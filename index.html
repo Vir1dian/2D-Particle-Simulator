@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2D Particle Simulator - Math 5 Honors Project</title>
+
+  <style>
+    .visual_container {
+      margin-top: 50px;
+      margin-inline: auto;
+      background-color: #eeeeee;
+    }
+    .visual_particle {
+      position: relative;
+      border-radius: 10px;
+      width: 20px;
+      height: 20px;
+      background-color: black;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main_container">
+  </div>
+
+  <script>
+
+    function setContainer(container) {
+      const visual_container = document.createElement('div');
+      visual_container.classList.add('visual_container');
+      visual_container.style.width = `${container.x_max - container.x_min}px`;
+      visual_container.style.height = `${container.y_max - container.y_min}px`;
+      document.body.appendChild(visual_container);
+    }
+
+    function setParticle(particle) {  // for single particle model (starting the concept)
+      const visual_container = document.querySelector('.visual_container');
+
+      const visual_particle = document.createElement('div');
+      visual_particle.classList.add('visual_particle');
+
+      // radius
+      visual_particle.style.borderRadius = `${particle.radius}px`;
+      visual_particle.style.width = `${2*particle.radius}px`;
+      visual_particle.style.height = `${2*particle.radius}px`;
+
+      // positioning
+      visual_particle.style.top = `${particle.position[1] - particle.radius}px`;
+      visual_particle.style.left = `${particle.position[0] - particle.radius}px`;
+
+      visual_container.appendChild(visual_particle);
+    }
+
+    let container = {
+      x_min: -250,
+      x_max: 250,
+      y_min: -250,
+      y_max: 250
+    }
+
+    let particle_x = {
+      position: [0,0], 
+      velocity: [0,0],
+      acceleration: [0,0],
+      radius: 10
+    }
+    
+    setContainer(container)
+    setParticle(particle_x);
+
+  </script>
+</body>
+</html>
