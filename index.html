@@ -37,14 +37,14 @@
 
   <div class="control_items">
     <span class="control_item">
-      <p>Particle 1: </p>
+      <div>Particle 1: </div>
       <label for="set_x">Set X</label>
       <input type="number" id="set_x" name="set_x" value="">
       <label for="set_y">Set Y</label>
       <input type="number" id="set_y" name="set_y" value="">
     </span>
     <span class="control_item">
-      <button onclick="updateParticle()">Update</button>
+      <button onclick="updateParticleManual()">Update</button>
     </span>
   </div>
 
@@ -73,7 +73,7 @@
 
       // positioning
       visual_particle.style.left = `${(particle.position[0] - particle.radius) - container.x_min}px`;
-      visual_particle.style.top = `${container.y_max - (particle_a.position[1] - particle_a.radius)}px`;
+      visual_particle.style.top = `${container.y_max - (particle_a.position[1] + particle_a.radius)}px`;
       
       // update inputs
       const x_input = document.querySelector('#set_x');
@@ -84,15 +84,25 @@
       visual_container.appendChild(visual_particle);
     }
 
-    function updateParticle() {
+    function updateParticleManual() {
       const x_input = document.querySelector('#set_x');
       const y_input = document.querySelector('#set_y');
-      particle_a.position[0] = x_input.value;
-      particle_a.position[1] = y_input.value;
+
+      // Validate user inputs to stay within container bounds, while also parsing input values as ints to avoid unexpected behaviors
+      const newX = Math.min(Math.max(parseInt(x_input.value, 10), container.x_min), container.x_max);
+      const newY = Math.min(Math.max(parseInt(y_input.value, 10), container.y_min), container.y_max);
+
+      // Update object values
+      particle_a.position[0] = newX;
+      particle_a.position[1] = newY;
+
+      // Show validation of user inputs in the input fields as well
+      x_input.value = newX;
+      y_input.value = newY;
 
       const visual_particle = document.querySelector('.visual_particle');
       visual_particle.style.left = `${(particle_a.position[0] - particle_a.radius) - container.x_min}px`;
-      visual_particle.style.top = `${container.y_max - (particle_a.position[1] - particle_a.radius)}px`;
+      visual_particle.style.top = `${container.y_max - (particle_a.position[1] + particle_a.radius)}px`;
     }
 
     let container = {
