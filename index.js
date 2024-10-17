@@ -7,7 +7,7 @@ const container = {
 
 const particle_a = {
   position: [0,0], 
-  velocity: [0,0],
+  velocity: [1,1],
   acceleration: [0,0],
   radius: 5
 }
