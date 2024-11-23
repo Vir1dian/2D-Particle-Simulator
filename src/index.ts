@@ -57,4 +57,5 @@ function updateParticleElementManual() {
 }
 
 loadContainerElement(container);
-createParticle();
+new Particle(1, 5, {x: 0, y: 0});
+loadParticleElement(simulation_particles[0], container);

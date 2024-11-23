@@ -1,4 +1,5 @@
 "use strict";
+const simulation_particles = [];
 class Particle {
     constructor(mass = 1, radius = 5, position = { x: 0, y: 0 }, velocity = { x: 0, y: 0 }, acceleration = { x: 0, y: 0 }) {
         this.id = Particle.instance_count;
@@ -8,6 +9,7 @@ class Particle {
         this.velocity = velocity;
         this.acceleration = acceleration;
         Particle.instance_count++;
+        simulation_particles.push(this);
     }
     collide_elastic(container) {
         if (this.position.x + this.radius > container.x_max) { // collision with right (totally elastic)
@@ -69,8 +71,3 @@ class Particle {
     }
 }
 Particle.instance_count = 0;
-const simulation_particles = [];
-function createParticle() {
-    const new_particle = new Particle();
-    simulation_particles.push(new_particle);
-}

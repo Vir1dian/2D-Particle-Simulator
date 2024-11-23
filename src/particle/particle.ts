@@ -3,6 +3,8 @@ interface Vector2D {
   y: number;
 }
 
+const simulation_particles: Particle[] = [];
+
 class Particle {
   static instance_count = 0;
 
@@ -29,6 +31,7 @@ class Particle {
     this.acceleration = acceleration;
 
     Particle.instance_count++;
+    simulation_particles.push(this);
   }
 
   collide_elastic(container: BoxSpace) {
@@ -93,11 +96,4 @@ class Particle {
     }
   }
 
-}
-
-const simulation_particles: Particle[] = [];
-
-function createParticle() {
-  const new_particle: Particle = new Particle();
-  simulation_particles.push(new_particle);
 }

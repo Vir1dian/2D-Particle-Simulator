@@ -1,16 +1,11 @@
 
-let start;
-let particle_movement;
-let progress;
-let isRunning = false;
-
 /**
  * Updates an element representing a moving particle in the HTML body, used for frame-by-frame animation
  * 
  * @param {number} id number associated with the selected particle
  * @param {number} ui_courseness defines how often display values change as the selected particle changes position
  */
-function updateParticleElement(id: number, ui_courseness = 2) {
+function updateParticleElement(id: number, ui_courseness = 1) {
   // Update the location of the selected particle's element
   const particle_element : HTMLElement | null = document.querySelector(`#particle_element_id${id}`);
   const selected_particle: Particle = simulation_particles[id];
@@ -27,7 +22,11 @@ function updateParticleElement(id: number, ui_courseness = 2) {
   (y_input as HTMLInputElement).value = newY.toString();
 }
 
-function step(timestamp) {
+let start: DOMHighResTimeStamp;
+let particle_movement: number;
+let isRunning: boolean = false;
+
+function step(timestamp: DOMHighResTimeStamp) {
   start = timestamp;
 
   simulation_particles.forEach((particle, index) => {
@@ -42,13 +41,13 @@ function step(timestamp) {
 function runSimulation() {
   if (!isRunning) {
     simulation_particles.forEach((particle, index) => {
-      particle.setVelocity('random');
+      particle.setVelocity('random', 3);
     })
 
     isRunning = true;
     window.requestAnimationFrame(step);
   } else {
     isRunning = false;
-    cancelAnimationFrame(stopID);
+    cancelAnimationFrame(particle_movement);
   }
 }
