@@ -5,10 +5,13 @@ const container = {
   y_max: 250
 }
 
+/**
+ * TODO: Implement multple particles
+ */
 const particle_a = {
   position: [0,0], 
   velocity: [1,1],
-  acceleration: [0,0],
+  acceleration: [0,-0.098],
   radius: 5
 }
 
