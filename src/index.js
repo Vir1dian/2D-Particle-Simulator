@@ -45,5 +45,5 @@ function updateParticleElementManual() {
     particle_element.style.top = `${container.y_max - (selected_particle.position.y + selected_particle.radius)}px`;
 }
 loadContainerElement(container);
-new Particle(1, 5, { x: 0, y: 0 });
+new Particle(1, 5, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: -0.98 });
 loadParticleElement(simulation_particles[0], container);

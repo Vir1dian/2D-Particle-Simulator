@@ -34,7 +34,7 @@ function step(timestamp) {
 }
 function runSimulation() {
     if (!isRunning) {
-        simulation_particles.forEach((particle, index) => {
+        simulation_particles.forEach((particle) => {
             particle.setVelocity('random', 3);
         });
         isRunning = true;
