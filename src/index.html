@@ -6,12 +6,12 @@
   <title>2D Particle Simulator - Math 5 Honors Project</title>
 
   <style>
-    .visual_container {
+    .container_element {
       margin-top: 25px;
       margin-inline: auto;
       background-color: #eeeeee;
     }
-    .visual_particle {
+    .particle_element {
       position: relative;
       border-radius: 10px;
       width: 20px;
@@ -31,9 +31,10 @@
     }
   </style>
 
-  <script src="functions/initial.js" defer></script>
-  <script src="functions/movement.js" defer></script>
+  <script src="particle/spaces.js" defer></script>
+  <script src="particle/particle.js" defer></script>
   <script src="index.js" defer></script>
+  <script src="functions/animation.js" defer></script>
 
 </head>
 <body>
@@ -42,7 +43,7 @@
 
   <div class="control_items">
     <span class="control_item">
-      <button onclick="updateParticleManual()">Update</button>
+      <button onclick="updateParticleElementManual()">Update</button>
       <div>Particle 1: </div>
       <label for="set_x">Set X</label>
       <input type="number" id="set_x" name="set_x" value="">
