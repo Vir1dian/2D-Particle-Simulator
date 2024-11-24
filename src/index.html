@@ -10,6 +10,7 @@
   <script src="particle/spaces.js" defer></script>
   <script src="particle/vector2D.js" defer></script>
   <script src="particle/particle.js" defer></script>
+  <script src="functions/renderers.js" defer></script>
   <script src="index.js" defer></script>
   <script src="functions/animation.js" defer></script>
 
@@ -20,31 +21,61 @@
     <div class="simulation_wrapper"></div>
 
     <div class="control_items">
-      <span class="control_item">
-        <button onclick="particleElementFunctions.createParticle()">Add Particle</button>
-      </span>
-      <span class="control_item control_particles">
+      <span class="control_item control_simulation">
         <table>
           <tr>
-            <th>
-              Particle #
-            </th>
-            <th>
-              X
-            </th>
-            <th>
-              Y
-            </th>
-            <th></th>
-            <th></th>
+            <td>Gravity</td>
           </tr>
-          <!-- rows for individual particle controls go here -->
+          <tr>
+            <td>Elasticity</td>
+          </tr>
+          <tr>
+            <td>
+              
+            </td>
+          </tr>
+        </table>
+        <button onclick="particleElementFunctions.createParticle()">Add Particle</button>
+      </span>
+      <span class="control_item control_animation">
+        <table>
+          <tr>
+            <td colspan="3">
+              <div id="simulation_timer">00:00:00</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button onclick="runSimulation()" id="control_button_run">Run</button>
+            </td>
+            <td>
+              <button onclick="pauseSimulation()" id="control_button_pause" disabled>Pause</button>
+            </td>
+            <td>
+              <button onclick="stopSimulation()" id="control_button_stop" disabled>Stop</button>
+            </td>
+          </tr>
         </table>
       </span>
-      <span class="control_item">
-        <button onclick="runSimulation()" id="control_button_run">Run</button>
-        <button onclick="pauseSimulation()" id="control_button_pause" style="display: none;">Pause</button>
-        <button onclick="stopSimulation()" id="control_button_stop" style="display: none;">Stop</button>
+      <span class="control_item control_particles">
+        <table cellspacing="0">
+          <thead>
+              <tr>
+              <th>
+                Particle #
+              </th>
+              <th>
+                X
+              </th>
+              <th>
+                Y
+              </th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <!-- rows for individual particle controls go here -->
+        </table>
       </span>
     </div>
 

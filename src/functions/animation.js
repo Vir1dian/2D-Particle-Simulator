@@ -35,10 +35,31 @@ function step(timestamp) {
     });
     particle_movement = window.requestAnimationFrame(step);
 }
+const timer_element = document.querySelector('#simulation_timer');
+let timer, time_elapsed = 0;
 /**
  * Runs the particle simulation and toggles the control buttons
  */
 function runSimulation() {
+    // start a timer
+    if (!timer) {
+        timer = setInterval(() => {
+            time_elapsed++;
+            let hours = Math.floor(time_elapsed / 3600);
+            if (hours / 10 < 1) {
+                hours = "0" + hours;
+            }
+            let minutes = Math.floor(time_elapsed / 60) % 60;
+            if (minutes / 10 < 1) {
+                minutes = "0" + minutes;
+            }
+            let seconds = time_elapsed % 60;
+            if (seconds / 10 < 1) {
+                seconds = "0" + seconds;
+            }
+            timer_element.innerHTML = `${hours}:${minutes}:${seconds}`;
+        }, 1000);
+    }
     // Change animation state
     simulation_particles.forEach((particle) => {
         particle.setVelocity('random', 1);
@@ -48,34 +69,52 @@ function runSimulation() {
     const run_button = document.querySelector('#control_button_run');
     const pause_button = document.querySelector('#control_button_pause');
     const stop_button = document.querySelector('#control_button_stop');
-    run_button.style.display = "none";
-    pause_button.style.display = "";
-    stop_button.style.display = "";
+    run_button.disabled = true;
+    pause_button.disabled = false;
+    stop_button.disabled = false;
 }
 /**
  * Pauses the particle simulation and toggles the control buttons
  */
 function pauseSimulation() {
+    // Pause a timer
+    clearInterval(timer);
+    timer = null;
     // Change animation state
     cancelAnimationFrame(particle_movement);
     // Update buttons in the HTML body
     const run_button = document.querySelector('#control_button_run');
     const pause_button = document.querySelector('#control_button_pause');
-    run_button.style.display = "";
-    pause_button.style.display = "none";
+    run_button.disabled = false;
+    pause_button.disabled = true;
 }
 /**
- * TODO: Implement RESETTING THE SIM
  * Stops the particle simulation and toggles the control buttons
  */
 function stopSimulation() {
+    // Stop a timer
+    clearInterval(timer);
+    timer = null;
+    time_elapsed = 0;
+    timer_element.innerHTML = '00:00:00';
     // Change animation state
     cancelAnimationFrame(particle_movement);
+    // Empty simulation data
+    simulation_particles.length = 0;
+    // Empty simulation elements
+    const particle_elements = document.querySelectorAll('.particle_element');
+    const control_particle_elements = document.querySelectorAll('.control_particle');
+    particle_elements.forEach(element => {
+        element.remove();
+    });
+    control_particle_elements.forEach(element => {
+        element.remove();
+    });
     // Update buttons in the HTML body
     const run_button = document.querySelector('#control_button_run');
     const pause_button = document.querySelector('#control_button_pause');
     const stop_button = document.querySelector('#control_button_stop');
-    run_button.style.display = "";
-    pause_button.style.display = "none";
-    stop_button.style.display = "none";
+    run_button.disabled = false;
+    pause_button.disabled = true;
+    stop_button.disabled = true;
 }
