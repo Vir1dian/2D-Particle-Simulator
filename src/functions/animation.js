@@ -25,7 +25,7 @@ function step(timestamp) {
     start = timestamp;
     simulation_particles.forEach((particle) => {
         particle.move();
-        particle.collide_elastic(container);
+        particle.collide_container_elastic(container);
         updateParticleElement(particle);
     });
     particle_movement = window.requestAnimationFrame(step);

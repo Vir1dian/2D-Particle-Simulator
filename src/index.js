@@ -64,13 +64,13 @@ const particleElementFunctions = {
         // append to HTML body
         const control_table = document.querySelector('.control_item table');
         control_table === null || control_table === void 0 ? void 0 : control_table.appendChild(particle_element_control);
-        console.log(simulation_particles);
     },
     /**
      * TODO: Implement variable initial conditions
      */
     createParticle() {
-        const created_particle = new Particle(1, 5, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 });
+        const created_particle = new Particle(1, 5, new Vector2D(), new Vector2D(), new Vector2D(0, 0)); // for gravity, use -0.098
+        created_particle.position.randomize(container.x_max - 1);
         this.loadParticle(created_particle, container);
     },
     updateParticle(selected_particle) {
@@ -80,8 +80,7 @@ const particleElementFunctions = {
         const newX = Math.min(Math.max(parseInt(x_input.value), container.x_min), container.x_max);
         const newY = Math.min(Math.max(parseInt(y_input.value), container.y_min), container.y_max);
         // Update object values
-        selected_particle.position.x = newX;
-        selected_particle.position.y = newY;
+        selected_particle.setPosition(newX, newY);
         // Show validation of user inputs in the input fields
         x_input.value = newX.toString();
         y_input.value = newY.toString();
@@ -98,7 +97,6 @@ const particleElementFunctions = {
         if (index > -1) { // only splice array when item is found
             simulation_particles.splice(index, 1); // 2nd parameter means remove one item only
         }
-        console.log(simulation_particles);
     }
 };
 loadContainerElement(container);

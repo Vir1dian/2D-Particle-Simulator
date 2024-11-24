@@ -7,9 +7,9 @@
  */
 function updateParticleElement(selected_particle: Particle, ui_courseness = 1) {
   // Update the location of the selected particle's element
-  const particle_element : HTMLElement | null = document.querySelector(`#particle_element_id${selected_particle.id}`);
-  (particle_element as HTMLElement).style.left = `${(selected_particle.position.x - selected_particle.radius) - container.x_min}px`;
-  (particle_element as HTMLElement).style.top = `${container.y_max - (selected_particle.position.y + selected_particle.radius)}px`;
+  const particle_element : HTMLElement = document.querySelector(`#particle_element_id${selected_particle.id}`) as HTMLElement;
+  particle_element.style.left = `${(selected_particle.position.x - selected_particle.radius) - container.x_min}px`;
+  particle_element.style.top = `${container.y_max - (selected_particle.position.y + selected_particle.radius)}px`;
 
   // Update displayed data for the selected particle
   const courseness_factor = Math.pow(10, ui_courseness)
@@ -31,7 +31,7 @@ function step(timestamp: DOMHighResTimeStamp) {
 
   simulation_particles.forEach((particle) => {
     particle.move();
-    particle.collide_elastic(container);
+    particle.collide_container_elastic(container);
     updateParticleElement(particle);
   })
 
