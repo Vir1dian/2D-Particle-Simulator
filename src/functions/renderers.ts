@@ -17,6 +17,56 @@ function loadContainerElement(container: BoxSpace) {
   wrapper?.appendChild(container_element);
 }
 
+const simulationSettingsElementFunctions = {
+  loadSettings(settings: SimulationSettings) {
+    // Get all input elements
+    const num_particles: HTMLInputElement = document.querySelector('#control_simulation-num_particles') as HTMLInputElement;
+    const num_particles_random: HTMLInputElement = document.querySelector('#control_simulation-num_particles_random') as HTMLInputElement;
+    const pos_x: HTMLInputElement = document.querySelector('#control_simulation-pos_x') as HTMLInputElement;
+    const pos_y: HTMLInputElement = document.querySelector('#control_simulation-pos_y') as HTMLInputElement;
+    const pos_random: HTMLInputElement = document.querySelector('#control_simulation-pos_random') as HTMLInputElement;
+    const vel_x: HTMLInputElement = document.querySelector('#control_simulation-vel_x') as HTMLInputElement;
+    const vel_y: HTMLInputElement = document.querySelector('#control_simulation-vel_y') as HTMLInputElement;
+    const vel_random: HTMLInputElement = document.querySelector('#control_simulation-vel_random') as HTMLInputElement;
+    const acc_x: HTMLInputElement = document.querySelector('#control_simulation-acc_x') as HTMLInputElement;
+    const acc_y: HTMLInputElement = document.querySelector('#control_simulation-acc_y') as HTMLInputElement;
+    const acc_random: HTMLInputElement = document.querySelector('#control_simulation-acc_random') as HTMLInputElement;
+    const mass: HTMLInputElement = document.querySelector('#control_simulation-mass') as HTMLInputElement;
+    const mass_random: HTMLInputElement = document.querySelector('#control_simulation-mass_random') as HTMLInputElement;
+    const radius: HTMLInputElement = document.querySelector('#control_simulation-radius') as HTMLInputElement;
+    const radius_random: HTMLInputElement = document.querySelector('#control_simulation-radius_random') as HTMLInputElement;
+    const elac: HTMLInputElement = document.querySelector('#control_simulation-elac') as HTMLInputElement;
+
+    // Load default values for simulation settings
+    if (settings.num_particles === 'random') num_particles_random.checked = true;
+    else num_particles.value = settings.num_particles.toString();
+    if (settings.position === 'random') pos_random.checked = true;
+    else {
+      pos_x.value = settings.position.x.toString();
+      pos_y.value = settings.position.y.toString();
+    }
+    if (settings.velocity === 'random') vel_random.checked = true;
+    else {
+      vel_x.value = settings.velocity.x.toString();
+      vel_y.value = settings.velocity.y.toString();
+    }
+    if (settings.acceleration === 'random') acc_random.checked = true;
+    else {
+      acc_x.value = settings.acceleration.x.toString();
+      acc_y.value = settings.acceleration.y.toString();
+    }
+    if (settings.mass === 'random') mass_random.checked = true;
+    else mass.value = settings.mass.toString() ;
+    if (settings.radius === 'random') radius_random.checked = true;
+    else radius.value = settings.radius.toString() ;
+    elac.value = settings.elasticity.toString()
+  },
+
+  updateSettings() {
+
+  }
+}
+
 /**
  * TODO: Refactor to use a function for attribute assignment, for readability
  */
@@ -70,7 +120,7 @@ const particleElementFunctions = {
       particleElementFunctions.deleteParticle(particle);
     });
     // append to HTML body
-    const control_table: HTMLTableElement | null = document.querySelector('.control_particles table')
+    const control_table: HTMLTableElement | null = document.querySelector('#control_particles table')
     control_table?.appendChild(particle_element_control);
   },
 
@@ -78,8 +128,13 @@ const particleElementFunctions = {
    * TODO: Implement variable initial conditions
    */
   createParticle() {
-    const created_particle = new Particle(1, 5, new Vector2D(), new Vector2D(), new Vector2D(0, -0.098));  // for gravity, use -0.098
-    // created_particle.position = created_particle.position.randomize(container.x_max-1);
+    const created_particle = new Particle(
+      simulation_settings.mass, 
+      simulation_settings.radius, 
+      simulation_settings.position, 
+      simulation_settings.velocity, 
+      simulation_settings.acceleration
+    );
     this.loadParticle(created_particle, container);
   },
 

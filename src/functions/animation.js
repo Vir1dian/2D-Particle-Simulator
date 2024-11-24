@@ -61,9 +61,6 @@ function runSimulation() {
         }, 1000);
     }
     // Change animation state
-    simulation_particles.forEach((particle) => {
-        particle.setVelocity('random', 1);
-    });
     window.requestAnimationFrame(step);
     // Update buttons in the HTML body
     const run_button = document.querySelector('#control_button_run');

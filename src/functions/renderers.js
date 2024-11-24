@@ -14,6 +14,61 @@ function loadContainerElement(container) {
     container_element.style.height = `${container.y_max - container.y_min}px`;
     wrapper === null || wrapper === void 0 ? void 0 : wrapper.appendChild(container_element);
 }
+const simulationSettingsElementFunctions = {
+    loadSettings(settings) {
+        // Get all input elements
+        const num_particles = document.querySelector('#control_simulation-num_particles');
+        const num_particles_random = document.querySelector('#control_simulation-num_particles_random');
+        const pos_x = document.querySelector('#control_simulation-pos_x');
+        const pos_y = document.querySelector('#control_simulation-pos_y');
+        const pos_random = document.querySelector('#control_simulation-pos_random');
+        const vel_x = document.querySelector('#control_simulation-vel_x');
+        const vel_y = document.querySelector('#control_simulation-vel_y');
+        const vel_random = document.querySelector('#control_simulation-vel_random');
+        const acc_x = document.querySelector('#control_simulation-acc_x');
+        const acc_y = document.querySelector('#control_simulation-acc_y');
+        const acc_random = document.querySelector('#control_simulation-acc_random');
+        const mass = document.querySelector('#control_simulation-mass');
+        const mass_random = document.querySelector('#control_simulation-mass_random');
+        const radius = document.querySelector('#control_simulation-radius');
+        const radius_random = document.querySelector('#control_simulation-radius_random');
+        const elac = document.querySelector('#control_simulation-elac');
+        // Load default values for simulation settings
+        if (settings.num_particles === 'random')
+            num_particles_random.checked = true;
+        else
+            num_particles.value = settings.num_particles.toString();
+        if (settings.position === 'random')
+            pos_random.checked = true;
+        else {
+            pos_x.value = settings.position.x.toString();
+            pos_y.value = settings.position.y.toString();
+        }
+        if (settings.velocity === 'random')
+            vel_random.checked = true;
+        else {
+            vel_x.value = settings.velocity.x.toString();
+            vel_y.value = settings.velocity.y.toString();
+        }
+        if (settings.acceleration === 'random')
+            acc_random.checked = true;
+        else {
+            acc_x.value = settings.acceleration.x.toString();
+            acc_y.value = settings.acceleration.y.toString();
+        }
+        if (settings.mass === 'random')
+            mass_random.checked = true;
+        else
+            mass.value = settings.mass.toString();
+        if (settings.radius === 'random')
+            radius_random.checked = true;
+        else
+            radius.value = settings.radius.toString();
+        elac.value = settings.elasticity.toString();
+    },
+    updateSettings() {
+    }
+};
 /**
  * TODO: Refactor to use a function for attribute assignment, for readability
  */
@@ -63,15 +118,14 @@ const particleElementFunctions = {
             particleElementFunctions.deleteParticle(particle);
         });
         // append to HTML body
-        const control_table = document.querySelector('.control_particles table');
+        const control_table = document.querySelector('#control_particles table');
         control_table === null || control_table === void 0 ? void 0 : control_table.appendChild(particle_element_control);
     },
     /**
      * TODO: Implement variable initial conditions
      */
     createParticle() {
-        const created_particle = new Particle(1, 5, new Vector2D(), new Vector2D(), new Vector2D(0, -0.098)); // for gravity, use -0.098
-        // created_particle.position = created_particle.position.randomize(container.x_max-1);
+        const created_particle = new Particle(simulation_settings.mass, simulation_settings.radius, simulation_settings.position, simulation_settings.velocity, simulation_settings.acceleration);
         this.loadParticle(created_particle, container);
     },
     updateParticle(selected_particle) {

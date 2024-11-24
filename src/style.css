@@ -29,22 +29,33 @@
   padding: 10px;
 }
 
-.control_particles {
+#control_simulation input {
+  width: 60px;
+}
+
+#control_add_particle input {
+  width: 60px;
+}
+
+#simulation_timer {
+  font-size: 24px;
+  text-align: center;
+}
+
+#control_particles {
   padding: 0;
   border-top: 1px solid gray;
-  height: 350px;
+  height: 200px;
   overflow-y: auto;
-  overflow-x: hidden;
   display: block;
 }
-.control_particles table tr:nth-of-type(even) {
+#control_particles table tr:nth-of-type(even) {
   background-color: whitesmoke;
 }
-.control_particles table th {
+#control_particles table th {
   position: sticky;
   top: 0;
   background-color: lightslategray;
-  
 }
 .control_particle_input {
   width: 40px;

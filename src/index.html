@@ -7,8 +7,8 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <script src="particle/spaces.js" defer></script>
   <script src="particle/vector2D.js" defer></script>
+  <script src="particle/spaces.js" defer></script>
   <script src="particle/particle.js" defer></script>
   <script src="functions/renderers.js" defer></script>
   <script src="index.js" defer></script>
@@ -21,23 +21,138 @@
     <div class="simulation_wrapper"></div>
 
     <div class="control_items">
-      <span class="control_item control_simulation">
+      <span class="control_item" id="control_simulation">
         <table>
           <tr>
-            <td>Gravity</td>
+            <td colspan="3">Simulation (For all Particles)</td>
+            <td>Randomize</td>
+          </tr>
+          <tr>
+            <td># of Particles</td>
+            <td colspan="2">
+              <input type="number" id="control_simulation-num_particles">
+            </td>
+            <td>
+              <input type="checkbox" id="control_simulation-num_particles_random">
+            </td>
+          </tr>
+          <tr>
+            <td>Position</td>
+            <td>
+              <input type="number" id="control_simulation-pos_x">
+            </td>
+            <td>
+              <input type="number" id="control_simulation-pos_y">
+            </td>
+            <td>
+              <input type="checkbox" id="control_simulation-pos_random">
+            </td>
+          </tr>
+          <tr>
+            <td>Velocity</td>
+            <td>
+              <input type="number" id="control_simulation-vel_x">
+            </td>
+            <td>
+              <input type="number" id="control_simulation-vel_y">
+            </td>
+            <td>
+              <input type="checkbox" id="control_simulation-vel_random">
+            </td>
+          </tr>
+          <tr>
+            <td>Acceleration</td>
+            <td>
+              <input type="number" id="control_simulation-acc_x">
+            </td>
+            <td>
+              <input type="number" id="control_simulation-acc_y">
+            </td>
+            <td>
+              <input type="checkbox" id="control_simulation-acc_random">
+            </td>
+          </tr>
+          <tr>
+            <td>Mass</td>
+            <td colspan="2">
+              <input type="number" id="control_simulation-mass">
+            </td>
+            <td>
+              <input type="checkbox" id="control_simulation-mass_random">
+            </td>
+          </tr>
+          <tr>
+            <td>Radius</td>
+            <td colspan="2">
+              <input type="number" id="control_simulation-radius">
+            </td>
+            <td>
+              <input type="checkbox" id="control_simulation-radius_random">
+            </td>
           </tr>
           <tr>
             <td>Elasticity</td>
+            <td colspan="3">
+              <input type="number" id="control_simulation-elac">
+            </td>
           </tr>
           <tr>
-            <td>
-              
+            <td colspan="4">
+              <button onclick="simulationSettingsElementFunctions.updateSettings()" style="width: 100%;">Update</button>
             </td>
           </tr>
         </table>
-        <button onclick="particleElementFunctions.createParticle()">Add Particle</button>
       </span>
-      <span class="control_item control_animation">
+      <span class="control_item" id="control_add_particle">
+        <table>
+          <tr>
+            <td colspan="5">Add New Particle:</td>
+          </tr>
+          <tr>
+            <td>Position</td>
+            <td>
+              <input type="number">
+            </td>
+            <td>
+              <input type="number">
+            </td>
+            <td>Radius</td>
+            <td>
+              <input type="number">
+            </td>
+          </tr>
+          <tr>
+            <td>Velocity</td>
+            <td>
+              <input type="number">
+            </td>
+            <td>
+              <input type="number">
+            </td>
+            <td>Mass</td>
+            <td>
+              <input type="number">
+            </td>
+          </tr>
+          <tr>
+            <td>Acceleration</td>
+            <td>
+              <input type="number">
+            </td>
+            <td>
+              <input type="number">
+            </td>
+            <td colspan="2">
+            </td>
+          </tr>
+          <tr>
+            <td colspan="5">
+              <button onclick="particleElementFunctions.createParticle()" style="width: 100%;">Add Particle</button>  
+            </td>
+          </tr>
+        </table>
+      </span>
+      <span class="control_item" id="control_animation">
         <table>
           <tr>
             <td colspan="3">
@@ -57,10 +172,10 @@
           </tr>
         </table>
       </span>
-      <span class="control_item control_particles">
+      <span class="control_item" id="control_particles">
         <table cellspacing="0">
           <thead>
-              <tr>
+            <tr>
               <th>
                 Particle #
               </th>

@@ -4,17 +4,36 @@ class Particle {
     constructor(mass = 1, radius = 5, position = new Vector2D(), velocity = new Vector2D(), acceleration = new Vector2D()) {
         Particle.instance_count++;
         this.id = Particle.instance_count;
-        if (mass <= 0) {
+        if (mass === 'random')
+            this.mass = Math.floor(Math.random() * (10 - 1 + 1) + 1);
+        else if (mass <= 0)
             throw new Error('Invalid mass argument.');
-        }
-        if (radius <= 0) {
+        else
+            this.mass = mass;
+        if (radius === 'random')
+            this.radius = Math.floor(Math.random() * (20 - 5 + 1) + 5);
+        else if (radius <= 0)
             throw new Error('Invalid radius argument.');
+        else
+            this.radius = radius;
+        if (position === 'random') {
+            this.position = new Vector2D();
+            this.setPosition('random', container.x_max - this.radius);
         }
-        this.mass = mass;
-        this.radius = radius;
-        this.position = position;
-        this.velocity = velocity;
-        this.acceleration = acceleration;
+        else
+            this.position = position;
+        if (velocity === 'random') {
+            this.velocity = new Vector2D();
+            this.setVelocity('random', 2);
+        }
+        else
+            this.velocity = velocity;
+        if (acceleration === 'random') {
+            this.acceleration = new Vector2D();
+            this.setAcceleration('random', 1);
+        }
+        else
+            this.acceleration = acceleration;
         simulation_particles.push(this);
     }
     collideContainer(container) {
@@ -49,7 +68,7 @@ class Particle {
             otherParticle.position = otherParticle.position.subtract(random_direction.scalarMultiply(minimum_separation));
             return;
         }
-        if (distance < this.radius + otherParticle.radius) {
+        if (distance <= this.radius + otherParticle.radius) {
             // Positional correction using projection method
             // const penetration_normal: Vector2D = distance_vector.scalarMultiply((this.radius + otherParticle.radius - distance) / 2);
             // this.position = this.position.add(penetration_normal);
@@ -102,6 +121,22 @@ class Particle {
         else {
             this.velocity.x = a;
             this.velocity.y = b;
+        }
+    }
+    /**
+     * Sets a new position in a 2D space for a particle
+     *
+     * @param {number | 'random'} a Either the position of the particle in the x-axis, or the setting for randomizing the particle position
+     * @param {number} b Either the position of the particle in the y-axis, or the set range (-max to +max) that the particle position can be randomized
+     */
+    setAcceleration(a = 0, b = 0) {
+        if (a === 'random') {
+            let max = b === 0 ? 1 : b;
+            this.acceleration = this.acceleration.randomize(max);
+        }
+        else {
+            this.acceleration.x = a;
+            this.acceleration.y = b;
         }
     }
 }
