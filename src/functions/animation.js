@@ -22,7 +22,6 @@ function updateParticleElement(id, ui_courseness = 1) {
 }
 let start;
 let particle_movement;
-let isRunning = false;
 function step(timestamp) {
     start = timestamp;
     simulation_particles.forEach((particle, index) => {
@@ -32,16 +31,47 @@ function step(timestamp) {
     });
     particle_movement = window.requestAnimationFrame(step);
 }
+/**
+ * Runs the particle simulation and toggles the control buttons
+ */
 function runSimulation() {
-    if (!isRunning) {
-        simulation_particles.forEach((particle) => {
-            particle.setVelocity('random', 3);
-        });
-        isRunning = true;
-        window.requestAnimationFrame(step);
-    }
-    else {
-        isRunning = false;
-        cancelAnimationFrame(particle_movement);
-    }
+    // Change animation state
+    simulation_particles.forEach((particle) => {
+        particle.setVelocity('random', 3);
+    });
+    window.requestAnimationFrame(step);
+    // Update buttons in the HTML body
+    const run_button = document.querySelector('#control_button_run');
+    const pause_button = document.querySelector('#control_button_pause');
+    const stop_button = document.querySelector('#control_button_stop');
+    run_button.style.display = "none";
+    pause_button.style.display = "";
+    stop_button.style.display = "";
+}
+/**
+ * Pauses the particle simulation and toggles the control buttons
+ */
+function pauseSimulation() {
+    // Change animation state
+    cancelAnimationFrame(particle_movement);
+    // Update buttons in the HTML body
+    const run_button = document.querySelector('#control_button_run');
+    const pause_button = document.querySelector('#control_button_pause');
+    run_button.style.display = "";
+    pause_button.style.display = "none";
+}
+/**
+ * TODO: Implement RESETTING THE SIM
+ * Stops the particle simulation and toggles the control buttons
+ */
+function stopSimulation() {
+    // Change animation state
+    cancelAnimationFrame(particle_movement);
+    // Update buttons in the HTML body
+    const run_button = document.querySelector('#control_button_run');
+    const pause_button = document.querySelector('#control_button_pause');
+    const stop_button = document.querySelector('#control_button_stop');
+    run_button.style.display = "";
+    pause_button.style.display = "none";
+    stop_button.style.display = "none";
 }

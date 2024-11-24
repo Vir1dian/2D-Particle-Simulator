@@ -5,31 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2D Particle Simulator - Math 5 Honors Project</title>
 
-  <style>
-    .container_element {
-      margin-top: 25px;
-      margin-inline: auto;
-      background-color: #eeeeee;
-    }
-    .particle_element {
-      position: relative;
-      border-radius: 10px;
-      width: 20px;
-      height: 20px;
-      background-color: black;
-    }
-    .control_items {
-      padding-top: 10px;
-    }
-    .control_item {
-      display: flex;
-      justify-content: center;
-      padding: 10px;
-    }
-    .control_item label {
-      margin-left: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 
   <script src="particle/spaces.js" defer></script>
   <script src="particle/particle.js" defer></script>
@@ -38,21 +14,48 @@
 
 </head>
 <body>
+  <div class="wrapper">
 
-  <div class="wrapper_visual"></div>
+    <div class="simulation_wrapper"></div>
 
-  <div class="control_items">
-    <span class="control_item">
-      <button onclick="updateParticleElementManual()">Update</button>
-      <div>Particle 1: </div>
-      <label for="set_x">Set X</label>
-      <input type="number" id="set_x" name="set_x" value="">
-      <label for="set_y">Set Y</label>
-      <input type="number" id="set_y" name="set_y" value="">
-    </span>
-    <span class="control_item">
-      <button onclick="runSimulation()">Run Simulator</button>
-    </span>
+    <div class="control_items">
+      <span class="control_item">
+        <table>
+          <tr>
+            <th></th>
+            <th>
+              Particle #
+            </th>
+            <th>
+              X
+            </th>
+            <th>
+              Y
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <button onclick="updateParticleElementManual()">Update</button>
+            </td>
+            <td>
+              <div id="selected_particle_name">1</div>
+            </td>
+            <td>
+              <input type="number" id="set_x" class="control_particle_input" name="set_x" value="">
+            </td>
+            <td>
+              <input type="number" id="set_y" class="control_particle_input" name="set_y" value="">
+            </td>
+          </tr>
+        </table>
+      </span>
+      <span class="control_item">
+        <button onclick="runSimulation()" id="control_button_run">Run</button>
+        <button onclick="pauseSimulation()" id="control_button_pause" style="display: none;">Pause</button>
+        <button onclick="stopSimulation()" id="control_button_stop" style="display: none;">Stop</button>
+      </span>
+    </div>
+
   </div>
 </body>
 </html>

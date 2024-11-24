@@ -1,6 +1,6 @@
 "use strict";
 function loadContainerElement(container) {
-    const wrapper = document.querySelector('.wrapper_visual');
+    const wrapper = document.querySelector('.simulation_wrapper');
     const container_element = document.createElement('div');
     container_element.classList.add('container_element');
     container_element.style.width = `${container.x_max - container.x_min}px`;
@@ -27,7 +27,7 @@ function loadParticleElement(particle, container) {
     container_element === null || container_element === void 0 ? void 0 : container_element.appendChild(particle_element);
 }
 function updateParticleElementManual() {
-    // const name_element : HTMLElement | null = document.querySelector('#selected_particle_name');
+    const name_element = document.querySelector('#selected_particle_name');
     const x_input = document.querySelector('#set_x');
     const y_input = document.querySelector('#set_y');
     // Validate user inputs to stay within container bounds, while also parsing input values as ints to avoid unexpected behaviors

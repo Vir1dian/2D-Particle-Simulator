@@ -22,9 +22,10 @@ function updateParticleElement(id: number, ui_courseness = 1) {
   (y_input as HTMLInputElement).value = newY.toString();
 }
 
+
+
 let start: DOMHighResTimeStamp;
 let particle_movement: number;
-let isRunning: boolean = false;
 
 function step(timestamp: DOMHighResTimeStamp) {
   start = timestamp;
@@ -38,16 +39,52 @@ function step(timestamp: DOMHighResTimeStamp) {
   particle_movement = window.requestAnimationFrame(step);
 }
 
+/**
+ * Runs the particle simulation and toggles the control buttons
+ */
 function runSimulation() {
-  if (!isRunning) {
-    simulation_particles.forEach((particle) => {
-      particle.setVelocity('random', 3);
-    })
+  // Change animation state
+  simulation_particles.forEach((particle) => {  // TODO: change to adapt to other initial control settings to add to simulator
+    particle.setVelocity('random', 3);
+  })
+  window.requestAnimationFrame(step);
 
-    isRunning = true;
-    window.requestAnimationFrame(step);
-  } else {
-    isRunning = false;
-    cancelAnimationFrame(particle_movement);
-  }
+  // Update buttons in the HTML body
+  const run_button : HTMLButtonElement | null = document.querySelector('#control_button_run');
+  const pause_button : HTMLButtonElement | null = document.querySelector('#control_button_pause');
+  const stop_button : HTMLButtonElement | null = document.querySelector('#control_button_stop');
+  (run_button as HTMLButtonElement).style.display = "none";
+  (pause_button as HTMLButtonElement).style.display = "";
+  (stop_button as HTMLButtonElement).style.display = "";
+}
+
+/**
+ * Pauses the particle simulation and toggles the control buttons
+ */
+function pauseSimulation() {
+  // Change animation state
+  cancelAnimationFrame(particle_movement);
+
+  // Update buttons in the HTML body
+  const run_button : HTMLButtonElement | null = document.querySelector('#control_button_run');
+  const pause_button : HTMLButtonElement | null = document.querySelector('#control_button_pause');
+  (run_button as HTMLButtonElement).style.display = "";
+  (pause_button as HTMLButtonElement).style.display = "none";
+}
+
+/**
+ * TODO: Implement RESETTING THE SIM
+ * Stops the particle simulation and toggles the control buttons
+ */
+function stopSimulation() {
+  // Change animation state
+  cancelAnimationFrame(particle_movement);
+
+  // Update buttons in the HTML body
+  const run_button : HTMLButtonElement | null = document.querySelector('#control_button_run');
+  const pause_button : HTMLButtonElement | null = document.querySelector('#control_button_pause');
+  const stop_button : HTMLButtonElement | null = document.querySelector('#control_button_stop');
+  (run_button as HTMLButtonElement).style.display = "";
+  (pause_button as HTMLButtonElement).style.display = "none";
+  (stop_button as HTMLButtonElement).style.display = "none";
 }

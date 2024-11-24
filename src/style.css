@@ -1,0 +1,39 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container_element {
+  margin-top: 25px;
+  margin-inline: auto;
+  background-color: #eeeeee;
+}
+.particle_element {
+  position: relative;
+  border-radius: 10px;
+  width: 20px;
+  height: 20px;
+  background-color: black;
+}
+.control_items {
+  margin-left: 10px;
+  padding-top: 10px;
+  border: 2px solid darkslategray;
+}
+.control_item {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+.control_item label {
+  margin-left: 10px;
+}
+.control_particle_input {
+  width: 40px;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

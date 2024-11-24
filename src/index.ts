@@ -1,5 +1,5 @@
 function loadContainerElement(container: BoxSpace) {
-  const wrapper : HTMLElement | null = document.querySelector('.wrapper_visual');
+  const wrapper : HTMLElement | null = document.querySelector('.simulation_wrapper');
 
   const container_element : HTMLElement = document.createElement('div');
   container_element.classList.add('container_element');
@@ -34,7 +34,7 @@ function loadParticleElement(particle: Particle, container: BoxSpace) {  // for 
 }
 
 function updateParticleElementManual() {  
-  // const name_element : HTMLElement | null = document.querySelector('#selected_particle_name');
+  const name_element : HTMLElement | null = document.querySelector('#selected_particle_name');
   const x_input : HTMLInputElement | null = document.querySelector('#set_x');
   const y_input : HTMLInputElement | null = document.querySelector('#set_y');
 
