@@ -20,9 +20,11 @@
 
     <div class="control_items">
       <span class="control_item">
+        <button onclick="particleElementFunctions.createParticle()">Add Particle</button>
+      </span>
+      <span class="control_item">
         <table>
           <tr>
-            <th></th>
             <th>
               Particle #
             </th>
@@ -32,21 +34,10 @@
             <th>
               Y
             </th>
+            <th></th>
+            <th></th>
           </tr>
-          <tr>
-            <td>
-              <button onclick="updateParticleElementManual()">Update</button>
-            </td>
-            <td>
-              <div id="selected_particle_name">1</div>
-            </td>
-            <td>
-              <input type="number" id="set_x" class="control_particle_input" name="set_x" value="">
-            </td>
-            <td>
-              <input type="number" id="set_y" class="control_particle_input" name="set_y" value="">
-            </td>
-          </tr>
+          <!-- rows for individual particle controls go here -->
         </table>
       </span>
       <span class="control_item">

@@ -2,13 +2,13 @@
 const simulation_particles = [];
 class Particle {
     constructor(mass = 1, radius = 5, position = { x: 0, y: 0 }, velocity = { x: 0, y: 0 }, acceleration = { x: 0, y: 0 }) {
+        Particle.instance_count++;
         this.id = Particle.instance_count;
         this.mass = mass;
         this.radius = radius;
         this.position = position;
         this.velocity = velocity;
         this.acceleration = acceleration;
-        Particle.instance_count++;
         simulation_particles.push(this);
     }
     collide_elastic(container) {

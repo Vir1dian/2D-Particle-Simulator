@@ -7,7 +7,6 @@ const simulation_particles: Particle[] = [];
 
 class Particle {
   static instance_count = 0;
-
   id: number;
   mass: number;
   radius: number;
@@ -22,6 +21,7 @@ class Particle {
     velocity: Vector2D = { x: 0, y: 0}, 
     acceleration: Vector2D = { x: 0, y: 0},
   ) {
+    Particle.instance_count++;
     this.id = Particle.instance_count;
 
     this.mass = mass;
@@ -30,7 +30,6 @@ class Particle {
     this.velocity = velocity;
     this.acceleration = acceleration;
 
-    Particle.instance_count++;
     simulation_particles.push(this);
   }
 
