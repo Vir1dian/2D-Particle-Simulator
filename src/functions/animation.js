@@ -23,12 +23,12 @@ let start;
 let particle_movement;
 function step(timestamp) {
     start = timestamp;
-    simulation_particles.forEach((particle, index1) => {
+    simulation_particles.forEach((particle) => {
         particle.move();
         particle.collideContainer(container);
         simulation_particles.forEach((otherParticle) => {
             if (otherParticle !== particle) {
-                particle.collideParticle(otherParticle);
+                particle.collideParticle(otherParticle, 0.6);
             }
         });
         updateParticleElement(particle);

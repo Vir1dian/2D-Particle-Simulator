@@ -29,13 +29,13 @@ let particle_movement: number;
 function step(timestamp: DOMHighResTimeStamp) {
   start = timestamp;
 
-  simulation_particles.forEach((particle, index1) => {
+  simulation_particles.forEach((particle) => {
     particle.move();
     particle.collideContainer(container);
 
     simulation_particles.forEach((otherParticle) => {
       if (otherParticle !== particle) {
-        particle.collideParticle(otherParticle);
+        particle.collideParticle(otherParticle, 0.6);
       }
     });
 

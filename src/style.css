@@ -1,11 +1,11 @@
 .wrapper {
+  margin-top: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .container_element {
-  margin-top: 25px;
   margin-inline: auto;
   background-color: #eeeeee;
   position: relative;
@@ -26,6 +26,10 @@
   display: flex;
   justify-content: center;
   padding: 10px;
+}
+.control_particles {
+  height: 350px;
+  overflow-y: scroll;
 }
 .control_item label {
   margin-left: 10px;

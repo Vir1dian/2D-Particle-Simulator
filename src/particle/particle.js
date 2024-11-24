@@ -36,10 +36,14 @@ class Particle {
         }
     }
     collideParticle(otherParticle, elasticity = 1) {
+        if (elasticity < 0 || elasticity > 1) {
+            throw new Error("Invalid elasticity value.");
+        }
         const distance_vector = this.position.subtract(otherParticle.position);
         const distance = distance_vector.magnitude();
         if (distance === 0) { // Handles particles in the same location (i.e. instantiated in the same position)
-            const random_direction = new Vector2D(2 * Math.random(), 2 * Math.random()).normalize();
+            let random_direction = new Vector2D(Math.random(), Math.random());
+            random_direction = random_direction.normalize();
             const minimum_separation = (this.radius + otherParticle.radius) / 2;
             this.position = this.position.add(random_direction.scalarMultiply(minimum_separation));
             otherParticle.position = otherParticle.position.subtract(random_direction.scalarMultiply(minimum_separation));
@@ -47,9 +51,9 @@ class Particle {
         }
         if (distance < this.radius + otherParticle.radius) {
             // Positional correction using projection method
-            const penetration_normal = distance_vector.scalarMultiply((this.radius + otherParticle.radius - distance) / 2);
-            this.position = this.position.add(penetration_normal);
-            otherParticle.position = otherParticle.position.subtract(penetration_normal);
+            // const penetration_normal: Vector2D = distance_vector.scalarMultiply((this.radius + otherParticle.radius - distance) / 2);
+            // this.position = this.position.add(penetration_normal);
+            // otherParticle.position = otherParticle.position.subtract(penetration_normal);
             // Velocity correction using impulse method
             const normal = distance_vector.normalize(); // n
             const relative_velocity = this.velocity.subtract(otherParticle.velocity); // v_ab = v_a - v_b
