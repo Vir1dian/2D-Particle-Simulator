@@ -34,6 +34,7 @@ const particleElementFunctions = {
     // positioning
     particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
     particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
+    // particle_element.style.zIndex = particle.id.toString();
     // append to HTML body
     const container_element : HTMLElement | null = document.querySelector('.container_element');
     container_element?.appendChild(particle_element);
@@ -78,7 +79,7 @@ const particleElementFunctions = {
    * TODO: Implement variable initial conditions
    */
   createParticle() {
-    const created_particle = new Particle(1, 5, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: -0.98});
+    const created_particle = new Particle(1, 5, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0});
     this.loadParticle(created_particle, container);
   },
 

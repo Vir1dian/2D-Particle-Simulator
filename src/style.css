@@ -8,9 +8,10 @@
   margin-top: 25px;
   margin-inline: auto;
   background-color: #eeeeee;
+  position: relative;
 }
 .particle_element {
-  position: relative;
+  position: absolute;
   border-radius: 10px;
   width: 20px;
   height: 20px;
