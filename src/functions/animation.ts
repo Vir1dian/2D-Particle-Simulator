@@ -29,9 +29,16 @@ let particle_movement: number;
 function step(timestamp: DOMHighResTimeStamp) {
   start = timestamp;
 
-  simulation_particles.forEach((particle) => {
+  simulation_particles.forEach((particle, index1) => {
     particle.move();
-    particle.collide_container_elastic(container);
+    particle.collideContainer(container);
+
+    simulation_particles.forEach((otherParticle) => {
+      if (otherParticle !== particle) {
+        particle.collideParticle(otherParticle);
+      }
+    });
+
     updateParticleElement(particle);
   })
 
@@ -44,7 +51,7 @@ function step(timestamp: DOMHighResTimeStamp) {
 function runSimulation() {
   // Change animation state
   simulation_particles.forEach((particle) => {  // TODO: change to adapt to other initial control settings to add to simulator
-    particle.setVelocity('random', 3);
+    particle.setVelocity('random', 1);
   })
   window.requestAnimationFrame(step);
 

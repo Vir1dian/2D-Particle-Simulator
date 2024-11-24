@@ -23,9 +23,14 @@ let start;
 let particle_movement;
 function step(timestamp) {
     start = timestamp;
-    simulation_particles.forEach((particle) => {
+    simulation_particles.forEach((particle, index1) => {
         particle.move();
-        particle.collide_container_elastic(container);
+        particle.collideContainer(container);
+        simulation_particles.forEach((otherParticle) => {
+            if (otherParticle !== particle) {
+                particle.collideParticle(otherParticle);
+            }
+        });
         updateParticleElement(particle);
     });
     particle_movement = window.requestAnimationFrame(step);
@@ -36,7 +41,7 @@ function step(timestamp) {
 function runSimulation() {
     // Change animation state
     simulation_particles.forEach((particle) => {
-        particle.setVelocity('random', 3);
+        particle.setVelocity('random', 1);
     });
     window.requestAnimationFrame(step);
     // Update buttons in the HTML body

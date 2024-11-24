@@ -1,28 +1,15 @@
 "use strict";
-class Vector2D {
-    constructor(x = 0, y = 0) {
-        this.x = x;
-        this.y = y;
-    }
-    add(otherVector) {
-        return new Vector2D(this.x + otherVector.x, this.y + otherVector.y);
-    }
-    dot_product(otherVector) {
-        return (this.x * otherVector.x) + (this.y * otherVector.y);
-    }
-    randomize(max = 1, min) {
-        if (min === undefined) {
-            min = -max;
-        }
-        this.x = Math.floor(Math.random() * (max - min + 1) + min);
-        this.y = Math.floor(Math.random() * (max - min + 1) + min);
-    }
-}
 const simulation_particles = [];
 class Particle {
     constructor(mass = 1, radius = 5, position = new Vector2D(), velocity = new Vector2D(), acceleration = new Vector2D()) {
         Particle.instance_count++;
         this.id = Particle.instance_count;
+        if (mass <= 0) {
+            throw new Error('Invalid mass argument.');
+        }
+        if (radius <= 0) {
+            throw new Error('Invalid radius argument.');
+        }
         this.mass = mass;
         this.radius = radius;
         this.position = position;
@@ -30,7 +17,7 @@ class Particle {
         this.acceleration = acceleration;
         simulation_particles.push(this);
     }
-    collide_container_elastic(container) {
+    collideContainer(container) {
         if (this.position.x + this.radius > container.x_max) { // collision with right (totally elastic)
             this.velocity.x = -this.velocity.x;
             this.position.x = container.x_max - this.radius;
@@ -48,10 +35,33 @@ class Particle {
             this.position.y = container.y_min + this.radius;
         }
     }
-    collide_particle_elastic(otherParticle, elasticity = 1) {
-        const distance = Math.sqrt(Math.pow(this.position.x - otherParticle.position.x, 2) + Math.pow(this.position.x - otherParticle.position.y, 2));
+    collideParticle(otherParticle, elasticity = 1) {
+        const distance_vector = this.position.subtract(otherParticle.position);
+        const distance = distance_vector.magnitude();
+        if (distance === 0) { // Handles particles in the same location (i.e. instantiated in the same position)
+            const random_direction = new Vector2D(2 * Math.random(), 2 * Math.random()).normalize();
+            const minimum_separation = (this.radius + otherParticle.radius) / 2;
+            this.position = this.position.add(random_direction.scalarMultiply(minimum_separation));
+            otherParticle.position = otherParticle.position.subtract(random_direction.scalarMultiply(minimum_separation));
+            return;
+        }
         if (distance < this.radius + otherParticle.radius) {
-            const impulse = -(1 + elasticity);
+            // Positional correction using projection method
+            const penetration_normal = distance_vector.scalarMultiply((this.radius + otherParticle.radius - distance) / 2);
+            this.position = this.position.add(penetration_normal);
+            otherParticle.position = otherParticle.position.subtract(penetration_normal);
+            // Velocity correction using impulse method
+            const normal = distance_vector.normalize(); // n
+            const relative_velocity = this.velocity.subtract(otherParticle.velocity); // v_ab = v_a - v_b
+            const normal_velocity = relative_velocity.dotProduct(normal); // v_n = v_ab * n
+            if (normal_velocity > 0) {
+                return;
+            }
+            const impulse = -(1 + elasticity) * normal_velocity
+                / ((1 / this.mass) + (1 / otherParticle.mass));
+            // J = -(1+e)v_ab*n / (n*n*(1/m_a + 1/m_b)) where n*n = 1 since n is already a unit vector
+            this.velocity = this.velocity.add(normal.scalarMultiply(impulse / this.mass));
+            otherParticle.velocity = otherParticle.velocity.subtract(normal.scalarMultiply(impulse / otherParticle.mass));
         }
     }
     move() {
@@ -67,7 +77,7 @@ class Particle {
     setPosition(a = 0, b = 0) {
         if (a === 'random') {
             let max = b === 0 ? 1 : b;
-            this.position.randomize(max);
+            this.position = this.position.randomize(max);
         }
         else {
             this.position.x = a;
@@ -83,7 +93,7 @@ class Particle {
     setVelocity(a = 0, b = 0) {
         if (a === 'random') {
             let max = b === 0 ? 1 : b;
-            this.velocity.randomize(max);
+            this.velocity = this.velocity.randomize(max);
         }
         else {
             this.velocity.x = a;

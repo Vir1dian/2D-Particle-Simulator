@@ -78,7 +78,7 @@ const particleElementFunctions = {
    */
   createParticle() {
     const created_particle = new Particle(1, 5, new Vector2D(), new Vector2D(), new Vector2D(0, 0));  // for gravity, use -0.098
-    created_particle.position.randomize(container.x_max-1);
+    // created_particle.position = created_particle.position.randomize(container.x_max-1);
     this.loadParticle(created_particle, container);
   },
 
