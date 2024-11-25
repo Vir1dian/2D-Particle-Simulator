@@ -20,7 +20,6 @@
 
 .control_items {
   margin-left: 10px;
-  padding-top: 10px;
   border: 2px solid darkslategray;
 }
 .control_item {
@@ -29,8 +28,26 @@
   padding: 10px;
 }
 
+#control_simulation {
+  padding: 0;
+  border-bottom: 1px solid gray;
+  height: 200px;
+  overflow-y: auto;
+  display: block;
+}
 #control_simulation input {
   width: 60px;
+}
+#control_simulation table th {
+  position: sticky;
+  top: 0;
+  background-color: lightslategray;
+}
+#control_simulation table th:nth-of-type(1),
+#control_simulation table td:nth-of-type(1),
+#control_particles table th:nth-of-type(1),
+#control_particles table td:nth-of-type(1) {
+  padding-left: 20px;
 }
 
 #control_add_particle input {
@@ -49,13 +66,13 @@
   overflow-y: auto;
   display: block;
 }
-#control_particles table tr:nth-of-type(even) {
-  background-color: whitesmoke;
-}
 #control_particles table th {
   position: sticky;
   top: 0;
   background-color: lightslategray;
+}
+#control_particles table tr:nth-of-type(even) {
+  background-color: whitesmoke;
 }
 .control_particle_input {
   width: 40px;
