@@ -6,12 +6,12 @@ const container = {
     y_max: 250
 };
 const simulation_settings = {
-    num_particles: 100,
+    num_particles: 25,
     position: 'random',
     velocity: 'random',
     acceleration: new Vector2D(0, 0),
     // oscillation: 0,
-    radius: 3,
+    radius: 8,
     mass: 1,
     elasticity: 1 // Used during animation, not at Particle instantiation
 };

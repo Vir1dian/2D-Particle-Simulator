@@ -24,12 +24,12 @@ const container: BoxSpace = {
 }
 
 const simulation_settings: SimulationSettings = {
-  num_particles: 100,
+  num_particles: 25,
   position: 'random',
   velocity: 'random',
   acceleration: new Vector2D(0,0),  // -0.098 for gravity
   // oscillation: 0,
-  radius: 3,
+  radius: 8,
   mass: 1,
   elasticity: 1  // Used during animation, not at Particle instantiation
 }
