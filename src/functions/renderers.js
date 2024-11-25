@@ -67,6 +67,127 @@ const simulationSettingsElementFunctions = {
         elac.value = settings.elasticity.toString();
     },
     updateSettings() {
+        // Get all input elements
+        const num_particles = document.querySelector('#control_simulation-num_particles');
+        const num_particles_random = document.querySelector('#control_simulation-num_particles_random');
+        const pos_x = document.querySelector('#control_simulation-pos_x');
+        const pos_y = document.querySelector('#control_simulation-pos_y');
+        const pos_random = document.querySelector('#control_simulation-pos_random');
+        const vel_x = document.querySelector('#control_simulation-vel_x');
+        const vel_y = document.querySelector('#control_simulation-vel_y');
+        const vel_random = document.querySelector('#control_simulation-vel_random');
+        const acc_x = document.querySelector('#control_simulation-acc_x');
+        const acc_y = document.querySelector('#control_simulation-acc_y');
+        const acc_random = document.querySelector('#control_simulation-acc_random');
+        const mass = document.querySelector('#control_simulation-mass');
+        const mass_random = document.querySelector('#control_simulation-mass_random');
+        const radius = document.querySelector('#control_simulation-radius');
+        const radius_random = document.querySelector('#control_simulation-radius_random');
+        const elac = document.querySelector('#control_simulation-elac');
+        // Load default values for simulation settings
+        if (num_particles_random.checked === true)
+            simulation_settings.num_particles = 'random';
+        else {
+            const newNum = Math.min(Math.max(parseInt(num_particles.value), 0), 500);
+            num_particles.value = newNum.toString();
+            simulation_settings.num_particles = newNum;
+        }
+        if (pos_random.checked === true)
+            simulation_settings.position = 'random';
+        else {
+            const newX = Math.min(Math.max(parseFloat(pos_x.value), container.x_min), container.x_max);
+            const newY = Math.min(Math.max(parseFloat(pos_y.value), container.y_min), container.y_max);
+            // Show validation of user inputs in the input fields
+            pos_x.value = newX.toString();
+            pos_y.value = newY.toString();
+            simulation_settings.position = new Vector2D(newX, newY);
+        }
+        if (vel_random.checked === true)
+            simulation_settings.velocity = 'random';
+        else {
+            simulation_settings.velocity = new Vector2D(parseFloat(vel_x.value), parseFloat(vel_y.value));
+        }
+        if (acc_random.checked === true)
+            simulation_settings.acceleration = 'random';
+        else {
+            simulation_settings.acceleration = new Vector2D(parseFloat(acc_x.value), parseFloat(acc_y.value));
+        }
+        if (mass_random.checked === true)
+            simulation_settings.mass = 'random';
+        else
+            simulation_settings.mass = parseInt(mass.value);
+        if (radius_random.checked === true)
+            simulation_settings.radius = 'random';
+        else
+            simulation_settings.radius = parseInt(radius.value);
+        simulation_settings.elasticity = parseFloat(elac.value);
+        this.applySettings(simulation_settings);
+    },
+    applySettings(settings) {
+        // Apply settings to the existing particles (ignoring newly added particles)
+        const applyToExistingParticles = (particle) => {
+            if (settings.radius) {
+                particle.radius = settings.radius === 'random'
+                    ? Math.floor(Math.random() * (20 - 5 + 1) + 5)
+                    : settings.radius;
+            }
+            if (settings.position) {
+                if (settings.position === 'random') {
+                    particle.setPosition('random', container.x_max - particle.radius);
+                }
+                else {
+                    particle.setPosition(settings.position.x - particle.radius, settings.position.y - particle.radius);
+                }
+            }
+            const particle_element = document.querySelector(`#particle_element_id${particle.id}`);
+            particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
+            particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
+            particle_element.style.borderRadius = `${particle.radius}px`;
+            particle_element.style.width = `${2 * particle.radius}px`;
+            particle_element.style.height = `${2 * particle.radius}px`;
+            if (settings.velocity) {
+                if (settings.velocity === 'random') {
+                    particle.setVelocity('random', 2);
+                }
+                else {
+                    particle.setVelocity(settings.velocity.x, settings.velocity.y);
+                }
+            }
+            if (settings.acceleration) {
+                if (settings.acceleration === 'random') {
+                    particle.setAcceleration('random', 0.1);
+                }
+                else {
+                    particle.setAcceleration(settings.acceleration.x, settings.acceleration.y);
+                }
+            }
+            if (settings.mass) {
+                particle.mass = settings.mass === 'random'
+                    ? Math.floor(Math.random() * (10 - 1 + 1) + 1)
+                    : settings.mass;
+            }
+        };
+        const previous_count = simulation_particles.length;
+        if (settings.num_particles) {
+            let new_count = 0;
+            if (settings.num_particles === 'random')
+                new_count = Math.floor(Math.random() * (150 - 20 + 1) + 20);
+            else {
+                new_count = settings.num_particles;
+            }
+            while (simulation_particles.length < new_count) {
+                particleElementFunctions.createParticle();
+            }
+            let delete_index = simulation_particles.length - 1;
+            while (simulation_particles.length > new_count) {
+                particleElementFunctions.deleteParticle(simulation_particles[delete_index]);
+                delete_index--;
+            }
+        }
+        // Update only existing particles
+        for (let i = 0; i < previous_count && i < simulation_particles.length; i++) {
+            applyToExistingParticles(simulation_particles[i]);
+        }
     }
 };
 /**

@@ -8,9 +8,10 @@ const container = {
 const simulation_settings = {
     num_particles: 100,
     position: 'random',
-    velocity: new Vector2D(-20, 20),
-    acceleration: new Vector2D(0.001, -0.001),
-    radius: 'random',
+    velocity: 'random',
+    acceleration: new Vector2D(0, 0),
+    // oscillation: 0,
+    radius: 3,
     mass: 1,
-    elasticity: 0.5
+    elasticity: 1 // Used during animation, not at Particle instantiation
 };

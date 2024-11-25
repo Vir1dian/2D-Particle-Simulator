@@ -27,12 +27,20 @@ class Vector2D {
         const coefficient = 1 / magnitude;
         return this.scalarMultiply(coefficient);
     }
-    randomize(max = 1, min) {
+    randomize_int(max = 1, min) {
         if (min === undefined) {
             min = -max;
         }
         const random_x = Math.floor(Math.random() * (max - min + 1) + min);
         const random_y = Math.floor(Math.random() * (max - min + 1) + min);
+        return new Vector2D(random_x, random_y);
+    }
+    randomize_float(max = 1, min) {
+        if (min === undefined) {
+            min = -max;
+        }
+        const random_x = Math.random() * (max - min) + min;
+        const random_y = Math.random() * (max - min) + min;
         return new Vector2D(random_x, random_y);
     }
 }

@@ -10,6 +10,7 @@ interface SimulationSettings {
   position: Vector2D | 'random',
   velocity: Vector2D | 'random',
   acceleration: Vector2D | 'random',
+  // oscillation: 0,
   radius: number | 'random',
   mass: number | 'random',
   elasticity: number
@@ -25,9 +26,10 @@ const container: BoxSpace = {
 const simulation_settings: SimulationSettings = {
   num_particles: 100,
   position: 'random',
-  velocity: new Vector2D(-20,20),
-  acceleration: new Vector2D(0.001,-0.001),  // -0.098 for gravity
-  radius: 'random',
+  velocity: 'random',
+  acceleration: new Vector2D(0,0),  // -0.098 for gravity
+  // oscillation: 0,
+  radius: 3,
   mass: 1,
-  elasticity: 0.5
+  elasticity: 1  // Used during animation, not at Particle instantiation
 }

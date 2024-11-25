@@ -26,10 +26,19 @@ function updateParticleElement(selected_particle: Particle, ui_courseness = 1) {
 let start: DOMHighResTimeStamp;
 let particle_movement: number;
 
+/**
+ * Literally the slowest and most inefficient possible way to calculate collisions
+ * TODO: Implement a different algorithm, consider:
+ * 1. Sweep and Prune
+ * 2. Uniform Grid Space
+ * 3. KD Trees
+ * 4. Bounding Volume Hierarchies
+ * 
+ * @param timestamp 
+ */
 function step(timestamp: DOMHighResTimeStamp) {
   start = timestamp;
-
-  simulation_particles.forEach((particle) => {
+  simulation_particles.forEach((particle) => {  
     particle.move();
     particle.collideContainer(container);
 

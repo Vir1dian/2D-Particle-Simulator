@@ -30,7 +30,7 @@
           <tr>
             <td># of Particles</td>
             <td colspan="2">
-              <input type="number" id="control_simulation-num_particles">
+              <input type="number" id="control_simulation-num_particles" value="0">
             </td>
             <td>
               <input type="checkbox" id="control_simulation-num_particles_random">
@@ -39,10 +39,10 @@
           <tr>
             <td>Position</td>
             <td>
-              <input type="number" id="control_simulation-pos_x">
+              <input type="number" id="control_simulation-pos_x" value="0">
             </td>
             <td>
-              <input type="number" id="control_simulation-pos_y">
+              <input type="number" id="control_simulation-pos_y" value="0">
             </td>
             <td>
               <input type="checkbox" id="control_simulation-pos_random">
@@ -51,10 +51,10 @@
           <tr>
             <td>Velocity</td>
             <td>
-              <input type="number" id="control_simulation-vel_x">
+              <input type="number" id="control_simulation-vel_x" value="0">
             </td>
             <td>
-              <input type="number" id="control_simulation-vel_y">
+              <input type="number" id="control_simulation-vel_y" value="0">
             </td>
             <td>
               <input type="checkbox" id="control_simulation-vel_random">
@@ -63,10 +63,10 @@
           <tr>
             <td>Acceleration</td>
             <td>
-              <input type="number" id="control_simulation-acc_x">
+              <input type="number" id="control_simulation-acc_x" value="0">
             </td>
             <td>
-              <input type="number" id="control_simulation-acc_y">
+              <input type="number" id="control_simulation-acc_y" value="0">
             </td>
             <td>
               <input type="checkbox" id="control_simulation-acc_random">
@@ -75,7 +75,7 @@
           <tr>
             <td>Mass</td>
             <td colspan="2">
-              <input type="number" id="control_simulation-mass">
+              <input type="number" id="control_simulation-mass" value="1">
             </td>
             <td>
               <input type="checkbox" id="control_simulation-mass_random">
@@ -84,7 +84,7 @@
           <tr>
             <td>Radius</td>
             <td colspan="2">
-              <input type="number" id="control_simulation-radius">
+              <input type="number" id="control_simulation-radius" value="5">
             </td>
             <td>
               <input type="checkbox" id="control_simulation-radius_random">
@@ -93,12 +93,12 @@
           <tr>
             <td>Elasticity</td>
             <td colspan="3">
-              <input type="number" id="control_simulation-elac">
+              <input type="number" id="control_simulation-elac" value="1">
             </td>
           </tr>
           <tr>
             <td colspan="4">
-              <button onclick="simulationSettingsElementFunctions.updateSettings()" style="width: 100%;">Update</button>
+              <button onclick="simulationSettingsElementFunctions.updateSettings()" style="width: 100%;">Apply</button>
             </td>
           </tr>
         </table>

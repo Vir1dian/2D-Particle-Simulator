@@ -30,7 +30,7 @@ class Particle {
             this.velocity = velocity;
         if (acceleration === 'random') {
             this.acceleration = new Vector2D();
-            this.setAcceleration('random', 1);
+            this.setAcceleration('random', 0.1);
         }
         else
             this.acceleration = acceleration;
@@ -100,7 +100,7 @@ class Particle {
     setPosition(a = 0, b = 0) {
         if (a === 'random') {
             let max = b === 0 ? 1 : b;
-            this.position = this.position.randomize(max);
+            this.position = this.position.randomize_int(max);
         }
         else {
             this.position.x = a;
@@ -116,7 +116,7 @@ class Particle {
     setVelocity(a = 0, b = 0) {
         if (a === 'random') {
             let max = b === 0 ? 1 : b;
-            this.velocity = this.velocity.randomize(max);
+            this.velocity = this.velocity.randomize_int(max);
         }
         else {
             this.velocity.x = a;
@@ -132,7 +132,7 @@ class Particle {
     setAcceleration(a = 0, b = 0) {
         if (a === 'random') {
             let max = b === 0 ? 1 : b;
-            this.acceleration = this.acceleration.randomize(max);
+            this.acceleration = this.acceleration.randomize_float(max);
         }
         else {
             this.acceleration.x = a;

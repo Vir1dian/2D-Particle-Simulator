@@ -36,12 +36,22 @@ class Vector2D {
     return this.scalarMultiply(coefficient);
   }
 
-  randomize(max: number = 1, min?: number): Vector2D {
+  randomize_int(max: number = 1, min?: number): Vector2D {
     if (min === undefined) {
       min = -max;
     }
     const random_x: number = Math.floor(Math.random() * (max - min + 1) + min);
     const random_y: number = Math.floor(Math.random() * (max - min + 1) + min);
+
+    return new Vector2D(random_x, random_y);
+  }
+
+  randomize_float(max: number = 1, min?: number): Vector2D {
+    if (min === undefined) {
+      min = -max;
+    }
+    const random_x: number = Math.random() * (max - min) + min;
+    const random_y: number = Math.random() * (max - min) + min;
 
     return new Vector2D(random_x, random_y);
   }
