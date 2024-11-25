@@ -1,4 +1,5 @@
 const simulation_particles: Particle[] = [];
+const particle_colors: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'white', 'brown'];
 
 class Particle {
   static instance_count = 0;
@@ -8,6 +9,8 @@ class Particle {
   position: Vector2D;
   velocity: Vector2D;
   acceleration: Vector2D;
+  oscillation: Vector2D;
+  color: string;
 
   constructor(
     mass: number | 'random' = 1,
@@ -15,6 +18,8 @@ class Particle {
     position: Vector2D | 'random' = new Vector2D(), 
     velocity: Vector2D | 'random' = new Vector2D(), 
     acceleration: Vector2D | 'random' = new Vector2D(),
+    oscillation: Vector2D | 'random' = new Vector2D,
+    color: string | 'random' = 'black'
   ) {
     Particle.instance_count++;
     this.id = Particle.instance_count;
@@ -39,11 +44,26 @@ class Particle {
       this.setAcceleration('random', 0.1)
     }
     else this.acceleration = acceleration;
-
+    if (oscillation === 'random') {
+      this.oscillation = new Vector2D();
+      this.setOscillation('random', 0.001)
+    }
+    else this.oscillation = oscillation;
+    if (color === 'random') {
+      this.color = particle_colors[Math.floor(Math.random() * particle_colors.length)];
+    }
+    else if (!particle_colors.includes(color)) this.color = 'black';
+    else this.color = color;
     simulation_particles.push(this);
   }
 
   collideContainer(container: BoxSpace) {
+    const tangential_velocity = 
+      this.oscillation.x && this.oscillation.y 
+        ? new Vector2D(this.oscillation.x * Math.cos(dt), this.oscillation.y * Math.sin(dt))
+        : new Vector2D();
+    // const total_velocity = this.position.add(tangential_velocity);
+
     if (this.position.x + this.radius > container.x_max) {  // collision with right (totally elastic)
       this.velocity.x = -this.velocity.x;
       this.position.x = container.x_max - this.radius;
@@ -101,7 +121,11 @@ class Particle {
     }
   }
 
-  move() {
+  move(dt: number) {
+    if (this.oscillation.x && this.oscillation.y) {
+      const tangential_velocity = new Vector2D(this.oscillation.x * Math.cos(dt), this.oscillation.y * Math.sin(dt));
+      this.position = this.position.add(tangential_velocity);
+    }
     this.velocity = this.velocity.add(this.acceleration);
     this.position = this.position.add(this.velocity)
   }
@@ -141,10 +165,10 @@ class Particle {
   }
 
   /**
-   * Sets a new position in a 2D space for a particle
+   * Sets a new acceleration in a 2D space for a particle
    * 
-   * @param {number | 'random'} a Either the position of the particle in the x-axis, or the setting for randomizing the particle position
-   * @param {number} b Either the position of the particle in the y-axis, or the set range (-max to +max) that the particle position can be randomized
+   * @param {number | 'random'} a Either the acceleration of the particle in the x-axis, or the setting for randomizing the particle acceleration
+   * @param {number} b Either the acceleration of the particle in the y-axis, or the set range (-max to +max) that the particle acceleration can be randomized
    */
   setAcceleration(a: number | 'random' = 0, b: number = 0) {
     if (a === 'random') {
@@ -157,4 +181,26 @@ class Particle {
     }
   }
 
+    /**
+   * Sets new oscillation amplitudes in a 2D space for a particle
+   * 
+   * @param {number | 'random'} a Either the amplitudes of the particle in the x-axis, or the setting for randomizing the oscillation amplitudes
+   * @param {number} b Either the amplitudes of the particle in the y-axis, or the set range (-max to +max) that the particle position can be randomized
+   * @param {'' | 'circular'} c Only used by the 'random' setting, constrains the randomized amplitudes to achieve circular motion
+   */
+  setOscillation(a: number | 'random' = 0, b: number = 0, c: '' | 'circular' = '') {
+    if (a === 'random') {
+      let max = b === 0 ? 1 : b;
+      this.oscillation = this.oscillation.randomize_float(max);
+      if (c === 'circular') {
+        const common_amplitude = Math.random() * (2*max) - max;
+        this.oscillation.x = common_amplitude;
+        this.oscillation.y = common_amplitude;
+      }
+    }
+    else {
+      this.oscillation.x = a;
+      this.oscillation.y = b;
+    }
+  }
 }

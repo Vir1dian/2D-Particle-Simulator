@@ -36,10 +36,12 @@ let particle_movement: number;
  * 
  * @param timestamp 
  */
+let dt: number = 0;
 function step(timestamp: DOMHighResTimeStamp) {
+  dt += 1/60;
   start = timestamp;
   simulation_particles.forEach((particle) => {  
-    particle.move();
+    particle.move(dt);
     particle.collideContainer(container);
 
     simulation_particles.forEach((otherParticle) => {
@@ -118,6 +120,7 @@ function stopSimulation() {
   time_elapsed = 0;
   timer_element.innerHTML = '00:00:00';
   // Change animation state
+  dt = 0;
   cancelAnimationFrame(particle_movement);
   // Empty simulation data
   simulation_particles.length = 0;

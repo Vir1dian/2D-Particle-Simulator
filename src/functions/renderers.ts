@@ -31,11 +31,16 @@ const simulationSettingsElementFunctions = {
     const acc_x: HTMLInputElement = document.querySelector('#control_simulation-acc_x') as HTMLInputElement;
     const acc_y: HTMLInputElement = document.querySelector('#control_simulation-acc_y') as HTMLInputElement;
     const acc_random: HTMLInputElement = document.querySelector('#control_simulation-acc_random') as HTMLInputElement;
+    const osc_x: HTMLInputElement = document.querySelector('#control_simulation-osc_x') as HTMLInputElement;
+    const osc_y: HTMLInputElement = document.querySelector('#control_simulation-osc_y') as HTMLInputElement;
+    const osc_random: HTMLInputElement = document.querySelector('#control_simulation-osc_random') as HTMLInputElement;
     const mass: HTMLInputElement = document.querySelector('#control_simulation-mass') as HTMLInputElement;
     const mass_random: HTMLInputElement = document.querySelector('#control_simulation-mass_random') as HTMLInputElement;
     const radius: HTMLInputElement = document.querySelector('#control_simulation-radius') as HTMLInputElement;
     const radius_random: HTMLInputElement = document.querySelector('#control_simulation-radius_random') as HTMLInputElement;
     const elac: HTMLInputElement = document.querySelector('#control_simulation-elac') as HTMLInputElement;
+    const color: HTMLInputElement = document.querySelector('#control_simulation-color') as HTMLInputElement;
+    const color_random: HTMLInputElement = document.querySelector('#control_simulation-color_random') as HTMLInputElement;
 
     // Load default values for simulation settings
     if (settings.num_particles === 'random') num_particles_random.checked = true;
@@ -55,10 +60,17 @@ const simulationSettingsElementFunctions = {
       acc_x.value = settings.acceleration.x.toString();
       acc_y.value = settings.acceleration.y.toString();
     }
+    if (settings.oscillation === 'random') osc_random.checked = true;
+    else {
+      osc_x.value = settings.oscillation.x.toString();
+      osc_y.value = settings.oscillation.y.toString();
+    }
     if (settings.mass === 'random') mass_random.checked = true;
-    else mass.value = settings.mass.toString() ;
+    else mass.value = settings.mass.toString();
     if (settings.radius === 'random') radius_random.checked = true;
-    else radius.value = settings.radius.toString() ;
+    else radius.value = settings.radius.toString();
+    if (settings.color === 'random') color_random.checked = true;
+    else color.value = settings.color;
     elac.value = settings.elasticity.toString()
   },
 
@@ -75,11 +87,16 @@ const simulationSettingsElementFunctions = {
     const acc_x: HTMLInputElement = document.querySelector('#control_simulation-acc_x') as HTMLInputElement;
     const acc_y: HTMLInputElement = document.querySelector('#control_simulation-acc_y') as HTMLInputElement;
     const acc_random: HTMLInputElement = document.querySelector('#control_simulation-acc_random') as HTMLInputElement;
+    const osc_x: HTMLInputElement = document.querySelector('#control_simulation-osc_x') as HTMLInputElement;
+    const osc_y: HTMLInputElement = document.querySelector('#control_simulation-osc_y') as HTMLInputElement;
+    const osc_random: HTMLInputElement = document.querySelector('#control_simulation-osc_random') as HTMLInputElement;
     const mass: HTMLInputElement = document.querySelector('#control_simulation-mass') as HTMLInputElement;
     const mass_random: HTMLInputElement = document.querySelector('#control_simulation-mass_random') as HTMLInputElement;
     const radius: HTMLInputElement = document.querySelector('#control_simulation-radius') as HTMLInputElement;
     const radius_random: HTMLInputElement = document.querySelector('#control_simulation-radius_random') as HTMLInputElement;
     const elac: HTMLInputElement = document.querySelector('#control_simulation-elac') as HTMLInputElement;
+    const color: HTMLInputElement = document.querySelector('#control_simulation-color') as HTMLInputElement;
+    const color_random: HTMLInputElement = document.querySelector('#control_simulation-color_random') as HTMLInputElement;
 
     // Load default values for simulation settings
     if (num_particles_random.checked === true) simulation_settings.num_particles = 'random';
@@ -106,10 +123,16 @@ const simulationSettingsElementFunctions = {
     else {
       simulation_settings.acceleration = new Vector2D(parseFloat(acc_x.value), parseFloat(acc_y.value));
     }
+    if (osc_random.checked === true) simulation_settings.oscillation = 'random';
+    else {
+      simulation_settings.oscillation = new Vector2D(parseFloat(osc_x.value), parseFloat(osc_y.value));
+    }
     if (mass_random.checked === true) simulation_settings.mass = 'random';
-    else simulation_settings.mass = parseInt(mass.value) ;
+    else simulation_settings.mass = parseInt(mass.value);
     if (radius_random.checked === true) simulation_settings.radius = 'random';
-    else simulation_settings.radius = parseInt(radius.value) ;
+    else simulation_settings.radius = parseInt(radius.value);
+    if (color_random.checked === true) simulation_settings.color = 'random';
+    else simulation_settings.color = color.value;
     simulation_settings.elasticity = parseFloat(elac.value);
 
     this.applySettings(simulation_settings);
@@ -118,42 +141,57 @@ const simulationSettingsElementFunctions = {
   applySettings(settings: SimulationSettings) {
     // Apply settings to the existing particles (ignoring newly added particles)
     const applyToExistingParticles = (particle: Particle) => {
+      if (settings.mass) {
+        particle.mass = settings.mass === 'random'
+          ? Math.floor(Math.random() * (10 - 1 + 1) + 1)
+          : settings.mass;
+      }
       if (settings.radius) {
         particle.radius = settings.radius === 'random'
           ? Math.floor(Math.random() * (20 - 5 + 1) + 5)
           : settings.radius;
       }
+      if (settings.color) {
+        if (settings.color === 'random') {
+          particle.color = particle_colors[Math.floor(Math.random() * particle_colors.length)];
+        }
+        else if (!particle_colors.includes(settings.color)) particle.color = 'black';
+        else particle.color = settings.color;
+      }
       if (settings.position) {
         if (settings.position === 'random') {
-            particle.setPosition('random', container.x_max - particle.radius);
+          particle.setPosition('random', container.x_max - particle.radius);
         } else {
-            particle.setPosition((settings.position as Vector2D).x - particle.radius, (settings.position as Vector2D).y - particle.radius);
+          particle.setPosition((settings.position as Vector2D).x, (settings.position as Vector2D).y);
         }
       }
       const particle_element : HTMLElement = document.querySelector(`#particle_element_id${particle.id}`) as HTMLElement;
-      particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
-      particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
       particle_element.style.borderRadius = `${particle.radius}px`;
       particle_element.style.width = `${2*particle.radius}px`;
       particle_element.style.height = `${2*particle.radius}px`;
+      particle_element.style.backgroundColor = particle.color;
+      particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
+      particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
       if (settings.velocity) {
         if (settings.velocity === 'random') {
-            particle.setVelocity('random', 2);
+          particle.setVelocity('random', 2);
         } else {
-            particle.setVelocity((settings.velocity as Vector2D).x, (settings.velocity as Vector2D).y);
+          particle.setVelocity((settings.velocity as Vector2D).x, (settings.velocity as Vector2D).y);
         }
       }
       if (settings.acceleration) {
         if (settings.acceleration === 'random') {
-            particle.setAcceleration('random', 0.1);
+          particle.setAcceleration('random', 0.1);
         } else {
-            particle.setAcceleration((settings.acceleration as Vector2D).x, (settings.acceleration as Vector2D).y);
+          particle.setAcceleration((settings.acceleration as Vector2D).x, (settings.acceleration as Vector2D).y);
         }
       }
-      if (settings.mass) {
-        particle.mass = settings.mass === 'random'
-          ? Math.floor(Math.random() * (10 - 1 + 1) + 1)
-          : settings.mass;
+      if (settings.oscillation) {
+        if (settings.oscillation === 'random') {
+          particle.setOscillation('random', 2, 'circular');
+        } else {
+          particle.setOscillation((settings.oscillation as Vector2D).x, (settings.oscillation as Vector2D).y);
+        }
       }
     };
 

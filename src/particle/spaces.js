@@ -10,8 +10,9 @@ const simulation_settings = {
     position: 'random',
     velocity: 'random',
     acceleration: new Vector2D(0, 0),
-    // oscillation: 0,
+    oscillation: new Vector2D(),
     radius: 8,
     mass: 1,
+    color: 'black',
     elasticity: 1 // Used during animation, not at Particle instantiation
 };

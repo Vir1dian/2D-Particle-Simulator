@@ -31,10 +31,12 @@ let particle_movement;
  *
  * @param timestamp
  */
+let dt = 0;
 function step(timestamp) {
+    dt += 1 / 60;
     start = timestamp;
     simulation_particles.forEach((particle) => {
-        particle.move();
+        particle.move(dt);
         particle.collideContainer(container);
         simulation_particles.forEach((otherParticle) => {
             if (otherParticle !== particle) {
@@ -105,6 +107,7 @@ function stopSimulation() {
     time_elapsed = 0;
     timer_element.innerHTML = '00:00:00';
     // Change animation state
+    dt = 0;
     cancelAnimationFrame(particle_movement);
     // Empty simulation data
     simulation_particles.length = 0;

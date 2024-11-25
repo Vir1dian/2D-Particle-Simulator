@@ -10,9 +10,10 @@ interface SimulationSettings {
   position: Vector2D | 'random',
   velocity: Vector2D | 'random',
   acceleration: Vector2D | 'random',
-  // oscillation: 0,
+  oscillation: Vector2D | 'random',
   radius: number | 'random',
   mass: number | 'random',
+  color: string | 'random',
   elasticity: number
 }
 
@@ -28,8 +29,9 @@ const simulation_settings: SimulationSettings = {
   position: 'random',
   velocity: 'random',
   acceleration: new Vector2D(0,0),  // -0.098 for gravity
-  // oscillation: 0,
+  oscillation: new Vector2D(),
   radius: 8,
   mass: 1,
+  color: 'black',
   elasticity: 1  // Used during animation, not at Particle instantiation
 }
