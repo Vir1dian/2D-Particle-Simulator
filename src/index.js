@@ -1,4 +1,5 @@
 "use strict";
+showControlOption();
 loadContainerElement(container);
 simulationSettingsElementFunctions.loadSettings(simulation_settings);
 simulationSettingsElementFunctions.applySettings(simulation_settings);
@@ -8,6 +9,11 @@ function showControlOption() {
     const control_particles = document.getElementById('control_particles');
     const selected = document.querySelector('#control_display_options');
     switch (selected.value) {
+        case "all":
+            control_simulation.style.display = "flex";
+            control_animation.style.display = "flex";
+            control_particles.style.display = "flex";
+            break;
         case "simulation":
             control_simulation.style.display = "flex";
             control_animation.style.display = "none";
@@ -21,11 +27,6 @@ function showControlOption() {
         case "particles":
             control_simulation.style.display = "none";
             control_animation.style.display = "none";
-            control_particles.style.display = "flex";
-            break;
-        case "all":
-            control_simulation.style.display = "flex";
-            control_animation.style.display = "flex";
             control_particles.style.display = "flex";
             break;
         default:

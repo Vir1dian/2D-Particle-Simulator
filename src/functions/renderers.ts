@@ -238,7 +238,12 @@ const particleElementFunctions = {
     // positioning
     particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
     particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
-    // particle_element.style.zIndex = particle.id.toString();
+    // radius
+    particle_element.style.borderRadius = `${particle.radius}px`;
+    particle_element.style.width = `${2*particle.radius}px`;
+    particle_element.style.height = `${2*particle.radius}px`;
+    // color
+    particle_element.style.backgroundColor = particle.color;
     // append to HTML body
     const container_element : HTMLElement | null = document.querySelector('.container_element');
     container_element?.appendChild(particle_element);
@@ -366,7 +371,6 @@ const particleElementFunctions = {
   },
 
   createParticle() {
-
     const created_particle = new Particle(
       simulation_settings.mass, 
       simulation_settings.radius, 
@@ -382,21 +386,50 @@ const particleElementFunctions = {
   updateParticle(selected_particle: Particle) {
     const x_input : HTMLInputElement = document.querySelector(`#set_x_id${selected_particle.id}`) as HTMLInputElement;
     const y_input : HTMLInputElement = document.querySelector(`#set_y_id${selected_particle.id}`) as HTMLInputElement;
+    const vx_input : HTMLInputElement = document.querySelector(`#set_vx_id${selected_particle.id}`) as HTMLInputElement;
+    const vy_input : HTMLInputElement = document.querySelector(`#set_vy_id${selected_particle.id}`) as HTMLInputElement;
+    const ax_input : HTMLInputElement = document.querySelector(`#set_ax_id${selected_particle.id}`) as HTMLInputElement;
+    const ay_input : HTMLInputElement = document.querySelector(`#set_ay_id${selected_particle.id}`) as HTMLInputElement;
+    const ox_input : HTMLInputElement = document.querySelector(`#set_ox_id${selected_particle.id}`) as HTMLInputElement;
+    const oy_input : HTMLInputElement = document.querySelector(`#set_oy_id${selected_particle.id}`) as HTMLInputElement;
+    const mass_input : HTMLInputElement = document.querySelector(`#set_mass_id${selected_particle.id}`) as HTMLInputElement;
+    const radius_input : HTMLInputElement = document.querySelector(`#set_radius_id${selected_particle.id}`) as HTMLInputElement;
+    const color_input : HTMLInputElement = document.querySelector(`#set_color_id${selected_particle.id}`) as HTMLInputElement;
   
-    // Validate user inputs to stay within container bounds, while also parsing input values as ints to avoid unexpected behaviors
+    // Validate user inputs to stay within container bounds (for position), parse input values as ints to avoid unexpected behaviors
     const newX = Math.min(Math.max(parseInt(x_input.value), container.x_min), container.x_max);
     const newY = Math.min(Math.max(parseInt(y_input.value), container.y_min), container.y_max);
-  
+    const newVX = parseFloat(vx_input.value);
+    const newVY = parseFloat(vy_input.value);
+    const newAX = parseFloat(ax_input.value);
+    const newAY = parseFloat(ay_input.value);
+    const newOX = parseFloat(ox_input.value);
+    const newOY = parseFloat(oy_input.value);
+    const newMass = parseInt(mass_input.value);
+    const newRadius = parseInt(radius_input.value);
+    const newColor = color_input.value;
+
     // Update object values
     selected_particle.setPosition(newX, newY);
+    selected_particle.setVelocity(newVX, newVY);
+    selected_particle.setAcceleration(newAX, newAY);
+    selected_particle.setOscillation(newOX, newOY);
+    selected_particle.mass = newMass;
+    selected_particle.radius = newRadius;
+    selected_particle.color = particle_colors.includes(newColor) ? newColor : 'black';
   
     // Show validation of user inputs in the input fields
     x_input.value = newX.toString();
     y_input.value = newY.toString();
   
-    const particle_element : HTMLElement = document.querySelector(`#particle_element_id${selected_particle.id}`) as HTMLElement;  // TODO: change from zero to whatever selected particle name
+    // Update representative element styling
+    const particle_element : HTMLElement = document.querySelector(`#particle_element_id${selected_particle.id}`) as HTMLElement;
     particle_element.style.left = `${(selected_particle.position.x - selected_particle.radius) - container.x_min}px`;
     particle_element.style.top = `${container.y_max - (selected_particle.position.y + selected_particle.radius)}px`;
+    particle_element.style.borderRadius = `${selected_particle.radius}px`;
+    particle_element.style.width = `${2*selected_particle.radius}px`;
+    particle_element.style.height = `${2*selected_particle.radius}px`;
+    particle_element.style.backgroundColor = selected_particle.color;
   },
 
   deleteParticle(selected_particle: Particle) {
@@ -415,6 +448,7 @@ function viewParticleDetailsModal(id_name: string, open: boolean) {
   const viewModal: HTMLDialogElement = document.querySelector(id_name) as HTMLDialogElement;
   if (open) {
     viewModal.showModal();
+    pauseSimulation();
   } else {
     viewModal.close();
   }

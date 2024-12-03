@@ -11,9 +11,12 @@ function updateParticleElement(selected_particle, ui_courseness = 1) {
     particle_element.style.left = `${(selected_particle.position.x - selected_particle.radius) - container.x_min}px`;
     particle_element.style.top = `${container.y_max - (selected_particle.position.y + selected_particle.radius)}px`;
     // Update displayed data for the selected particle
-    const courseness_factor = Math.pow(10, ui_courseness);
-    const newX = Math.floor(selected_particle.position.x / courseness_factor) * courseness_factor;
-    const newY = Math.floor(selected_particle.position.y / courseness_factor) * courseness_factor;
+    const courseness_factor_pos = Math.pow(10, ui_courseness);
+    const courseness_factor_vel = Math.pow(10, ui_courseness - 3);
+    const newX = Math.floor(selected_particle.position.x / courseness_factor_pos) * courseness_factor_pos;
+    const newY = Math.floor(selected_particle.position.y / courseness_factor_pos) * courseness_factor_pos;
+    const newVX = Math.floor(selected_particle.velocity.x / courseness_factor_vel) * courseness_factor_vel;
+    const newVY = Math.floor(selected_particle.velocity.y / courseness_factor_vel) * courseness_factor_vel;
     const view_x_input = document.querySelector(`#view_x_id${selected_particle.id}`);
     const view_y_input = document.querySelector(`#view_y_id${selected_particle.id}`);
     const x_input = document.querySelector(`#set_x_id${selected_particle.id}`);
@@ -24,8 +27,8 @@ function updateParticleElement(selected_particle, ui_courseness = 1) {
     view_y_input.value = newY.toString();
     x_input.value = newX.toString();
     y_input.value = newY.toString();
-    vx_input.value = newX.toString();
-    vy_input.value = newY.toString();
+    vx_input.value = newVX.toString();
+    vy_input.value = newVY.toString();
 }
 let start;
 let particle_movement;
