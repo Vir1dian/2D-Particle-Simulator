@@ -73,9 +73,15 @@
 .control_items {
   margin-left: 10px;
   border: 2px solid darkslategray;
+  min-width: 360px;
+  min-height: 500px;
+}
+#control_item_display {
+  display: flex;
+  padding: 10px;
 }
 .control_item {
-  display: flex;
+  display: none;
   justify-content: center;
   padding: 10px;
 }
@@ -85,7 +91,6 @@
   border-bottom: 1px solid gray;
   height: 200px;
   overflow-y: auto;
-  display: flex;
   justify-content: right;
 }
 #control_simulation input {
@@ -128,7 +133,6 @@
   border-top: 1px solid gray;
   height: 200px;
   overflow-y: auto;
-  display: flex;
   justify-content: right;
 }
 #control_particles table th {
