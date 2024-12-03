@@ -151,6 +151,7 @@ const simulationSettingsElementFunctions = {
             simulation_settings.color = color.value;
         simulation_settings.elasticity = parseFloat(elac.value);
         this.applySettings(simulation_settings);
+        stopSimulation('soft');
     },
     applySettings(settings) {
         // Apply settings to the existing particles (ignoring newly added particles)

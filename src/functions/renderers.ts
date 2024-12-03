@@ -136,6 +136,7 @@ const simulationSettingsElementFunctions = {
     simulation_settings.elasticity = parseFloat(elac.value);
 
     this.applySettings(simulation_settings);
+    stopSimulation('soft');
   },
 
   applySettings(settings: SimulationSettings) {

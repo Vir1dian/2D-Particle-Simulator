@@ -53,6 +53,10 @@ let timer, time_elapsed = 0;
  * Runs the particle simulation and toggles the control buttons
  */
 function runSimulation() {
+    // ignore if simulation has no particles
+    if (!simulation_particles.length) {
+        return;
+    }
     // start a timer
     if (!timer) {
         timer = setInterval(() => {
@@ -100,7 +104,7 @@ function pauseSimulation() {
 /**
  * Stops the particle simulation and toggles the control buttons
  */
-function stopSimulation() {
+function stopSimulation(setting = '') {
     // Stop a timer
     clearInterval(timer);
     timer = null;
@@ -109,17 +113,19 @@ function stopSimulation() {
     // Change animation state
     dt = 0;
     cancelAnimationFrame(particle_movement);
-    // Empty simulation data
-    simulation_particles.length = 0;
-    // Empty simulation elements
-    const particle_elements = document.querySelectorAll('.particle_element');
-    const control_particle_elements = document.querySelectorAll('.control_particle');
-    particle_elements.forEach(element => {
-        element.remove();
-    });
-    control_particle_elements.forEach(element => {
-        element.remove();
-    });
+    if (setting !== 'soft') {
+        // Empty simulation data
+        simulation_particles.length = 0;
+        // Empty simulation elements
+        const particle_elements = document.querySelectorAll('.particle_element');
+        const control_particle_elements = document.querySelectorAll('.control_particle');
+        particle_elements.forEach(element => {
+            element.remove();
+        });
+        control_particle_elements.forEach(element => {
+            element.remove();
+        });
+    }
     // Update buttons in the HTML body
     const run_button = document.querySelector('#control_button_run');
     const pause_button = document.querySelector('#control_button_pause');
