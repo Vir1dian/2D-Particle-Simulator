@@ -16,205 +16,225 @@
 
 </head>
 <body>
-  <div class="wrapper">
 
-    <div class="simulation_wrapper"></div>
+  <div class="layout">
 
-    <div class="control_items">
-      <span class="control_item" id="control_simulation">
-        <table cellspacing="0">
-          <tr>
-            <th colspan="3">Simulation (For all Particles)</th>
-            <th>Randomize</th>
-          </tr>
-          <tr>
-            <td># of Particles</td>
-            <td colspan="2">
-              <input type="number" id="control_simulation-num_particles" value="0">
-            </td>
-            <td>
-              <input type="checkbox" id="control_simulation-num_particles_random">
-            </td>
-          </tr>
-          <tr>
-            <td>Position</td>
-            <td>
-              <input type="number" id="control_simulation-pos_x" value="0">
-            </td>
-            <td>
-              <input type="number" id="control_simulation-pos_y" value="0">
-            </td>
-            <td>
-              <input type="checkbox" id="control_simulation-pos_random">
-            </td>
-          </tr>
-          <tr>
-            <td>Velocity</td>
-            <td>
-              <input type="number" id="control_simulation-vel_x" value="0">
-            </td>
-            <td>
-              <input type="number" id="control_simulation-vel_y" value="0">
-            </td>
-            <td>
-              <input type="checkbox" id="control_simulation-vel_random">
-            </td>
-          </tr>
-          <tr>
-            <td>Acceleration</td>
-            <td>
-              <input type="number" id="control_simulation-acc_x" value="0">
-            </td>
-            <td>
-              <input type="number" id="control_simulation-acc_y" value="0">
-            </td>
-            <td>
-              <input type="checkbox" id="control_simulation-acc_random">
-            </td>
-          </tr>
-          <tr>
-            <td>Oscillation</td>
-            <td>
-              <input type="number" id="control_simulation-osc_x" value="0">
-            </td>
-            <td>
-              <input type="number" id="control_simulation-osc_y" value="0">
-            </td>
-            <td>
-              <input type="checkbox" id="control_simulation-osc_random">
-            </td>
-          </tr>
-          <tr>
-            <td>Mass</td>
-            <td colspan="2">
-              <input type="number" id="control_simulation-mass" value="1">
-            </td>
-            <td>
-              <input type="checkbox" id="control_simulation-mass_random">
-            </td>
-          </tr>
-          <tr>
-            <td>Radius</td>
-            <td colspan="2">
-              <input type="number" id="control_simulation-radius" value="5">
-            </td>
-            <td>
-              <input type="checkbox" id="control_simulation-radius_random">
-            </td>
-          </tr>
-          <tr>
-            <td>Elasticity</td>
-            <td colspan="3">
-              <input type="number" id="control_simulation-elac" value="1">
-            </td>
-          </tr>
-          <tr>
-            <td>Color</td>
-            <td colspan="2">
-              <input type="text" id="control_simulation-color" value="black">
-            </td>
-            <td>
-              <input type="checkbox" id="control_simulation-color_random">
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4">
-              <button onclick="simulationSettingsElementFunctions.updateSettings()" style="width: 100%;">Apply</button>
-            </td>
-          </tr>
-        </table>
-      </span>
-      <span class="control_item" id="control_add_particle">
-        <table>
-          <tr>
-            <td colspan="5">Add New Particle:</td>
-          </tr>
-          <tr>
-            <td>Position</td>
-            <td>
-              <input type="number">
-            </td>
-            <td>
-              <input type="number">
-            </td>
-            <td>Radius</td>
-            <td>
-              <input type="number">
-            </td>
-          </tr>
-          <tr>
-            <td>Velocity</td>
-            <td>
-              <input type="number">
-            </td>
-            <td>
-              <input type="number">
-            </td>
-            <td>Mass</td>
-            <td>
-              <input type="number">
-            </td>
-          </tr>
-          <tr>
-            <td>Acceleration</td>
-            <td>
-              <input type="number">
-            </td>
-            <td>
-              <input type="number">
-            </td>
-            <td colspan="2">
-            </td>
-          </tr>
-          <tr>
-            <td colspan="5">
-              <button onclick="particleElementFunctions.createParticle()" style="width: 100%;">Add Particle</button>  
-            </td>
-          </tr>
-        </table>
-      </span>
-      <span class="control_item" id="control_animation">
-        <table>
-          <tr>
-            <td colspan="3">
-              <div id="simulation_timer">00:00:00</div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <button onclick="runSimulation()" id="control_button_run">Run</button>
-            </td>
-            <td>
-              <button onclick="pauseSimulation()" id="control_button_pause" disabled>Pause</button>
-            </td>
-            <td>
-              <button onclick="stopSimulation()" id="control_button_stop" disabled>Stop</button>
-            </td>
-          </tr>
-        </table>
-      </span>
-      <span class="control_item" id="control_particles">
-        <table cellspacing="0">
-          <thead>
-            <tr>
-              <th>
-                Particle #
-              </th>
-              <th>
-                X
-              </th>
-              <th>
-                Y
-              </th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <!-- rows for individual particle controls go here -->
-        </table>
-      </span>
+    <aside class="sidebar">
+      <h1>2D Particle Simulator</h1>
+      <ul>
+        <li><a href="index.html">Calculator</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="https://github.com/Vir1dian/Invertible-Matrix-Calculator" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      </ul>
+    </aside>
+
+
+    <div class="content">
+
+      <div class="wrapper">
+
+        <div class="simulation_wrapper"></div>
+
+        <div class="control_items">
+          <span class="control_item" id="control_simulation">
+            <table cellspacing="0">
+              <tr>
+                <th colspan="3">Simulation (For all Particles)</th>
+                <th>Randomize</th>
+              </tr>
+              <tr>
+                <td># of Particles</td>
+                <td colspan="2">
+                  <input type="number" id="control_simulation-num_particles" value="0">
+                </td>
+                <td>
+                  <input type="checkbox" id="control_simulation-num_particles_random">
+                </td>
+              </tr>
+              <tr>
+                <td>Position</td>
+                <td>
+                  <input type="number" id="control_simulation-pos_x" value="0">
+                </td>
+                <td>
+                  <input type="number" id="control_simulation-pos_y" value="0">
+                </td>
+                <td>
+                  <input type="checkbox" id="control_simulation-pos_random">
+                </td>
+              </tr>
+              <tr>
+                <td>Velocity</td>
+                <td>
+                  <input type="number" id="control_simulation-vel_x" value="0">
+                </td>
+                <td>
+                  <input type="number" id="control_simulation-vel_y" value="0">
+                </td>
+                <td>
+                  <input type="checkbox" id="control_simulation-vel_random">
+                </td>
+              </tr>
+              <tr>
+                <td>Acceleration</td>
+                <td>
+                  <input type="number" id="control_simulation-acc_x" value="0">
+                </td>
+                <td>
+                  <input type="number" id="control_simulation-acc_y" value="0">
+                </td>
+                <td>
+                  <input type="checkbox" id="control_simulation-acc_random">
+                </td>
+              </tr>
+              <tr>
+                <td>Oscillation</td>
+                <td>
+                  <input type="number" id="control_simulation-osc_x" value="0">
+                </td>
+                <td>
+                  <input type="number" id="control_simulation-osc_y" value="0">
+                </td>
+                <td>
+                  <input type="checkbox" id="control_simulation-osc_random">
+                </td>
+              </tr>
+              <tr>
+                <td>Mass</td>
+                <td colspan="2">
+                  <input type="number" id="control_simulation-mass" value="1">
+                </td>
+                <td>
+                  <input type="checkbox" id="control_simulation-mass_random">
+                </td>
+              </tr>
+              <tr>
+                <td>Radius</td>
+                <td colspan="2">
+                  <input type="number" id="control_simulation-radius" value="5">
+                </td>
+                <td>
+                  <input type="checkbox" id="control_simulation-radius_random">
+                </td>
+              </tr>
+              <tr>
+                <td>Elasticity</td>
+                <td colspan="3">
+                  <input type="number" id="control_simulation-elac" value="1">
+                </td>
+              </tr>
+              <tr>
+                <td>Color</td>
+                <td colspan="2">
+                  <input type="text" id="control_simulation-color" value="black">
+                </td>
+                <td>
+                  <input type="checkbox" id="control_simulation-color_random">
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4">
+                  <button onclick="simulationSettingsElementFunctions.updateSettings()" style="width: 100%;">Apply</button>
+                </td>
+              </tr>
+            </table>
+          </span>
+          <span class="control_item" id="control_add_particle">
+            <table>
+              <tr>
+                <td colspan="5">Add New Particle:</td>
+              </tr>
+              <tr>
+                <td>Position</td>
+                <td>
+                  <input type="number">
+                </td>
+                <td>
+                  <input type="number">
+                </td>
+                <td>Radius</td>
+                <td>
+                  <input type="number">
+                </td>
+              </tr>
+              <tr>
+                <td>Velocity</td>
+                <td>
+                  <input type="number">
+                </td>
+                <td>
+                  <input type="number">
+                </td>
+                <td>Mass</td>
+                <td>
+                  <input type="number">
+                </td>
+              </tr>
+              <tr>
+                <td>Acceleration</td>
+                <td>
+                  <input type="number">
+                </td>
+                <td>
+                  <input type="number">
+                </td>
+                <td colspan="2">
+                </td>
+              </tr>
+              <tr>
+                <td colspan="5">
+                  <button onclick="particleElementFunctions.createParticle()" style="width: 100%;">Add Particle</button>  
+                </td>
+              </tr>
+            </table>
+          </span>
+          <span class="control_item" id="control_animation">
+            <table>
+              <tr>
+                <td colspan="3">
+                  <div id="simulation_timer">00:00:00</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <button onclick="runSimulation()" id="control_button_run">Run</button>
+                </td>
+                <td>
+                  <button onclick="pauseSimulation()" id="control_button_pause" disabled>Pause</button>
+                </td>
+                <td>
+                  <button onclick="stopSimulation()" id="control_button_stop" disabled>Stop</button>
+                </td>
+              </tr>
+            </table>
+          </span>
+          <span class="control_item" id="control_particles">
+            <table cellspacing="0">
+              <thead>
+                <tr>
+                  <th>
+                    Particle #
+                  </th>
+                  <th>
+                    X
+                  </th>
+                  <th>
+                    Y
+                  </th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <!-- rows for individual particle controls go here -->
+            </table>
+          </span>
+        </div>
+
+      </div>
+
     </div>
-
   </div>
+
+
 </body>
 </html>
