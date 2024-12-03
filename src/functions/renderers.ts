@@ -278,10 +278,8 @@ const particleElementFunctions = {
     control_table?.appendChild(particle_element_control);
   },
 
-  /**
-   * TODO: Implement variable initial conditions
-   */
   createParticle() {
+    
     const created_particle = new Particle(
       simulation_settings.mass, 
       simulation_settings.radius, 

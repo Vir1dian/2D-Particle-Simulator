@@ -42,7 +42,6 @@
               <option selected value="">Please Select</option>
               <option value="simulation">Simulation</option>
               <option value="animation">Animation</option>
-              <option value="addParticle">Add Particle</option>
               <option value="particles">Particle</option>
               <option value="all">All</option>
             </select>
@@ -166,56 +165,6 @@
                 </td>
                 <td>
                   <button onclick="stopSimulation()" id="control_button_stop" disabled>Stop</button>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <!-- TODO: add new particle functionality -->
-          <div class="control_item" id="control_add_particle">
-            <table>
-              <tr>
-                <td colspan="5">Add New Particle:</td>
-              </tr>
-              <tr>
-                <td>Position</td>
-                <td>
-                  <input type="number">
-                </td>
-                <td>
-                  <input type="number">
-                </td>
-                <td>Radius</td>
-                <td>
-                  <input type="number">
-                </td>
-              </tr>
-              <tr>
-                <td>Velocity</td>
-                <td>
-                  <input type="number">
-                </td>
-                <td>
-                  <input type="number">
-                </td>
-                <td>Mass</td>
-                <td>
-                  <input type="number">
-                </td>
-              </tr>
-              <tr>
-                <td>Acceleration</td>
-                <td>
-                  <input type="number">
-                </td>
-                <td>
-                  <input type="number">
-                </td>
-                <td colspan="2">
-                </td>
-              </tr>
-              <tr>
-                <td colspan="5">
-                  <button onclick="particleElementFunctions.createParticle()" style="width: 100%;">Add Particle</button>  
                 </td>
               </tr>
             </table>

@@ -290,9 +290,6 @@ const particleElementFunctions = {
         const control_table = document.querySelector('#control_particles table');
         control_table === null || control_table === void 0 ? void 0 : control_table.appendChild(particle_element_control);
     },
-    /**
-     * TODO: Implement variable initial conditions
-     */
     createParticle() {
         const created_particle = new Particle(simulation_settings.mass, simulation_settings.radius, simulation_settings.position, simulation_settings.velocity, simulation_settings.acceleration);
         this.loadParticle(created_particle, container);

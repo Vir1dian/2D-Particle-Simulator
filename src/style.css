@@ -119,10 +119,6 @@
   background-color: lightslategray;
 }
 
-#control_add_particle input {
-  width: 60px;
-}
-
 #simulation_timer {
   font-size: 24px;
   text-align: center;
