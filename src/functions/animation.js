@@ -14,10 +14,18 @@ function updateParticleElement(selected_particle, ui_courseness = 1) {
     const courseness_factor = Math.pow(10, ui_courseness);
     const newX = Math.floor(selected_particle.position.x / courseness_factor) * courseness_factor;
     const newY = Math.floor(selected_particle.position.y / courseness_factor) * courseness_factor;
+    const view_x_input = document.querySelector(`#view_x_id${selected_particle.id}`);
+    const view_y_input = document.querySelector(`#view_y_id${selected_particle.id}`);
     const x_input = document.querySelector(`#set_x_id${selected_particle.id}`);
     const y_input = document.querySelector(`#set_y_id${selected_particle.id}`);
+    const vx_input = document.querySelector(`#set_vx_id${selected_particle.id}`);
+    const vy_input = document.querySelector(`#set_vy_id${selected_particle.id}`);
+    view_x_input.value = newX.toString();
+    view_y_input.value = newY.toString();
     x_input.value = newX.toString();
     y_input.value = newY.toString();
+    vx_input.value = newX.toString();
+    vy_input.value = newY.toString();
 }
 let start;
 let particle_movement;

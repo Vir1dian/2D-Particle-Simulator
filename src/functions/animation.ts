@@ -15,10 +15,18 @@ function updateParticleElement(selected_particle: Particle, ui_courseness = 1) {
   const courseness_factor = Math.pow(10, ui_courseness)
   const newX = Math.floor(selected_particle.position.x / courseness_factor) * courseness_factor;
   const newY = Math.floor(selected_particle.position.y / courseness_factor) * courseness_factor;
+  const view_x_input : HTMLInputElement = document.querySelector(`#view_x_id${selected_particle.id}`) as HTMLInputElement;
+  const view_y_input : HTMLInputElement = document.querySelector(`#view_y_id${selected_particle.id}`) as HTMLInputElement;
   const x_input : HTMLInputElement = document.querySelector(`#set_x_id${selected_particle.id}`) as HTMLInputElement;
   const y_input : HTMLInputElement = document.querySelector(`#set_y_id${selected_particle.id}`) as HTMLInputElement;
+  const vx_input : HTMLInputElement = document.querySelector(`#set_vx_id${selected_particle.id}`) as HTMLInputElement;
+  const vy_input : HTMLInputElement = document.querySelector(`#set_vy_id${selected_particle.id}`) as HTMLInputElement;
+  view_x_input.value = newX.toString();
+  view_y_input.value = newY.toString();
   x_input.value = newX.toString();
   y_input.value = newY.toString();
+  vx_input.value = newX.toString();
+  vy_input.value = newY.toString();
 }
 
 

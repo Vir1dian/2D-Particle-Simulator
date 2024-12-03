@@ -57,6 +57,19 @@
   align-items: center;
 }
 
+input:not(input[type="checkbox"]), textarea {
+  padding: 2px;
+  border: solid 1px lightgrey;
+  box-shadow: inset 0px 1px 1px hsla(0, 0%, 0%, 0.075);
+}
+button {
+  padding: 2px;
+  border: solid 1px lightgray;
+  background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
+  background-blend-mode: overlay;
+  background-color: gray;
+}
+
 .container_element {
   margin-inline: auto;
   background-color: #eeeeee;
@@ -131,17 +144,35 @@
   overflow-y: auto;
   justify-content: right;
 }
-#control_particles table th {
+#control_particles_table > thead > tr > th {
   position: sticky;
   top: 0;
   background-color: lightslategray;
 }
-#control_particles table tr:nth-of-type(even) {
+#control_particles_table tr:nth-of-type(even) {
   background-color: whitesmoke;
 }
 .control_particle_input {
   width: 40px;
 }
+#control_particles_table dialog {
+  margin: auto;
+  margin-right: 100px;
+  padding: 10px;
+  gap: 10px;
+}
+#control_particles_table .modal_buttons {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: solid 1px gray;
+}
+#control_particles_table .update_btn {
+  background-color: rgb(83, 255, 83);
+}
+#control_particles_table .delete_btn {
+  background-color: rgb(250, 103, 103);
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;

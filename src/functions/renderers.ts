@@ -253,23 +253,110 @@ const particleElementFunctions = {
         <div id="selected_particle_id${particle.id}">${particle.id}</div>
       </td>
       <td>
-        <input type="number" id="set_x_id${particle.id}" class="control_particle_input" value="${particle.position.x.toString()}">
+        <input type="number" id="view_x_id${particle.id}" class="control_particle_input" value="${particle.position.x.toString()}" readonly>
       </td>
       <td>
-        <input type="number" id="set_y_id${particle.id}" class="control_particle_input" value="${particle.position.y.toString()}">
+        <input type="number" id="view_y_id${particle.id}" class="control_particle_input" value="${particle.position.y.toString()}" readonly>
       </td>
       <td>
-        <button id="update_id${particle.id}">Update</button>
-      </td>
-      <td>
-        <button id="delete_id${particle.id}">Delete</button>
+        <button id="view_id${particle.id}">View Details</button>
       </td>
     `;
+    const particle_element_modal: HTMLDialogElement = document.createElement('dialog');
+    particle_element_modal.id = `view_modal${particle.id}`;
+    particle_element_modal.innerHTML = `
+      <div class="modal_buttons">
+        <button id="close_view_id${particle.id}" class="close_btn">Close</button>
+        <button id="update_id${particle.id}" class="update_btn">Update</button>
+        <button id="delete_id${particle.id}" class="delete_btn">Delete</button>        
+      </div>
+      <table cellspacing="0">
+        <tr>
+          <th>Particle #</th>
+          <td>
+            <div>${particle.id}</div>
+          </td>
+        </tr>
+        <tr>
+          <th>pos<sub>X</sub></th>
+          <td>
+            <input type="number" id="set_x_id${particle.id}" class="control_particle_input" value="${particle.position.x.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>pos<sub>Y</sub></th>
+          <td>
+            <input type="number" id="set_y_id${particle.id}" class="control_particle_input" value="${particle.position.y.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>vel<sub>X</sub></th>
+          <td>
+            <input type="number" id="set_vx_id${particle.id}" class="control_particle_input" value="${particle.velocity.x.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>vel<sub>Y</sub></th>
+          <td>
+            <input type="number" id="set_vy_id${particle.id}" class="control_particle_input" value="${particle.velocity.y.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>acc<sub>X</sub></th>
+          <td>
+            <input type="number" id="set_ax_id${particle.id}" class="control_particle_input" value="${particle.acceleration.x.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>acc<sub>Y</sub></th>
+          <td>
+            <input type="number" id="set_ay_id${particle.id}" class="control_particle_input" value="${particle.acceleration.y.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>Amp<sub>X</sub></th>
+          <td>
+            <input type="number" id="set_ox_id${particle.id}" class="control_particle_input" value="${particle.oscillation.x.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>Amp<sub>Y</sub></th>
+          <td>
+            <input type="number" id="set_oy_id${particle.id}" class="control_particle_input" value="${particle.oscillation.y.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>Mass</th>
+          <td>
+            <input type="number" id="set_mass_id${particle.id}" class="control_particle_input" value="${particle.mass.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>Radius</th>
+          <td>
+            <input type="number" id="set_radius_id${particle.id}" class="control_particle_input" value="${particle.radius.toString()}">
+          </td>
+        </tr>
+        <tr>
+          <th>Color</th>
+          <td>
+            <input type="text" id="set_color_id${particle.id}" class="control_particle_input" value="${particle.color.toString()}">
+          </td>
+        </tr>
+      </table>
+    `;
+    particle_element_control.appendChild(particle_element_modal);
+
     // Add event listeners
+    (particle_element_control.querySelector(`#view_id${particle.id}`) as HTMLButtonElement).addEventListener('click', () => {
+      viewParticleDetailsModal(`#view_modal${particle.id}`, true);
+    });
+    (particle_element_control.querySelector(`#close_view_id${particle.id}`) as HTMLButtonElement).addEventListener('click', () => {
+      viewParticleDetailsModal(`#view_modal${particle.id}`, false);
+    });
     (particle_element_control.querySelector(`#update_id${particle.id}`) as HTMLButtonElement).addEventListener('click', () => {
       particleElementFunctions.updateParticle(particle);
     });
-
     (particle_element_control.querySelector(`#delete_id${particle.id}`) as HTMLButtonElement).addEventListener('click', () => {
       particleElementFunctions.deleteParticle(particle);
     });
@@ -279,13 +366,15 @@ const particleElementFunctions = {
   },
 
   createParticle() {
-    
+
     const created_particle = new Particle(
       simulation_settings.mass, 
       simulation_settings.radius, 
       simulation_settings.position, 
       simulation_settings.velocity, 
-      simulation_settings.acceleration
+      simulation_settings.acceleration,
+      simulation_settings.oscillation,
+      simulation_settings.color
     );
     this.loadParticle(created_particle, container);
   },
@@ -319,5 +408,14 @@ const particleElementFunctions = {
     if (index > -1) { // only splice array when item is found
       simulation_particles.splice(index, 1); // 2nd parameter means remove one item only
     }
+  }
+}
+
+function viewParticleDetailsModal(id_name: string, open: boolean) {
+  const viewModal: HTMLDialogElement = document.querySelector(id_name) as HTMLDialogElement;
+  if (open) {
+    viewModal.showModal();
+  } else {
+    viewModal.close();
   }
 }
