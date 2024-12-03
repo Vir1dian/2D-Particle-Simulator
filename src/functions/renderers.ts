@@ -162,11 +162,15 @@ const simulationSettingsElementFunctions = {
         particle.mass = settings.mass === 'random'
           ? Math.floor(Math.random() * (10 - 1 + 1) + 1)
           : settings.mass;
+        const mass_input : HTMLInputElement = document.querySelector(`#set_mass_id${particle.id}`) as HTMLInputElement;
+        mass_input.value = particle.mass.toString();
       }
       if (settings.radius) {
         particle.radius = settings.radius === 'random'
           ? Math.floor(Math.random() * (20 - 5 + 1) + 5)
           : settings.radius;
+        const radius_input : HTMLInputElement = document.querySelector(`#set_radius_id${particle.id}`) as HTMLInputElement;
+        radius_input.value = particle.radius.toString();
       }
       if (settings.color) {
         if (settings.color === 'random') {
@@ -174,6 +178,8 @@ const simulationSettingsElementFunctions = {
         }
         else if (!particle_colors.includes(settings.color)) particle.color = 'black';
         else particle.color = settings.color;
+        const color_input : HTMLInputElement = document.querySelector(`#set_color_id${particle.id}`) as HTMLInputElement;
+        color_input.value = particle.color;
       }
       if (settings.position) {
         if (settings.position === 'random') {
@@ -181,6 +187,14 @@ const simulationSettingsElementFunctions = {
         } else {
           particle.setPosition((settings.position as Vector2D).x, (settings.position as Vector2D).y);
         }
+        const view_x_input : HTMLInputElement = document.querySelector(`#view_x_id${particle.id}`) as HTMLInputElement;
+        const view_y_input : HTMLInputElement = document.querySelector(`#view_y_id${particle.id}`) as HTMLInputElement;
+        const x_input : HTMLInputElement = document.querySelector(`#set_x_id${particle.id}`) as HTMLInputElement;
+        const y_input : HTMLInputElement = document.querySelector(`#set_y_id${particle.id}`) as HTMLInputElement;
+        view_x_input.value = particle.position.x.toString();
+        view_y_input.value = particle.position.y.toString();
+        x_input.value = particle.position.x.toString();
+        y_input.value = particle.position.y.toString();
       }
       const particle_element : HTMLElement = document.querySelector(`#particle_element_id${particle.id}`) as HTMLElement;
       particle_element.style.borderRadius = `${particle.radius}px`;
@@ -195,6 +209,10 @@ const simulationSettingsElementFunctions = {
         } else {
           particle.setVelocity((settings.velocity as Vector2D).x, (settings.velocity as Vector2D).y);
         }
+        const vx_input : HTMLInputElement = document.querySelector(`#set_vx_id${particle.id}`) as HTMLInputElement;
+        const vy_input : HTMLInputElement = document.querySelector(`#set_vy_id${particle.id}`) as HTMLInputElement;
+        vx_input.value = particle.velocity.x.toString();
+        vy_input.value = particle.velocity.y.toString();
       }
       if (settings.acceleration) {
         if (settings.acceleration === 'random') {
@@ -202,6 +220,10 @@ const simulationSettingsElementFunctions = {
         } else {
           particle.setAcceleration((settings.acceleration as Vector2D).x, (settings.acceleration as Vector2D).y);
         }
+        const ax_input : HTMLInputElement = document.querySelector(`#set_ax_id${particle.id}`) as HTMLInputElement;
+        const ay_input : HTMLInputElement = document.querySelector(`#set_ay_id${particle.id}`) as HTMLInputElement;
+        ax_input.value = particle.acceleration.x.toString();
+        ay_input.value = particle.acceleration.y.toString();
       }
       if (settings.oscillation) {
         if (settings.oscillation === 'random') {
@@ -209,6 +231,10 @@ const simulationSettingsElementFunctions = {
         } else {
           particle.setOscillation((settings.oscillation as Vector2D).x, (settings.oscillation as Vector2D).y);
         }
+        const ox_input : HTMLInputElement = document.querySelector(`#set_ox_id${particle.id}`) as HTMLInputElement;
+        const oy_input : HTMLInputElement = document.querySelector(`#set_oy_id${particle.id}`) as HTMLInputElement;
+        ox_input.value = particle.oscillation.x.toString();
+        oy_input.value = particle.oscillation.y.toString();
       }
     };
 

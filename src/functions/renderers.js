@@ -172,11 +172,15 @@ const simulationSettingsElementFunctions = {
                 particle.mass = settings.mass === 'random'
                     ? Math.floor(Math.random() * (10 - 1 + 1) + 1)
                     : settings.mass;
+                const mass_input = document.querySelector(`#set_mass_id${particle.id}`);
+                mass_input.value = particle.mass.toString();
             }
             if (settings.radius) {
                 particle.radius = settings.radius === 'random'
                     ? Math.floor(Math.random() * (20 - 5 + 1) + 5)
                     : settings.radius;
+                const radius_input = document.querySelector(`#set_radius_id${particle.id}`);
+                radius_input.value = particle.radius.toString();
             }
             if (settings.color) {
                 if (settings.color === 'random') {
@@ -186,6 +190,8 @@ const simulationSettingsElementFunctions = {
                     particle.color = 'black';
                 else
                     particle.color = settings.color;
+                const color_input = document.querySelector(`#set_color_id${particle.id}`);
+                color_input.value = particle.color;
             }
             if (settings.position) {
                 if (settings.position === 'random') {
@@ -194,6 +200,14 @@ const simulationSettingsElementFunctions = {
                 else {
                     particle.setPosition(settings.position.x, settings.position.y);
                 }
+                const view_x_input = document.querySelector(`#view_x_id${particle.id}`);
+                const view_y_input = document.querySelector(`#view_y_id${particle.id}`);
+                const x_input = document.querySelector(`#set_x_id${particle.id}`);
+                const y_input = document.querySelector(`#set_y_id${particle.id}`);
+                view_x_input.value = particle.position.x.toString();
+                view_y_input.value = particle.position.y.toString();
+                x_input.value = particle.position.x.toString();
+                y_input.value = particle.position.y.toString();
             }
             const particle_element = document.querySelector(`#particle_element_id${particle.id}`);
             particle_element.style.borderRadius = `${particle.radius}px`;
@@ -209,6 +223,10 @@ const simulationSettingsElementFunctions = {
                 else {
                     particle.setVelocity(settings.velocity.x, settings.velocity.y);
                 }
+                const vx_input = document.querySelector(`#set_vx_id${particle.id}`);
+                const vy_input = document.querySelector(`#set_vy_id${particle.id}`);
+                vx_input.value = particle.velocity.x.toString();
+                vy_input.value = particle.velocity.y.toString();
             }
             if (settings.acceleration) {
                 if (settings.acceleration === 'random') {
@@ -217,6 +235,10 @@ const simulationSettingsElementFunctions = {
                 else {
                     particle.setAcceleration(settings.acceleration.x, settings.acceleration.y);
                 }
+                const ax_input = document.querySelector(`#set_ax_id${particle.id}`);
+                const ay_input = document.querySelector(`#set_ay_id${particle.id}`);
+                ax_input.value = particle.acceleration.x.toString();
+                ay_input.value = particle.acceleration.y.toString();
             }
             if (settings.oscillation) {
                 if (settings.oscillation === 'random') {
@@ -225,6 +247,10 @@ const simulationSettingsElementFunctions = {
                 else {
                     particle.setOscillation(settings.oscillation.x, settings.oscillation.y);
                 }
+                const ox_input = document.querySelector(`#set_ox_id${particle.id}`);
+                const oy_input = document.querySelector(`#set_oy_id${particle.id}`);
+                ox_input.value = particle.oscillation.x.toString();
+                oy_input.value = particle.oscillation.y.toString();
             }
         };
         const previous_count = simulation_particles.length;
