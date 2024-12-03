@@ -41,10 +41,19 @@
             <select id="control_display_options" onchange="showControlOption()">
               <!-- <option selected value="">Please Select</option> -->
               <option selected value="all">All</option>
+              <option value="presets">Presets</option>
               <option value="simulation">Simulation</option>
               <option value="animation">Animation</option>
               <option value="particles">Particle</option>
             </select>
+          </div>
+          <div class="control_item" id="control_presets">
+            <div>Presets</div>
+            <div>
+              <button onclick="simulationSettingsElementFunctions.loadPreset('sandbox')">Sandbox</button>
+              <button onclick="simulationSettingsElementFunctions.loadPreset('projmotion')">Projectile Motion</button>
+              <button onclick="simulationSettingsElementFunctions.loadPreset('snowglobe')">Snowglobe</button>
+            </div>
           </div>
           <div class="control_item" id="control_simulation">
             <table cellspacing="0">

@@ -44,33 +44,49 @@ const simulationSettingsElementFunctions = {
 
     // Load default values for simulation settings
     if (settings.num_particles === 'random') num_particles_random.checked = true;
-    else num_particles.value = settings.num_particles.toString();
+    else {
+      num_particles.value = settings.num_particles.toString();
+      num_particles_random.checked = false;
+    }
     if (settings.position === 'random') pos_random.checked = true;
     else {
       pos_x.value = settings.position.x.toString();
       pos_y.value = settings.position.y.toString();
+      pos_random.checked = false;
     }
     if (settings.velocity === 'random') vel_random.checked = true;
     else {
       vel_x.value = settings.velocity.x.toString();
       vel_y.value = settings.velocity.y.toString();
+      vel_random.checked = false;
     }
     if (settings.acceleration === 'random') acc_random.checked = true;
     else {
       acc_x.value = settings.acceleration.x.toString();
       acc_y.value = settings.acceleration.y.toString();
+      acc_random.checked = false;
     }
     if (settings.oscillation === 'random') osc_random.checked = true;
     else {
       osc_x.value = settings.oscillation.x.toString();
       osc_y.value = settings.oscillation.y.toString();
+      osc_random.checked = false;
     }
     if (settings.mass === 'random') mass_random.checked = true;
-    else mass.value = settings.mass.toString();
+    else {
+      mass.value = settings.mass.toString();
+      mass_random.checked = false;
+    }
     if (settings.radius === 'random') radius_random.checked = true;
-    else radius.value = settings.radius.toString();
+    else {
+      radius.value = settings.radius.toString();
+      radius_random.checked = false;
+    }
     if (settings.color === 'random') color_random.checked = true;
-    else color.value = settings.color;
+    else {
+      color.value = settings.color;
+      color_random.checked = false;
+    }
     elac.value = settings.elasticity.toString()
   },
 
@@ -218,6 +234,54 @@ const simulationSettingsElementFunctions = {
     for (let i = 0; i < previous_count && i < simulation_particles.length; i++) {
       applyToExistingParticles(simulation_particles[i]);
     }
+  },
+
+  loadPreset(preset: string) {
+    if (preset === 'sandbox') {
+      Object.assign(simulation_settings, {
+        num_particles: 25,
+        position: 'random',
+        velocity: 'random',
+        acceleration: new Vector2D(0,0),  // -0.098 for gravity
+        oscillation: new Vector2D(),
+        radius: 8,
+        mass: 1,
+        color: 'black',
+        elasticity: 1  // Used during animation, not at Particle instantiation
+      })
+    }
+    else if (preset === 'projmotion') {
+      Object.assign(simulation_settings, {
+        num_particles: 1,
+        position: new Vector2D(-200,100),
+        velocity: new Vector2D(2,0),
+        acceleration: new Vector2D(0,-0.098),  // -0.098 for gravity
+        oscillation: new Vector2D(),
+        radius: 8,
+        mass: 1,
+        color: 'black',
+        elasticity: 1  // Used during animation, not at Particle instantiation
+      })
+    }
+    else if (preset === 'snowglobe') {
+      Object.assign(simulation_settings, {
+        num_particles: 50,
+        position: 'random',
+        velocity: new Vector2D(),
+        acceleration: new Vector2D(0,-0.0098),  // -0.098 for gravity
+        oscillation: new Vector2D(),
+        radius: 5,
+        mass: 1,
+        color: 'white',
+        elasticity: 1  // Used during animation, not at Particle instantiation
+      })
+    }
+    else {
+
+    }
+    this.loadSettings(simulation_settings);
+    this.applySettings(simulation_settings);
+    stopSimulation('soft');
   }
 }
 
@@ -370,15 +434,23 @@ const particleElementFunctions = {
     control_table?.appendChild(particle_element_control);
   },
 
-  createParticle() {
+  createParticle(
+    mass: number | 'random' = simulation_settings.mass, 
+    radius: number | 'random' = simulation_settings.radius, 
+    position: Vector2D | 'random' = simulation_settings.position,
+    velocity: Vector2D | 'random' = simulation_settings.velocity,
+    acceleration: Vector2D | 'random' = simulation_settings.acceleration,
+    oscillation: Vector2D | 'random' = simulation_settings.oscillation,
+    color: string = simulation_settings.color
+  ) {
     const created_particle = new Particle(
-      simulation_settings.mass, 
-      simulation_settings.radius, 
-      simulation_settings.position, 
-      simulation_settings.velocity, 
-      simulation_settings.acceleration,
-      simulation_settings.oscillation,
-      simulation_settings.color
+      mass, 
+      radius, 
+      position, 
+      velocity, 
+      acceleration,
+      oscillation,
+      color
     );
     this.loadParticle(created_particle, container);
   },

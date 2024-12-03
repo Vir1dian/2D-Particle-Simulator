@@ -58,16 +58,22 @@
 }
 
 input:not(input[type="checkbox"]), textarea {
+  margin: 2px;
   padding: 2px;
   border: solid 1px lightgrey;
+  border-radius: 4px;
   box-shadow: inset 0px 1px 1px hsla(0, 0%, 0%, 0.075);
 }
 button {
   padding: 2px;
   border: solid 1px lightgray;
+  border-radius: 4px;
   background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
   background-blend-mode: overlay;
   background-color: gray;
+}
+button:not([disabled]):hover {
+  background-color: rgb(104, 139, 151);
 }
 
 .container_element {
@@ -99,10 +105,25 @@ button {
   padding: 10px;
 }
 
+#control_presets {
+  flex-direction: column;
+}
+#control_presets div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 325px;
+  margin: auto;
+}
+#control_presets button {
+  margin: 4px;
+}
+
 #control_simulation {
   padding: 0;
   border-bottom: 1px solid gray;
   height: 200px;
+  min-width: 100%;
   overflow-y: auto;
   justify-content: right;
 }
@@ -169,8 +190,14 @@ button {
 #control_particles_table .update_btn {
   background-color: rgb(83, 255, 83);
 }
+#control_particles_table .update_btn:hover {
+  background-color: rgb(61, 180, 61);
+}
 #control_particles_table .delete_btn {
   background-color: rgb(250, 103, 103);
+}
+#control_particles_table .delete_btn:hover {
+  background-color: rgb(177, 74, 74);
 }
 
 input::-webkit-outer-spin-button,
