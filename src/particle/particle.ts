@@ -203,8 +203,4 @@ class Particle {
       this.oscillation.y = b;
     }
   }
-
-  predictImpactTime(container: BoxSpace): number {
-    return 0;
-  }
 }

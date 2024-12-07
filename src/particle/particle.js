@@ -183,8 +183,5 @@ class Particle {
             this.oscillation.y = b;
         }
     }
-    predictImpactTime(container) {
-        return 0;
-    }
 }
 Particle.instance_count = 0;
