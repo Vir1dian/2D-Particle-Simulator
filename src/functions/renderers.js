@@ -39,56 +39,56 @@ const simulationSettingsElementFunctions = {
         const color = document.querySelector('#control_simulation-color');
         const color_random = document.querySelector('#control_simulation-color_random');
         // Load default values for simulation settings
-        if (settings.particle.num_particles === 'random')
+        if (settings.particle[0].num_particles === 'random')
             num_particles_random.checked = true;
         else {
-            num_particles.value = settings.particle.num_particles.toString();
+            num_particles.value = settings.particle[0].num_particles.toString();
             num_particles_random.checked = false;
         }
-        if (settings.particle.position === 'random')
+        if (settings.particle[0].position === 'random')
             pos_random.checked = true;
         else {
-            pos_x.value = settings.particle.position.x.toString();
-            pos_y.value = settings.particle.position.y.toString();
+            pos_x.value = settings.particle[0].position.x.toString();
+            pos_y.value = settings.particle[0].position.y.toString();
             pos_random.checked = false;
         }
-        if (settings.particle.velocity === 'random')
+        if (settings.particle[0].velocity === 'random')
             vel_random.checked = true;
         else {
-            vel_x.value = settings.particle.velocity.x.toString();
-            vel_y.value = settings.particle.velocity.y.toString();
+            vel_x.value = settings.particle[0].velocity.x.toString();
+            vel_y.value = settings.particle[0].velocity.y.toString();
             vel_random.checked = false;
         }
-        if (settings.particle.acceleration === 'random')
+        if (settings.particle[0].acceleration === 'random')
             acc_random.checked = true;
         else {
-            acc_x.value = settings.particle.acceleration.x.toString();
-            acc_y.value = settings.particle.acceleration.y.toString();
+            acc_x.value = settings.particle[0].acceleration.x.toString();
+            acc_y.value = settings.particle[0].acceleration.y.toString();
             acc_random.checked = false;
         }
-        if (settings.particle.oscillation === 'random')
+        if (settings.particle[0].oscillation === 'random')
             osc_random.checked = true;
         else {
-            osc_x.value = settings.particle.oscillation.x.toString();
-            osc_y.value = settings.particle.oscillation.y.toString();
+            osc_x.value = settings.particle[0].oscillation.x.toString();
+            osc_y.value = settings.particle[0].oscillation.y.toString();
             osc_random.checked = false;
         }
-        if (settings.particle.mass === 'random')
+        if (settings.particle[0].mass === 'random')
             mass_random.checked = true;
         else {
-            mass.value = settings.particle.mass.toString();
+            mass.value = settings.particle[0].mass.toString();
             mass_random.checked = false;
         }
-        if (settings.particle.radius === 'random')
+        if (settings.particle[0].radius === 'random')
             radius_random.checked = true;
         else {
-            radius.value = settings.particle.radius.toString();
+            radius.value = settings.particle[0].radius.toString();
             radius_random.checked = false;
         }
-        if (settings.particle.color === 'random')
+        if (settings.particle[0].color === 'random')
             color_random.checked = true;
         else {
-            color.value = settings.particle.color;
+            color.value = settings.particle[0].color;
             color_random.checked = false;
         }
         elac.value = settings.environment.elasticity.toString();
@@ -118,97 +118,93 @@ const simulationSettingsElementFunctions = {
         const color_random = document.querySelector('#control_simulation-color_random');
         // Load default values for simulation settings
         if (num_particles_random.checked === true)
-            simulation_settings.particle.num_particles = 'random';
+            simulation_settings.particle[0].num_particles = 'random';
         else {
             const newNum = Math.min(Math.max(parseInt(num_particles.value), 0), 500);
             num_particles.value = newNum.toString();
-            simulation_settings.particle.num_particles = newNum;
+            simulation_settings.particle[0].num_particles = newNum;
         }
         if (pos_random.checked === true)
-            simulation_settings.particle.position = 'random';
+            simulation_settings.particle[0].position = 'random';
         else {
             const newX = Math.min(Math.max(parseFloat(pos_x.value), container.x_min), container.x_max);
             const newY = Math.min(Math.max(parseFloat(pos_y.value), container.y_min), container.y_max);
             // Show validation of user inputs in the input fields
             pos_x.value = newX.toString();
             pos_y.value = newY.toString();
-            simulation_settings.particle.position = new Vector2D(newX, newY);
+            simulation_settings.particle[0].position = new Vector2D(newX, newY);
         }
         if (vel_random.checked === true)
-            simulation_settings.particle.velocity = 'random';
+            simulation_settings.particle[0].velocity = 'random';
         else {
-            simulation_settings.particle.velocity = new Vector2D(parseFloat(vel_x.value), parseFloat(vel_y.value));
+            simulation_settings.particle[0].velocity = new Vector2D(parseFloat(vel_x.value), parseFloat(vel_y.value));
         }
         if (acc_random.checked === true)
-            simulation_settings.particle.acceleration = 'random';
+            simulation_settings.particle[0].acceleration = 'random';
         else {
-            simulation_settings.particle.acceleration = new Vector2D(parseFloat(acc_x.value), parseFloat(acc_y.value));
+            simulation_settings.particle[0].acceleration = new Vector2D(parseFloat(acc_x.value), parseFloat(acc_y.value));
         }
         if (osc_random.checked === true)
-            simulation_settings.particle.oscillation = 'random';
+            simulation_settings.particle[0].oscillation = 'random';
         else {
-            simulation_settings.particle.oscillation = new Vector2D(parseFloat(osc_x.value), parseFloat(osc_y.value));
+            simulation_settings.particle[0].oscillation = new Vector2D(parseFloat(osc_x.value), parseFloat(osc_y.value));
         }
         if (mass_random.checked === true)
-            simulation_settings.particle.mass = 'random';
+            simulation_settings.particle[0].mass = 'random';
         else
-            simulation_settings.particle.mass = parseInt(mass.value);
+            simulation_settings.particle[0].mass = parseInt(mass.value);
         if (radius_random.checked === true)
-            simulation_settings.particle.radius = 'random';
+            simulation_settings.particle[0].radius = 'random';
         else
-            simulation_settings.particle.radius = parseInt(radius.value);
+            simulation_settings.particle[0].radius = parseInt(radius.value);
         if (color_random.checked === true)
-            simulation_settings.particle.color = 'random';
+            simulation_settings.particle[0].color = 'random';
         else
-            simulation_settings.particle.color = color.value;
+            simulation_settings.particle[0].color = color.value;
         simulation_settings.environment.elasticity = parseFloat(elac.value);
         this.applySettings(simulation_settings);
         stopSimulation('soft');
     },
+    /**
+     * TODO: Provide a full overhaul of the group particle settings
+     * @param settings
+     */
     applySettings(settings) {
-        // Apply settings to the existing particles (ignoring newly added particles)
-        const applyToExistingParticles = (particle) => {
-            if (settings.particle.mass) {
-                particle.mass = settings.particle.mass === 'random'
-                    ? Math.floor(Math.random() * (10 - 1 + 1) + 1)
-                    : settings.particle.mass;
-                const mass_input = document.querySelector(`#set_mass_id${particle.id}`);
-                mass_input.value = particle.mass.toString();
+        // Apply settings to the existing particles (ignoring newly added particles), (group 0 is the default global for creating particles)
+        const applyToExistingParticles = (particle, group_index = 0) => {
+            particle.mass = settings.particle[group_index].mass === 'random'
+                ? Math.floor(Math.random() * (10 - 1 + 1) + 1)
+                : settings.particle[group_index].mass;
+            const mass_input = document.querySelector(`#set_mass_id${particle.id}`);
+            mass_input.value = particle.mass.toString();
+            particle.radius = settings.particle[group_index].radius === 'random'
+                ? Math.floor(Math.random() * (20 - 5 + 1) + 5)
+                : settings.particle[group_index].radius;
+            const radius_input = document.querySelector(`#set_radius_id${particle.id}`);
+            radius_input.value = particle.radius.toString();
+            if (settings.particle[group_index].color === 'random') {
+                particle.color = particle_colors[Math.floor(Math.random() * particle_colors.length)];
             }
-            if (settings.particle.radius) {
-                particle.radius = settings.particle.radius === 'random'
-                    ? Math.floor(Math.random() * (20 - 5 + 1) + 5)
-                    : settings.particle.radius;
-                const radius_input = document.querySelector(`#set_radius_id${particle.id}`);
-                radius_input.value = particle.radius.toString();
+            else if (!particle_colors.includes(settings.particle[group_index].color))
+                particle.color = 'black';
+            else
+                particle.color = settings.particle[group_index].color;
+            const color_input = document.querySelector(`#set_color_id${particle.id}`);
+            color_input.value = particle.color;
+            if (settings.particle[group_index].position === 'random') {
+                particle.setPosition('random', container.x_max - particle.radius);
             }
-            if (settings.particle.color) {
-                if (settings.particle.color === 'random') {
-                    particle.color = particle_colors[Math.floor(Math.random() * particle_colors.length)];
-                }
-                else if (!particle_colors.includes(settings.particle.color))
-                    particle.color = 'black';
-                else
-                    particle.color = settings.particle.color;
-                const color_input = document.querySelector(`#set_color_id${particle.id}`);
-                color_input.value = particle.color;
+            else {
+                particle.setPosition(settings.particle[group_index].position.x, settings.particle[group_index].position.y);
             }
-            if (settings.particle.position) {
-                if (settings.particle.position === 'random') {
-                    particle.setPosition('random', container.x_max - particle.radius);
-                }
-                else {
-                    particle.setPosition(settings.particle.position.x, settings.particle.position.y);
-                }
-                const view_x_input = document.querySelector(`#view_x_id${particle.id}`);
-                const view_y_input = document.querySelector(`#view_y_id${particle.id}`);
-                const x_input = document.querySelector(`#set_x_id${particle.id}`);
-                const y_input = document.querySelector(`#set_y_id${particle.id}`);
-                view_x_input.value = particle.position.x.toString();
-                view_y_input.value = particle.position.y.toString();
-                x_input.value = particle.position.x.toString();
-                y_input.value = particle.position.y.toString();
-            }
+            const view_x_input = document.querySelector(`#view_x_id${particle.id}`);
+            const view_y_input = document.querySelector(`#view_y_id${particle.id}`);
+            const x_input = document.querySelector(`#set_x_id${particle.id}`);
+            const y_input = document.querySelector(`#set_y_id${particle.id}`);
+            view_x_input.value = particle.position.x.toString();
+            view_y_input.value = particle.position.y.toString();
+            x_input.value = particle.position.x.toString();
+            y_input.value = particle.position.y.toString();
             const particle_element = document.querySelector(`#particle_element_id${particle.id}`);
             particle_element.style.borderRadius = `${particle.radius}px`;
             particle_element.style.width = `${2 * particle.radius}px`;
@@ -216,50 +212,44 @@ const simulationSettingsElementFunctions = {
             particle_element.style.backgroundColor = particle.color;
             particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
             particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
-            if (settings.particle.velocity) {
-                if (settings.particle.velocity === 'random') {
-                    particle.setVelocity('random', 2);
-                }
-                else {
-                    particle.setVelocity(settings.particle.velocity.x, settings.particle.velocity.y);
-                }
-                const vx_input = document.querySelector(`#set_vx_id${particle.id}`);
-                const vy_input = document.querySelector(`#set_vy_id${particle.id}`);
-                vx_input.value = particle.velocity.x.toString();
-                vy_input.value = particle.velocity.y.toString();
+            if (settings.particle[group_index].velocity === 'random') {
+                particle.setVelocity('random', 2);
             }
-            if (settings.particle.acceleration) {
-                if (settings.particle.acceleration === 'random') {
-                    particle.setAcceleration('random', 0.1);
-                }
-                else {
-                    particle.setAcceleration(settings.particle.acceleration.x, settings.particle.acceleration.y);
-                }
-                const ax_input = document.querySelector(`#set_ax_id${particle.id}`);
-                const ay_input = document.querySelector(`#set_ay_id${particle.id}`);
-                ax_input.value = particle.acceleration.x.toString();
-                ay_input.value = particle.acceleration.y.toString();
+            else {
+                particle.setVelocity(settings.particle[group_index].velocity.x, settings.particle[group_index].velocity.y);
             }
-            if (settings.particle.oscillation) {
-                if (settings.particle.oscillation === 'random') {
-                    particle.setOscillation('random', 2, 'circular');
-                }
-                else {
-                    particle.setOscillation(settings.particle.oscillation.x, settings.particle.oscillation.y);
-                }
-                const ox_input = document.querySelector(`#set_ox_id${particle.id}`);
-                const oy_input = document.querySelector(`#set_oy_id${particle.id}`);
-                ox_input.value = particle.oscillation.x.toString();
-                oy_input.value = particle.oscillation.y.toString();
+            const vx_input = document.querySelector(`#set_vx_id${particle.id}`);
+            const vy_input = document.querySelector(`#set_vy_id${particle.id}`);
+            vx_input.value = particle.velocity.x.toString();
+            vy_input.value = particle.velocity.y.toString();
+            if (settings.particle[group_index].acceleration === 'random') {
+                particle.setAcceleration('random', 0.1);
             }
+            else {
+                particle.setAcceleration(settings.particle[group_index].acceleration.x, settings.particle[group_index].acceleration.y);
+            }
+            const ax_input = document.querySelector(`#set_ax_id${particle.id}`);
+            const ay_input = document.querySelector(`#set_ay_id${particle.id}`);
+            ax_input.value = particle.acceleration.x.toString();
+            ay_input.value = particle.acceleration.y.toString();
+            if (settings.particle[group_index].oscillation === 'random') {
+                particle.setOscillation('random', 2, 'circular');
+            }
+            else {
+                particle.setOscillation(settings.particle[0].oscillation.x, settings.particle[0].oscillation.y);
+            }
+            const ox_input = document.querySelector(`#set_ox_id${particle.id}`);
+            const oy_input = document.querySelector(`#set_oy_id${particle.id}`);
+            ox_input.value = particle.oscillation.x.toString();
+            oy_input.value = particle.oscillation.y.toString();
         };
         const previous_count = simulation_particles.length;
-        if (settings.particle.num_particles) {
+        if (settings.particle[0].num_particles) {
             let new_count = 0;
-            if (settings.particle.num_particles === 'random')
+            if (settings.particle[0].num_particles === 'random')
                 new_count = Math.floor(Math.random() * (150 - 20 + 1) + 20);
             else {
-                new_count = settings.particle.num_particles;
+                new_count = settings.particle[0].num_particles;
             }
             while (simulation_particles.length < new_count) {
                 particleElementFunctions.createParticle();
@@ -274,68 +264,38 @@ const simulationSettingsElementFunctions = {
         for (let i = 0; i < previous_count && i < simulation_particles.length; i++) {
             applyToExistingParticles(simulation_particles[i]);
         }
+        // TODO: overhaul this at some point, currently we're assuming that the 
+        // total counted specified particles are less than or equal to the global
+        // particle settings at simulation_settings.particle[0]
+        let indexFrom = 0;
+        let indexTo = 0;
+        for (let i = 1; i < simulation_settings.particle.length; i++) {
+            indexFrom = indexTo;
+            if (simulation_settings.particle[i].num_particles === 'random') {
+                indexTo += Math.floor(Math.random() * ((simulation_particles.length - 1) - 2 + 1) + 2);
+            }
+            else {
+                indexTo += simulation_settings.particle[i].num_particles;
+            }
+            if (indexFrom >= simulation_particles.length)
+                break;
+            if (indexTo > simulation_particles.length)
+                indexTo = simulation_particles.length;
+            for (let j = indexFrom; j < indexTo; j++) {
+                applyToExistingParticles(simulation_particles[j], i);
+            }
+        }
     },
     loadPreset(preset) {
-        if (preset === 'sandbox') {
-            Object.assign(simulation_settings, {
-                particle: {
-                    num_particles: 25,
-                    position: 'random',
-                    velocity: 'random',
-                    acceleration: new Vector2D(0, 0),
-                    oscillation: new Vector2D(),
-                    radius: 8,
-                    mass: 1,
-                    color: 'black'
-                },
-                environment: {
-                    elasticity: 1,
-                    drag: 0,
-                    acceleration: 0
-                }
-            });
+        if (presets[preset]) {
+            Object.assign(simulation_settings, presets[preset]);
+            this.loadSettings(simulation_settings);
+            this.applySettings(simulation_settings);
+            stopSimulation('soft');
         }
-        else if (preset === 'projmotion') {
-            Object.assign(simulation_settings, {
-                particle: {
-                    num_particles: 1,
-                    position: new Vector2D(-200, 100),
-                    velocity: new Vector2D(2, 0),
-                    acceleration: new Vector2D(),
-                    oscillation: new Vector2D(),
-                    radius: 8,
-                    mass: 1,
-                    color: 'blue'
-                },
-                environment: {
-                    elasticity: 1,
-                    drag: 2,
-                    acceleration: new Vector2D(0, -0.098)
-                }
-            });
+        else {
+            console.error(`Preset "${preset}" not found.`);
         }
-        else if (preset === 'snowglobe') {
-            Object.assign(simulation_settings, {
-                particle: {
-                    num_particles: 50,
-                    position: 'random',
-                    velocity: new Vector2D(),
-                    acceleration: new Vector2D(0, -0.0098),
-                    oscillation: new Vector2D(),
-                    radius: 5,
-                    mass: 1,
-                    color: 'white'
-                },
-                environment: {
-                    elasticity: 1,
-                    drag: 1,
-                    acceleration: new Vector2D()
-                }
-            });
-        }
-        this.loadSettings(simulation_settings);
-        this.applySettings(simulation_settings);
-        stopSimulation('soft');
     }
 };
 const particleElementFunctions = {
@@ -479,7 +439,7 @@ const particleElementFunctions = {
         const control_table = document.querySelector('#control_particles table');
         control_table === null || control_table === void 0 ? void 0 : control_table.appendChild(particle_element_control);
     },
-    createParticle(mass = simulation_settings.particle.mass, radius = simulation_settings.particle.radius, position = simulation_settings.particle.position, velocity = simulation_settings.particle.velocity, acceleration = simulation_settings.particle.acceleration, oscillation = simulation_settings.particle.oscillation, color = simulation_settings.particle.color) {
+    createParticle(mass = simulation_settings.particle[0].mass, radius = simulation_settings.particle[0].radius, position = simulation_settings.particle[0].position, velocity = simulation_settings.particle[0].velocity, acceleration = simulation_settings.particle[0].acceleration, oscillation = simulation_settings.particle[0].oscillation, color = simulation_settings.particle[0].color) {
         const created_particle = new Particle(mass, radius, position, velocity, acceleration, oscillation, color);
         this.loadParticle(created_particle, container);
     },
