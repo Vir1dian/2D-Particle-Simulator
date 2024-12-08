@@ -2,7 +2,7 @@
 const simulation_particles = [];
 const particle_colors = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'white', 'brown'];
 class Particle {
-    constructor(mass = 1, radius = 5, position = new Vector2D(), velocity = new Vector2D(), acceleration = new Vector2D(), oscillation = new Vector2D, color = 'black', trajectory = false) {
+    constructor(mass = 1, radius = 5, position = new Vector2D(), velocity = new Vector2D(), acceleration = new Vector2D(), oscillation = new Vector2D(), color = 'black', trajectory = false) {
         Particle.instance_count++;
         this.id = Particle.instance_count;
         if (mass === 'random')
@@ -22,25 +22,25 @@ class Particle {
             this.setPosition('random', container.x_max - this.radius);
         }
         else
-            this.position = position;
+            this.position = new Vector2D(position.x, position.y);
         if (velocity === 'random') {
             this.velocity = new Vector2D();
             this.setVelocity('random', 200);
         }
         else
-            this.velocity = velocity;
+            this.velocity = new Vector2D(velocity.x, velocity.y);
         if (acceleration === 'random') {
             this.acceleration = new Vector2D();
             this.setAcceleration('random', 100);
         }
         else
-            this.acceleration = acceleration;
+            this.acceleration = new Vector2D(acceleration.x, acceleration.y);
         if (oscillation === 'random') {
             this.oscillation = new Vector2D();
             this.setOscillation('random', 0.001);
         }
         else
-            this.oscillation = oscillation;
+            this.oscillation = new Vector2D(oscillation.x, oscillation.y);
         if (color === 'random') {
             this.color = particle_colors[Math.floor(Math.random() * particle_colors.length)];
         }

@@ -56,7 +56,7 @@ const PredictParticle = {
   },
 
   constantDrag(particle: Particle, t0:number, cont: BoxSpace = container): KinematicData {
-
+    
     return {position: new Vector2D(), velocity: new Vector2D()};
   }
 }

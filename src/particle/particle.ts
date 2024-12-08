@@ -19,7 +19,7 @@ class Particle {
     position: Vector2D | 'random' = new Vector2D(), 
     velocity: Vector2D | 'random' = new Vector2D(), 
     acceleration: Vector2D | 'random' = new Vector2D(),
-    oscillation: Vector2D | 'random' = new Vector2D,
+    oscillation: Vector2D | 'random' = new Vector2D(),
     color: string | 'random' = 'black',
     trajectory: boolean = false
   ) {
@@ -35,22 +35,22 @@ class Particle {
       this.position = new Vector2D();
       this.setPosition('random', container.x_max - this.radius)
     }
-    else this.position = position;
+    else this.position = new Vector2D(position.x, position.y);
     if (velocity === 'random') {
       this.velocity = new Vector2D();
       this.setVelocity('random', 200)
     }
-    else this.velocity = velocity;
+    else this.velocity = new Vector2D(velocity.x, velocity.y);
     if (acceleration === 'random') {
       this.acceleration = new Vector2D();
       this.setAcceleration('random', 100)
     }
-    else this.acceleration = acceleration;
+    else this.acceleration = new Vector2D(acceleration.x, acceleration.y);
     if (oscillation === 'random') {
       this.oscillation = new Vector2D();
       this.setOscillation('random', 0.001)
     }
-    else this.oscillation = oscillation;
+    else this.oscillation = new Vector2D(oscillation.x, oscillation.y);
     if (color === 'random') {
       this.color = particle_colors[Math.floor(Math.random() * particle_colors.length)];
     }

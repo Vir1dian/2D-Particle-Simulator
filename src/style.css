@@ -80,6 +80,7 @@ button:not([disabled]):hover {
   margin-inline: auto;
   background-color: #eeeeee;
   position: relative;
+  z-index: 1;
 }
 .particle_element {
   position: absolute;
@@ -87,6 +88,7 @@ button:not([disabled]):hover {
   width: 20px;
   height: 20px;
   background-color: black;
+  z-index: 3;
 }
 .point {
   position: absolute;
@@ -94,6 +96,7 @@ button:not([disabled]):hover {
   width: 10px;
   height: 10px;
   background-color: gray;
+  z-index: 2;
 }
 
 .control_items {

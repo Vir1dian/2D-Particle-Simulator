@@ -115,7 +115,7 @@ const presets: Record<string, SimulationSettings> = {
     particle: [{
       num_particles: 1,
       position: new Vector2D(-200, -200),
-      velocity: new Vector2D(100, 200),
+      velocity: new Vector2D(80, 250),
       acceleration: new Vector2D(),
       oscillation: new Vector2D(),
       radius: 8,
@@ -282,6 +282,36 @@ const presets: Record<string, SimulationSettings> = {
       drag: 0,
       acceleration: new Vector2D(),
       trajectory_step: 0.5
+    },
+  },
+  twoparticles: {
+    particle: [{
+      num_particles: 2,
+      position: new Vector2D(100,0),
+      velocity: new Vector2D(-120,0),
+      acceleration: new Vector2D(0, 0),
+      oscillation: new Vector2D(),
+      radius: 8,
+      mass: 1,
+      color: 'red',
+      trajectory: true
+    },
+    {
+      num_particles: 1,
+      position: new Vector2D(-100,0),
+      velocity: new Vector2D(120,0),
+      acceleration: new Vector2D(),
+      oscillation: new Vector2D(),
+      radius: 8,
+      mass: 1,
+      color: 'blue',
+      trajectory: true
+    }],
+    environment: {
+      elasticity: 0.75,
+      drag: 0,
+      acceleration: new Vector2D(),
+      trajectory_step: 0.25
     },
   }
 };
