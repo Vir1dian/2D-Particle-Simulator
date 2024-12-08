@@ -25,13 +25,13 @@ class Particle {
             this.position = position;
         if (velocity === 'random') {
             this.velocity = new Vector2D();
-            this.setVelocity('random', 2);
+            this.setVelocity('random', 200);
         }
         else
             this.velocity = velocity;
         if (acceleration === 'random') {
             this.acceleration = new Vector2D();
-            this.setAcceleration('random', 0.1);
+            this.setAcceleration('random', 100);
         }
         else
             this.acceleration = acceleration;
@@ -52,7 +52,7 @@ class Particle {
     }
     collideContainer(container) {
         const tangential_velocity = this.oscillation.x && this.oscillation.y
-            ? new Vector2D(this.oscillation.x * Math.cos(dt), this.oscillation.y * Math.sin(dt))
+            ? new Vector2D(this.oscillation.x * Math.cos(time_elapsed), this.oscillation.y * Math.sin(time_elapsed))
             : new Vector2D();
         // const total_velocity = this.position.add(tangential_velocity);
         if (this.position.x + this.radius > container.x_max) { // collision with right (totally elastic)
@@ -105,13 +105,25 @@ class Particle {
             otherParticle.velocity = otherParticle.velocity.subtract(normal.scalarMultiply(impulse / otherParticle.mass));
         }
     }
-    move(dt) {
+    /**
+     * TODO: Make sure dragTerm works correctly
+     * @param dt
+     * @param t
+     */
+    move(dt, t, method = 'euler') {
         if (this.oscillation.x && this.oscillation.y) {
-            const tangential_velocity = new Vector2D(this.oscillation.x * Math.cos(dt), this.oscillation.y * Math.sin(dt));
+            const tangential_velocity = new Vector2D(this.oscillation.x * Math.cos(t), this.oscillation.y * Math.sin(t));
             this.position = this.position.add(tangential_velocity);
         }
-        this.velocity = this.velocity.add(this.acceleration);
-        this.position = this.position.add(this.velocity);
+        if (method === 'euler') {
+            // dv/dt = g - (b/m)*v
+            const gravity = simulation_settings.environment.acceleration;
+            const dragTerm = this.velocity.scalarMultiply(-1 * simulation_settings.environment.drag / this.mass);
+            const new_acceleration = this.acceleration.add(gravity.add(dragTerm));
+            this.velocity = this.velocity.add(new_acceleration.scalarMultiply(dt));
+            this.position = this.position.add(this.velocity.scalarMultiply(dt));
+        }
+        else if (method === 'rungekutta') { }
     }
     /**
      * Sets a new position in a 2D space for a particle

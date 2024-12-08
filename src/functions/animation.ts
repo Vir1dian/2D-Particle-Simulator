@@ -37,7 +37,7 @@ function updateParticleElement(selected_particle: Particle, ui_courseness = 1) {
 
 let start: DOMHighResTimeStamp;
 let particle_movement: number;
-
+let time_previous: number = 0, time_elapsed: number = 0, time_paused: number = 0;
 /**
  * Literally the slowest and most inefficient possible way to calculate collisions
  * TODO: Implement a different algorithm, consider:
@@ -48,12 +48,18 @@ let particle_movement: number;
  * 
  * @param timestamp 
  */
-let dt: number = 0;
 function step(timestamp: DOMHighResTimeStamp) {
-  dt += 1/60;
+  // Time update for differential and movement caluclations
+  if (!time_previous) time_previous = timestamp;
+  const dt = (timestamp - time_previous) / 1000;  // Using this line instead of 1/60 for higher accuracy, in seconds
+  time_previous = timestamp; // Update the previous timestamp for the next frame
+  time_elapsed += dt; // Update total elapsed time in seconds
+  // console.log(dt + ' ' + elapsedTime);
+
+  // Collision
   start = timestamp;
   simulation_particles.forEach((particle) => {  
-    particle.move(dt);
+    particle.move(dt, time_elapsed);
     particle.collideContainer(container);
 
     simulation_particles.forEach((otherParticle) => {
@@ -69,7 +75,8 @@ function step(timestamp: DOMHighResTimeStamp) {
 }
 
 const timer_element: HTMLElement = document.querySelector('#simulation_timer') as HTMLElement;
-let timer: number | null, time_elapsed: number = 0;
+let timer: number | null;
+// let timer_elapsed: number = 0;
 /**
  * Runs the particle simulation and toggles the control buttons
  */
@@ -78,10 +85,16 @@ function runSimulation() {
   if (!simulation_particles.length) {
     return;
   }
+  // resume elapsed time correctly after unpausing
+  if (time_paused) {
+    const pauseDuration = (performance.now() - time_paused) / 1000; // Time paused in seconds
+    time_previous += pauseDuration * 1000; // Adjust previousTime by pause duration
+    time_paused = 0; // Reset pauseTime
+  }
   // start a timer
   if (!timer) {
     timer = setInterval(() => {
-      time_elapsed++;
+      // timer_elapsed++;
     
       let hours: string | number = Math.floor(time_elapsed/3600);
       if (hours/10 < 1) {
@@ -91,7 +104,7 @@ function runSimulation() {
       if (minutes/10 < 1) {
         minutes = "0" + minutes;
       }
-      let seconds: string | number = time_elapsed % 60;
+      let seconds: string | number = Math.round(time_elapsed) % 60;
       if (seconds/10 < 1) {
         seconds = "0" + seconds;
       }
@@ -117,6 +130,8 @@ function pauseSimulation() {
   // Pause a timer
   clearInterval(timer as number);
   timer = null;
+  // Record the pause time
+  time_paused = performance.now();
   // Change animation state
   cancelAnimationFrame(particle_movement);
   // Update buttons in the HTML body
@@ -133,10 +148,11 @@ function stopSimulation(setting: 'soft' | '' = '') {
   // Stop a timer
   clearInterval(timer as number);
   timer = null;
-  time_elapsed = 0;
+  // timer_elapsed = 0;
   timer_element.innerHTML = '00:00:00';
   // Change animation state
-  dt = 0;
+  time_previous = 0;
+  time_elapsed = 0;
   cancelAnimationFrame(particle_movement);
 
   if (setting !== 'soft') {

@@ -213,7 +213,7 @@ const simulationSettingsElementFunctions = {
             particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
             particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
             if (settings.particle[group_index].velocity === 'random') {
-                particle.setVelocity('random', 2);
+                particle.setVelocity('random', 300);
             }
             else {
                 particle.setVelocity(settings.particle[group_index].velocity.x, settings.particle[group_index].velocity.y);
@@ -223,7 +223,7 @@ const simulationSettingsElementFunctions = {
             vx_input.value = particle.velocity.x.toString();
             vy_input.value = particle.velocity.y.toString();
             if (settings.particle[group_index].acceleration === 'random') {
-                particle.setAcceleration('random', 0.1);
+                particle.setAcceleration('random', 100);
             }
             else {
                 particle.setAcceleration(settings.particle[group_index].acceleration.x, settings.particle[group_index].acceleration.y);

@@ -35,7 +35,7 @@ const presets = {
                 color: 'black',
             }],
         environment: {
-            elasticity: 0.75,
+            elasticity: 1,
             drag: 0,
             acceleration: new Vector2D(),
         },
@@ -43,8 +43,8 @@ const presets = {
     projmotion: {
         particle: [{
                 num_particles: 1,
-                position: new Vector2D(-200, 100),
-                velocity: new Vector2D(2, 0),
+                position: new Vector2D(-200, -200),
+                velocity: new Vector2D(100, 300),
                 acceleration: new Vector2D(),
                 oscillation: new Vector2D(),
                 radius: 8,
@@ -53,8 +53,8 @@ const presets = {
             }],
         environment: {
             elasticity: 1,
-            drag: 2,
-            acceleration: new Vector2D(0, -0.098),
+            drag: 0.1,
+            acceleration: new Vector2D(0, -98),
         },
     },
     snowglobe: {
@@ -62,7 +62,7 @@ const presets = {
                 num_particles: 50,
                 position: 'random',
                 velocity: new Vector2D(),
-                acceleration: new Vector2D(0, -0.0098),
+                acceleration: new Vector2D(),
                 oscillation: new Vector2D(),
                 radius: 5,
                 mass: 1,
@@ -70,8 +70,8 @@ const presets = {
             }],
         environment: {
             elasticity: 0.1,
-            drag: 1,
-            acceleration: new Vector2D(),
+            drag: 0.01,
+            acceleration: new Vector2D(0, -98),
         },
     },
     bulldozer: {
@@ -82,14 +82,14 @@ const presets = {
                 velocity: new Vector2D(),
                 acceleration: new Vector2D(),
                 oscillation: new Vector2D(),
-                radius: 8,
+                radius: 12,
                 mass: 1,
                 color: 'gray',
             },
             {
                 num_particles: 1,
                 position: new Vector2D(-200, -200),
-                velocity: new Vector2D(3, 3),
+                velocity: new Vector2D(200, 200),
                 acceleration: new Vector2D(),
                 oscillation: new Vector2D(),
                 radius: 20,
@@ -99,7 +99,7 @@ const presets = {
         ],
         environment: {
             elasticity: 0.6,
-            drag: 1,
+            drag: 0,
             acceleration: new Vector2D(),
         },
     },
@@ -118,7 +118,7 @@ const presets = {
             {
                 num_particles: 5,
                 position: new Vector2D(-200, 200),
-                velocity: new Vector2D(0.5, -0.5),
+                velocity: new Vector2D(200, -200),
                 acceleration: new Vector2D(),
                 oscillation: new Vector2D(),
                 radius: 15,
@@ -128,7 +128,7 @@ const presets = {
             {
                 num_particles: 5,
                 position: new Vector2D(200, 200),
-                velocity: new Vector2D(-0.75, -0.75),
+                velocity: new Vector2D(-200, -200),
                 acceleration: new Vector2D(),
                 oscillation: new Vector2D(),
                 radius: 15,
@@ -138,7 +138,7 @@ const presets = {
             {
                 num_particles: 5,
                 position: new Vector2D(-200, -200),
-                velocity: new Vector2D(1, 1),
+                velocity: new Vector2D(200, 200),
                 acceleration: new Vector2D(),
                 oscillation: new Vector2D(),
                 radius: 15,
@@ -148,7 +148,7 @@ const presets = {
             {
                 num_particles: 5,
                 position: new Vector2D(200, -200),
-                velocity: new Vector2D(-1.25, 1.25),
+                velocity: new Vector2D(-200, 200),
                 acceleration: new Vector2D(),
                 oscillation: new Vector2D(),
                 radius: 15,
@@ -158,7 +158,41 @@ const presets = {
         ],
         environment: {
             elasticity: 0.6,
-            drag: 1,
+            drag: 0.01,
+            acceleration: new Vector2D(),
+        },
+    },
+    elastic_highdrag: {
+        particle: [{
+                num_particles: 25,
+                position: 'random',
+                velocity: 'random',
+                acceleration: new Vector2D(0, 0),
+                oscillation: new Vector2D(),
+                radius: 8,
+                mass: 1,
+                color: 'green',
+            }],
+        environment: {
+            elasticity: 1,
+            drag: 0.25,
+            acceleration: new Vector2D(),
+        },
+    },
+    nodrag_lowelasticity: {
+        particle: [{
+                num_particles: 25,
+                position: 'random',
+                velocity: 'random',
+                acceleration: new Vector2D(0, 0),
+                oscillation: new Vector2D(),
+                radius: 8,
+                mass: 1,
+                color: 'purple',
+            }],
+        environment: {
+            elasticity: 0.75,
+            drag: 0,
             acceleration: new Vector2D(),
         },
     }
