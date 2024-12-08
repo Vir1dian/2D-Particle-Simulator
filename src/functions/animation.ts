@@ -67,7 +67,7 @@ function step(timestamp: DOMHighResTimeStamp) {
         particle.collideParticle(otherParticle, simulation_settings.environment.elasticity);
       }
     });
-
+    
     updateParticleElement(particle);
   })
 

@@ -280,6 +280,7 @@ const simulationSettingsElementFunctions = {
 
   loadPreset(preset: string) {
     if (presets[preset]) {
+      current_preset = preset;
       Object.assign(simulation_settings, presets[preset]);
       this.loadSettings(simulation_settings);
       this.applySettings(simulation_settings);

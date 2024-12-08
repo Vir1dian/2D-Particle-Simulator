@@ -106,24 +106,44 @@ class Particle {
         }
     }
     /**
-     * TODO: Make sure dragTerm works correctly
-     * @param dt
-     * @param t
+     * "Moves" or changes the particle's kinematic properties given some time span
+     * @param {number} dt The time change that the movement occurs, more accurate the smaller the value is
+     * @param {number} t The total time elapsed, used for oscillation only (WIP)
+     * @param {'euler' | 'rungekutta'} method The calculation used, euler by default
      */
     move(dt, t, method = 'euler') {
         if (this.oscillation.x && this.oscillation.y) {
             const tangential_velocity = new Vector2D(this.oscillation.x * Math.cos(t), this.oscillation.y * Math.sin(t));
             this.position = this.position.add(tangential_velocity);
         }
+        // dv/dt = g - (b/m)*v
+        const gravity = simulation_settings.environment.acceleration;
+        const dragOverMass = simulation_settings.environment.drag / this.mass;
         if (method === 'euler') {
-            // dv/dt = g - (b/m)*v
-            const gravity = simulation_settings.environment.acceleration;
-            const dragTerm = this.velocity.scalarMultiply(-1 * simulation_settings.environment.drag / this.mass);
-            const new_acceleration = this.acceleration.add(gravity.add(dragTerm));
+            const drag_force = this.velocity.scalarMultiply(-dragOverMass);
+            const new_acceleration = this.acceleration.add(gravity.add(drag_force));
             this.velocity = this.velocity.add(new_acceleration.scalarMultiply(dt));
             this.position = this.position.add(this.velocity.scalarMultiply(dt));
         }
-        else if (method === 'rungekutta') { }
+        else if (method === 'rungekutta') {
+            const new_acceleration = (vel) => gravity.add(vel.scalarMultiply(-dragOverMass));
+            const k1_velocity = this.velocity;
+            const k1_acceleration = new_acceleration(k1_velocity);
+            const k2_velocity = this.velocity.add(k1_acceleration.scalarMultiply(0.5 * dt));
+            const k2_acceleration = new_acceleration(k2_velocity);
+            const k3_velocity = this.velocity.add(k2_acceleration.scalarMultiply(0.5 * dt));
+            const k3_acceleration = new_acceleration(k3_velocity);
+            const k4_velocity = this.velocity.add(k3_acceleration.scalarMultiply(dt));
+            const k4_acceleration = new_acceleration(k4_velocity);
+            this.velocity = this.velocity.add(k1_acceleration.add(k2_acceleration.scalarMultiply(2))
+                .add(k3_acceleration.scalarMultiply(2))
+                .add(k4_acceleration)
+                .scalarMultiply(dt / 6));
+            this.position = this.position.add(k1_velocity.add(k2_velocity.scalarMultiply(2))
+                .add(k3_velocity.scalarMultiply(2))
+                .add(k4_velocity)
+                .scalarMultiply(dt / 6));
+        }
     }
     /**
      * Sets a new position in a 2D space for a particle

@@ -48,6 +48,7 @@ const simulation_settings: SimulationSettings = {
   }
 }
 
+let current_preset: string;
 const presets: Record<string, SimulationSettings> = {
   sandbox: {
     particle: [{

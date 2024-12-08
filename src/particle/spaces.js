@@ -22,6 +22,7 @@ const simulation_settings = {
         acceleration: new Vector2D()
     }
 };
+let current_preset;
 const presets = {
     sandbox: {
         particle: [{
