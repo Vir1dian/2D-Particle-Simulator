@@ -65,6 +65,10 @@ function step(timestamp: DOMHighResTimeStamp) {
     simulation_particles.forEach((otherParticle) => {
       if (otherParticle !== particle) {
         particle.collideParticle(otherParticle, simulation_settings.environment.elasticity);
+        if (particle.trajectory) {
+          particleElementFunctions.eraseTrajectory(particle.id);
+          particleElementFunctions.drawTrajectory(particle, time_elapsed);          
+        }
       }
     });
     

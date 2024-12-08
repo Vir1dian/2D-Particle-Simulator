@@ -312,10 +312,6 @@ const particleElementFunctions = {
         // positioning
         particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
         particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
-        // radius
-        particle_element.style.borderRadius = `${particle.radius}px`;
-        particle_element.style.width = `${2 * particle.radius}px`;
-        particle_element.style.height = `${2 * particle.radius}px`;
         // color
         particle_element.style.backgroundColor = particle.color;
         // append to HTML body
@@ -440,9 +436,12 @@ const particleElementFunctions = {
         const control_table = document.querySelector('#control_particles table');
         control_table === null || control_table === void 0 ? void 0 : control_table.appendChild(particle_element_control);
     },
-    createParticle(mass = simulation_settings.particle[0].mass, radius = simulation_settings.particle[0].radius, position = simulation_settings.particle[0].position, velocity = simulation_settings.particle[0].velocity, acceleration = simulation_settings.particle[0].acceleration, oscillation = simulation_settings.particle[0].oscillation, color = simulation_settings.particle[0].color) {
-        const created_particle = new Particle(mass, radius, position, velocity, acceleration, oscillation, color);
+    createParticle(mass = simulation_settings.particle[0].mass, radius = simulation_settings.particle[0].radius, position = simulation_settings.particle[0].position, velocity = simulation_settings.particle[0].velocity, acceleration = simulation_settings.particle[0].acceleration, oscillation = simulation_settings.particle[0].oscillation, color = simulation_settings.particle[0].color, trajectory = simulation_settings.particle[0].trajectory) {
+        const created_particle = new Particle(mass, radius, position, velocity, acceleration, oscillation, color, trajectory);
         this.loadParticle(created_particle, container);
+        if (created_particle.trajectory) {
+            this.drawTrajectory(created_particle, time_elapsed);
+        }
     },
     updateParticle(selected_particle) {
         const x_input = document.querySelector(`#set_x_id${selected_particle.id}`);
@@ -487,6 +486,10 @@ const particleElementFunctions = {
         particle_element.style.width = `${2 * selected_particle.radius}px`;
         particle_element.style.height = `${2 * selected_particle.radius}px`;
         particle_element.style.backgroundColor = selected_particle.color;
+        this.eraseTrajectory(selected_particle.id);
+        if (selected_particle.trajectory) {
+            this.drawTrajectory(selected_particle, time_elapsed);
+        }
     },
     deleteParticle(selected_particle) {
         const particle_element = document.querySelector(`#particle_element_id${selected_particle.id}`);
@@ -497,8 +500,46 @@ const particleElementFunctions = {
         if (index > -1) { // only splice array when item is found
             simulation_particles.splice(index, 1); // 2nd parameter means remove one item only
         }
+        if (selected_particle.trajectory) {
+            this.eraseTrajectory(selected_particle.id);
+        }
+    },
+    drawTrajectory(selected_particle, time_elapsed, step = 0.5, cont = container) {
+        console.log('drawTrajectory called');
+        console.log(simulation_settings.environment.drag);
+        if (simulation_settings.environment.drag === 0) {
+            const collision_time = PredictCollision.noDrag(selected_particle, time_elapsed, cont);
+            if (!isFinite(collision_time))
+                return;
+            for (let i = time_elapsed; i < collision_time; i += step) {
+                const new_position = PredictParticle.noDrag(selected_particle, time_elapsed, i).position;
+                drawPoint(new_position, selected_particle.id);
+            }
+        }
+        else {
+            // Implement drag trajectory here
+        }
+    },
+    eraseTrajectory(id) {
+        document.querySelectorAll(`.point_id${id}`).forEach(e => e.remove());
     }
 };
+function drawPoint(position, id = 0, radius = 3, color = 'gray') {
+    const container_element = document.querySelector('.container_element');
+    const point_element = document.createElement('div');
+    point_element.classList.add('point');
+    point_element.classList.add(`point_id${id}`);
+    // shape
+    point_element.style.borderRadius = `${radius}px`;
+    point_element.style.width = `${2 * radius}px`;
+    point_element.style.height = `${2 * radius}px`;
+    // positioning
+    point_element.style.left = `${(position.x - radius) - container.x_min}px`;
+    point_element.style.top = `${container.y_max - (position.y + radius)}px`;
+    // color
+    point_element.style.backgroundColor = color;
+    container_element.appendChild(point_element);
+}
 function viewParticleDetailsModal(id_name, open) {
     const viewModal = document.querySelector(id_name);
     if (open) {
@@ -508,4 +549,7 @@ function viewParticleDetailsModal(id_name, open) {
     else {
         viewModal.close();
     }
+}
+function sayHi() {
+    console.log('hi');
 }

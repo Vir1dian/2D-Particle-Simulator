@@ -1,6 +1,6 @@
 showControlOption();
 loadContainerElement(container);
-simulationSettingsElementFunctions.loadPreset('sandbox');
+simulationSettingsElementFunctions.loadPreset('empty');
 
 function showControlOption() {
   const control_presets : HTMLElement = document.getElementById('control_presets') as HTMLElement;

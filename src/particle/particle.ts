@@ -11,6 +11,7 @@ class Particle {
   acceleration: Vector2D;
   oscillation: Vector2D;
   color: string;
+  trajectory: boolean;
 
   constructor(
     mass: number | 'random' = 1,
@@ -19,7 +20,8 @@ class Particle {
     velocity: Vector2D | 'random' = new Vector2D(), 
     acceleration: Vector2D | 'random' = new Vector2D(),
     oscillation: Vector2D | 'random' = new Vector2D,
-    color: string | 'random' = 'black'
+    color: string | 'random' = 'black',
+    trajectory: boolean = false
   ) {
     Particle.instance_count++;
     this.id = Particle.instance_count;
@@ -54,6 +56,7 @@ class Particle {
     }
     else if (!particle_colors.includes(color)) this.color = 'black';
     else this.color = color;
+    this.trajectory = trajectory;
     simulation_particles.push(this);
   }
 

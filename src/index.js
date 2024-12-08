@@ -1,7 +1,7 @@
 "use strict";
 showControlOption();
 loadContainerElement(container);
-simulationSettingsElementFunctions.loadPreset('sandbox');
+simulationSettingsElementFunctions.loadPreset('empty');
 function showControlOption() {
     const control_presets = document.getElementById('control_presets');
     const control_simulation = document.getElementById('control_simulation');

@@ -292,7 +292,6 @@ const simulationSettingsElementFunctions = {
 }
 
 const particleElementFunctions = {
-
   loadParticle(particle: Particle, container: BoxSpace) {  
     // Load particle element in the simulation space
     const particle_element : HTMLElement = document.createElement('div');
@@ -305,10 +304,6 @@ const particleElementFunctions = {
     // positioning
     particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
     particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
-    // radius
-    particle_element.style.borderRadius = `${particle.radius}px`;
-    particle_element.style.width = `${2*particle.radius}px`;
-    particle_element.style.height = `${2*particle.radius}px`;
     // color
     particle_element.style.backgroundColor = particle.color;
     // append to HTML body
@@ -444,7 +439,8 @@ const particleElementFunctions = {
     velocity: Vector2D | 'random' = simulation_settings.particle[0].velocity,
     acceleration: Vector2D | 'random' = simulation_settings.particle[0].acceleration,
     oscillation: Vector2D | 'random' = simulation_settings.particle[0].oscillation,
-    color: string = simulation_settings.particle[0].color
+    color: string = simulation_settings.particle[0].color,
+    trajectory: boolean = simulation_settings.particle[0].trajectory
   ) {
     const created_particle = new Particle(
       mass, 
@@ -453,9 +449,13 @@ const particleElementFunctions = {
       velocity, 
       acceleration,
       oscillation,
-      color
+      color,
+      trajectory
     );
     this.loadParticle(created_particle, container);
+    if (created_particle.trajectory) {
+      this.drawTrajectory(created_particle, time_elapsed);
+    }
   },
 
   updateParticle(selected_particle: Particle) {
@@ -505,6 +505,10 @@ const particleElementFunctions = {
     particle_element.style.width = `${2*selected_particle.radius}px`;
     particle_element.style.height = `${2*selected_particle.radius}px`;
     particle_element.style.backgroundColor = selected_particle.color;
+    this.eraseTrajectory(selected_particle.id);
+    if (selected_particle.trajectory) {
+      this.drawTrajectory(selected_particle, time_elapsed);
+    }
   },
 
   deleteParticle(selected_particle: Particle) {
@@ -516,7 +520,47 @@ const particleElementFunctions = {
     if (index > -1) { // only splice array when item is found
       simulation_particles.splice(index, 1); // 2nd parameter means remove one item only
     }
+    if (selected_particle.trajectory) {
+      this.eraseTrajectory(selected_particle.id);
+    }
+  },
+
+  drawTrajectory(selected_particle: Particle, time_elapsed: number, step: number = 0.5, cont: BoxSpace = container) {
+    console.log('drawTrajectory called');
+    console.log(simulation_settings.environment.drag);
+    if (simulation_settings.environment.drag === 0) {
+      const collision_time = PredictCollision.noDrag(selected_particle, time_elapsed, cont);
+      if (!isFinite(collision_time)) return;
+      for (let i = time_elapsed; i < collision_time; i += step) {
+        const new_position = PredictParticle.noDrag(selected_particle, time_elapsed, i).position;
+        drawPoint(new_position, selected_particle.id);
+      }
+    }
+    else {
+      // Implement drag trajectory here
+    }
+  },
+
+  eraseTrajectory(id: number) {
+    document.querySelectorAll(`.point_id${id}`).forEach(e => e.remove());
   }
+}
+
+function drawPoint(position: Vector2D, id: number = 0, radius: number = 3, color: string = 'gray') {
+  const container_element : HTMLElement = document.querySelector('.container_element') as HTMLElement;
+  const point_element : HTMLElement = document.createElement('div');
+  point_element.classList.add('point');
+  point_element.classList.add(`point_id${id}`);
+  // shape
+  point_element.style.borderRadius = `${radius}px`;
+  point_element.style.width = `${2*radius}px`;
+  point_element.style.height = `${2*radius}px`;
+  // positioning
+  point_element.style.left = `${(position.x - radius) - container.x_min}px`;
+  point_element.style.top = `${container.y_max - (position.y + radius)}px`;
+  // color
+  point_element.style.backgroundColor = color;
+  container_element.appendChild(point_element);
 }
 
 function viewParticleDetailsModal(id_name: string, open: boolean) {
@@ -527,4 +571,8 @@ function viewParticleDetailsModal(id_name: string, open: boolean) {
   } else {
     viewModal.close();
   }
+}
+
+function sayHi() {
+  console.log('hi');
 }

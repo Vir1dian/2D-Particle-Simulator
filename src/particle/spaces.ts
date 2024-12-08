@@ -15,6 +15,7 @@ interface SimulationSettings {
     radius: number | 'random',
     mass: number | 'random',
     color: string | 'random',
+    trajectory: boolean
   } [],
   environment: {
     elasticity: number,
@@ -32,34 +33,36 @@ const container: BoxSpace = {
 
 const simulation_settings: SimulationSettings = {
   particle: [{
-    num_particles: 25,
+    num_particles: 0,
     position: 'random',
     velocity: 'random',
-    acceleration: new Vector2D(0,0),  // -0.098 for gravity
+    acceleration: new Vector2D(),
     oscillation: new Vector2D(),
     radius: 8,
     mass: 1,
-    color: 'black'
+    color: 'black',
+    trajectory: false
   }],
   environment: {
     elasticity: 1,
     drag: 0,
-    acceleration: new Vector2D()
-  }
+    acceleration: new Vector2D(),
+  },
 }
 
 let current_preset: string;
 const presets: Record<string, SimulationSettings> = {
-  sandbox: {
+  empty: {
     particle: [{
-      num_particles: 25,
+      num_particles: 0,
       position: 'random',
       velocity: 'random',
-      acceleration: new Vector2D(0, 0),
+      acceleration: new Vector2D(),
       oscillation: new Vector2D(),
       radius: 8,
       mass: 1,
       color: 'black',
+      trajectory: false
     }],
     environment: {
       elasticity: 1,
@@ -67,7 +70,25 @@ const presets: Record<string, SimulationSettings> = {
       acceleration: new Vector2D(),
     },
   },
-  projmotion: {
+  sandbox: {
+    particle: [{
+      num_particles: 10,
+      position: 'random',
+      velocity: 'random',
+      acceleration: new Vector2D(),
+      oscillation: new Vector2D(),
+      radius: 'random',
+      mass: 'random',
+      color: 'random',
+      trajectory: false
+    }],
+    environment: {
+      elasticity: 1,
+      drag: 0,
+      acceleration: new Vector2D(),
+    },
+  },
+  projdrag: {
     particle: [{
       num_particles: 1,
       position: new Vector2D(-200, -200),
@@ -77,10 +98,29 @@ const presets: Record<string, SimulationSettings> = {
       radius: 8,
       mass: 1,
       color: 'blue',
+      trajectory: true
     }],
     environment: {
       elasticity: 1,
       drag: 0.1,
+      acceleration: new Vector2D(0, -98),
+    },
+  },
+  projnodrag: {
+    particle: [{
+      num_particles: 1,
+      position: new Vector2D(-200, -200),
+      velocity: new Vector2D(100, 200),
+      acceleration: new Vector2D(),
+      oscillation: new Vector2D(),
+      radius: 8,
+      mass: 1,
+      color: 'green',
+      trajectory: true
+    }],
+    environment: {
+      elasticity: 1,
+      drag: 0,
       acceleration: new Vector2D(0, -98),
     },
   },
@@ -94,6 +134,7 @@ const presets: Record<string, SimulationSettings> = {
       radius: 5,
       mass: 1,
       color: 'white',
+      trajectory: false
     }],
     environment: {
       elasticity: 0.1,
@@ -112,6 +153,7 @@ const presets: Record<string, SimulationSettings> = {
         radius: 12,
         mass: 1,
         color: 'gray',
+        trajectory: false
       },
       {
         num_particles: 1,
@@ -122,6 +164,7 @@ const presets: Record<string, SimulationSettings> = {
         radius: 20,
         mass: 10000,
         color: 'red',
+        trajectory: false
       }
     ],
     environment: {
@@ -141,6 +184,7 @@ const presets: Record<string, SimulationSettings> = {
         radius: 8,
         mass: 1,
         color: 'gray',
+        trajectory: false
       },
       {
         num_particles: 5,
@@ -151,6 +195,7 @@ const presets: Record<string, SimulationSettings> = {
         radius: 15,
         mass: 4,
         color: 'red',
+        trajectory: false
       },
       {
         num_particles: 5,
@@ -161,6 +206,7 @@ const presets: Record<string, SimulationSettings> = {
         radius: 15,
         mass: 3,
         color: 'blue',
+        trajectory: false
       },
       {
         num_particles: 5,
@@ -171,6 +217,7 @@ const presets: Record<string, SimulationSettings> = {
         radius: 15,
         mass: 2,
         color: 'orange',
+        trajectory: false
       },
       {
         num_particles: 5,
@@ -181,6 +228,7 @@ const presets: Record<string, SimulationSettings> = {
         radius: 15,
         mass: 1,
         color: 'green',
+        trajectory: false
       }
     ],
     environment: {
@@ -199,6 +247,7 @@ const presets: Record<string, SimulationSettings> = {
       radius: 8,
       mass: 1,
       color: 'green',
+      trajectory: false
     }],
     environment: {
       elasticity: 1,
@@ -216,6 +265,7 @@ const presets: Record<string, SimulationSettings> = {
       radius: 8,
       mass: 1,
       color: 'purple',
+      trajectory: false
     }],
     environment: {
       elasticity: 0.75,

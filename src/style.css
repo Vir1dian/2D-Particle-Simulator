@@ -88,6 +88,13 @@ button:not([disabled]):hover {
   height: 20px;
   background-color: black;
 }
+.point {
+  position: absolute;
+  border-radius: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: gray;
+}
 
 .control_items {
   margin-left: 10px;
