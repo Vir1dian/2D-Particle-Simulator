@@ -30,9 +30,16 @@ function updateParticleElement(selected_particle, ui_courseness = 1) {
     vx_input.value = newVX.toString();
     vy_input.value = newVY.toString();
 }
+var SimulationState;
+(function (SimulationState) {
+    SimulationState[SimulationState["Stopped"] = 0] = "Stopped";
+    SimulationState[SimulationState["Running"] = 1] = "Running";
+    SimulationState[SimulationState["Paused"] = 2] = "Paused";
+})(SimulationState || (SimulationState = {}));
 let start;
 let particle_movement;
 let time_previous = 0, time_elapsed = 0, time_paused = 0;
+let simulation_state = SimulationState.Stopped;
 /**
  * Literally the slowest and most inefficient possible way to calculate collisions
  * TODO: Implement a different algorithm, consider:
@@ -86,10 +93,9 @@ let timer;
  */
 function runSimulation() {
     // ignore if simulation has no particles
-    if (!simulation_particles.length) {
+    if (!simulation_particles.length || simulation_state === SimulationState.Running) {
         return;
     }
-    // resume elapsed time correctly after unpausing
     if (time_paused) {
         const pauseDuration = (performance.now() - time_paused) / 1000; // Time paused in seconds
         time_previous += pauseDuration * 1000; // Adjust previousTime by pause duration
@@ -116,6 +122,7 @@ function runSimulation() {
     }
     // Change animation state
     window.requestAnimationFrame(step);
+    simulation_state = SimulationState.Running;
     // Update buttons in the HTML body
     const run_button = document.querySelector('#control_button_run');
     const pause_button = document.querySelector('#control_button_pause');
@@ -128,13 +135,19 @@ function runSimulation() {
  * Pauses the particle simulation and toggles the control buttons
  */
 function pauseSimulation() {
+    if (simulation_state === SimulationState.Paused || simulation_state === SimulationState.Stopped) {
+        return;
+    }
     // Pause a timer
     clearInterval(timer);
     timer = null;
     // Record the pause time
-    time_paused = performance.now();
+    if (time_elapsed) {
+        time_paused = performance.now();
+    }
     // Change animation state
     cancelAnimationFrame(particle_movement);
+    simulation_state = SimulationState.Paused;
     // Update buttons in the HTML body
     const run_button = document.querySelector('#control_button_run');
     const pause_button = document.querySelector('#control_button_pause');
@@ -153,6 +166,8 @@ function stopSimulation() {
     // Change animation state
     time_previous = 0;
     time_elapsed = 0;
+    time_paused = 0;
+    simulation_state = SimulationState.Stopped;
     cancelAnimationFrame(particle_movement);
     // Empty simulation data
     simulation_particles.length = 0;
