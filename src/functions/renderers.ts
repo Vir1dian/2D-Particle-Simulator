@@ -18,6 +18,10 @@ function loadContainerElement(container: BoxSpace) {
 }
 
 const simulationSettingsElementFunctions = {
+  /**
+   * Updates the input fields of simulation settings UI to reflect actual values
+   * @param settings 
+   */
   loadSettings(settings: SimulationSettings) {  // jesus christ
     // Get all input elements
     const num_particles: HTMLInputElement = document.querySelector('#control_simulation-num_particles') as HTMLInputElement;
@@ -90,6 +94,10 @@ const simulationSettingsElementFunctions = {
     elac.value = settings.environment.elasticity.toString()
   },
 
+    /**
+   * Updates the actual values of simulation settings to reflect input fields in UI
+   * @param settings 
+   */
   updateSettings() {
     // Get all input elements
     const num_particles: HTMLInputElement = document.querySelector('#control_simulation-num_particles') as HTMLInputElement;
@@ -152,7 +160,6 @@ const simulationSettingsElementFunctions = {
     simulation_settings.environment.elasticity = parseFloat(elac.value);
 
     this.applySettings(simulation_settings);
-    stopSimulation('soft');
   },
 
   /**
@@ -161,6 +168,27 @@ const simulationSettingsElementFunctions = {
    */
 
   applySettings(settings: SimulationSettings) {
+    try {
+      if (typeof stopSimulation === 'function') {stopSimulation();}
+    } catch {}
+
+    if (settings.particle[0].num_particles) {
+      let new_count: number = 0;
+      if (settings.particle[0].num_particles === 'random') 
+        new_count = Math.floor(Math.random() * (150 - 20 + 1) + 20);
+      else {
+        new_count = settings.particle[0].num_particles;
+      }
+      while (simulation_particles.length < new_count) {
+        particleElementFunctions.createParticle();
+      }
+    }
+
+    /* Grouped Settings */
+    // TODO: overhaul this at some point, currently we're assuming that the 
+    // total counted specified particles are less than or equal to the global
+    // particle settings at simulation_settings.particle[0]
+
     // Apply settings to the existing particles (ignoring newly added particles), (group 0 is the default global for creating particles)
     const applyToExistingParticles = (particle: Particle, group_index: number = 0) => {
       particle.mass = settings.particle[group_index].mass === 'random'
@@ -236,32 +264,6 @@ const simulationSettingsElementFunctions = {
       oy_input.value = particle.oscillation.y.toString();
     };
 
-    const previous_count: number = simulation_particles.length;
-    if (settings.particle[0].num_particles) {
-      let new_count: number = 0;
-      if (settings.particle[0].num_particles === 'random') 
-        new_count = Math.floor(Math.random() * (150 - 20 + 1) + 20);
-      else {
-        new_count = settings.particle[0].num_particles;
-      }
-      while (simulation_particles.length < new_count) {
-        particleElementFunctions.createParticle();
-      }
-      let delete_index: number = simulation_particles.length - 1;
-      while (simulation_particles.length > new_count) {
-        particleElementFunctions.deleteParticle(simulation_particles[delete_index]);
-        delete_index--;
-      }
-    }
-
-    // Update only existing particles
-    for (let i = 0; i < previous_count && i < simulation_particles.length; i++) {
-      applyToExistingParticles(simulation_particles[i]);
-    }
-
-    // TODO: overhaul this at some point, currently we're assuming that the 
-    // total counted specified particles are less than or equal to the global
-    // particle settings at simulation_settings.particle[0]
     let indexFrom = 0;
     let indexTo = 0;
     for (let i = 1; i < simulation_settings.particle.length; i++) {
@@ -284,10 +286,10 @@ const simulationSettingsElementFunctions = {
       Object.assign(simulation_settings, presets[preset]);
       this.loadSettings(simulation_settings);
       this.applySettings(simulation_settings);
-      stopSimulation('soft');
     } else {
       console.error(`Preset "${preset}" not found.`);
     }
+    console.log(simulation_particles);
   }
 }
 
@@ -454,7 +456,7 @@ const particleElementFunctions = {
     );
     this.loadParticle(created_particle, container);
     if (created_particle.trajectory) {
-      this.drawTrajectory(created_particle, time_elapsed);
+      this.drawTrajectory(created_particle, time_elapsed, simulation_settings.environment.trajectory_step);
     }
   },
 
@@ -526,8 +528,6 @@ const particleElementFunctions = {
   },
 
   drawTrajectory(selected_particle: Particle, time_elapsed: number, step: number = 0.5, cont: BoxSpace = container) {
-    console.log('drawTrajectory called');
-    console.log(simulation_settings.environment.drag);
     if (simulation_settings.environment.drag === 0) {
       const collision_time = PredictCollision.noDrag(selected_particle, time_elapsed, cont);
       if (!isFinite(collision_time)) return;
@@ -568,11 +568,8 @@ function viewParticleDetailsModal(id_name: string, open: boolean) {
   if (open) {
     viewModal.showModal();
     pauseSimulation();
+    console.log()
   } else {
     viewModal.close();
   }
-}
-
-function sayHi() {
-  console.log('hi');
 }

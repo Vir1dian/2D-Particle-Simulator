@@ -59,19 +59,24 @@ class Particle {
         if (this.position.x + this.radius > container.x_max) { // collision with right (totally elastic)
             this.velocity.x = -this.velocity.x;
             this.position.x = container.x_max - this.radius;
+            return true;
         }
-        else if (this.position.x - this.radius < container.x_min) { // collision with left (totally elastic)
+        if (this.position.x - this.radius < container.x_min) { // collision with left (totally elastic)
             this.velocity.x = -this.velocity.x;
             this.position.x = container.x_min + this.radius;
+            return true;
         }
         if (this.position.y + this.radius > container.y_max) { // collision with top (totally elastic)
             this.velocity.y = -this.velocity.y;
             this.position.y = container.y_max - this.radius;
+            return true;
         }
-        else if (this.position.y - this.radius < container.y_min) { // collision with bottom (totally elastic)
+        if (this.position.y - this.radius < container.y_min) { // collision with bottom (totally elastic)
             this.velocity.y = -this.velocity.y;
             this.position.y = container.y_min + this.radius;
+            return true;
         }
+        return false;
     }
     collideParticle(otherParticle, elasticity = 1) {
         if (elasticity < 0 || elasticity > 1) {
@@ -85,7 +90,7 @@ class Particle {
             const minimum_separation = (this.radius + otherParticle.radius) / 2;
             this.position = this.position.add(random_direction.scalarMultiply(minimum_separation));
             otherParticle.position = otherParticle.position.subtract(random_direction.scalarMultiply(minimum_separation));
-            return;
+            return false;
         }
         if (distance <= this.radius + otherParticle.radius) {
             // Positional correction using projection method
@@ -97,14 +102,16 @@ class Particle {
             const relative_velocity = this.velocity.subtract(otherParticle.velocity); // v_ab = v_a - v_b
             const normal_velocity = relative_velocity.dotProduct(normal); // v_n = v_ab * n
             if (normal_velocity > 0) {
-                return;
+                return false;
             }
             const impulse = -(1 + elasticity) * normal_velocity
                 / ((1 / this.mass) + (1 / otherParticle.mass));
             // J = -(1+e)v_ab*n / (n*n*(1/m_a + 1/m_b)) where n*n = 1 since n is already a unit vector
             this.velocity = this.velocity.add(normal.scalarMultiply(impulse / this.mass));
             otherParticle.velocity = otherParticle.velocity.subtract(normal.scalarMultiply(impulse / otherParticle.mass));
+            return true;
         }
+        return false;
     }
     /**
      * "Moves" or changes the particle's kinematic properties given some time span

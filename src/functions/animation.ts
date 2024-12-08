@@ -60,14 +60,22 @@ function step(timestamp: DOMHighResTimeStamp) {
   start = timestamp;
   simulation_particles.forEach((particle) => {  
     particle.move(dt, time_elapsed);
-    particle.collideContainer(container);
+    if (particle.collideContainer(container) && particle.trajectory) {
+      particleElementFunctions.eraseTrajectory(particle.id);
+      particleElementFunctions.drawTrajectory(particle, time_elapsed, simulation_settings.environment.trajectory_step);
+    };
 
     simulation_particles.forEach((otherParticle) => {
       if (otherParticle !== particle) {
-        particle.collideParticle(otherParticle, simulation_settings.environment.elasticity);
-        if (particle.trajectory) {
-          particleElementFunctions.eraseTrajectory(particle.id);
-          particleElementFunctions.drawTrajectory(particle, time_elapsed);          
+        if (particle.collideParticle(otherParticle, simulation_settings.environment.elasticity)) {
+          if (particle.trajectory) {
+            particleElementFunctions.eraseTrajectory(particle.id);
+            particleElementFunctions.drawTrajectory(particle, time_elapsed, simulation_settings.environment.trajectory_step);
+          }
+          if (otherParticle.trajectory) {
+            particleElementFunctions.eraseTrajectory(otherParticle.id);
+            particleElementFunctions.drawTrajectory(otherParticle, time_elapsed, simulation_settings.environment.trajectory_step);
+          }
         }
       }
     });
@@ -148,7 +156,7 @@ function pauseSimulation() {
 /**
  * Stops the particle simulation and toggles the control buttons
  */
-function stopSimulation(setting: 'soft' | '' = '') {
+function stopSimulation() {
   // Stop a timer
   clearInterval(timer as number);
   timer = null;
@@ -158,20 +166,21 @@ function stopSimulation(setting: 'soft' | '' = '') {
   time_previous = 0;
   time_elapsed = 0;
   cancelAnimationFrame(particle_movement);
-
-  if (setting !== 'soft') {
-    // Empty simulation data
-    simulation_particles.length = 0;
-    // Empty simulation elements
-    const particle_elements : NodeListOf<Element> = document.querySelectorAll('.particle_element');
-    const control_particle_elements : NodeListOf<Element> = document.querySelectorAll('.control_particle');
-    particle_elements.forEach(element => {
-      element.remove()
-    });
-    control_particle_elements.forEach(element => {
-      element.remove()
-    });    
-  }
+  // Empty simulation data
+  simulation_particles.length = 0;
+  // Empty simulation elements
+  const particle_elements : NodeListOf<Element> = document.querySelectorAll('.particle_element');
+  const control_particle_elements : NodeListOf<Element> = document.querySelectorAll('.control_particle');
+  const trajectory_points : NodeListOf<Element> = document.querySelectorAll('.point');
+  trajectory_points.forEach(element => {
+    element.remove()
+  });
+  particle_elements.forEach(element => {
+    element.remove()
+  });
+  control_particle_elements.forEach(element => {
+    element.remove()
+  });    
 
   // Update buttons in the HTML body
   const run_button : HTMLButtonElement = document.querySelector('#control_button_run') as HTMLButtonElement;

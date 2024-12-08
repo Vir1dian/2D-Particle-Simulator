@@ -21,6 +21,7 @@ const simulation_settings = {
         elasticity: 1,
         drag: 0,
         acceleration: new Vector2D(),
+        trajectory_step: 0.5
     },
 };
 let current_preset;
@@ -41,6 +42,7 @@ const presets = {
             elasticity: 1,
             drag: 0,
             acceleration: new Vector2D(),
+            trajectory_step: 0.5
         },
     },
     sandbox: {
@@ -59,6 +61,7 @@ const presets = {
             elasticity: 1,
             drag: 0,
             acceleration: new Vector2D(),
+            trajectory_step: 0.5
         },
     },
     projdrag: {
@@ -77,6 +80,7 @@ const presets = {
             elasticity: 1,
             drag: 0.1,
             acceleration: new Vector2D(0, -98),
+            trajectory_step: 0.25
         },
     },
     projnodrag: {
@@ -95,6 +99,7 @@ const presets = {
             elasticity: 1,
             drag: 0,
             acceleration: new Vector2D(0, -98),
+            trajectory_step: 0.25
         },
     },
     snowglobe: {
@@ -113,6 +118,7 @@ const presets = {
             elasticity: 0.1,
             drag: 0.01,
             acceleration: new Vector2D(0, -98),
+            trajectory_step: 0.5
         },
     },
     bulldozer: {
@@ -144,6 +150,7 @@ const presets = {
             elasticity: 0.6,
             drag: 0,
             acceleration: new Vector2D(),
+            trajectory_step: 0.5
         },
     },
     rbyg: {
@@ -208,6 +215,7 @@ const presets = {
             elasticity: 0.6,
             drag: 0.01,
             acceleration: new Vector2D(),
+            trajectory_step: 0.5
         },
     },
     elastic_highdrag: {
@@ -226,6 +234,7 @@ const presets = {
             elasticity: 1,
             drag: 0.25,
             acceleration: new Vector2D(),
+            trajectory_step: 0.5
         },
     },
     nodrag_lowelasticity: {
@@ -244,6 +253,7 @@ const presets = {
             elasticity: 0.75,
             drag: 0,
             acceleration: new Vector2D(),
+            trajectory_step: 0.5
         },
     }
 };
