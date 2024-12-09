@@ -60,7 +60,7 @@ const Dynamics = {
             const term2 = (v0 - term1) * (1 - exponent);
             return term1 * (t - t0) + (m / b) * term2 + s0;
         },
-        time(s0, s, v0, a, m, b, t0 = 0, max_iterations = 10, tolerance_digit = 3, t_init = t0 + 0.1) {
+        time(s0, s, v0, a, m, b, t0 = 0, max_iterations = 10, tolerance_digit = 6, t_init = t0 + 0.1) {
             const tolerance = Math.pow(10, -tolerance_digit);
             // Handling edge cases
             if (!b) {
@@ -177,18 +177,20 @@ const PredictCollision = {
         const collision_bottom = Dynamics.drag.time(particle.position.y, cont.y_min, particle.velocity.y, a.y, m, b, t0);
         const collision_top = Dynamics.drag.time(particle.position.y, cont.y_max, particle.velocity.y, a.y, m, b, t0);
         // Filter out non-valid collision times (non-positive or infinite)
+        const tolerance = 0;
         const collision_times = [collision_left, collision_right, collision_bottom, collision_top];
-        collision_times.forEach(time => {
-            console.log(`Time: ${time}, t0: ${t0}, isValid: ${time > t0 && isFinite(time)}`);
-        });
-        const valid_collision_time = collision_times.filter(time => time > t0 && isFinite(time));
-        console.log(valid_collision_time);
+        const valid_collision_time = collision_times.filter(time => isFinite(time) && time + tolerance > t0 && time > 0);
+        // console.log(`Left - Time: ${collision_left}, t0: ${t0}, isValid: ${collision_left + tolerance > t0 && isFinite(collision_left)}`);
+        // console.log(`Right - Time: ${collision_right}, t0: ${t0}, isValid: ${collision_right + tolerance > t0 && isFinite(collision_right)}`);
+        // console.log(`Bottom - Time: ${collision_bottom}, t0: ${t0}, isValid: ${collision_bottom + tolerance > t0 && isFinite(collision_bottom)}`);
+        // console.log(`Top - Time: ${collision_top}, t0: ${t0}, isValid: ${collision_top + tolerance > t0 && isFinite(collision_top)}`);
+        // console.log(valid_collision_time);
         // If no valid collisions, return Infinity to indicate no collision
         if (valid_collision_time.length === 0) {
             console.error(`No valid collision time. particle_id=${particle.id}, t0=${t0}`);
             return Infinity;
         }
-        return Math.min(...valid_collision_time);
+        return Math.min(...valid_collision_time) + tolerance;
     }
 };
 /* NO DRAG */

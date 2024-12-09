@@ -530,18 +530,31 @@ const particleElementFunctions = {
     if (simulation_settings.environment.drag === 0) {
       const collision_time = PredictCollision.noDrag(selected_particle, time_elapsed, cont);
       if (!isFinite(collision_time)) return;
-      for (let i = time_elapsed; i < collision_time; i += step) {
-        const new_position = PredictParticle.noDrag(selected_particle, time_elapsed, i).position;
+      for (let t = time_elapsed + step; t < collision_time; t += step) {
+        const new_position = PredictParticle.noDrag(selected_particle, time_elapsed, t).position;
         drawPoint(new_position, selected_particle.id);
       }
     }
     else {
       const collision_time = PredictCollision.constantDrag(selected_particle, time_elapsed, cont);
       if (!isFinite(collision_time)) return;
-
-      const max_interval = 10;  // Capped time range for trajectory prediction, in seconds
-      for (let i = time_elapsed; i < Math.min(collision_time, time_elapsed + max_interval); i += step) {
-        const new_position = PredictParticle.constantDrag(selected_particle, time_elapsed, i).position;
+      // console.log(time_elapsed + step + ' < ' + collision_time);
+      for (let t = time_elapsed + step; t < collision_time; t += step) {
+        const new_position = PredictParticle.constantDrag(selected_particle, time_elapsed, t).position;
+        // console.log('At time: ' + t + ': ' + new_position.x + ' ' + new_position.y);
+        // Bandaid fix, should be relying on time rather than position to stop trajectory drawing
+        if (new_position.x + selected_particle.radius > cont.x_max) {  // Bounded right
+          break;
+        }
+        if (new_position.x - selected_particle.radius < cont.x_min) {  // Bounded left
+          break;
+        }
+        if (new_position.y + selected_particle.radius > cont.y_max) {  // Bounded top
+          break;
+        }
+        if (new_position.y - selected_particle.radius < cont.y_min) {  // Bounded bottom
+          break;
+        }
         drawPoint(new_position, selected_particle.id);
       }
     }

@@ -67,7 +67,7 @@ const Dynamics = {
     },
     time(
       s0: number, s: number, v0: number, a: number, m: number, b: number, t0:number = 0, 
-      max_iterations: number = 10, tolerance_digit: number = 3, t_init: number = t0 + 0.1
+      max_iterations: number = 10, tolerance_digit: number = 6, t_init: number = t0 + 0.1
     ): number {
       const tolerance = Math.pow(10, -tolerance_digit);
 
@@ -205,20 +205,22 @@ const PredictCollision = {
     const collision_top = Dynamics.drag.time(particle.position.y, cont.y_max, particle.velocity.y, a.y, m, b, t0);
 
     // Filter out non-valid collision times (non-positive or infinite)
+    const tolerance: number = 0;
     const collision_times: number[] = [collision_left, collision_right, collision_bottom, collision_top];
-    collision_times.forEach(time => {
-      console.log(`Time: ${time}, t0: ${t0}, isValid: ${time > t0 && isFinite(time)}`);
-    });
-    const valid_collision_time = collision_times.filter(time => time > t0 && isFinite(time));
-    console.log(valid_collision_time);
+    const valid_collision_time = collision_times.filter(time => isFinite(time) && time + tolerance > t0 && time > 0);
+
+    // console.log(`Left - Time: ${collision_left}, t0: ${t0}, isValid: ${collision_left + tolerance > t0 && isFinite(collision_left)}`);
+    // console.log(`Right - Time: ${collision_right}, t0: ${t0}, isValid: ${collision_right + tolerance > t0 && isFinite(collision_right)}`);
+    // console.log(`Bottom - Time: ${collision_bottom}, t0: ${t0}, isValid: ${collision_bottom + tolerance > t0 && isFinite(collision_bottom)}`);
+    // console.log(`Top - Time: ${collision_top}, t0: ${t0}, isValid: ${collision_top + tolerance > t0 && isFinite(collision_top)}`);
+    // console.log(valid_collision_time);
 
     // If no valid collisions, return Infinity to indicate no collision
     if (valid_collision_time.length === 0) {
       console.error(`No valid collision time. particle_id=${particle.id}, t0=${t0}`);
       return Infinity;
     }
-
-    return Math.min(...valid_collision_time);
+    return Math.min(...valid_collision_time) + tolerance;
   }
 }
 
