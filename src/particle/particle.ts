@@ -61,10 +61,10 @@ class Particle {
   }
 
   collideContainer(container: BoxSpace): boolean {
-    const tangential_velocity = 
-      this.oscillation.x && this.oscillation.y 
-        ? new Vector2D(this.oscillation.x * Math.cos(time_elapsed), this.oscillation.y * Math.sin(time_elapsed))
-        : new Vector2D();
+    // const tangential_velocity = 
+    //   this.oscillation.x && this.oscillation.y 
+    //     ? new Vector2D(this.oscillation.x * Math.cos(time_elapsed), this.oscillation.y * Math.sin(time_elapsed))
+    //     : new Vector2D();
     // const total_velocity = this.position.add(tangential_velocity);
 
     if (this.position.x + this.radius > container.x_max) {  // collision with right (totally elastic)

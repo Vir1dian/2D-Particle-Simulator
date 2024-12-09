@@ -8,12 +8,16 @@ interface KinematicData {
  */
 const Kinematics = {
   velocity(v0: number, a: number, t:number, t0:number = 0): number {
+    // v = g*t + v_0 - g*t_0 = g*(t - t_0) + v_0
     return a*(t - t0) + v0;
   },
   position(s0: number, v0: number, a: number, t:number, t0:number = 0): number {
+    // s = (1/2)*g*(t - t_0)^2 + v_0*(t - t_0) + s_0
     return (1/2)*a*Math.pow(t - t0, 2) + v0*(t - t0) + s0;
   },
   time(s0: number, s: number, v0: number, a: number, t0:number = 0): number {
+    // u = (-v_0 +- sqrt(v_0^2 - 2*g*(s_0 - s)))/g
+    // t = u + t_0
     if (a === 0) {
       if (v0 === 0) {
         if (s0 === s) return t0;
@@ -41,8 +45,34 @@ const Kinematics = {
   }
 }
 
+const Dynamics = {
+  drag: {
+    acceleration(v: number, g: number, m: number, b: number) {
+      // a = g - b*v/m
+
+    },
+    velocity(v0: number, g: number, m: number, b: number, t:number, t0:number = 0) {
+      // v = (m/b)*g + (v_0 - (m/b)*g)*e^(b*(t_0 - t)/m)
+    },
+    position(s0: number, v0: number, g: number, m: number, b: number, t:number, t0:number = 0) {
+      // s = (m/b)*g*(t - t_0) + (m/b)*(v_0 - (m/b)*g)*(1 - e^(b*(t_0 - t)/m)) + s_0
+
+    },
+    time(s0: number, s: number, v0: number, g: number, m: number, b: number, t0:number = 0) {
+      // s = (m/b)*g*(t - t_0) + (m/b)*(v_0 - (m/b)*g)*(1 - e^(b*(t_0 - t)/m)) + s_0
+      // Solve t from s(t) using Newton-Raphson
+      
+    }
+  },
+  simple_harmonics: {},
+  magnetism: {},
+  planetary: {},
+  rocketry: {}
+}
+
 const PredictParticle = {
   noDrag(particle: Particle, t0:number, t:number): KinematicData {
+
     const a: Vector2D = simulation_settings.environment.acceleration.add(particle.acceleration);
     const new_position: Vector2D = new Vector2D(
       Kinematics.position(particle.position.x, particle.velocity.x, a.x, t, t0),
@@ -56,7 +86,6 @@ const PredictParticle = {
   },
 
   constantDrag(particle: Particle, t0:number, cont: BoxSpace = container): KinematicData {
-    
     return {position: new Vector2D(), velocity: new Vector2D()};
   }
 }
@@ -92,11 +121,13 @@ const PredictCollision = {
 // v = g*t + C_v
 // C_v = v_0 - g*t_0
 // v = g*t + v_0 - g*t_0 = g*(t - t_0) + v_0
+
 // ∫(v)dt = ∫(g*(t - t_0) + v_0)dt
 // s = (1/2)*g*(t - t_0)^2 + v_0*t + C_s
 // C_s = s_0 - (1/2)*g*(t_0 - t_0)^2 - v_0*t_0 = s_0 - v_0*t_0
 // s = (1/2)*g*(t - t_0)^2 + v_0*t + s_0 - v_0*t_0
 // s = (1/2)*g*(t - t_0)^2 + v_0*(t - t_0) + s_0  <-- u = t - t_0
+
 // 0 = (1/2)*g*(u)^2  + v_0*(u) + (s_0 - s)
 // u = (-v_0 +- sqrt(v_0^2 - 2*g*(s_0 - s)))/g
 // t = u + t_0
@@ -105,18 +136,24 @@ const PredictCollision = {
 // F = m*g - b*v  where m is particle mass, g is external acceleration, b is constant drag force, and v is velocity
 // m*(dv/dt) = m*g - b*v
 // m*(dv/dt) + b*v = m*g
+// dv/dt + b*v/m = g
+// a = g - b*v/m
+
 // dv/dt + b*v/m = g  --> μ(t) = e^∫(b/m)dt = e^(b*t/m)
 // (dv/dt)*e^(b*t/m) + (b*v/m)e^(b*t/m) = g*e^(b*t/m)
 // ∫(d/dt)(v*e^(b*t/m)) = ∫(g*e^(b*t/m))dt
-// v*e^(bt/m) = (m/b)*g*e^(b*t/m) + C
+// v*e^(bt/m) = (m/b)*g*e^(b*t/m) + C_v
 // v = (m/b)*g + C_v*e^(-b*t/m)
 // C_v = (v_0 - (m/b)*g)*e^(b*t_0/m)
+// v = (m/b)*g + (v_0 - (m/b)*g)*e^(b*t_0/m)*e^(-b*t/m)
+// v = (m/b)*g + (v_0 - (m/b)*g)*e^(b*(t_0 - t)/m)
 
 // s = ∫(v)dt
-// s = (m/b)*g*t + (-m/b)*C_v*e^(-b*t/m) + C_s
-// C_s = s_0 - (m/b)*g*t_0 - (-m/b)*C_v*e^(-b*t_0/m)
-// s = (m/b)*g*t + (-m/b)*(v_0 - (m/b)*g)*e^(b*t_0/m)*e^(-b*t/m) + s_0 - (m/b)*g*t_0 - (-m/b)*(v_0 - (m/b)*g)*e^(b*t_0/m)*e^(-b*t_0/m)
+// s = (m/b)*g*t + (-m/b)*(v_0 - (m/b)*g)*e^(b*(t_0 - t)/m) + C_s
+// C_s = s_0 - (m/b)*g*t_0 - (-m/b)*(v_0 - (m/b)*g)*e^(b*(t_0 - t)/m)
+// s = (m/b)*g*t + (-m/b)*(v_0 - (m/b)*g)*e^(b*(t_0 - t)/m) + s_0 - (m/b)*g*t_0 - (-m/b)*(v_0 - (m/b)*g)*e^(b*(t_0 - t_0)/m)
 // s = (m/b)*g*(t - t_0) + (-m/b)*(v_0 - (m/b)*g)*e^(b*(t_0 - t)/m) + s_0 + (m/b)*(v_0 - (m/b)*g)
-
 // s = (m/b)*g*(t - t_0) + (m/b)*(v_0 - (m/b)*g)*(1 - e^(b*(t_0 - t)/m)) + s_0
+// s(t) is transcendental, must use newton's method to solve for t
+
 // t = ?
