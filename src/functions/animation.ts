@@ -56,7 +56,7 @@ let simulation_state: SimulationState = SimulationState.Stopped;
 function step(timestamp: DOMHighResTimeStamp) {
   // Time update for differential and movement caluclations
   if (!time_previous) time_previous = timestamp;
-  const dt = (timestamp - time_previous) / 1000;  // Using this line instead of 1/60 for higher accuracy, in seconds
+  const dt = Math.min((timestamp - time_previous) / 1000, 1 / 60);  // Using this line instead of 1/60 for higher accuracy, in seconds. Capped to 1/60
   time_previous = timestamp; // Update the previous timestamp for the next frame
   time_elapsed += dt; // Update total elapsed time in seconds
   // console.log(dt + ' ' + elapsedTime);
@@ -110,8 +110,6 @@ function runSimulation() {
   // start a timer
   if (!timer) {
     timer = setInterval(() => {
-      // timer_elapsed++;
-    
       let hours: string | number = Math.floor(time_elapsed/3600);
       if (hours/10 < 1) {
         hours = "0" + hours;
@@ -171,7 +169,6 @@ function stopSimulation() {
   // Stop a timer
   clearInterval(timer as number);
   timer = null;
-  // timer_elapsed = 0;
   timer_element.innerHTML = '00:00:00';
   // Change animation state
   time_previous = 0;

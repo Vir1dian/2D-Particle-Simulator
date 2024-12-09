@@ -289,7 +289,6 @@ const simulationSettingsElementFunctions = {
     } else {
       console.error(`Preset "${preset}" not found.`);
     }
-    console.log(simulation_particles);
   }
 }
 
@@ -537,7 +536,14 @@ const particleElementFunctions = {
       }
     }
     else {
-      // Implement drag trajectory here
+      const collision_time = PredictCollision.constantDrag(selected_particle, time_elapsed, cont);
+      if (!isFinite(collision_time)) return;
+
+      const max_interval = 10;  // Capped time range for trajectory prediction, in seconds
+      for (let i = time_elapsed; i < Math.min(collision_time, time_elapsed + max_interval); i += step) {
+        const new_position = PredictParticle.constantDrag(selected_particle, time_elapsed, i).position;
+        drawPoint(new_position, selected_particle.id);
+      }
     }
   },
 
