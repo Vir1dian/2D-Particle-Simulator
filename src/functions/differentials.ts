@@ -209,11 +209,11 @@ const PredictCollision = {
     const collision_times: number[] = [collision_left, collision_right, collision_bottom, collision_top];
     const valid_collision_time = collision_times.filter(time => isFinite(time) && time + tolerance > t0 && time > 0);
 
-    // console.log(`Left - Time: ${collision_left}, t0: ${t0}, isValid: ${collision_left + tolerance > t0 && isFinite(collision_left)}`);
-    // console.log(`Right - Time: ${collision_right}, t0: ${t0}, isValid: ${collision_right + tolerance > t0 && isFinite(collision_right)}`);
-    // console.log(`Bottom - Time: ${collision_bottom}, t0: ${t0}, isValid: ${collision_bottom + tolerance > t0 && isFinite(collision_bottom)}`);
-    // console.log(`Top - Time: ${collision_top}, t0: ${t0}, isValid: ${collision_top + tolerance > t0 && isFinite(collision_top)}`);
-    // console.log(valid_collision_time);
+    console.log(`Left - Time: ${collision_left}, t0: ${t0}, isValid: ${collision_left + tolerance > t0 && isFinite(collision_left)}`);
+    console.log(`Right - Time: ${collision_right}, t0: ${t0}, isValid: ${collision_right + tolerance > t0 && isFinite(collision_right)}`);
+    console.log(`Bottom - Time: ${collision_bottom}, t0: ${t0}, isValid: ${collision_bottom + tolerance > t0 && isFinite(collision_bottom)}`);
+    console.log(`Top - Time: ${collision_top}, t0: ${t0}, isValid: ${collision_top + tolerance > t0 && isFinite(collision_top)}`);
+    console.log(valid_collision_time);
 
     // If no valid collisions, return Infinity to indicate no collision
     if (valid_collision_time.length === 0) {

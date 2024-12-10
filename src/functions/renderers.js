@@ -508,12 +508,33 @@ const particleElementFunctions = {
         }
     },
     drawTrajectory(selected_particle, time_elapsed, step = 0.5, cont = container) {
+        const isOutOfContainer = (x, y, r = selected_particle.radius) => {
+            if (x + r > cont.x_max) { // Bounded right
+                console.error(`drawTrajectory attempted outside of container bounds. x+r=${x + r}, x_max=${cont.x_max}`);
+                return true;
+            }
+            if (x - r < cont.x_min) { // Bounded left
+                console.error(`drawTrajectory attempted outside of container bounds. x-r=${x - r}, x_min=${cont.x_min}`);
+                return true;
+            }
+            if (y + r > cont.y_max) { // Bounded top
+                console.error(`drawTrajectory attempted outside of container bounds. y+r=${y + r}, x_min=${cont.y_max}`);
+                return true;
+            }
+            if (y - r < cont.y_min) { // Bounded bottom
+                console.error(`drawTrajectory attempted outside of container bounds. y-r=${y - r}, x_min=${cont.y_min}`);
+                return true;
+            }
+            return false;
+        };
         if (simulation_settings.environment.drag === 0) {
             const collision_time = PredictCollision.noDrag(selected_particle, time_elapsed, cont);
             if (!isFinite(collision_time))
                 return;
             for (let t = time_elapsed + step; t < collision_time; t += step) {
                 const new_position = PredictParticle.noDrag(selected_particle, time_elapsed, t).position;
+                if (isOutOfContainer(new_position.x, new_position.y))
+                    break;
                 drawPoint(new_position, selected_particle.id);
             }
         }
@@ -524,20 +545,8 @@ const particleElementFunctions = {
             // console.log(time_elapsed + step + ' < ' + collision_time);
             for (let t = time_elapsed + step; t < collision_time; t += step) {
                 const new_position = PredictParticle.constantDrag(selected_particle, time_elapsed, t).position;
-                // console.log('At time: ' + t + ': ' + new_position.x + ' ' + new_position.y);
-                // Bandaid fix, should be relying on time rather than position to stop trajectory drawing
-                if (new_position.x + selected_particle.radius > cont.x_max) { // Bounded right
+                if (isOutOfContainer(new_position.x, new_position.y))
                     break;
-                }
-                if (new_position.x - selected_particle.radius < cont.x_min) { // Bounded left
-                    break;
-                }
-                if (new_position.y + selected_particle.radius > cont.y_max) { // Bounded top
-                    break;
-                }
-                if (new_position.y - selected_particle.radius < cont.y_min) { // Bounded bottom
-                    break;
-                }
                 drawPoint(new_position, selected_particle.id);
             }
         }
