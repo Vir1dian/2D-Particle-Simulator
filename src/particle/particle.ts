@@ -125,7 +125,7 @@ class Particle {
         -(1 + elasticity) * normal_velocity 
         / ((1/this.mass)+(1/otherParticle.mass));
         // J = -(1+e)v_ab*n / (n*n*(1/m_a + 1/m_b)) where n*n = 1 since n is already a unit vector
-      this.velocity = this.velocity.add(normal.scalarMultiply(impulse/this.mass))
+      this.velocity = this.velocity.add(normal.scalarMultiply(impulse/this.mass));
       otherParticle.velocity = otherParticle.velocity.subtract(normal.scalarMultiply(impulse/otherParticle.mass));
       return true;
     }

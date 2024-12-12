@@ -287,7 +287,6 @@ const PredictCollision = {
 // s(t) - s(t_n) = v(t_n)*(t - t_n)
 // t - t_n = (s(t) - s(t_n))/v(t_n)
 // t = t_n + (s(t) - s(t_n))/v(t_n)
-// t = t_n - (s(t_n) - s(t))/v(t_n)
 
 // Time: Case of zero acceleration, non-zero velocity
 // s = (m/b)*g*(t - t_0) + (m/b)*(v_0 - (m/b)*g)*(1 - e^(b*(t_0 - t)/m)) + s_0
