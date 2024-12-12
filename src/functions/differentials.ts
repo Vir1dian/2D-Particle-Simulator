@@ -124,7 +124,7 @@ const Dynamics = {
     }
   },
   simple_harmonics: {},
-  magnetism: {},
+  electromagnetism: {},
   planetary: {},
   rocketry: {}
 }
