@@ -2,11 +2,17 @@ showControlOption();
 loadContainerElement(container);
 simulationSettingsElementFunctions.loadPreset('empty');
 
-const control_items: {
+interface control_item_data {
   name: string,
   isOpen: boolean,
   toggleAnimation: string
-}[] = [
+}
+
+const control_bar_items_element: HTMLSpanElement = document.getElementById("setting_icons") as HTMLSpanElement;  // not including the timer
+const control_item_icons: NodeListOf<HTMLSpanElement> = control_bar_items_element.querySelectorAll(`.icon`) as NodeListOf<HTMLSpanElement>;
+const control_item_elements: NodeListOf<HTMLElement> = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;
+
+const control_items_data: control_item_data[] = [
   {
     name: "ui",
     isOpen: false,
@@ -23,15 +29,28 @@ const control_items: {
     toggleAnimation: "rotate" // 180deg
   }
 ];
-control_items.forEach(item => {
-  const control_items_element: HTMLSpanElement = document.getElementById("setting_icons") as HTMLSpanElement;
-  (control_items_element.querySelector(`#control_button_${item.name}setup`) as HTMLButtonElement).addEventListener('click', () => {
-    openControlItem(item.name);
+control_items_data.forEach(item => {
+  (control_bar_items_element.querySelector(`#control_button_${item.name}setup`) as HTMLButtonElement).addEventListener('click', () => {
+    openControlItem(item);
   });
 })
 
-function openControlItem(test:string) {
-  console.log(test);
+function openControlItem(item:control_item_data) {
+  const control_item_icon: HTMLSpanElement = document.querySelector(`#control_button_${item.name}setup .icon`) as HTMLSpanElement;
+  control_items_data.forEach((item, index) => {
+    item.isOpen = false;
+    control_item_icons[index].style.transform = `${item.toggleAnimation}(0deg)`;
+    control_item_elements[index].style.display = "none";
+  })
+
+  // functionality of showControlOption moved here
+  
+  if (!item.isOpen) {
+    control_item_icon.style.transform = `${item.toggleAnimation}(180deg)`;
+  } else {
+    control_item_icon.style.transform = `${item.toggleAnimation}(0deg)`;
+  }
+  item.isOpen = !item.isOpen;
 }
 
 

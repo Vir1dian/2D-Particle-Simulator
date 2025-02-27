@@ -2,7 +2,10 @@
 showControlOption();
 loadContainerElement(container);
 simulationSettingsElementFunctions.loadPreset('empty');
-const control_items = [
+const control_bar_items_element = document.getElementById("setting_icons"); // not including the timer
+const control_item_icons = control_bar_items_element.querySelectorAll(`.icon`);
+const control_item_elements = document.querySelectorAll(".control_item");
+const control_items_data = [
     {
         name: "ui",
         isOpen: false,
@@ -19,14 +22,26 @@ const control_items = [
         toggleAnimation: "rotate" // 180deg
     }
 ];
-control_items.forEach(item => {
-    const control_items_element = document.getElementById("setting_icons");
-    control_items_element.querySelector(`#control_button_${item.name}setup`).addEventListener('click', () => {
-        openControlItem(item.name);
+control_items_data.forEach(item => {
+    control_bar_items_element.querySelector(`#control_button_${item.name}setup`).addEventListener('click', () => {
+        openControlItem(item);
     });
 });
-function openControlItem(test) {
-    console.log(test);
+function openControlItem(item) {
+    const control_item_icon = document.querySelector(`#control_button_${item.name}setup .icon`);
+    control_items_data.forEach((item, index) => {
+        item.isOpen = false;
+        control_item_icons[index].style.transform = `${item.toggleAnimation}(0deg)`;
+        control_item_elements[index].style.display = "none";
+    });
+    // functionality of showControlOption moved here
+    if (!item.isOpen) {
+        control_item_icon.style.transform = `${item.toggleAnimation}(180deg)`;
+    }
+    else {
+        control_item_icon.style.transform = `${item.toggleAnimation}(0deg)`;
+    }
+    item.isOpen = !item.isOpen;
 }
 // TO BE OVERHAULED
 function showControlOption() {

@@ -196,9 +196,10 @@ input:not(input[type="checkbox"]), textarea {
 }
 
 .control_items {
-  margin-left: 10px;
+  margin-left: 20px;
   border: 2px solid darkslategray;
   height: 100%;
+  width: 400px;
 }
 #control_item_display {
   display: flex;
