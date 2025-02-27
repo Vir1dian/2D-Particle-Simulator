@@ -56,6 +56,93 @@
   justify-content: center;
   align-items: center;
 }
+.wrapper_controls {
+  background-color: gray;
+  background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
+  background-blend-mode: overlay;
+  border: solid 1px lightgray;
+  margin-bottom: 20px;
+}
+.wrapper_simulation_controls {
+  gap: 10px;
+}
+.control_bar {
+  padding: 10px;
+  padding-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.control_bar button {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  padding: 4px;
+}
+.control_bar button:not([disabled]):hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+#setting_logos {
+  padding-left: 12px;
+}
+#setting_logos button {
+  margin-right: 10px;
+  position: relative;
+}
+#setting_logos button .tooltip_text {
+  visibility: hidden;
+  width: 120px;
+  background-color: #343536;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 999;
+  top: 48px;
+  left: -40px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+#setting_logos button .tooltip_text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-top: transparent;
+  border-color: #343536 transparent;
+}
+#setting_logos button:hover .tooltip_text {
+  visibility: visible;
+  opacity: 1;
+}
+#setting_logos span {
+  font-size: 32px;
+}
+#control_timer table {
+  border-spacing: 0;
+}
+#control_timer table td {
+  padding: 0;
+}
+#control_timer button {
+  padding: 0;
+}
+#simulation_timer {
+  font-size: 20px;
+  text-align: center;
+}
 
 input:not(input[type="checkbox"]), textarea {
   margin: 2px;
@@ -64,22 +151,27 @@ input:not(input[type="checkbox"]), textarea {
   border-radius: 4px;
   box-shadow: inset 0px 1px 1px hsla(0, 0%, 0%, 0.075);
 }
-button {
+/* button {
   padding: 2px;
   border: solid 1px lightgray;
   border-radius: 4px;
   background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
   background-blend-mode: overlay;
   background-color: gray;
-}
-button:not([disabled]):hover {
+} */
+/* button:not([disabled]):hover {
   background-color: rgb(104, 139, 151);
-}
+} */
 
 .container_element {
   margin-inline: auto;
   background-color: #eeeeee;
   position: relative;
+  background-size: 20px 20px;
+  background-image:
+    linear-gradient(to right, lightgray 1px, transparent 1px),
+    linear-gradient(to bottom, lightgray 1px, transparent 1px);
+
   z-index: 1;
 }
 .particle_element {
@@ -102,8 +194,7 @@ button:not([disabled]):hover {
 .control_items {
   margin-left: 10px;
   border: 2px solid darkslategray;
-  min-width: 360px;
-  min-height: 500px;
+  height: 100%;
 }
 #control_item_display {
   display: flex;
@@ -161,11 +252,6 @@ button:not([disabled]):hover {
   position: sticky;
   bottom: 0;
   background-color: lightslategray;
-}
-
-#simulation_timer {
-  font-size: 24px;
-  text-align: center;
 }
 
 #control_particles {

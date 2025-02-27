@@ -57,27 +57,28 @@ class Particle {
         //     ? new Vector2D(this.oscillation.x * Math.cos(time_elapsed), this.oscillation.y * Math.sin(time_elapsed))
         //     : new Vector2D();
         // const total_velocity = this.position.add(tangential_velocity);
+        let hasCollided = false;
         if (this.position.x + this.radius > container.x_max) { // collision with right (totally elastic)
             this.velocity.x = -this.velocity.x;
             this.position.x = container.x_max - this.radius;
-            return true;
+            hasCollided = true;
         }
         if (this.position.x - this.radius < container.x_min) { // collision with left (totally elastic)
             this.velocity.x = -this.velocity.x;
             this.position.x = container.x_min + this.radius;
-            return true;
+            hasCollided = true;
         }
         if (this.position.y + this.radius > container.y_max) { // collision with top (totally elastic)
             this.velocity.y = -this.velocity.y;
             this.position.y = container.y_max - this.radius;
-            return true;
+            hasCollided = true;
         }
         if (this.position.y - this.radius < container.y_min) { // collision with bottom (totally elastic)
             this.velocity.y = -this.velocity.y;
             this.position.y = container.y_min + this.radius;
-            return true;
+            hasCollided = true;
         }
-        return false;
+        return hasCollided;
     }
     collideParticle(otherParticle, elasticity = 1) {
         if (elasticity < 0 || elasticity > 1) {

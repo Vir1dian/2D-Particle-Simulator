@@ -112,7 +112,7 @@ const Dynamics = {
         }
     },
     simple_harmonics: {},
-    magnetism: {},
+    electromagnetism: {},
     planetary: {},
     rocketry: {}
 };
@@ -218,6 +218,7 @@ const PredictCollision = {
 // s - s_0 = v_0*(t - t_0)
 // t - t_0 = (s - s_0)/v_0
 // t = t_0 + (s - s_0)/v_0
+// t = t_0 + (s - s_0)/v_0
 /* CONSTANT DRAG */
 // F = m*g - b*v  where m is particle mass, g is external acceleration, b is constant drag force, and v is velocity
 // m*(dv/dt) = m*g - b*v
@@ -247,7 +248,6 @@ const PredictCollision = {
 // s(t) - s(t_n) = v(t_n)*(t - t_n)
 // t - t_n = (s(t) - s(t_n))/v(t_n)
 // t = t_n + (s(t) - s(t_n))/v(t_n)
-// t = t_n - (s(t_n) - s(t))/v(t_n)
 // Time: Case of zero acceleration, non-zero velocity
 // s = (m/b)*g*(t - t_0) + (m/b)*(v_0 - (m/b)*g)*(1 - e^(b*(t_0 - t)/m)) + s_0
 // s = (m/b)*v_0*(1 - e^(b*(t_0 - t)/m)) + s_0

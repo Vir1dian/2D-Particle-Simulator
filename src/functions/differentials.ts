@@ -254,6 +254,7 @@ const PredictCollision = {
 // s - s_0 = v_0*(t - t_0)
 // t - t_0 = (s - s_0)/v_0
 // t = t_0 + (s - s_0)/v_0
+// t = t_0 + (s - s_0)/v_0
 
 /* CONSTANT DRAG */
 // F = m*g - b*v  where m is particle mass, g is external acceleration, b is constant drag force, and v is velocity
