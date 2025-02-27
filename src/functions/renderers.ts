@@ -7,6 +7,17 @@
 //   }
 // }
 
+function openModal(id_name: string, open: boolean) {
+  const viewModal: HTMLDialogElement = document.querySelector(id_name) as HTMLDialogElement;
+  if (open) {
+    viewModal.showModal();
+    pauseSimulation();
+    console.log()
+  } else {
+    viewModal.close();
+  }
+}
+
 function loadContainerElement(container: BoxSpace) {
   const wrapper : HTMLElement | null = document.querySelector('.simulation_wrapper');
 
@@ -417,10 +428,10 @@ const particleElementFunctions = {
 
     // Add event listeners
     (particle_element_control.querySelector(`#view_id${particle.id}`) as HTMLButtonElement).addEventListener('click', () => {
-      viewParticleDetailsModal(`#view_modal${particle.id}`, true);
+      openModal(`#view_modal${particle.id}`, true);
     });
     (particle_element_control.querySelector(`#close_view_id${particle.id}`) as HTMLButtonElement).addEventListener('click', () => {
-      viewParticleDetailsModal(`#view_modal${particle.id}`, false);
+      openModal(`#view_modal${particle.id}`, false);
     });
     (particle_element_control.querySelector(`#update_id${particle.id}`) as HTMLButtonElement).addEventListener('click', () => {
       particleElementFunctions.updateParticle(particle);
@@ -588,15 +599,4 @@ function drawPoint(position: Vector2D, id: number = 0, radius: number = 3, color
   // color
   point_element.style.backgroundColor = color;
   container_element.appendChild(point_element);
-}
-
-function viewParticleDetailsModal(id_name: string, open: boolean) {
-  const viewModal: HTMLDialogElement = document.querySelector(id_name) as HTMLDialogElement;
-  if (open) {
-    viewModal.showModal();
-    pauseSimulation();
-    console.log()
-  } else {
-    viewModal.close();
-  }
 }

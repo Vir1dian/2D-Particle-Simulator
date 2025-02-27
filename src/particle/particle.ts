@@ -1,5 +1,5 @@
 const simulation_particles: Particle[] = [];
-const particle_colors: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'white', 'brown'];
+const particle_colors: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
 
 class Particle {
   static instance_count = 0;

@@ -6,6 +6,17 @@
 //       }
 //   }
 // }
+function openModal(id_name, open) {
+    const viewModal = document.querySelector(id_name);
+    if (open) {
+        viewModal.showModal();
+        pauseSimulation();
+        console.log();
+    }
+    else {
+        viewModal.close();
+    }
+}
 function loadContainerElement(container) {
     const wrapper = document.querySelector('.simulation_wrapper');
     const container_element = document.createElement('div');
@@ -424,10 +435,10 @@ const particleElementFunctions = {
         particle_element_control.appendChild(particle_element_modal);
         // Add event listeners
         particle_element_control.querySelector(`#view_id${particle.id}`).addEventListener('click', () => {
-            viewParticleDetailsModal(`#view_modal${particle.id}`, true);
+            openModal(`#view_modal${particle.id}`, true);
         });
         particle_element_control.querySelector(`#close_view_id${particle.id}`).addEventListener('click', () => {
-            viewParticleDetailsModal(`#view_modal${particle.id}`, false);
+            openModal(`#view_modal${particle.id}`, false);
         });
         particle_element_control.querySelector(`#update_id${particle.id}`).addEventListener('click', () => {
             particleElementFunctions.updateParticle(particle);
@@ -570,15 +581,4 @@ function drawPoint(position, id = 0, radius = 3, color = 'gray') {
     // color
     point_element.style.backgroundColor = color;
     container_element.appendChild(point_element);
-}
-function viewParticleDetailsModal(id_name, open) {
-    const viewModal = document.querySelector(id_name);
-    if (open) {
-        viewModal.showModal();
-        pauseSimulation();
-        console.log();
-    }
-    else {
-        viewModal.close();
-    }
 }

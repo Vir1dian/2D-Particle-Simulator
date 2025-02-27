@@ -1,6 +1,6 @@
 "use strict";
 const simulation_particles = [];
-const particle_colors = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'white', 'brown'];
+const particle_colors = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
 class Particle {
     constructor(mass = 1, radius = 5, position = new Vector2D(), velocity = new Vector2D(), acceleration = new Vector2D(), oscillation = new Vector2D(), color = 'black', trajectory = false) {
         Particle.instance_count++;

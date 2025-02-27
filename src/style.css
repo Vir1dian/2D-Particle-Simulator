@@ -84,14 +84,14 @@
 .control_bar button:not([disabled]):hover {
   background-color: rgba(0, 0, 0, 0.075);
 }
-#setting_logos {
+#setting_icons {
   padding-left: 12px;
 }
-#setting_logos button {
+#setting_icons button {
   margin-right: 10px;
   position: relative;
 }
-#setting_logos button .tooltip_text {
+#setting_icons button .tooltip_text {
   visibility: hidden;
   width: 120px;
   background-color: #343536;
@@ -112,7 +112,7 @@
   transition: opacity 0.3s;
 }
 /* Show the tooltip text when you mouse over the tooltip container */
-#setting_logos button .tooltip_text::after {
+#setting_icons button .tooltip_text::after {
   content: "";
   position: absolute;
   bottom: 100%;
@@ -123,12 +123,16 @@
   border-top: transparent;
   border-color: #343536 transparent;
 }
-#setting_logos button:hover .tooltip_text {
+#setting_icons button:hover .tooltip_text {
   visibility: visible;
   opacity: 1;
 }
-#setting_logos span {
+#setting_icons span {
   font-size: 32px;
+}
+.icon {
+  display: inline-block; /* Ensure it rotates properly */
+  transition: transform 0.5s ease-in-out; /* Smooth animation */
 }
 #control_timer table {
   border-spacing: 0;

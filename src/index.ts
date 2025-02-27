@@ -2,6 +2,40 @@ showControlOption();
 loadContainerElement(container);
 simulationSettingsElementFunctions.loadPreset('empty');
 
+const control_items: {
+  name: string,
+  isOpen: boolean,
+  toggleAnimation: string
+}[] = [
+  {
+    name: "ui",
+    isOpen: false,
+    toggleAnimation: "rotate" // 180deg
+  },
+  {
+    name: "sim",
+    isOpen: false,
+    toggleAnimation: "rotateY" // 180deg
+  },
+  {
+    name: "par",
+    isOpen: false,
+    toggleAnimation: "rotate" // 180deg
+  }
+];
+control_items.forEach(item => {
+  const control_items_element: HTMLSpanElement = document.getElementById("setting_icons") as HTMLSpanElement;
+  (control_items_element.querySelector(`#control_button_${item.name}setup`) as HTMLButtonElement).addEventListener('click', () => {
+    openControlItem(item.name);
+  });
+})
+
+function openControlItem(test:string) {
+  console.log(test);
+}
+
+
+// TO BE OVERHAULED
 function showControlOption() {
   const control_presets : HTMLElement = document.getElementById('control_presets') as HTMLElement;
   const control_simulation : HTMLElement = document.getElementById('control_simulation') as HTMLElement;

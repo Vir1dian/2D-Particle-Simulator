@@ -139,7 +139,7 @@ const presets: Record<string, SimulationSettings> = {
       oscillation: new Vector2D(),
       radius: 5,
       mass: 1,
-      color: 'white',
+      color: 'blue',
       trajectory: false
     }],
     environment: {
