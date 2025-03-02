@@ -9,7 +9,7 @@ const control_items_data = [
     {
         name: "ui",
         isOpen: false,
-        toggleAnimation: "rotate" // 180deg
+        toggleAnimation: "rotateZ" // 180deg
     },
     {
         name: "sim",
@@ -19,7 +19,7 @@ const control_items_data = [
     {
         name: "par",
         isOpen: false,
-        toggleAnimation: "rotate" // 180deg
+        toggleAnimation: "rotateZ" // 180deg
     }
 ];
 control_items_data.forEach(item => {
@@ -27,20 +27,36 @@ control_items_data.forEach(item => {
         openControlItem(item);
     });
 });
+// Handles animation of UI icons when clicked
+const spinHandlers = new Map();
+function handleIconSpin(icon, transform = "rotate") {
+    let spin = 0;
+    console.log(spin);
+    return function (reverse) {
+        spin += reverse ? -180 : 180;
+        if (icon)
+            icon.style.transform = `${transform}(${spin}deg)`;
+        console.log(spin);
+    };
+}
 function openControlItem(item) {
     const control_item_icon = document.querySelector(`#control_button_${item.name}setup .icon`);
-    control_items_data.forEach((item, index) => {
-        item.isOpen = false;
-        control_item_icons[index].style.transform = `${item.toggleAnimation}(0deg)`;
+    if (!control_item_icon) {
+        console.warn(`Icon for ${item.name} not found.`);
+        return;
+    }
+    control_items_data.forEach((elem, index) => {
+        if (elem != item)
+            elem.isOpen = false;
         control_item_elements[index].style.display = "none";
     });
+    if (!spinHandlers.has(item.name)) {
+        spinHandlers.set(item.name, handleIconSpin(control_item_icon, item.toggleAnimation));
+    }
     // functionality of showControlOption moved here
-    if (!item.isOpen) {
-        control_item_icon.style.transform = `${item.toggleAnimation}(180deg)`;
-    }
-    else {
-        control_item_icon.style.transform = `${item.toggleAnimation}(0deg)`;
-    }
+    const spinHandler = spinHandlers.get(item.name);
+    spinHandler(item.isOpen);
+    console.log(item.isOpen);
     item.isOpen = !item.isOpen;
 }
 // TO BE OVERHAULED
