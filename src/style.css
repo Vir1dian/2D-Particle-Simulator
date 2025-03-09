@@ -169,13 +169,13 @@ input:not(input[type="checkbox"]), textarea {
 
 .container_element {
   margin-inline: auto;
-  background-color: #eeeeee;
+  background-color: white;
   position: relative;
-  background-size: 20px 20px;
+  background-size: 19.5px 19.5px;  /* Make this dynamic in UI settings */
   background-image:
     linear-gradient(to right, lightgray 1px, transparent 1px),
     linear-gradient(to bottom, lightgray 1px, transparent 1px);
-
+  border: solid 1px #343536;
   z-index: 1;
 }
 .particle_element {
@@ -207,14 +207,41 @@ input:not(input[type="checkbox"]), textarea {
 }
 .control_item {
   display: none;
-  padding: 10px;
+  padding: 16px;
 }
 .control_item header {
   font-size: 24px;
-  display: block;
+  margin-bottom: 20px;
 }
-#control_simsetup {
-  display: block;
+.control_item div {
+  margin-bottom: 20px;
+}
+#simsetup_global_variables_wrapper {
+  display: flex;
+  justify-content: center;
+  background-color: #eeeeee;
+  padding: 16px;
+  border-radius: 4px;
+}
+#simsetup_global_variables_wrapper table td {
+  text-align: center;
+  width: 150px;
+  padding: 4px;
+}
+#parsetup_groups_wrapper {
+  padding: 0;
+}
+.parsetup_group {
+  padding: 10px;
+  background-color: #eeeeee;
+  border-radius: 4px;
+}
+.parsetup_group span {
+  font-size: 18px;
+}
+.parsetup_group ul {
+  margin-top: 16px;
+  list-style: none;
 }
 
 #control_presets {

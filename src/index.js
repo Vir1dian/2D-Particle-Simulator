@@ -67,57 +67,11 @@ const setupElementRenderers = {
     },
     particle: {}
 };
-// TO BE OVERHAULED
-function showControlOption() {
-    const control_presets = document.getElementById('control_presets');
-    const control_simulation = document.getElementById('control_simulation');
-    const control_timer = document.getElementById('control_timer');
-    const control_particles = document.getElementById('control_particles');
-    const selected = document.querySelector('#control_display_options');
-    switch (selected.value) {
-        case "all":
-            control_presets.style.display = "flex";
-            control_simulation.style.display = "flex";
-            control_timer.style.display = "flex";
-            control_particles.style.display = "flex";
-            break;
-        case "presets":
-            control_presets.style.display = "flex";
-            control_simulation.style.display = "none";
-            control_timer.style.display = "none";
-            control_particles.style.display = "none";
-            break;
-        case "simulation":
-            control_presets.style.display = "none";
-            control_simulation.style.display = "flex";
-            control_timer.style.display = "none";
-            control_particles.style.display = "none";
-            break;
-        case "animation":
-            control_presets.style.display = "none";
-            control_simulation.style.display = "none";
-            control_timer.style.display = "flex";
-            control_particles.style.display = "none";
-            break;
-        case "particles":
-            control_presets.style.display = "none";
-            control_simulation.style.display = "none";
-            control_timer.style.display = "none";
-            control_particles.style.display = "flex";
-            break;
-        default:
-            control_presets.style.display = "none";
-            control_simulation.style.display = "none";
-            control_timer.style.display = "none";
-            control_particles.style.display = "none";
-            console.log("No option selected.");
-    }
-}
 // Sets the initial state of all elements
 function loadAll() {
-    showControlOption(); //old version, to be removed soon
     loadContainerElement(container);
     simulationSettingsElementFunctions.loadPreset('empty');
+    openControlItem(control_items_data[1]);
     // Simulation Presets
     setupElementRenderers.simulation.loadPresets();
     const simsetup_presets_button = document.getElementById("simsetup_presets_button");
