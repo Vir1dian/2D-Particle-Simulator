@@ -31,12 +31,10 @@ control_items_data.forEach(item => {
 const spinHandlers = new Map();
 function handleIconSpin(icon, transform = "rotate") {
     let spin = 0;
-    console.log(spin);
     return function (reverse) {
         spin += reverse ? -180 : 180;
         if (icon)
             icon.style.transform = `${transform}(${spin}deg)`;
-        console.log(spin);
     };
 }
 function openControlItem(item) {
@@ -48,15 +46,13 @@ function openControlItem(item) {
     control_items_data.forEach((elem, index) => {
         if (elem != item)
             elem.isOpen = false;
-        control_item_elements[index].style.display = "none";
+        control_item_elements[index].style.display = (elem == item) ? "flex" : "none";
     });
     if (!spinHandlers.has(item.name)) {
         spinHandlers.set(item.name, handleIconSpin(control_item_icon, item.toggleAnimation));
     }
-    // functionality of showControlOption moved here
     const spinHandler = spinHandlers.get(item.name);
     spinHandler(item.isOpen);
-    console.log(item.isOpen);
     item.isOpen = !item.isOpen;
 }
 // TO BE OVERHAULED

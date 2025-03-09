@@ -195,7 +195,7 @@ input:not(input[type="checkbox"]), textarea {
   z-index: 2;
 }
 
-.control_items {
+.control_items_wrapper {
   margin-left: 20px;
   border: 2px solid darkslategray;
   height: 100%;
@@ -305,4 +305,8 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+#to_be_removed {
+  display: none;
 }

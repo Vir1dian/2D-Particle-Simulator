@@ -35,7 +35,7 @@
 
       <div class="wrapper">
         <div class="wrapper_simulation_controls">
-          <div class="wrapper_controls">
+          <nav class="wrapper_controls">
             <div class="control_bar">
               <span class="control_bar_item" id="setting_icons">
                 <button id="control_button_uisetup">
@@ -75,11 +75,25 @@
                 <!-- Time speed slider -->
               </span>
             </div>
-          </div>
+          </nav>
           <div class="simulation_wrapper"></div>
         </div>
+        <!-- New control_items setup -->
+        <section class="control_items_wrapper">
+          
+          <article class="control_item" id="control_uisetup">
+            <header>Visual Settings</header>
+          </article>
+          <article class="control_item" id="control_simsetup">
+            <header>Simulation Setup</header>
+          </article>
+          <article class="control_item" id="control_parsetup">
+            <header>Particle Interface</header>
+          </article>
+        </section>
 
-        <div class="control_items">
+        <!-- To be removed -->
+        <div class="control_items_wrapper" id="to_be_removed">
           <div id="control_item_display">
             <label for="control_display_options">Settings:</label>
             <select id="control_display_options" onchange="showControlOption()">
