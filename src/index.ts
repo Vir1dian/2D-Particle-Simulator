@@ -1,6 +1,4 @@
-showControlOption();
-loadContainerElement(container);
-simulationSettingsElementFunctions.loadPreset('empty');
+document.addEventListener("DOMContentLoaded", loadAll);
 
 interface control_item_data {
   name: string,
@@ -56,8 +54,8 @@ function openControlItem(item:control_item_data) {
 
   control_items_data.forEach((elem, index) => {
     if (elem != item) elem.isOpen = false;
-    control_item_elements[index].style.display = (elem == item) ? "flex" : "none";
-  })
+    control_item_elements[index].style.display = (elem == item && !item.isOpen) ? "block" : "none";
+  });
 
   if (!spinHandlers.has(item.name)) {
     spinHandlers.set(item.name, handleIconSpin(control_item_icon, item.toggleAnimation));
@@ -68,6 +66,24 @@ function openControlItem(item:control_item_data) {
   item.isOpen = !item.isOpen;
 }
 
+const setupElementRenderers = {
+  ui : {
+
+  },
+  simulation : {
+    loadPresets() {
+      const preset_datalist_element : HTMLDataListElement = document.getElementById("simsetup_presets") as HTMLDataListElement;
+      Object.keys(presets).forEach((preset_name: string) => {
+        const option_element : HTMLOptionElement = document.createElement('option');
+        option_element.value = preset_name;
+        preset_datalist_element.appendChild(option_element);
+      });
+    },
+  },
+  particle : {
+
+  }
+}
 
 // TO BE OVERHAULED
 function showControlOption() {
@@ -115,4 +131,19 @@ function showControlOption() {
       control_particles.style.display = "none";
       console.log("No option selected.")
   }
+}
+
+// Sets the initial state of all elements
+function loadAll() {
+  showControlOption();  //old version, to be removed soon
+  loadContainerElement(container);
+  simulationSettingsElementFunctions.loadPreset('empty');
+
+  // Simulation Presets
+  setupElementRenderers.simulation.loadPresets();
+  const simsetup_presets_button : HTMLButtonElement = document.getElementById("simsetup_presets_button") as HTMLButtonElement;
+  const simsetup_presets_input : HTMLInputElement = document.getElementById("simsetup_presets_input") as HTMLInputElement;
+  simsetup_presets_button.addEventListener("click", () => simulationSettingsElementFunctions.loadPreset(simsetup_presets_input.value));
+
+
 }

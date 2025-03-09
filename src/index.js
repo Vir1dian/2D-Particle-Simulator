@@ -1,7 +1,5 @@
 "use strict";
-showControlOption();
-loadContainerElement(container);
-simulationSettingsElementFunctions.loadPreset('empty');
+document.addEventListener("DOMContentLoaded", loadAll);
 const control_bar_items_element = document.getElementById("setting_icons"); // not including the timer
 const control_item_icons = control_bar_items_element.querySelectorAll(`.icon`);
 const control_item_elements = document.querySelectorAll(".control_item");
@@ -46,7 +44,7 @@ function openControlItem(item) {
     control_items_data.forEach((elem, index) => {
         if (elem != item)
             elem.isOpen = false;
-        control_item_elements[index].style.display = (elem == item) ? "flex" : "none";
+        control_item_elements[index].style.display = (elem == item && !item.isOpen) ? "block" : "none";
     });
     if (!spinHandlers.has(item.name)) {
         spinHandlers.set(item.name, handleIconSpin(control_item_icon, item.toggleAnimation));
@@ -55,6 +53,20 @@ function openControlItem(item) {
     spinHandler(item.isOpen);
     item.isOpen = !item.isOpen;
 }
+const setupElementRenderers = {
+    ui: {},
+    simulation: {
+        loadPresets() {
+            const preset_datalist_element = document.getElementById("simsetup_presets");
+            Object.keys(presets).forEach((preset_name) => {
+                const option_element = document.createElement('option');
+                option_element.value = preset_name;
+                preset_datalist_element.appendChild(option_element);
+            });
+        },
+    },
+    particle: {}
+};
 // TO BE OVERHAULED
 function showControlOption() {
     const control_presets = document.getElementById('control_presets');
@@ -100,4 +112,15 @@ function showControlOption() {
             control_particles.style.display = "none";
             console.log("No option selected.");
     }
+}
+// Sets the initial state of all elements
+function loadAll() {
+    showControlOption(); //old version, to be removed soon
+    loadContainerElement(container);
+    simulationSettingsElementFunctions.loadPreset('empty');
+    // Simulation Presets
+    setupElementRenderers.simulation.loadPresets();
+    const simsetup_presets_button = document.getElementById("simsetup_presets_button");
+    const simsetup_presets_input = document.getElementById("simsetup_presets_input");
+    simsetup_presets_button.addEventListener("click", () => simulationSettingsElementFunctions.loadPreset(simsetup_presets_input.value));
 }

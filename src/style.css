@@ -207,8 +207,14 @@ input:not(input[type="checkbox"]), textarea {
 }
 .control_item {
   display: none;
-  justify-content: center;
   padding: 10px;
+}
+.control_item header {
+  font-size: 24px;
+  display: block;
+}
+#control_simsetup {
+  display: block;
 }
 
 #control_presets {

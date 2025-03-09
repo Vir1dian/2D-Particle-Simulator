@@ -78,14 +78,22 @@
           </nav>
           <div class="simulation_wrapper"></div>
         </div>
+
         <!-- New control_items setup -->
         <section class="control_items_wrapper">
-          
           <article class="control_item" id="control_uisetup">
             <header>Visual Settings</header>
           </article>
           <article class="control_item" id="control_simsetup">
             <header>Simulation Setup</header>
+            <div id="simsetup_presets_wrapper">
+              <input list="simsetup_presets" id="simsetup_presets_input">
+              <datalist id="simsetup_presets">
+                <!-- Generated from presets list by JS -->
+              </datalist>  
+              <button id="simsetup_presets_button">Apply Preset</button>
+            </div>
+            
           </article>
           <article class="control_item" id="control_parsetup">
             <header>Particle Interface</header>

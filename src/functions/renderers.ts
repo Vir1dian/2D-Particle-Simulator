@@ -28,6 +28,7 @@ function loadContainerElement(container: BoxSpace) {
   wrapper?.appendChild(container_element);
 }
 
+// TO BE REPLACED
 const simulationSettingsElementFunctions = {
   /**
    * Updates the input fields of simulation settings UI to reflect actual values
@@ -303,6 +304,7 @@ const simulationSettingsElementFunctions = {
   }
 }
 
+// TO BE REPLACED
 const particleElementFunctions = {
   loadParticle(particle: Particle, container: BoxSpace) {  
     // Load particle element in the simulation space
