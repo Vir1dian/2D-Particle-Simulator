@@ -90,7 +90,7 @@ function loadAll() {
   loadContainerElement(container);
   simulationSettingsElementFunctions.loadPreset('empty');
 
-  openControlItem(control_items_data[1]);
+  openControlItem(control_items_data[2]);  // Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
 
   // Simulation Presets
   setupElementRenderers.simulation.loadPresets();

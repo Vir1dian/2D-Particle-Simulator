@@ -46,16 +46,15 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
-  overflow: auto;
+  /* overflow: auto; */
   gap: 10px;
 }
-
 .wrapper {
   margin-top: 25px;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
+
 .wrapper_controls {
   background-color: gray;
   background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
@@ -209,11 +208,11 @@ input:not(input[type="checkbox"]), textarea {
   display: none;
   padding: 16px;
 }
-.control_item header {
+.control_item > header {
   font-size: 24px;
   margin-bottom: 20px;
 }
-.control_item div {
+.control_item > div {
   margin-bottom: 20px;
 }
 #simsetup_global_variables_wrapper {
@@ -230,14 +229,104 @@ input:not(input[type="checkbox"]), textarea {
 }
 #parsetup_groups_wrapper {
   padding: 0;
+  height: 420px;
+  overflow-y: scroll;
+  /* mask-image: linear-gradient(180deg, #000 60%, transparent); */
 }
+/* Custom scroll bar styling */
+#parsetup_groups_wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+#parsetup_groups_wrapper::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+#parsetup_groups_wrapper::-webkit-scrollbar-thumb {
+  background-color: rgb(152, 179, 179);
+  border-radius: 10px;
+}
+#parsetup_groups_wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(117, 145, 145);
+}
+
 .parsetup_group {
+  margin-right: 8px;
   padding: 10px;
   background-color: #eeeeee;
   border-radius: 4px;
 }
-.parsetup_group span {
+.parsetup_group header {
+  display: flex;
+  justify-content: space-between;
+}
+.parsetup_group_title_wrapper {
+  display: inline-flex;
+  width: 250px;
+  padding: 6px;
+}
+.parsetup_group_icon {
+  display: inline-block;
+  background-color: #2c3e50;
+  border-radius: 10px;
+  height: 20px;
+  width: 20px;
+  margin-right: 12px;
+}
+.parsetup_group_title {
+  display: inline-block;
+  width: 200px;
   font-size: 18px;
+  font-weight: bold;
+}
+.parsetup_group_buttons_wrapper {
+  display: inline-block;
+  width: auto;
+}
+.parsetup_group button {
+  position: relative;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  padding: 4px 4px 2px 4px;
+}
+.parsetup_group button:not([disabled]):hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+.parsetup_group button .tooltip_text {
+  visibility: hidden;
+  width: 120px;
+  background-color: #343536;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 999;
+  top: 48px;
+  left: -40px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.parsetup_group button .tooltip_text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-top: transparent;
+  border-color: #343536 transparent;
+}
+.parsetup_group button:hover .tooltip_text {
+  visibility: visible;
+  opacity: 1;
 }
 .parsetup_group ul {
   margin-top: 16px;
@@ -343,3 +432,4 @@ input::-webkit-inner-spin-button {
 #to_be_removed {
   display: none;
 }
+
