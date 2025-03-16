@@ -39,28 +39,6 @@ class Renderer {
   }
 }
 
-class TableRenderer extends Renderer {
-  #rows: number;
-  #cols: number;
-  constructor(rows: number = 1, cols: number = 1) {
-    const table: HTMLTableElement = document.createElement('table');
-    for (let i = 0; i < rows; i++) {
-      const table_row: HTMLTableRowElement = document.createElement('tr');
-      for (let j = 0; j < cols; j++) {
-        const table_cell: HTMLTableCellElement = document.createElement('td');
-        table_row.appendChild(table_cell);
-      }
-      table.appendChild(table_row);
-    }
-    super(table);
-    this.#rows = rows;
-    this.#cols = cols;
-  }
-  getElement(): HTMLTableElement {
-    return super.getElement() as HTMLTableElement;
-  }
-}
-
 class InputRenderer extends Renderer {
   #value: string | number | boolean;
   #type: 'text' | 'number' | 'checkbox';
@@ -131,7 +109,88 @@ class ButtonRenderer extends Renderer {
 }
 
 class DialogRenderer extends Renderer {
+  #open_button: ButtonRenderer;
+  #close_button: ButtonRenderer;
+  constructor(id: string) {
+    const dialog: HTMLDialogElement = document.createElement('dialog');
+    dialog.id = id;
+    super(dialog, '', id);
+    const open_button: ButtonRenderer = new ButtonRenderer(this.openDialog);
+    const close_button: ButtonRenderer = new ButtonRenderer(this.closeDialog);
+    this.#open_button = open_button;
+    this.#close_button = close_button;
+  }
+  getElement(): HTMLDialogElement {
+    return super.getElement() as HTMLDialogElement;
+  }
+  openDialog() {
+    this.getElement().showModal();
+  }
+  closeDialog() {
+    this.getElement().close();
+  }
+}
 
+class TableCellRenderer extends Renderer {
+  #row: number;
+  #col: number;
+  
+  constructor(row: number, col: number) {
+    const cell: HTMLTableCellElement = document.createElement('td');
+    super(cell);
+    this.#row = row;
+    this.#col = col;
+  }
+  getRow(): number {
+    return this.#row;
+  }
+  getCol(): number {
+    return this.#col;
+  }
+  setContent(content: string | HTMLElement): void {
+    const cell = this.getElement();
+    cell.innerHTML = '';
+    if (typeof content === 'string') {
+      cell.textContent = content;
+    } else {
+      cell.appendChild(content);
+    }
+  }
+}
+
+class TableRenderer extends Renderer {
+  #rows: number;
+  #cols: number;
+  #cells: TableCellRenderer[][];
+  constructor(rows: number = 1, cols: number = 1) {
+    if (rows < 1 || cols < 1) {
+      throw new Error('Invalid table dimensions');
+    }
+    const table: HTMLTableElement = document.createElement('table');
+    super(table);
+    this.#rows = rows;
+    this.#cols = cols;
+    this.#cells = [];
+    for (let i = 0; i < rows; i++) {
+      const table_row: HTMLTableRowElement = document.createElement('tr');
+      this.#cells[i] = [];
+      for (let j = 0; j < cols; j++) {
+        const cell_renderer: TableCellRenderer = new TableCellRenderer(i, j);
+        cell_renderer.setParent(table_row);
+        this.#cells[i][j] = cell_renderer;
+      }
+      table.appendChild(table_row);
+    }
+  }
+  getCell(row: number, col: number): TableCellRenderer {
+    if (row >= this.#rows || row < 0 || col >= this.#cols || col < 0) {
+      throw new Error(`Invalid cell at (${row}, ${col})`);
+    }
+    return this.#cells[row][col];
+  }
+  getElement(): HTMLTableElement {
+    return super.getElement() as HTMLTableElement;
+  }
 }
 
 class TooltipRenderer extends Renderer {
@@ -140,21 +199,11 @@ class TooltipRenderer extends Renderer {
 
 // Other Renderer classes soon
 
-
-
-// function setAttributes(element: HTMLElement, attributes: string[]) {
-//   for (let key in attributes) {
-//       if (attributes.hasOwnProperty(key)) {
-//           element.setAttribute(key, attributes[key]);
-//       }
-//   }
-// }
-
-function openModal(id_name: string, open: boolean) {
+function openModal(id_name: string, open: boolean): void {
   const viewModal: HTMLDialogElement = document.querySelector(id_name) as HTMLDialogElement;
   if (open) {
     viewModal.showModal();
-    pauseSimulation();
+    pauseSimulation();  // Won't matter for the new dialog, we actually want the simulation to keep running while we have it open here
     console.log()
   } else {
     viewModal.close();

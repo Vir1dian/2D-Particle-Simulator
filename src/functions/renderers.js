@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Renderer_element, _Renderer_classname, _Renderer_id, _TableRenderer_rows, _TableRenderer_cols, _InputRenderer_value, _InputRenderer_type, _InputRenderer_is_readonly, _ButtonRenderer_callback, _ButtonRenderer_event;
+var _Renderer_element, _Renderer_classname, _Renderer_id, _InputRenderer_value, _InputRenderer_type, _InputRenderer_is_readonly, _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _TableCellRenderer_row, _TableCellRenderer_col, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells;
 class Renderer {
     constructor(element, classname = '', id = '') {
         _Renderer_element.set(this, void 0);
@@ -55,28 +55,6 @@ class Renderer {
     }
 }
 _Renderer_element = new WeakMap(), _Renderer_classname = new WeakMap(), _Renderer_id = new WeakMap();
-class TableRenderer extends Renderer {
-    constructor(rows = 1, cols = 1) {
-        const table = document.createElement('table');
-        for (let i = 0; i < rows; i++) {
-            const table_row = document.createElement('tr');
-            for (let j = 0; j < cols; j++) {
-                const table_cell = document.createElement('td');
-                table_row.appendChild(table_cell);
-            }
-            table.appendChild(table_row);
-        }
-        super(table);
-        _TableRenderer_rows.set(this, void 0);
-        _TableRenderer_cols.set(this, void 0);
-        __classPrivateFieldSet(this, _TableRenderer_rows, rows, "f");
-        __classPrivateFieldSet(this, _TableRenderer_cols, cols, "f");
-    }
-    getElement() {
-        return super.getElement();
-    }
-}
-_TableRenderer_rows = new WeakMap(), _TableRenderer_cols = new WeakMap();
 class InputRenderer extends Renderer {
     constructor(value, type, is_readonly = false) {
         const input = document.createElement('input');
@@ -149,22 +127,98 @@ class ButtonRenderer extends Renderer {
 }
 _ButtonRenderer_callback = new WeakMap(), _ButtonRenderer_event = new WeakMap();
 class DialogRenderer extends Renderer {
+    constructor(id) {
+        const dialog = document.createElement('dialog');
+        dialog.id = id;
+        super(dialog, '', id);
+        _DialogRenderer_open_button.set(this, void 0);
+        _DialogRenderer_close_button.set(this, void 0);
+        const open_button = new ButtonRenderer(this.openDialog);
+        const close_button = new ButtonRenderer(this.closeDialog);
+        __classPrivateFieldSet(this, _DialogRenderer_open_button, open_button, "f");
+        __classPrivateFieldSet(this, _DialogRenderer_close_button, close_button, "f");
+    }
+    getElement() {
+        return super.getElement();
+    }
+    openDialog() {
+        this.getElement().showModal();
+    }
+    closeDialog() {
+        this.getElement().close();
+    }
 }
+_DialogRenderer_open_button = new WeakMap(), _DialogRenderer_close_button = new WeakMap();
+class TableCellRenderer extends Renderer {
+    constructor(row, col) {
+        const cell = document.createElement('td');
+        super(cell);
+        _TableCellRenderer_row.set(this, void 0);
+        _TableCellRenderer_col.set(this, void 0);
+        __classPrivateFieldSet(this, _TableCellRenderer_row, row, "f");
+        __classPrivateFieldSet(this, _TableCellRenderer_col, col, "f");
+    }
+    getRow() {
+        return __classPrivateFieldGet(this, _TableCellRenderer_row, "f");
+    }
+    getCol() {
+        return __classPrivateFieldGet(this, _TableCellRenderer_col, "f");
+    }
+    setContent(content) {
+        const cell = this.getElement();
+        cell.innerHTML = '';
+        if (typeof content === 'string') {
+            cell.textContent = content;
+        }
+        else {
+            cell.appendChild(content);
+        }
+    }
+}
+_TableCellRenderer_row = new WeakMap(), _TableCellRenderer_col = new WeakMap();
+class TableRenderer extends Renderer {
+    constructor(rows = 1, cols = 1) {
+        if (rows < 1 || cols < 1) {
+            throw new Error('Invalid table dimensions');
+        }
+        const table = document.createElement('table');
+        super(table);
+        _TableRenderer_rows.set(this, void 0);
+        _TableRenderer_cols.set(this, void 0);
+        _TableRenderer_cells.set(this, void 0);
+        __classPrivateFieldSet(this, _TableRenderer_rows, rows, "f");
+        __classPrivateFieldSet(this, _TableRenderer_cols, cols, "f");
+        __classPrivateFieldSet(this, _TableRenderer_cells, [], "f");
+        for (let i = 0; i < rows; i++) {
+            const table_row = document.createElement('tr');
+            __classPrivateFieldGet(this, _TableRenderer_cells, "f")[i] = [];
+            for (let j = 0; j < cols; j++) {
+                const cell_renderer = new TableCellRenderer(i, j);
+                cell_renderer.setParent(table_row);
+                __classPrivateFieldGet(this, _TableRenderer_cells, "f")[i][j] = cell_renderer;
+            }
+            table.appendChild(table_row);
+        }
+    }
+    getCell(row, col) {
+        if (row >= __classPrivateFieldGet(this, _TableRenderer_rows, "f") || row < 0 || col >= __classPrivateFieldGet(this, _TableRenderer_cols, "f") || col < 0) {
+            throw new Error(`Invalid cell at (${row}, ${col})`);
+        }
+        return __classPrivateFieldGet(this, _TableRenderer_cells, "f")[row][col];
+    }
+    getElement() {
+        return super.getElement();
+    }
+}
+_TableRenderer_rows = new WeakMap(), _TableRenderer_cols = new WeakMap(), _TableRenderer_cells = new WeakMap();
 class TooltipRenderer extends Renderer {
 }
 // Other Renderer classes soon
-// function setAttributes(element: HTMLElement, attributes: string[]) {
-//   for (let key in attributes) {
-//       if (attributes.hasOwnProperty(key)) {
-//           element.setAttribute(key, attributes[key]);
-//       }
-//   }
-// }
 function openModal(id_name, open) {
     const viewModal = document.querySelector(id_name);
     if (open) {
         viewModal.showModal();
-        pauseSimulation();
+        pauseSimulation(); // Won't matter for the new dialog, we actually want the simulation to keep running while we have it open here
         console.log();
     }
     else {
