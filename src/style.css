@@ -90,43 +90,7 @@
   margin-right: 10px;
   position: relative;
 }
-#setting_icons button .tooltip_text {
-  visibility: hidden;
-  width: 120px;
-  background-color: #343536;
-  color: #fff;
-  font-size: 14px;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-
-  /* Position the tooltip text */
-  position: absolute;
-  z-index: 999;
-  top: 48px;
-  left: -40px;
-
-  /* Fade in tooltip */
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-/* Show the tooltip text when you mouse over the tooltip container */
-#setting_icons button .tooltip_text::after {
-  content: "";
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-top: transparent;
-  border-color: #343536 transparent;
-}
-#setting_icons button:hover .tooltip_text {
-  visibility: visible;
-  opacity: 1;
-}
-#setting_icons span {
+#setting_icons .icon {
   font-size: 32px;
 }
 .icon {
@@ -171,6 +135,42 @@ button {
 /* button:not([disabled]):hover {
   background-color: rgb(104, 139, 151);
 } */
+button .tooltip_text {
+  visibility: hidden;
+  width: 120px;
+  background-color: #343536;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 999;
+  top: 48px;
+  left: -40px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+button .tooltip_text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-top: transparent;
+  border-color: #343536 transparent;
+}
+button:hover .tooltip_text {
+  visibility: visible;
+  opacity: 1;
+}
 
 .container_element {
   margin-inline: auto;
@@ -240,9 +240,9 @@ button {
   padding: 8px;
   border: none;
   border-radius: 4px;
-  background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
+  background-image: linear-gradient(rgb(221, 234, 238), rgb(171, 180, 180));
   background-blend-mode: overlay;
-  background-color: rgb(24, 80, 102);
+  background-color: rgb(29, 100, 128);
   font-size: 16px;
   color: #eeeeee;
   cursor: pointer;
@@ -251,7 +251,7 @@ button {
 #parsetup_add_group:hover {
   background-image: 
     linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)),
-    linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
+    linear-gradient(rgb(221, 234, 238), rgb(171, 180, 180));
   background-blend-mode: overlay;
 }
 #parsetup_groups_wrapper {
@@ -278,7 +278,10 @@ button {
 .parsetup_group {
   margin-right: 8px;
   padding: 10px;
-  background-color: #eeeeee;
+  background-color: gray;
+  background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
+  background-blend-mode: overlay;
+  border: solid 1px lightgray;
   border-radius: 4px;
 }
 .parsetup_group header {
@@ -320,44 +323,50 @@ button {
 .parsetup_group button:not([disabled]):hover {
   background-color: rgba(0, 0, 0, 0.075);
 }
-.parsetup_group button .tooltip_text {
-  visibility: hidden;
-  width: 120px;
-  background-color: #343536;
-  color: #fff;
-  font-size: 14px;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-
-  /* Position the tooltip text */
-  position: absolute;
-  z-index: 999;
-  top: 48px;
-  left: -40px;
-
-  /* Fade in tooltip */
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.parsetup_group button .tooltip_text::after {
-  content: "";
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-top: transparent;
-  border-color: #343536 transparent;
-}
-.parsetup_group button:hover .tooltip_text {
-  visibility: visible;
-  opacity: 1;
-}
 .parsetup_group ul {
+  max-height: 160px;
+  overflow-y: scroll;
   margin-top: 16px;
+  padding: 4px;
   list-style: none;
+  background-color: white;
+  border: solid 1px lightgray;
+  border-radius: 4px;
+}
+.parsetup_par {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px;
+  border-radius: 4px;
+  background-color: #525355;
+  background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
+  background-blend-mode: overlay;
+  border: solid 1px lightgray;
+}
+.parsetup_par:not(:last-child) {
+  margin-bottom: 4px;
+}
+.parsetup_par_title_wrapper {
+  display: inline-flex;
+  align-items: center;
+  width: 200px;
+  padding: 6px;
+}
+.parsetup_par_title {
+  display: inline-block;
+}
+.parsetup_par_icon {
+  display: inline-block;
+  background-color: #ffca67;
+  border-radius: 10px;
+  height: 20px;
+  width: 20px;
+  margin-right: 12px;
+}
+.parsetup_par_buttons_wrapper {
+  display: inline-block;
+  width: auto;
 }
 
 #control_presets {

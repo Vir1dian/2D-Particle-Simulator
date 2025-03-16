@@ -65,16 +65,27 @@ const setupElementRenderers = {
             });
         },
     },
-    particle: {}
+    particle: {
+        loadDraggableGroups() {
+            const pargroup_elements = document.querySelectorAll('.parsetup_group');
+        },
+        loadDraggableListedParticles() {
+            const pargroup_element = document.querySelectorAll('.parsetup_group');
+            const pargroup_par_elements = document.querySelectorAll('');
+        }
+    }
 };
 // Sets the initial state of all elements
 function loadAll() {
     loadContainerElement(container);
-    simulationSettingsElementFunctions.loadPreset('empty');
+    simulationSettingsElementFunctionsOld.loadPreset('empty');
     openControlItem(control_items_data[2]); // Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
     // Simulation Presets
     setupElementRenderers.simulation.loadPresets();
     const simsetup_presets_button = document.getElementById("simsetup_presets_button");
     const simsetup_presets_input = document.getElementById("simsetup_presets_input");
-    simsetup_presets_button.addEventListener("click", () => simulationSettingsElementFunctions.loadPreset(simsetup_presets_input.value));
+    simsetup_presets_button.addEventListener("click", () => simulationSettingsElementFunctionsOld.loadPreset(simsetup_presets_input.value));
+    // Particle Interface
+    setupElementRenderers.particle.loadDraggableGroups();
+    setupElementRenderers.particle.loadDraggableListedParticles();
 }

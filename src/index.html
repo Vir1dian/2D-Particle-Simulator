@@ -182,26 +182,38 @@
             </div>
             <div id="parsetup_groups_wrapper">
               <!-- Loaded and updated by JS -->
-              <article class="parsetup_group">
+              <article class="parsetup_group" id="parsetup_group_idXX">
                 <header>
                   <div class="parsetup_group_title_wrapper">
-                    <div class="parsetup_group_icon" id="pargroup_icon_idXX"></div>
-                    <span class="parsetup_group_title" id="pargroup_title_idXX">Placeholder Group Title</span>
+                    <span class="parsetup_group_icon"></span>
+                    <span class="parsetup_group_title">Placeholder Group Title</span>
                   </div>
                   <div class="parsetup_group_buttons_wrapper">
-                    <button id="pargroup_view_idXX">
+                    <button>
                       <span class="material-symbols-sharp icon">keyboard_arrow_down</span>
                       <span class="tooltip_text">Expand for details</span>
                     </button>
-                    <button class="drag_icon" id="pargroup_drag_idXX">
+                    <button class="drag_icon">
                       <span class="material-symbols-sharp icon">drag_handle</span>
                     </button>
                   </div>
                 </header>
                 <ul>
-                  <li draggable="true">A: (number/name) (appearance) (view icon) (draggable icon)</li>
-                  <li draggable="true">B: (number/name) (appearance) (view icon) (draggable icon)</li>
-                  <li draggable="true">C: (number/name) (appearance) (view icon) (draggable icon)</li>
+                  <!-- Loaded and updated by JS -->
+                  <li class="parsetup_par" id="parsetup_par_idXX" draggable="true">
+                    <div class="parsetup_par_title_wrapper">
+                      <span class="parsetup_par_icon"></span>
+                      <span class="parsetup_par_title">XX1</span>
+                    </div>
+                    <div class="parsetup_par_buttons_wrapper">
+                      <button>
+                        <span class="material-symbols-sharp icon">visibility</span>
+                      </button>
+                      <button class="drag_icon">
+                        <span class="material-symbols-sharp icon">drag_handle</span>
+                      </button>
+                    </div>
+                  </li>
                 </ul>
               </article>
             </div>
@@ -224,15 +236,15 @@
           <div class="control_item" id="control_presets">
             <div>Presets</div>
             <div>
-              <button onclick="simulationSettingsElementFunctions.loadPreset('sandbox')">Sandbox</button>
-              <button onclick="simulationSettingsElementFunctions.loadPreset('elastic_highdrag')">High Drag</button>
-              <button onclick="simulationSettingsElementFunctions.loadPreset('nodrag_lowelasticity')">Low Elasticity</button>
-              <button onclick="simulationSettingsElementFunctions.loadPreset('projdrag')">Projectile Motion (Drag)</button>
-              <button onclick="simulationSettingsElementFunctions.loadPreset('projnodrag')">Projectile Motion</button>
-              <button onclick="simulationSettingsElementFunctions.loadPreset('twoparticles')">2 Particles</button>
-              <button onclick="simulationSettingsElementFunctions.loadPreset('snowglobe')">Snowglobe</button>
-              <button onclick="simulationSettingsElementFunctions.loadPreset('bulldozer')">Bulldozer</button>
-              <button onclick="simulationSettingsElementFunctions.loadPreset('rbyg')">RedBlueYellowGreen</button>
+              <button onclick="simulationSettingsElementFunctionsOld.loadPreset('sandbox')">Sandbox</button>
+              <button onclick="simulationSettingsElementFunctionsOld.loadPreset('elastic_highdrag')">High Drag</button>
+              <button onclick="simulationSettingsElementFunctionsOld.loadPreset('nodrag_lowelasticity')">Low Elasticity</button>
+              <button onclick="simulationSettingsElementFunctionsOld.loadPreset('projdrag')">Projectile Motion (Drag)</button>
+              <button onclick="simulationSettingsElementFunctionsOld.loadPreset('projnodrag')">Projectile Motion</button>
+              <button onclick="simulationSettingsElementFunctionsOld.loadPreset('twoparticles')">2 Particles</button>
+              <button onclick="simulationSettingsElementFunctionsOld.loadPreset('snowglobe')">Snowglobe</button>
+              <button onclick="simulationSettingsElementFunctionsOld.loadPreset('bulldozer')">Bulldozer</button>
+              <button onclick="simulationSettingsElementFunctionsOld.loadPreset('rbyg')">RedBlueYellowGreen</button>
             </div>
           </div>
           <div class="control_item" id="control_simulation">
@@ -333,7 +345,7 @@
               </tr>
               <tr>
                 <td colspan="4">
-                  <button onclick="simulationSettingsElementFunctions.updateSettings()" style="width: 100%;">Apply</button>
+                  <button onclick="simulationSettingsElementFunctionsOld.updateSettings()" style="width: 100%;">Apply</button>
                 </td>
               </tr>
             </table>

@@ -81,14 +81,21 @@ const setupElementRenderers = {
     },
   },
   particle : {
-
+    loadDraggableGroups() {
+      const pargroup_elements : NodeListOf<HTMLElement> = document.querySelectorAll('.parsetup_group') as NodeListOf<HTMLElement>;
+      
+    },
+    loadDraggableListedParticles() {
+      const pargroup_element : NodeListOf<HTMLElement> = document.querySelectorAll('.parsetup_group') as NodeListOf<HTMLElement>;
+      const pargroup_par_elements : NodeListOf<HTMLElement> = document.querySelectorAll('');
+    }
   }
 }
 
 // Sets the initial state of all elements
 function loadAll() {
   loadContainerElement(container);
-  simulationSettingsElementFunctions.loadPreset('empty');
+  simulationSettingsElementFunctionsOld.loadPreset('empty');
 
   openControlItem(control_items_data[2]);  // Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
 
@@ -96,7 +103,9 @@ function loadAll() {
   setupElementRenderers.simulation.loadPresets();
   const simsetup_presets_button : HTMLButtonElement = document.getElementById("simsetup_presets_button") as HTMLButtonElement;
   const simsetup_presets_input : HTMLInputElement = document.getElementById("simsetup_presets_input") as HTMLInputElement;
-  simsetup_presets_button.addEventListener("click", () => simulationSettingsElementFunctions.loadPreset(simsetup_presets_input.value));
+  simsetup_presets_button.addEventListener("click", () => simulationSettingsElementFunctionsOld.loadPreset(simsetup_presets_input.value));
 
-
+  // Particle Interface
+  setupElementRenderers.particle.loadDraggableGroups();
+  setupElementRenderers.particle.loadDraggableListedParticles();
 }
