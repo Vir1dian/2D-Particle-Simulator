@@ -1,4 +1,98 @@
 "use strict";
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var _Renderer_element, _Renderer_id, _Renderer_classname;
+class Renderer {
+    constructor(element, id, classname) {
+        _Renderer_element.set(this, void 0);
+        _Renderer_id.set(this, void 0);
+        _Renderer_classname.set(this, void 0);
+        __classPrivateFieldSet(this, _Renderer_element, element, "f");
+        __classPrivateFieldGet(this, _Renderer_element, "f").id = id;
+        __classPrivateFieldGet(this, _Renderer_element, "f").classList = classname;
+        __classPrivateFieldSet(this, _Renderer_id, id, "f");
+        __classPrivateFieldSet(this, _Renderer_classname, classname, "f");
+    }
+    getId() {
+        return __classPrivateFieldGet(this, _Renderer_id, "f");
+    }
+    getClassName() {
+        return __classPrivateFieldGet(this, _Renderer_classname, "f");
+    }
+    getElement() {
+        return __classPrivateFieldGet(this, _Renderer_element, "f");
+    }
+    setParent(parent) {
+        const currentParent = __classPrivateFieldGet(this, _Renderer_element, "f").parentElement;
+        if (currentParent) {
+            currentParent.removeChild(__classPrivateFieldGet(this, _Renderer_element, "f"));
+        }
+        if (parent instanceof HTMLElement)
+            parent.appendChild(__classPrivateFieldGet(this, _Renderer_element, "f"));
+        else
+            parent.getElement().appendChild(__classPrivateFieldGet(this, _Renderer_element, "f"));
+    }
+    setChild(child) {
+        if (child instanceof HTMLElement)
+            __classPrivateFieldGet(this, _Renderer_element, "f").appendChild(child);
+        else
+            __classPrivateFieldGet(this, _Renderer_element, "f").appendChild(child.getElement());
+    }
+    remove() {
+        __classPrivateFieldGet(this, _Renderer_element, "f").remove();
+    }
+}
+_Renderer_element = new WeakMap(), _Renderer_id = new WeakMap(), _Renderer_classname = new WeakMap();
+class TableCellRenderer extends Renderer {
+    constructor(child_element = null, id = '', classname = '') {
+        super(document.createElement('td'), id, classname);
+        if (child_element)
+            this.cell.appendChild(child_element);
+    }
+    append(parent) {
+        parent.appendChild(this.cell);
+    }
+    remove() {
+        this.cell.remove();
+    }
+}
+class TableRenderer extends Renderer {
+    constructor(rows = 1, cols = 1) {
+        super();
+        this.rows = rows;
+        this.cols = cols;
+        this.table = document.createElement('table');
+        for (let i = 0; i < rows; i++) {
+            const table_row = document.createElement('tr');
+            for (let j = 0; j < cols; j++) {
+                const table_cell = document.createElement('td');
+                table_row.appendChild(table_cell);
+            }
+            this.table.appendChild(table_row);
+        }
+    }
+    append(parent) {
+        parent.appendChild(this.table);
+    }
+    remove() {
+        this.table.remove();
+    }
+}
+class DialogRenderer extends Renderer {
+}
+class TooltipRenderer extends Renderer {
+}
+class InputRenderer extends Renderer {
+}
 // function setAttributes(element: HTMLElement, attributes: string[]) {
 //   for (let key in attributes) {
 //       if (attributes.hasOwnProperty(key)) {
@@ -25,8 +119,13 @@ function loadContainerElement(container) {
     container_element.style.height = `${container.y_max - container.y_min}px`;
     wrapper === null || wrapper === void 0 ? void 0 : wrapper.appendChild(container_element);
 }
+const simulationSettingsElementFunctions = {};
+const particleElementFunctions = {
+    createGroupElement() {
+    }
+};
 // TO BE REPLACED
-const simulationSettingsElementFunctions = {
+const simulationSettingsElementFunctionsOld = {
     /**
      * Updates the input fields of simulation settings UI to reflect actual values
      * @param settings
@@ -203,7 +302,7 @@ const simulationSettingsElementFunctions = {
                 new_count = settings.particle[0].num_particles;
             }
             while (simulation_particles.length < new_count) {
-                particleElementFunctions.createParticle();
+                particleElementFunctionsOld.createParticle();
             }
         }
         /* Grouped Settings */
@@ -315,7 +414,7 @@ const simulationSettingsElementFunctions = {
     }
 };
 // TO BE REPLACED
-const particleElementFunctions = {
+const particleElementFunctionsOld = {
     loadParticle(particle, container) {
         // Load particle element in the simulation space
         const particle_element = document.createElement('div');
@@ -443,10 +542,10 @@ const particleElementFunctions = {
             openModal(`#view_modal${particle.id}`, false);
         });
         particle_element_control.querySelector(`#update_id${particle.id}`).addEventListener('click', () => {
-            particleElementFunctions.updateParticle(particle);
+            particleElementFunctionsOld.updateParticle(particle);
         });
         particle_element_control.querySelector(`#delete_id${particle.id}`).addEventListener('click', () => {
-            particleElementFunctions.deleteParticle(particle);
+            particleElementFunctionsOld.deleteParticle(particle);
         });
         // append to HTML body
         const control_table = document.querySelector('#control_particles table');

@@ -63,20 +63,20 @@ function step(timestamp) {
     simulation_particles.forEach((particle) => {
         particle.move(dt, time_elapsed);
         if (particle.collideContainer(container) && particle.trajectory) {
-            particleElementFunctions.eraseTrajectory(particle.id);
-            particleElementFunctions.drawTrajectory(particle, time_elapsed, simulation_settings.environment.trajectory_step);
+            particleElementFunctionsOld.eraseTrajectory(particle.id);
+            particleElementFunctionsOld.drawTrajectory(particle, time_elapsed, simulation_settings.environment.trajectory_step);
         }
         ;
         simulation_particles.forEach((otherParticle) => {
             if (otherParticle !== particle) {
                 if (particle.collideParticle(otherParticle, simulation_settings.environment.elasticity)) {
                     if (particle.trajectory) {
-                        particleElementFunctions.eraseTrajectory(particle.id);
-                        particleElementFunctions.drawTrajectory(particle, time_elapsed, simulation_settings.environment.trajectory_step);
+                        particleElementFunctionsOld.eraseTrajectory(particle.id);
+                        particleElementFunctionsOld.drawTrajectory(particle, time_elapsed, simulation_settings.environment.trajectory_step);
                     }
                     if (otherParticle.trajectory) {
-                        particleElementFunctions.eraseTrajectory(otherParticle.id);
-                        particleElementFunctions.drawTrajectory(otherParticle, time_elapsed, simulation_settings.environment.trajectory_step);
+                        particleElementFunctionsOld.eraseTrajectory(otherParticle.id);
+                        particleElementFunctionsOld.drawTrajectory(otherParticle, time_elapsed, simulation_settings.environment.trajectory_step);
                     }
                 }
             }

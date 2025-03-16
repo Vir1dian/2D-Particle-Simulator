@@ -1,3 +1,94 @@
+class Renderer {
+  #element: HTMLElement;
+  #id: string;
+  #classname: string;
+  constructor(element: HTMLElement, id: string, classname: string) {
+    this.#element = element;
+    this.#element.id = id;
+    this.#element.classList = classname;
+    this.#id = id;
+    this.#classname = classname;
+  }
+  getId(): string {
+    return this.#id;
+  }
+  getClassName(): string {
+    return this.#classname;
+  }
+  getElement(): HTMLElement {
+    return this.#element;
+  }
+  setParent(parent: HTMLElement | Renderer) {
+    const currentParent = this.#element.parentElement;
+    if (currentParent) {
+      currentParent.removeChild(this.#element);
+    }
+    if (parent instanceof HTMLElement) parent.appendChild(this.#element);
+    else parent.getElement().appendChild(this.#element);
+  }
+  setChild(child: HTMLElement | Renderer) {
+    if (child instanceof HTMLElement) this.#element.appendChild(child);
+    else this.#element.appendChild(child.getElement());
+  }
+  remove() {
+    this.#element.remove();
+  }
+}
+
+class TableCellRenderer extends Renderer {
+  constructor(child_element: HTMLElement | null = null, id: string = '', classname: string = '') {
+    super(document.createElement('td'), id, classname);
+    if (child_element) this.cell.appendChild(child_element);
+  }  
+  append(parent: HTMLElement) {
+    parent.appendChild(this.cell);
+  }
+  remove() {
+    this.cell.remove();
+  }
+}
+
+class TableRenderer extends Renderer {
+  rows: number;
+  cols: number;
+  table: HTMLTableElement;
+  constructor(rows: number = 1, cols: number = 1) {
+    super();
+    this.rows = rows;
+    this.cols = cols;
+    this.table = document.createElement('table');
+    for (let i = 0; i < rows; i++) {
+      const table_row: HTMLTableRowElement = document.createElement('tr');
+      for (let j = 0; j < cols; j++) {
+        const table_cell: HTMLTableCellElement = document.createElement('td');
+        table_row.appendChild(table_cell);
+      }
+      this.table.appendChild(table_row);
+    }
+  }
+  append(parent: HTMLElement) {
+    parent.appendChild(this.table);
+  }
+  remove() {
+    this.table.remove();
+  }
+}
+
+class DialogRenderer extends Renderer {
+
+}
+
+class TooltipRenderer extends Renderer {
+
+}
+
+class InputRenderer extends Renderer {
+
+}
+
+
+
+
 
 // function setAttributes(element: HTMLElement, attributes: string[]) {
 //   for (let key in attributes) {
@@ -28,8 +119,18 @@ function loadContainerElement(container: BoxSpace) {
   wrapper?.appendChild(container_element);
 }
 
-// TO BE REPLACED
 const simulationSettingsElementFunctions = {
+  
+}
+
+const particleElementFunctions = {
+  createGroupElement() {
+
+  }
+}
+
+// TO BE REPLACED
+const simulationSettingsElementFunctionsOld = {
   /**
    * Updates the input fields of simulation settings UI to reflect actual values
    * @param settings 
@@ -192,7 +293,7 @@ const simulationSettingsElementFunctions = {
         new_count = settings.particle[0].num_particles;
       }
       while (simulation_particles.length < new_count) {
-        particleElementFunctions.createParticle();
+        particleElementFunctionsOld.createParticle();
       }
     }
 
@@ -305,7 +406,7 @@ const simulationSettingsElementFunctions = {
 }
 
 // TO BE REPLACED
-const particleElementFunctions = {
+const particleElementFunctionsOld = {
   loadParticle(particle: Particle, container: BoxSpace) {  
     // Load particle element in the simulation space
     const particle_element : HTMLElement = document.createElement('div');
@@ -436,10 +537,10 @@ const particleElementFunctions = {
       openModal(`#view_modal${particle.id}`, false);
     });
     (particle_element_control.querySelector(`#update_id${particle.id}`) as HTMLButtonElement).addEventListener('click', () => {
-      particleElementFunctions.updateParticle(particle);
+      particleElementFunctionsOld.updateParticle(particle);
     });
     (particle_element_control.querySelector(`#delete_id${particle.id}`) as HTMLButtonElement).addEventListener('click', () => {
-      particleElementFunctions.deleteParticle(particle);
+      particleElementFunctionsOld.deleteParticle(particle);
     });
     // append to HTML body
     const control_table: HTMLTableElement | null = document.querySelector('#control_particles table')
