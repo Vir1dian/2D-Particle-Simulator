@@ -10,14 +10,14 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Renderer_element, _Renderer_classname, _Renderer_id, _TableRenderer_rows, _TableRenderer_cols, _InputRenderer_value, _InputRenderer_type, _InputRenderer_is_readonly;
+var _Renderer_element, _Renderer_classname, _Renderer_id, _TableRenderer_rows, _TableRenderer_cols, _InputRenderer_value, _InputRenderer_type, _InputRenderer_is_readonly, _ButtonRenderer_callback, _ButtonRenderer_event;
 class Renderer {
     constructor(element, classname = '', id = '') {
         _Renderer_element.set(this, void 0);
         _Renderer_classname.set(this, void 0);
         _Renderer_id.set(this, void 0);
         __classPrivateFieldSet(this, _Renderer_element, element, "f");
-        __classPrivateFieldGet(this, _Renderer_element, "f").classList = classname;
+        __classPrivateFieldGet(this, _Renderer_element, "f").classList.add(classname);
         __classPrivateFieldGet(this, _Renderer_element, "f").id = id;
         __classPrivateFieldSet(this, _Renderer_classname, classname, "f");
         __classPrivateFieldSet(this, _Renderer_id, id, "f");
@@ -27,7 +27,7 @@ class Renderer {
     }
     setClassName(classname) {
         __classPrivateFieldSet(this, _Renderer_classname, classname, "f");
-        __classPrivateFieldGet(this, _Renderer_element, "f").classList = classname;
+        __classPrivateFieldGet(this, _Renderer_element, "f").classList.add(classname);
     }
     setID(id) {
         __classPrivateFieldSet(this, _Renderer_id, id, "f");
@@ -50,6 +50,7 @@ class Renderer {
             __classPrivateFieldGet(this, _Renderer_element, "f").appendChild(child.getElement());
     }
     remove() {
+        __classPrivateFieldGet(this, _Renderer_element, "f").replaceWith(__classPrivateFieldGet(this, _Renderer_element, "f").cloneNode(true)); // Nukes all attached event listeners
         __classPrivateFieldGet(this, _Renderer_element, "f").remove();
     }
 }
@@ -71,16 +72,13 @@ class TableRenderer extends Renderer {
         __classPrivateFieldSet(this, _TableRenderer_rows, rows, "f");
         __classPrivateFieldSet(this, _TableRenderer_cols, cols, "f");
     }
+    getElement() {
+        return super.getElement();
+    }
 }
 _TableRenderer_rows = new WeakMap(), _TableRenderer_cols = new WeakMap();
 class InputRenderer extends Renderer {
     constructor(value, type, is_readonly = false) {
-        const isInvalid1 = type === 'text' && typeof value !== 'string';
-        const isInvalid2 = type === 'number' && typeof value !== 'number';
-        const isInvalid3 = type === 'checkbox' && typeof value !== 'boolean';
-        if (isInvalid1 || isInvalid2 || isInvalid3) {
-            throw new Error("InputRenderer parameter type mismatch.");
-        }
         const input = document.createElement('input');
         input.type = type;
         input.value = value.toString();
@@ -89,14 +87,67 @@ class InputRenderer extends Renderer {
         _InputRenderer_value.set(this, void 0);
         _InputRenderer_type.set(this, void 0);
         _InputRenderer_is_readonly.set(this, void 0);
+        this.validateType(type, value);
         __classPrivateFieldSet(this, _InputRenderer_value, value, "f");
         __classPrivateFieldSet(this, _InputRenderer_type, type, "f");
         __classPrivateFieldSet(this, _InputRenderer_is_readonly, is_readonly, "f");
     }
+    getElement() {
+        return super.getElement();
+    }
+    setChild(child) {
+        throw new Error("InputRenderer does not support child elements.");
+    }
+    refreshValue() {
+        __classPrivateFieldSet(this, _InputRenderer_value, this.getElement().value, "f");
+    }
+    setValue(value) {
+        this.validateType(__classPrivateFieldGet(this, _InputRenderer_type, "f"), value);
+        __classPrivateFieldSet(this, _InputRenderer_value, value, "f");
+        this.getElement().value = value.toString();
+    }
+    validateType(type, value) {
+        const isInvalid1 = type === 'text' && typeof value !== 'string';
+        const isInvalid2 = type === 'number' && typeof value !== 'number';
+        const isInvalid3 = type === 'checkbox' && typeof value !== 'boolean';
+        if (isInvalid1 || isInvalid2 || isInvalid3) {
+            throw new Error("InputRenderer parameter type mismatch.");
+        }
+    }
 }
 _InputRenderer_value = new WeakMap(), _InputRenderer_type = new WeakMap(), _InputRenderer_is_readonly = new WeakMap();
 class ButtonRenderer extends Renderer {
+    constructor(callback, event = 'click') {
+        const button = document.createElement('button');
+        button.addEventListener(event, callback);
+        super(button);
+        _ButtonRenderer_callback.set(this, void 0);
+        _ButtonRenderer_event.set(this, void 0);
+        __classPrivateFieldSet(this, _ButtonRenderer_callback, callback, "f");
+        __classPrivateFieldSet(this, _ButtonRenderer_event, event, "f");
+    }
+    getElement() {
+        return super.getElement();
+    }
+    deafen() {
+        this.getElement().removeEventListener(__classPrivateFieldGet(this, _ButtonRenderer_event, "f"), __classPrivateFieldGet(this, _ButtonRenderer_callback, "f"));
+    }
+    setCallback(callback) {
+        if (__classPrivateFieldGet(this, _ButtonRenderer_callback, "f") === callback)
+            return;
+        this.deafen();
+        __classPrivateFieldSet(this, _ButtonRenderer_callback, callback, "f");
+        this.getElement().addEventListener(__classPrivateFieldGet(this, _ButtonRenderer_event, "f"), callback);
+    }
+    setEvent(event) {
+        if (__classPrivateFieldGet(this, _ButtonRenderer_event, "f") === event)
+            return;
+        this.deafen();
+        __classPrivateFieldSet(this, _ButtonRenderer_event, event, "f");
+        this.getElement().addEventListener(event, __classPrivateFieldGet(this, _ButtonRenderer_callback, "f"));
+    }
 }
+_ButtonRenderer_callback = new WeakMap(), _ButtonRenderer_event = new WeakMap();
 class DialogRenderer extends Renderer {
 }
 class TooltipRenderer extends Renderer {

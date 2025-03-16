@@ -5,7 +5,7 @@ class Renderer {
  
   constructor(element: HTMLElement, classname: string = '', id: string = '') {
     this.#element = element;
-    this.#element.classList = classname;
+    this.#element.classList.add(classname);
     this.#element.id = id;
     this.#classname = classname;
     this.#id = id;
@@ -15,7 +15,7 @@ class Renderer {
   }
   setClassName(classname: string): void {
     this.#classname = classname;
-    this.#element.classList = classname;
+    this.#element.classList.add(classname);
   }
   setID(id: string): void {
     this.#id = id;
@@ -34,6 +34,7 @@ class Renderer {
     else this.#element.appendChild(child.getElement());
   }
   remove(): void {
+    this.#element.replaceWith(this.#element.cloneNode(true));  // Nukes all attached event listeners
     this.#element.remove();
   }
 }
@@ -55,6 +56,9 @@ class TableRenderer extends Renderer {
     this.#rows = rows;
     this.#cols = cols;
   }
+  getElement(): HTMLTableElement {
+    return super.getElement() as HTMLTableElement;
+  }
 }
 
 class InputRenderer extends Renderer {
@@ -62,25 +66,68 @@ class InputRenderer extends Renderer {
   #type: 'text' | 'number' | 'checkbox';
   #is_readonly: boolean;
   constructor(value: string | number | boolean, type: 'text' | 'number' | 'checkbox', is_readonly: boolean = false) {
+    const input: HTMLInputElement = document.createElement('input');
+    input.type = type;
+    input.value = value.toString();
+    input.readOnly = is_readonly;
+    super(input);
+    this.validateType(type, value);
+    this.#value = value;
+    this.#type = type;
+    this.#is_readonly = is_readonly;
+  }
+  getElement(): HTMLInputElement {
+    return super.getElement() as HTMLInputElement;
+  }
+  setChild(child: HTMLElement | Renderer): void {
+    throw new Error("InputRenderer does not support child elements.");
+  }
+  refreshValue(): void {
+    this.#value = this.getElement().value;
+  }
+  setValue(value: string | number | boolean): void {
+    this.validateType(this.#type, value);
+    this.#value = value;
+    this.getElement().value = value.toString();
+  }
+  private validateType(type: 'text' | 'number' | 'checkbox', value: string | number | boolean): void {
     const isInvalid1: boolean = type === 'text' && typeof value !== 'string';
     const isInvalid2: boolean = type === 'number' && typeof value !== 'number';
     const isInvalid3: boolean = type === 'checkbox' && typeof value !== 'boolean';
     if (isInvalid1 || isInvalid2 || isInvalid3) {
       throw new Error("InputRenderer parameter type mismatch.");
     }
-    const input: HTMLInputElement = document.createElement('input');
-    input.type = type;
-    input.value = value.toString();
-    input.readOnly = is_readonly;
-    super(input);
-    this.#value = value;
-    this.#type = type;
-    this.#is_readonly = is_readonly;
   }
 }
 
 class ButtonRenderer extends Renderer {
-
+  #callback: (...args: any) => void;
+  #event: string;
+  constructor (callback: (...args: any) => void, event: string = 'click') {
+    const button: HTMLButtonElement = document.createElement('button');
+    button.addEventListener(event, callback);
+    super(button);
+    this.#callback = callback;
+    this.#event = event;
+  }
+  getElement(): HTMLButtonElement {
+    return super.getElement() as HTMLButtonElement;
+  }
+  deafen(): void {
+    this.getElement().removeEventListener(this.#event,this.#callback);
+  }
+  setCallback(callback: (...args: any) => void): void {
+    if (this.#callback === callback) return;
+    this.deafen();
+    this.#callback = callback;
+    this.getElement().addEventListener(this.#event, callback);
+  }
+  setEvent(event: string): void {
+    if (this.#event === event) return;
+    this.deafen();
+    this.#event = event;
+    this.getElement().addEventListener(event, this.#callback);
+  }
 }
 
 class DialogRenderer extends Renderer {
