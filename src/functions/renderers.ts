@@ -1,24 +1,27 @@
 class Renderer {
   #element: HTMLElement;
-  #id: string;
   #classname: string;
-  constructor(element: HTMLElement, id: string, classname: string) {
+  #id: string;
+ 
+  constructor(element: HTMLElement, classname: string = '', id: string = '') {
     this.#element = element;
-    this.#element.id = id;
     this.#element.classList = classname;
-    this.#id = id;
+    this.#element.id = id;
     this.#classname = classname;
-  }
-  getId(): string {
-    return this.#id;
-  }
-  getClassName(): string {
-    return this.#classname;
+    this.#id = id;
   }
   getElement(): HTMLElement {
     return this.#element;
   }
-  setParent(parent: HTMLElement | Renderer) {
+  setClassName(classname: string): void {
+    this.#classname = classname;
+    this.#element.classList = classname;
+  }
+  setID(id: string): void {
+    this.#id = id;
+    this.#element.id = id;
+  }
+  setParent(parent: HTMLElement | Renderer): void {
     const currentParent = this.#element.parentElement;
     if (currentParent) {
       currentParent.removeChild(this.#element);
@@ -26,52 +29,58 @@ class Renderer {
     if (parent instanceof HTMLElement) parent.appendChild(this.#element);
     else parent.getElement().appendChild(this.#element);
   }
-  setChild(child: HTMLElement | Renderer) {
+  setChild(child: HTMLElement | Renderer): void {
     if (child instanceof HTMLElement) this.#element.appendChild(child);
     else this.#element.appendChild(child.getElement());
   }
-  remove() {
+  remove(): void {
     this.#element.remove();
   }
 }
 
-class TableCellRenderer extends Renderer {
-  constructor(child_element: HTMLElement | null = null, id: string = '', classname: string = '') {
-    super(document.createElement('td'), id, classname);
-    if (child_element) this.cell.appendChild(child_element);
-  }  
-  append(parent: HTMLElement) {
-    parent.appendChild(this.cell);
-  }
-  remove() {
-    this.cell.remove();
-  }
-}
-
 class TableRenderer extends Renderer {
-  rows: number;
-  cols: number;
-  table: HTMLTableElement;
+  #rows: number;
+  #cols: number;
   constructor(rows: number = 1, cols: number = 1) {
-    super();
-    this.rows = rows;
-    this.cols = cols;
-    this.table = document.createElement('table');
+    const table: HTMLTableElement = document.createElement('table');
     for (let i = 0; i < rows; i++) {
       const table_row: HTMLTableRowElement = document.createElement('tr');
       for (let j = 0; j < cols; j++) {
         const table_cell: HTMLTableCellElement = document.createElement('td');
         table_row.appendChild(table_cell);
       }
-      this.table.appendChild(table_row);
+      table.appendChild(table_row);
     }
+    super(table);
+    this.#rows = rows;
+    this.#cols = cols;
   }
-  append(parent: HTMLElement) {
-    parent.appendChild(this.table);
+}
+
+class InputRenderer extends Renderer {
+  #value: string | number | boolean;
+  #type: 'text' | 'number' | 'checkbox';
+  #is_readonly: boolean;
+  constructor(value: string | number | boolean, type: 'text' | 'number' | 'checkbox', is_readonly: boolean = false) {
+    const isInvalid1: boolean = type === 'text' && typeof value !== 'string';
+    const isInvalid2: boolean = type === 'number' && typeof value !== 'number';
+    const isInvalid3: boolean = type === 'checkbox' && typeof value !== 'boolean';
+    if (isInvalid1 || isInvalid2 || isInvalid3) {
+      throw new Error("InputRenderer parameter type mismatch.");
+    }
+    const input: HTMLInputElement = document.createElement('input');
+    input.type = type;
+    input.value = value.toString();
+    input.readOnly = is_readonly;
+    super(input);
+    this.#value = value;
+    this.#type = type;
+    this.#is_readonly = is_readonly;
   }
-  remove() {
-    this.table.remove();
-  }
+}
+
+class ButtonRenderer extends Renderer {
+
 }
 
 class DialogRenderer extends Renderer {
@@ -82,11 +91,7 @@ class TooltipRenderer extends Renderer {
 
 }
 
-class InputRenderer extends Renderer {
-
-}
-
-
+// Other Renderer classes soon
 
 
 

@@ -10,26 +10,28 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Renderer_element, _Renderer_id, _Renderer_classname;
+var _Renderer_element, _Renderer_classname, _Renderer_id, _TableRenderer_rows, _TableRenderer_cols, _InputRenderer_value, _InputRenderer_type, _InputRenderer_is_readonly;
 class Renderer {
-    constructor(element, id, classname) {
+    constructor(element, classname = '', id = '') {
         _Renderer_element.set(this, void 0);
-        _Renderer_id.set(this, void 0);
         _Renderer_classname.set(this, void 0);
+        _Renderer_id.set(this, void 0);
         __classPrivateFieldSet(this, _Renderer_element, element, "f");
-        __classPrivateFieldGet(this, _Renderer_element, "f").id = id;
         __classPrivateFieldGet(this, _Renderer_element, "f").classList = classname;
-        __classPrivateFieldSet(this, _Renderer_id, id, "f");
+        __classPrivateFieldGet(this, _Renderer_element, "f").id = id;
         __classPrivateFieldSet(this, _Renderer_classname, classname, "f");
-    }
-    getId() {
-        return __classPrivateFieldGet(this, _Renderer_id, "f");
-    }
-    getClassName() {
-        return __classPrivateFieldGet(this, _Renderer_classname, "f");
+        __classPrivateFieldSet(this, _Renderer_id, id, "f");
     }
     getElement() {
         return __classPrivateFieldGet(this, _Renderer_element, "f");
+    }
+    setClassName(classname) {
+        __classPrivateFieldSet(this, _Renderer_classname, classname, "f");
+        __classPrivateFieldGet(this, _Renderer_element, "f").classList = classname;
+    }
+    setID(id) {
+        __classPrivateFieldSet(this, _Renderer_id, id, "f");
+        __classPrivateFieldGet(this, _Renderer_element, "f").id = id;
     }
     setParent(parent) {
         const currentParent = __classPrivateFieldGet(this, _Renderer_element, "f").parentElement;
@@ -51,48 +53,55 @@ class Renderer {
         __classPrivateFieldGet(this, _Renderer_element, "f").remove();
     }
 }
-_Renderer_element = new WeakMap(), _Renderer_id = new WeakMap(), _Renderer_classname = new WeakMap();
-class TableCellRenderer extends Renderer {
-    constructor(child_element = null, id = '', classname = '') {
-        super(document.createElement('td'), id, classname);
-        if (child_element)
-            this.cell.appendChild(child_element);
-    }
-    append(parent) {
-        parent.appendChild(this.cell);
-    }
-    remove() {
-        this.cell.remove();
-    }
-}
+_Renderer_element = new WeakMap(), _Renderer_classname = new WeakMap(), _Renderer_id = new WeakMap();
 class TableRenderer extends Renderer {
     constructor(rows = 1, cols = 1) {
-        super();
-        this.rows = rows;
-        this.cols = cols;
-        this.table = document.createElement('table');
+        const table = document.createElement('table');
         for (let i = 0; i < rows; i++) {
             const table_row = document.createElement('tr');
             for (let j = 0; j < cols; j++) {
                 const table_cell = document.createElement('td');
                 table_row.appendChild(table_cell);
             }
-            this.table.appendChild(table_row);
+            table.appendChild(table_row);
         }
+        super(table);
+        _TableRenderer_rows.set(this, void 0);
+        _TableRenderer_cols.set(this, void 0);
+        __classPrivateFieldSet(this, _TableRenderer_rows, rows, "f");
+        __classPrivateFieldSet(this, _TableRenderer_cols, cols, "f");
     }
-    append(parent) {
-        parent.appendChild(this.table);
+}
+_TableRenderer_rows = new WeakMap(), _TableRenderer_cols = new WeakMap();
+class InputRenderer extends Renderer {
+    constructor(value, type, is_readonly = false) {
+        const isInvalid1 = type === 'text' && typeof value !== 'string';
+        const isInvalid2 = type === 'number' && typeof value !== 'number';
+        const isInvalid3 = type === 'checkbox' && typeof value !== 'boolean';
+        if (isInvalid1 || isInvalid2 || isInvalid3) {
+            throw new Error("InputRenderer parameter type mismatch.");
+        }
+        const input = document.createElement('input');
+        input.type = type;
+        input.value = value.toString();
+        input.readOnly = is_readonly;
+        super(input);
+        _InputRenderer_value.set(this, void 0);
+        _InputRenderer_type.set(this, void 0);
+        _InputRenderer_is_readonly.set(this, void 0);
+        __classPrivateFieldSet(this, _InputRenderer_value, value, "f");
+        __classPrivateFieldSet(this, _InputRenderer_type, type, "f");
+        __classPrivateFieldSet(this, _InputRenderer_is_readonly, is_readonly, "f");
     }
-    remove() {
-        this.table.remove();
-    }
+}
+_InputRenderer_value = new WeakMap(), _InputRenderer_type = new WeakMap(), _InputRenderer_is_readonly = new WeakMap();
+class ButtonRenderer extends Renderer {
 }
 class DialogRenderer extends Renderer {
 }
 class TooltipRenderer extends Renderer {
 }
-class InputRenderer extends Renderer {
-}
+// Other Renderer classes soon
 // function setAttributes(element: HTMLElement, attributes: string[]) {
 //   for (let key in attributes) {
 //       if (attributes.hasOwnProperty(key)) {
