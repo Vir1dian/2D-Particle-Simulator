@@ -209,6 +209,9 @@ class TableRenderer extends Renderer {
 class ListRenderer extends Renderer {
   #items: Renderer[];
   constructor (...items: Renderer[]) {
+    if (items.length <= 0) {
+      throw new Error("Empty spread operator argument");
+    }
     const ul: HTMLUListElement = document.createElement('ul');
     super(ul);
     this.#items = [];

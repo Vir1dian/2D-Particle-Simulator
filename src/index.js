@@ -56,7 +56,7 @@ function openControlItem(item) {
 const setupElementRenderers = {
     ui: {},
     simulation: {
-        loadPresets() {
+        loadAvailablePresets() {
             const preset_datalist_element = document.getElementById("simsetup_presets");
             Object.keys(presets).forEach((preset_name) => {
                 const option_element = document.createElement('option');
@@ -66,12 +66,33 @@ const setupElementRenderers = {
         },
     },
     particle: {
-        loadDraggableGroups() {
-            const pargroup_elements = document.querySelectorAll('.parsetup_group');
-        },
-        loadDraggableListedParticles() {
-            const pargroup_element = document.querySelectorAll('.parsetup_group');
-            const pargroup_par_elements = document.querySelectorAll('');
+        testSetup() {
+            // This is purely for testing the Renderer classes, final setup will likely be handled mostly in simulation
+            const test_mass = 1;
+            const test_radius = 5;
+            const test_position = new Vector2D();
+            const test_velocity = new Vector2D();
+            const test_acceleration = new Vector2D();
+            const test_oscillation = new Vector2D();
+            const test_color = 'blue';
+            const test_trajectory = false;
+            const test_particle_set = [
+                new Particle(),
+                new Particle(test_mass, test_radius, test_position, test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory),
+                new Particle('random', test_radius, test_position, 'random', test_acceleration, test_oscillation, 'random', test_trajectory),
+                new Particle(test_mass, 'random', test_position, test_velocity, 'random', test_oscillation, 'random', test_trajectory),
+                new Particle(test_mass, test_radius, 'random', test_velocity, 'random', test_oscillation, 'random', test_trajectory),
+                new Particle('random', test_radius, test_position, 'random', test_acceleration, test_oscillation, 'random', test_trajectory),
+                new Particle(test_mass, test_radius, test_position, test_velocity, 'random', test_oscillation, test_color, test_trajectory),
+                new Particle(test_mass, 'random', test_position, test_velocity, test_acceleration, test_oscillation, 'random', test_trajectory),
+                new Particle(test_mass, test_radius, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory),
+                new Particle(test_mass, 7, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory, 1),
+                new Particle(test_mass, 7, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory, 1),
+                new Particle(test_mass, 7, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory, 1),
+                new Particle(test_mass, 10, 'random', test_velocity, test_acceleration, test_oscillation, 'red', test_trajectory, 2),
+                new Particle(test_mass, 10, 'random', test_velocity, test_acceleration, test_oscillation, 'red', test_trajectory, 2),
+                new Particle(test_mass, 10, 'random', test_velocity, test_acceleration, test_oscillation, 'red', test_trajectory, 2),
+            ];
         }
     }
 };
@@ -79,13 +100,12 @@ const setupElementRenderers = {
 function loadAll() {
     loadContainerElement(container);
     simulationSettingsElementFunctionsOld.loadPreset('empty');
-    openControlItem(control_items_data[2]); // Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
+    openControlItem(control_items_data[2]); // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
     // Simulation Presets
-    setupElementRenderers.simulation.loadPresets();
+    setupElementRenderers.simulation.loadAvailablePresets();
     const simsetup_presets_button = document.getElementById("simsetup_presets_button");
     const simsetup_presets_input = document.getElementById("simsetup_presets_input");
     simsetup_presets_button.addEventListener("click", () => simulationSettingsElementFunctionsOld.loadPreset(simsetup_presets_input.value));
     // Particle Interface
-    setupElementRenderers.particle.loadDraggableGroups();
-    setupElementRenderers.particle.loadDraggableListedParticles();
+    setupElementRenderers.particle.testSetup();
 }

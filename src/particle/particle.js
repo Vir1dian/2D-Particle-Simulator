@@ -2,7 +2,7 @@
 const simulation_particles = [];
 const particle_colors = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
 class Particle {
-    constructor(mass = 1, radius = 5, position = new Vector2D(), velocity = new Vector2D(), acceleration = new Vector2D(), oscillation = new Vector2D(), color = 'black', trajectory = false) {
+    constructor(mass = 1, radius = 5, position = new Vector2D(), velocity = new Vector2D(), acceleration = new Vector2D(), oscillation = new Vector2D(), color = 'black', trajectory = false, group_id = 0) {
         Particle.instance_count++;
         this.id = Particle.instance_count;
         if (mass === 'random')
@@ -50,6 +50,7 @@ class Particle {
             this.color = color;
         this.trajectory = trajectory;
         simulation_particles.push(this);
+        this.group_id = group_id;
     }
     collideContainer(container) {
         // const tangential_velocity = 

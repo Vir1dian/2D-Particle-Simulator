@@ -4,6 +4,7 @@ const particle_colors: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'gree
 class Particle {
   static instance_count = 0;
   id: number;
+  group_id: number;
   mass: number;
   radius: number;
   position: Vector2D;
@@ -21,7 +22,8 @@ class Particle {
     acceleration: Vector2D | 'random' = new Vector2D(),
     oscillation: Vector2D | 'random' = new Vector2D(),
     color: string | 'random' = 'black',
-    trajectory: boolean = false
+    trajectory: boolean = false,
+    group_id: number = 0
   ) {
     Particle.instance_count++;
     this.id = Particle.instance_count;
@@ -58,6 +60,7 @@ class Particle {
     else this.color = color;
     this.trajectory = trajectory;
     simulation_particles.push(this);
+    this.group_id = group_id;
   }
 
   collideContainer(container: BoxSpace): boolean {

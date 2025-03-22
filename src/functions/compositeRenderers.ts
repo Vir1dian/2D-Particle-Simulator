@@ -52,7 +52,7 @@ class ParticleUnitRenderer extends Renderer {
     super(particle_control_element);
     // Saved renderers
     this.#particle_renderer = p_renderer;
-    this.#icon = this.createIcon();
+    this.#icon = this.createIcon(particle.color);
     this.#details_dialog = this.setupDetailsDialog(particle.id);
     this.#drag_button = this.setupDragButton(); 
     // Contents
@@ -60,14 +60,18 @@ class ParticleUnitRenderer extends Renderer {
     particle_control_element.appendChild(this.createButtonsWrapper());
     this.#details_dialog.setParent(particle_control_element);
   }
-  private createIcon(): Renderer {
+  private createIcon(color: string): Renderer {
     const icon = new Renderer(document.createElement("span"));
     icon.setClassName("parsetup_par_icon");
+    icon.getElement().style.backgroundColor = color;
     return icon;
   }
   private setupDetailsDialog(id: number): DialogRenderer {
     const details_dialog = new DialogRenderer(`particle_dialog_id${id}`);
     details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
+
+    // Entire setup for dialog details
+
     return details_dialog;
   }
   private setupDragButton(): ButtonRenderer {
@@ -100,19 +104,65 @@ class ParticleUnitRenderer extends Renderer {
   getElement(): HTMLDivElement {
     return super.getElement() as HTMLDivElement;
   }
+  getParticlePoint(): ParticlePointRenderer {
+    return this.#particle_renderer;
+  }
 }
 
 class ParticleUnitGroupRenderer extends Renderer {
   #particles: ParticleUnitRenderer[];
-  constructor(id: string, ...p_renderers: ParticleUnitRenderer[]) {
+  #icon: Renderer;
+  #details_dialog: DialogRenderer;
+  #drag_button: ButtonRenderer;
+  #unit_list: ListRenderer;
+  
+  constructor(...p_renderers: ParticleUnitRenderer[]) {
+    if (p_renderers.length <= 0) {
+      throw new Error("Empty spread operator argument");
+    }
+    const head_particle: Particle = p_renderers[0].getParticlePoint().getParticle();
     const particle_group_element: HTMLElement = document.createElement('article');
-    super(particle_group_element, '', id);
+    super(particle_group_element, 'parsetup_group', `parsetup_group_id${head_particle.group_id}`);
+    // Saved renderers
     this.#particles = p_renderers;
+    this.#icon = this.createIcon(head_particle.color);
+    this.#details_dialog = this.setupDetailsDialog(head_particle.id);
+    this.#drag_button = this.setupDragButton();
+    this.#unit_list = this.setupUnitList();
+    // Contents
+    const header: HTMLElement = document.createElement('header');
+    header.appendChild(this.createTitleWrapper(head_particle.group_id));
+    header.appendChild(this.createButtonsWrapper());
+    particle_group_element.appendChild(header);
+    this.#unit_list.setParent(particle_group_element);
+  }
+  private createIcon(color: string): Renderer {
+
+  };
+  private setupDetailsDialog(group_id: number): DialogRenderer {
+
+  };
+  private setupDragButton(): ButtonRenderer {
+
+  };
+  private setupUnitList(): ListRenderer {
+
+  };
+  private createTitleWrapper(group_id: number): HTMLDivElement {
+
+  };
+  private createButtonsWrapper(): HTMLDivElement {
+
+  };
+}
+
+class ParticleSetRenderer extends ListRenderer {
+  constructor(...p_groups: ParticleUnitGroupRenderer[]) {
+    super(...p_groups);
     // boilerplate, far from done
 
   }
 }
-
 
 
 function openModal(id_name: string, open: boolean): void {
