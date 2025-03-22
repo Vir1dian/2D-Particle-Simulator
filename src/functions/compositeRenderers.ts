@@ -27,6 +27,11 @@ class ParticlePointRenderer extends Renderer {
   getParticle(): Particle {
     return this.#particle;
   }
+  setContainer(container: BoxSpace) {
+    if (this.#container !== container) this.#container = container;
+    const container_element : HTMLElement | null = document.querySelector('.container_element');
+    container_element?.appendChild(this.getElement());
+  }
   update() {
     const particle_element : HTMLDivElement = this.getElement() as HTMLDivElement;
     // shape
@@ -56,6 +61,7 @@ class ParticleUnitRenderer extends Renderer {
     this.#details_dialog = this.setupDetailsDialog(particle.id);
     this.#drag_button = this.setupDragButton(); 
     // Contents
+    this.#particle_renderer.setContainer(container);
     particle_control_element.appendChild(this.createTitleWrapper(particle.id));
     particle_control_element.appendChild(this.createButtonsWrapper());
     this.#details_dialog.setParent(particle_control_element);
@@ -82,7 +88,7 @@ class ParticleUnitRenderer extends Renderer {
       }, 
       'drag'  // Draggable button WIP (see Drag and Drop API)
     )
-    drag_button.setClassName("material-symbols-sharp icon");
+    drag_button.setClassName("material-symbols-sharp icon drag_icon");
     drag_button.getElement().innerHTML = "drag_handle";
     return drag_button;
   }
@@ -160,7 +166,7 @@ class ParticleUnitGroupRenderer extends Renderer {
       }, 
       'drag'  // Draggable button WIP (see Drag and Drop API)
     )
-    drag_button.setClassName("material-symbols-sharp icon");
+    drag_button.setClassName("material-symbols-sharp icon drag_icon");
     drag_button.getElement().innerHTML = "drag_handle";
     return drag_button;
   };

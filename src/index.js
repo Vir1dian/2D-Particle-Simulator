@@ -103,7 +103,7 @@ const setupElementRenderers = {
                 new ParticleUnitGroupRenderer(...test_group_2.map(particle => new ParticleUnitRenderer(new ParticlePointRenderer(particle, container))))
             ];
             const particle_set_element = new ListRenderer(...particle_groups);
-            const particle_setup = document.getElementById("control_parsetup");
+            const particle_setup = document.getElementById("parsetup_groups_wrapper");
             particle_set_element.setParent(particle_setup);
         }
     }

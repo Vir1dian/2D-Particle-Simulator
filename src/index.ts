@@ -128,7 +128,7 @@ const setupElementRenderers = {
       ]
       
       const particle_set_element: ListRenderer = new ListRenderer(...particle_groups);
-      const particle_setup: HTMLElement = document.getElementById("control_parsetup") as HTMLElement;
+      const particle_setup: HTMLElement = document.getElementById("parsetup_groups_wrapper") as HTMLElement;
       particle_set_element.setParent(particle_setup);
     }
   }

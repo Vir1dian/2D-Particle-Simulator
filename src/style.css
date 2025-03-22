@@ -277,6 +277,7 @@ button:hover .tooltip_text {
 
 .parsetup_group {
   margin-right: 8px;
+  margin-bottom: 10px;
   padding: 10px;
   background-color: gray;
   background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
@@ -343,9 +344,6 @@ button:hover .tooltip_text {
   background-image: linear-gradient(rgb(243, 248, 250), rgb(215, 221, 221));
   background-blend-mode: overlay;
   border: solid 1px lightgray;
-}
-.parsetup_par:not(:last-child) {
-  margin-bottom: 4px;
 }
 .parsetup_par_title_wrapper {
   display: inline-flex;

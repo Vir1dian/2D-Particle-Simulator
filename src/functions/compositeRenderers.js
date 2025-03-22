@@ -38,6 +38,12 @@ class ParticlePointRenderer extends Renderer {
     getParticle() {
         return __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f");
     }
+    setContainer(container) {
+        if (__classPrivateFieldGet(this, _ParticlePointRenderer_container, "f") !== container)
+            __classPrivateFieldSet(this, _ParticlePointRenderer_container, container, "f");
+        const container_element = document.querySelector('.container_element');
+        container_element === null || container_element === void 0 ? void 0 : container_element.appendChild(this.getElement());
+    }
     update() {
         const particle_element = this.getElement();
         // shape
@@ -67,6 +73,7 @@ class ParticleUnitRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.id), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_drag_button, this.setupDragButton(), "f");
         // Contents
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").setContainer(container);
         particle_control_element.appendChild(this.createTitleWrapper(particle.id));
         particle_control_element.appendChild(this.createButtonsWrapper());
         __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").setParent(particle_control_element);
@@ -89,7 +96,7 @@ class ParticleUnitRenderer extends Renderer {
             // Draggable button WIP (see Drag and Drop API)
         }, 'drag' // Draggable button WIP (see Drag and Drop API)
         );
-        drag_button.setClassName("material-symbols-sharp icon");
+        drag_button.setClassName("material-symbols-sharp icon drag_icon");
         drag_button.getElement().innerHTML = "drag_handle";
         return drag_button;
     }
@@ -164,7 +171,7 @@ class ParticleUnitGroupRenderer extends Renderer {
             // Draggable button WIP (see Drag and Drop API)
         }, 'drag' // Draggable button WIP (see Drag and Drop API)
         );
-        drag_button.setClassName("material-symbols-sharp icon");
+        drag_button.setClassName("material-symbols-sharp icon drag_icon");
         drag_button.getElement().innerHTML = "drag_handle";
         return drag_button;
     }
