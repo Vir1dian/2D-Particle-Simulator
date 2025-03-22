@@ -145,6 +145,12 @@ class DialogRenderer extends Renderer {
     getElement() {
         return super.getElement();
     }
+    getOpenButton() {
+        return __classPrivateFieldGet(this, _DialogRenderer_open_button, "f");
+    }
+    getCloseButton() {
+        return __classPrivateFieldGet(this, _DialogRenderer_close_button, "f");
+    }
     openDialog() {
         this.getElement().showModal();
     }

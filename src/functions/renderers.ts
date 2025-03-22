@@ -127,6 +127,12 @@ class DialogRenderer extends Renderer {
   getElement(): HTMLDialogElement {
     return super.getElement() as HTMLDialogElement;
   }
+  getOpenButton(): ButtonRenderer {
+    return this.#open_button;
+  }
+  getCloseButton(): ButtonRenderer {
+    return this.#close_button;
+  }
   openDialog() {
     this.getElement().showModal();
   }

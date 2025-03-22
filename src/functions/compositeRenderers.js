@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ParticlePointRenderer_particle, _ParticlePointRenderer_container, _ParticleControlRenderer_particle, _ParticleGroupControlRenderer_particles;
+var _ParticlePointRenderer_particle, _ParticlePointRenderer_container, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticleUnitGroupRenderer_particles;
 // Other larger Renderer classes
 class SimulationSettingsControlRenderer extends Renderer {
 }
@@ -35,6 +35,9 @@ class ParticlePointRenderer extends Renderer {
     getElement() {
         return super.getElement();
     }
+    getParticle() {
+        return __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f");
+    }
     update() {
         const particle_element = this.getElement();
         // shape
@@ -49,26 +52,75 @@ class ParticlePointRenderer extends Renderer {
     }
 }
 _ParticlePointRenderer_particle = new WeakMap(), _ParticlePointRenderer_container = new WeakMap();
-class ParticleControlRenderer extends Renderer {
-    constructor(particle) {
-        const particle_element = document.createElement('div');
-        super(particle_element);
-        _ParticleControlRenderer_particle.set(this, void 0);
-        __classPrivateFieldSet(this, _ParticleControlRenderer_particle, particle, "f");
-        // boilerplate, far from done
+class ParticleUnitRenderer extends Renderer {
+    constructor(p_renderer) {
+        const particle = p_renderer.getParticle();
+        const particle_control_element = document.createElement('div');
+        super(particle_control_element);
+        _ParticleUnitRenderer_particle_renderer.set(this, void 0);
+        _ParticleUnitRenderer_icon.set(this, void 0);
+        _ParticleUnitRenderer_details_dialog.set(this, void 0);
+        _ParticleUnitRenderer_drag_button.set(this, void 0);
+        // Saved renderers
+        __classPrivateFieldSet(this, _ParticleUnitRenderer_particle_renderer, p_renderer, "f");
+        __classPrivateFieldSet(this, _ParticleUnitRenderer_icon, this.createIcon(), "f");
+        __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.id), "f");
+        __classPrivateFieldSet(this, _ParticleUnitRenderer_drag_button, this.setupDragButton(), "f");
+        // Contents
+        particle_control_element.appendChild(this.createTitleWrapper(particle.id));
+        particle_control_element.appendChild(this.createButtonsWrapper());
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").setParent(particle_control_element);
+    }
+    createIcon() {
+        const icon = new Renderer(document.createElement("span"));
+        icon.setClassName("parsetup_par_icon");
+        return icon;
+    }
+    setupDetailsDialog(id) {
+        const details_dialog = new DialogRenderer(`particle_dialog_id${id}`);
+        details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
+        return details_dialog;
+    }
+    setupDragButton() {
+        const drag_button = new ButtonRenderer(() => {
+            // Draggable button WIP (see Drag and Drop API)
+        }, 'drag' // Draggable button WIP (see Drag and Drop API)
+        );
+        drag_button.setClassName("material-symbols-sharp icon");
+        return drag_button;
+    }
+    createTitleWrapper(id) {
+        const title_wrapper = document.createElement('div');
+        title_wrapper.className = "parsetup_par_title_wrapper";
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_icon, "f").setParent(title_wrapper);
+        const title = document.createElement('span');
+        title.className = "parsetup_par_title";
+        title.innerHTML = id.toString();
+        title_wrapper.appendChild(title);
+        return title_wrapper;
+    }
+    createButtonsWrapper() {
+        const buttons_wrapper = document.createElement('div');
+        buttons_wrapper.className = "parsetup_par_buttons_wrapper";
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").getOpenButton().setParent(buttons_wrapper);
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_drag_button, "f").setParent(buttons_wrapper);
+        return buttons_wrapper;
+    }
+    getElement() {
+        return super.getElement();
     }
 }
-_ParticleControlRenderer_particle = new WeakMap();
-class ParticleGroupControlRenderer extends Renderer {
+_ParticleUnitRenderer_particle_renderer = new WeakMap(), _ParticleUnitRenderer_icon = new WeakMap(), _ParticleUnitRenderer_details_dialog = new WeakMap(), _ParticleUnitRenderer_drag_button = new WeakMap();
+class ParticleUnitGroupRenderer extends Renderer {
     constructor(id, ...p_renderers) {
         const particle_group_element = document.createElement('article');
         super(particle_group_element, '', id);
-        _ParticleGroupControlRenderer_particles.set(this, void 0);
-        __classPrivateFieldSet(this, _ParticleGroupControlRenderer_particles, p_renderers, "f");
+        _ParticleUnitGroupRenderer_particles.set(this, void 0);
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_particles, p_renderers, "f");
         // boilerplate, far from done
     }
 }
-_ParticleGroupControlRenderer_particles = new WeakMap();
+_ParticleUnitGroupRenderer_particles = new WeakMap();
 function openModal(id_name, open) {
     const viewModal = document.querySelector(id_name);
     if (open) {

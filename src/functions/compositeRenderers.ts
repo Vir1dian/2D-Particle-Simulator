@@ -24,6 +24,9 @@ class ParticlePointRenderer extends Renderer {
   getElement(): HTMLDivElement {
     return super.getElement() as HTMLDivElement;
   }
+  getParticle(): Particle {
+    return this.#particle;
+  }
   update() {
     const particle_element : HTMLDivElement = this.getElement() as HTMLDivElement;
     // shape
@@ -38,23 +41,75 @@ class ParticlePointRenderer extends Renderer {
   }
 }
 
-class ParticleControlRenderer extends Renderer {
-  #particle: Particle;
-  constructor(particle: Particle) {
-    const particle_element : HTMLDivElement = document.createElement('div');
-    super(particle_element);
-    this.#particle = particle;
-    // boilerplate, far from done
+class ParticleUnitRenderer extends Renderer {
+  #particle_renderer: ParticlePointRenderer;
+  #icon: Renderer;
+  #details_dialog: DialogRenderer;
+  #drag_button: ButtonRenderer;
+  constructor(p_renderer: ParticlePointRenderer) {
+    const particle: Particle = p_renderer.getParticle();
+    const particle_control_element : HTMLDivElement = document.createElement('div');
+    super(particle_control_element);
+    // Saved renderers
+    this.#particle_renderer = p_renderer;
+    this.#icon = this.createIcon();
+    this.#details_dialog = this.setupDetailsDialog(particle.id);
+    this.#drag_button = this.setupDragButton(); 
+    // Contents
+    particle_control_element.appendChild(this.createTitleWrapper(particle.id));
+    particle_control_element.appendChild(this.createButtonsWrapper());
+    this.#details_dialog.setParent(particle_control_element);
+  }
+  private createIcon(): Renderer {
+    const icon = new Renderer(document.createElement("span"));
+    icon.setClassName("parsetup_par_icon");
+    return icon;
+  }
+  private setupDetailsDialog(id: number): DialogRenderer {
+    const details_dialog = new DialogRenderer(`particle_dialog_id${id}`);
+    details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
+    return details_dialog;
+  }
+  private setupDragButton(): ButtonRenderer {
+    const drag_button = new ButtonRenderer(
+      ()=>{
+        // Draggable button WIP (see Drag and Drop API)
+      }, 
+      'drag'  // Draggable button WIP (see Drag and Drop API)
+    )
+    drag_button.setClassName("material-symbols-sharp icon");
+    return drag_button;
+  }
+  private createTitleWrapper(id: number): HTMLDivElement {
+    const title_wrapper : HTMLDivElement = document.createElement('div');
+    title_wrapper.className = "parsetup_par_title_wrapper";
+    this.#icon.setParent(title_wrapper);
+    const title : HTMLSpanElement = document.createElement('span');
+    title.className = "parsetup_par_title";
+    title.innerHTML = id.toString();
+    title_wrapper.appendChild(title);
+    return title_wrapper;
+  }
+  private createButtonsWrapper(): HTMLDivElement {
+    const buttons_wrapper : HTMLDivElement = document.createElement('div');
+    buttons_wrapper.className = "parsetup_par_buttons_wrapper";
+    this.#details_dialog.getOpenButton().setParent(buttons_wrapper);
+    this.#drag_button.setParent(buttons_wrapper);
+    return buttons_wrapper;
+  }
+  getElement(): HTMLDivElement {
+    return super.getElement() as HTMLDivElement;
   }
 }
 
-class ParticleGroupControlRenderer extends Renderer {
-  #particles: ParticleControlRenderer[];
-  constructor(id: string, ...p_renderers: ParticleControlRenderer[]) {
+class ParticleUnitGroupRenderer extends Renderer {
+  #particles: ParticleUnitRenderer[];
+  constructor(id: string, ...p_renderers: ParticleUnitRenderer[]) {
     const particle_group_element: HTMLElement = document.createElement('article');
     super(particle_group_element, '', id);
     this.#particles = p_renderers;
     // boilerplate, far from done
+
   }
 }
 
