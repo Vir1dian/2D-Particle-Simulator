@@ -190,12 +190,6 @@ class ParticleUnitGroupRenderer extends Renderer {
     ;
 }
 _ParticleUnitGroupRenderer_particles = new WeakMap(), _ParticleUnitGroupRenderer_icon = new WeakMap(), _ParticleUnitGroupRenderer_details_dialog = new WeakMap(), _ParticleUnitGroupRenderer_drag_button = new WeakMap(), _ParticleUnitGroupRenderer_unit_list = new WeakMap();
-class ParticleSetRenderer extends ListRenderer {
-    constructor(...p_groups) {
-        super(...p_groups);
-        // boilerplate, far from done
-    }
-}
 function openModal(id_name, open) {
     const viewModal = document.querySelector(id_name);
     if (open) {

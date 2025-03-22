@@ -20,7 +20,7 @@ class Renderer {
         _Renderer_classname.set(this, void 0);
         _Renderer_id.set(this, void 0);
         __classPrivateFieldSet(this, _Renderer_element, element, "f");
-        __classPrivateFieldGet(this, _Renderer_element, "f").classList.add(classname);
+        __classPrivateFieldGet(this, _Renderer_element, "f").className = classname;
         __classPrivateFieldGet(this, _Renderer_element, "f").id = id;
         __classPrivateFieldSet(this, _Renderer_classname, classname, "f");
         __classPrivateFieldSet(this, _Renderer_id, id, "f");
@@ -30,7 +30,7 @@ class Renderer {
     }
     setClassName(classname) {
         __classPrivateFieldSet(this, _Renderer_classname, classname, "f");
-        __classPrivateFieldGet(this, _Renderer_element, "f").classList.add(classname);
+        __classPrivateFieldGet(this, _Renderer_element, "f").className = classname;
     }
     setID(id) {
         __classPrivateFieldSet(this, _Renderer_id, id, "f");

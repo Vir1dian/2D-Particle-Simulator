@@ -8,7 +8,7 @@ class Renderer {
  
   constructor(element: HTMLElement, classname: string = '', id: string = '') {
     this.#element = element;
-    this.#element.classList.add(classname);
+    this.#element.className = classname;
     this.#element.id = id;
     this.#classname = classname;
     this.#id = id;
@@ -18,7 +18,7 @@ class Renderer {
   }
   setClassName(classname: string): void {
     this.#classname = classname;
-    this.#element.classList.add(classname);
+    this.#element.className = classname;
   }
   setID(id: string): void {
     this.#id = id;

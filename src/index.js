@@ -76,7 +76,7 @@ const setupElementRenderers = {
             const test_oscillation = new Vector2D();
             const test_color = 'blue';
             const test_trajectory = false;
-            const test_particle_set = [
+            const test_group_0 = [
                 new Particle(),
                 new Particle(test_mass, test_radius, test_position, test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory),
                 new Particle('random', test_radius, test_position, 'random', test_acceleration, test_oscillation, 'random', test_trajectory),
@@ -85,14 +85,26 @@ const setupElementRenderers = {
                 new Particle('random', test_radius, test_position, 'random', test_acceleration, test_oscillation, 'random', test_trajectory),
                 new Particle(test_mass, test_radius, test_position, test_velocity, 'random', test_oscillation, test_color, test_trajectory),
                 new Particle(test_mass, 'random', test_position, test_velocity, test_acceleration, test_oscillation, 'random', test_trajectory),
-                new Particle(test_mass, test_radius, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory),
-                new Particle(test_mass, 7, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory, 1),
-                new Particle(test_mass, 7, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory, 1),
-                new Particle(test_mass, 7, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory, 1),
-                new Particle(test_mass, 10, 'random', test_velocity, test_acceleration, test_oscillation, 'red', test_trajectory, 2),
-                new Particle(test_mass, 10, 'random', test_velocity, test_acceleration, test_oscillation, 'red', test_trajectory, 2),
-                new Particle(test_mass, 10, 'random', test_velocity, test_acceleration, test_oscillation, 'red', test_trajectory, 2),
+                new Particle(test_mass, test_radius, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory)
             ];
+            const test_group_1 = [
+                new Particle(test_mass, 7, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory, 1),
+                new Particle(test_mass, 7, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory, 1),
+                new Particle(test_mass, 7, 'random', test_velocity, test_acceleration, test_oscillation, test_color, test_trajectory, 1)
+            ];
+            const test_group_2 = [
+                new Particle(test_mass, 10, 'random', test_velocity, test_acceleration, test_oscillation, 'red', test_trajectory, 2),
+                new Particle(test_mass, 10, 'random', test_velocity, test_acceleration, test_oscillation, 'red', test_trajectory, 2),
+                new Particle(test_mass, 10, 'random', test_velocity, test_acceleration, test_oscillation, 'red', test_trajectory, 2)
+            ];
+            const particle_groups = [
+                new ParticleUnitGroupRenderer(...test_group_0.map(particle => new ParticleUnitRenderer(new ParticlePointRenderer(particle, container)))),
+                new ParticleUnitGroupRenderer(...test_group_1.map(particle => new ParticleUnitRenderer(new ParticlePointRenderer(particle, container)))),
+                new ParticleUnitGroupRenderer(...test_group_2.map(particle => new ParticleUnitRenderer(new ParticlePointRenderer(particle, container))))
+            ];
+            const particle_set_element = new ListRenderer(...particle_groups);
+            const particle_setup = document.getElementById("control_parsetup");
+            particle_set_element.setParent(particle_setup);
         }
     }
 };

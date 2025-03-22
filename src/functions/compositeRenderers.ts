@@ -183,13 +183,6 @@ class ParticleUnitGroupRenderer extends Renderer {
   };
 }
 
-class ParticleSetRenderer extends ListRenderer {
-  constructor(...p_groups: ParticleUnitGroupRenderer[]) {
-    super(...p_groups);
-    // boilerplate, far from done
-
-  }
-}
 
 
 function openModal(id_name: string, open: boolean): void {
