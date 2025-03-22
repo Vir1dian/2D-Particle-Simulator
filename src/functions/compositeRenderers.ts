@@ -49,7 +49,7 @@ class ParticleUnitRenderer extends Renderer {
   constructor(p_renderer: ParticlePointRenderer) {
     const particle: Particle = p_renderer.getParticle();
     const particle_control_element : HTMLDivElement = document.createElement('div');
-    super(particle_control_element);
+    super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.id}`);
     // Saved renderers
     this.#particle_renderer = p_renderer;
     this.#icon = this.createIcon(particle.color);
@@ -69,6 +69,7 @@ class ParticleUnitRenderer extends Renderer {
   private setupDetailsDialog(id: number): DialogRenderer {
     const details_dialog = new DialogRenderer(`particle_dialog_id${id}`);
     details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
+    details_dialog.getOpenButton().getElement().innerHTML = "visibility";
 
     // Entire setup for dialog details
 
@@ -82,6 +83,7 @@ class ParticleUnitRenderer extends Renderer {
       'drag'  // Draggable button WIP (see Drag and Drop API)
     )
     drag_button.setClassName("material-symbols-sharp icon");
+    drag_button.getElement().innerHTML = "drag_handle";
     return drag_button;
   }
   private createTitleWrapper(id: number): HTMLDivElement {
@@ -128,7 +130,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#icon = this.createIcon(head_particle.color);
     this.#details_dialog = this.setupDetailsDialog(head_particle.id);
     this.#drag_button = this.setupDragButton();
-    this.#unit_list = this.setupUnitList();
+    this.#unit_list = new ListRenderer(...p_renderers);
     // Contents
     const header: HTMLElement = document.createElement('header');
     header.appendChild(this.createTitleWrapper(head_particle.group_id));
@@ -137,22 +139,47 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#unit_list.setParent(particle_group_element);
   }
   private createIcon(color: string): Renderer {
-
+    const icon = new Renderer(document.createElement("span"));
+    icon.setClassName("parsetup_group_icon");
+    icon.getElement().style.backgroundColor = color;
+    return icon;
   };
   private setupDetailsDialog(group_id: number): DialogRenderer {
+    const details_dialog = new DialogRenderer(`particle_group_dialog_id${group_id}`);
+    details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
+    details_dialog.getOpenButton().getElement().innerHTML = "keyboard_arrow_down";
 
+    // Entire setup for dialog details
+
+    return details_dialog;
   };
   private setupDragButton(): ButtonRenderer {
-
-  };
-  private setupUnitList(): ListRenderer {
-
+    const drag_button = new ButtonRenderer(
+      ()=>{
+        // Draggable button WIP (see Drag and Drop API)
+      }, 
+      'drag'  // Draggable button WIP (see Drag and Drop API)
+    )
+    drag_button.setClassName("material-symbols-sharp icon");
+    drag_button.getElement().innerHTML = "drag_handle";
+    return drag_button;
   };
   private createTitleWrapper(group_id: number): HTMLDivElement {
-
+    const title_wrapper : HTMLDivElement = document.createElement('div');
+    title_wrapper.className = "parsetup_group_title_wrapper";
+    this.#icon.setParent(title_wrapper);
+    const title : HTMLSpanElement = document.createElement('span');
+    title.className = "parsetup_group_title";
+    title.innerHTML = `Group ${group_id}`;
+    title_wrapper.appendChild(title);
+    return title_wrapper;
   };
   private createButtonsWrapper(): HTMLDivElement {
-
+    const buttons_wrapper : HTMLDivElement = document.createElement('div');
+    buttons_wrapper.className = "parsetup_group_buttons_wrapper";
+    this.#details_dialog.getOpenButton().setParent(buttons_wrapper);
+    this.#drag_button.setParent(buttons_wrapper);
+    return buttons_wrapper;
   };
 }
 

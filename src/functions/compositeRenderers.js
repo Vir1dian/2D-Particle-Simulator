@@ -56,7 +56,7 @@ class ParticleUnitRenderer extends Renderer {
     constructor(p_renderer) {
         const particle = p_renderer.getParticle();
         const particle_control_element = document.createElement('div');
-        super(particle_control_element);
+        super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.id}`);
         _ParticleUnitRenderer_particle_renderer.set(this, void 0);
         _ParticleUnitRenderer_icon.set(this, void 0);
         _ParticleUnitRenderer_details_dialog.set(this, void 0);
@@ -80,6 +80,7 @@ class ParticleUnitRenderer extends Renderer {
     setupDetailsDialog(id) {
         const details_dialog = new DialogRenderer(`particle_dialog_id${id}`);
         details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
+        details_dialog.getOpenButton().getElement().innerHTML = "visibility";
         // Entire setup for dialog details
         return details_dialog;
     }
@@ -89,6 +90,7 @@ class ParticleUnitRenderer extends Renderer {
         }, 'drag' // Draggable button WIP (see Drag and Drop API)
         );
         drag_button.setClassName("material-symbols-sharp icon");
+        drag_button.getElement().innerHTML = "drag_handle";
         return drag_button;
     }
     createTitleWrapper(id) {
@@ -134,7 +136,7 @@ class ParticleUnitGroupRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_icon, this.createIcon(head_particle.color), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(head_particle.id), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_drag_button, this.setupDragButton(), "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, this.setupUnitList(), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...p_renderers), "f");
         // Contents
         const header = document.createElement('header');
         header.appendChild(this.createTitleWrapper(head_particle.group_id));
@@ -143,21 +145,47 @@ class ParticleUnitGroupRenderer extends Renderer {
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").setParent(particle_group_element);
     }
     createIcon(color) {
+        const icon = new Renderer(document.createElement("span"));
+        icon.setClassName("parsetup_group_icon");
+        icon.getElement().style.backgroundColor = color;
+        return icon;
     }
     ;
     setupDetailsDialog(group_id) {
+        const details_dialog = new DialogRenderer(`particle_group_dialog_id${group_id}`);
+        details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
+        details_dialog.getOpenButton().getElement().innerHTML = "keyboard_arrow_down";
+        // Entire setup for dialog details
+        return details_dialog;
     }
     ;
     setupDragButton() {
-    }
-    ;
-    setupUnitList() {
+        const drag_button = new ButtonRenderer(() => {
+            // Draggable button WIP (see Drag and Drop API)
+        }, 'drag' // Draggable button WIP (see Drag and Drop API)
+        );
+        drag_button.setClassName("material-symbols-sharp icon");
+        drag_button.getElement().innerHTML = "drag_handle";
+        return drag_button;
     }
     ;
     createTitleWrapper(group_id) {
+        const title_wrapper = document.createElement('div');
+        title_wrapper.className = "parsetup_group_title_wrapper";
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").setParent(title_wrapper);
+        const title = document.createElement('span');
+        title.className = "parsetup_group_title";
+        title.innerHTML = `Group ${group_id}`;
+        title_wrapper.appendChild(title);
+        return title_wrapper;
     }
     ;
     createButtonsWrapper() {
+        const buttons_wrapper = document.createElement('div');
+        buttons_wrapper.className = "parsetup_group_buttons_wrapper";
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_details_dialog, "f").getOpenButton().setParent(buttons_wrapper);
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_drag_button, "f").setParent(buttons_wrapper);
+        return buttons_wrapper;
     }
     ;
 }
