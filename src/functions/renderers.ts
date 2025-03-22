@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 class Renderer {
   #element: HTMLElement;
   #classname: string;
@@ -20,6 +23,9 @@ class Renderer {
   setID(id: string): void {
     this.#id = id;
     this.#element.id = id;
+  }
+  setStyle(): void {
+
   }
   setParent(parent: HTMLElement | Renderer): void {
     const currentParent = this.#element.parentElement;
@@ -141,6 +147,9 @@ class TableCellRenderer extends Renderer {
     this.#row = row;
     this.#col = col;
   }
+  getElement(): HTMLTableCellElement {
+    return super.getElement() as HTMLTableCellElement;
+  }
   getRow(): number {
     return this.#row;
   }
@@ -151,7 +160,7 @@ class TableCellRenderer extends Renderer {
     const cell = this.getElement();
     cell.innerHTML = '';
     if (typeof content === 'string') {
-      cell.textContent = content;
+      cell.innerHTML = content;
     } else {
       cell.appendChild(content);
     }
@@ -190,6 +199,98 @@ class TableRenderer extends Renderer {
   }
   getElement(): HTMLTableElement {
     return super.getElement() as HTMLTableElement;
+  }
+}
+
+class ListRenderer extends Renderer {
+  #items: Renderer[];
+  constructor (...items: Renderer[]) {
+    const ul: HTMLUListElement = document.createElement('ul');
+    super(ul);
+    this.#items = [];
+    items.forEach(item => {
+      this.#items.push(item);
+      const li: HTMLLIElement = document.createElement('li');
+      item.setParent(li);
+      ul.appendChild(li);
+    });
+  }
+  getElement(): HTMLUListElement {
+    return super.getElement() as HTMLUListElement;
+  }
+  getLength(): number {
+    return this.#items.length;
+  }
+  push(item: Renderer): void {
+    this.#items.push(item);
+    const ul: HTMLUListElement = this.getElement();
+    const li: HTMLLIElement = document.createElement('li');
+    item.setParent(li);
+    ul.appendChild(li);
+  }
+  at(index: number): Renderer {
+    if (index < 0 || index >= this.#items.length) {
+      throw new Error("Invalid index.");
+    }
+    return this.#items[index];
+  }
+  map<T>(callback: (item: Renderer, index: number) => T): T[] {
+    return this.#items.map(callback);
+  }
+  forEach(callback: (item: Renderer, index: number) => void): void {
+    this.#items.forEach(callback);
+  }
+  filter(callback: (item: Renderer, index: number) => boolean): Renderer[] {
+    return this.#items.filter(callback);
+  }
+  swap(index1: number, index2: number): void {
+    if (index1 === index2) return;
+    // Swap in array
+    const s: Renderer[] = this.#items;
+    if (index1 < 0 || index2 < 0 || 
+        index1 >= s.length || 
+        index2 >= s.length) {
+      throw new Error("Invalid indices.");
+    }
+    let temp: Renderer = s[index1];
+    s[index1] = s[index2];
+    s[index2] = temp;
+    // Swap in DOM
+    const ul: HTMLUListElement = this.getElement();
+    const li1 = ul.children[index1] as HTMLElement;
+    const li2 = ul.children[index2] as HTMLElement;
+    if (li1 && li2) {
+      const next = li2.nextSibling; // Store next sibling for correct insertion order
+      ul.insertBefore(li2, li1);
+      if (next) {
+          ul.insertBefore(li1, next);
+      } else {
+          ul.appendChild(li1); // If li2 was last, append li1 at the end
+      }
+    }
+  }
+  removeItem(item: Renderer): void {
+    const index = this.#items.indexOf(item);
+    if (index !== -1) {
+      this.#items.splice(index, 1);
+      item.remove();
+    }
+  }
+  removeAtIndex(index: number, range: number): void {
+    if (index < 0 || range < 0 || index + range > this.#items.length) {
+      throw new Error("Invalid range.");
+    }
+    this.#items.splice(index, range).forEach(item => {item.remove()});
+  }
+  empty(): void {
+    this.#items.forEach(item => {
+      item.remove();
+    });
+    this.#items.splice(0, Infinity);
+  }
+  remove(): void {
+    this.empty();
+    super.remove();
   }
 }
 

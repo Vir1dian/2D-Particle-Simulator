@@ -5,62 +5,38 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var _RendererSequence_container_element, _RendererSequence_sequence;
-// Other Renderer classes soon
-class RendererSequence {
-    constructor(container_element, ...sequence_members) {
-        _RendererSequence_container_element.set(this, void 0);
-        _RendererSequence_sequence.set(this, void 0);
-        __classPrivateFieldSet(this, _RendererSequence_container_element, container_element, "f");
-        __classPrivateFieldSet(this, _RendererSequence_sequence, sequence_members, "f");
-        __classPrivateFieldGet(this, _RendererSequence_sequence, "f").forEach(renderer => renderer.setParent(__classPrivateFieldGet(this, _RendererSequence_container_element, "f")));
+var _ParticlePointRenderer_particle, _ParticleControlRenderer_particle, _ParticleGroupControlRenderer_particles;
+// Other larger Renderer classes
+class ParticlePointRenderer extends Renderer {
+    constructor(particle) {
+        const particle_element = document.createElement('div');
+        super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
+        _ParticlePointRenderer_particle.set(this, void 0);
+        __classPrivateFieldSet(this, _ParticlePointRenderer_particle, particle, "f");
     }
-    getElement() {
-        return __classPrivateFieldGet(this, _RendererSequence_container_element, "f");
-    }
-    push(renderer) {
-        __classPrivateFieldGet(this, _RendererSequence_sequence, "f").push(renderer);
-        renderer.setParent(__classPrivateFieldGet(this, _RendererSequence_container_element, "f"));
-    }
-    at(index) {
-        if (index < 0 || index > __classPrivateFieldGet(this, _RendererSequence_sequence, "f").length) {
-            throw new Error("Invalid index.");
-        }
-        return __classPrivateFieldGet(this, _RendererSequence_sequence, "f")[index];
-    }
-    swap(index1, index2) {
-        if (index1 === index2)
-            return;
-        const s = __classPrivateFieldGet(this, _RendererSequence_sequence, "f");
-        if (index1 < 0 || index2 < 0 ||
-            index1 > s.length ||
-            index2 > s.length) {
-            throw new Error("Invalid indices.");
-        }
-        let temp = s[index1];
-        s[index1] = s[index2];
-        s[index2] = temp;
-    }
-    remove(renderer) {
-        const index = __classPrivateFieldGet(this, _RendererSequence_sequence, "f").indexOf(renderer);
-        if (index !== -1) {
-            __classPrivateFieldGet(this, _RendererSequence_sequence, "f").splice(index, 1);
-            renderer.remove();
-        }
-    }
-    removeAtIndex(index, range) {
-        if (index < 0 || range < 0 || index + range >= __classPrivateFieldGet(this, _RendererSequence_sequence, "f").length) {
-            throw new Error("Invalid range.");
-        }
-        __classPrivateFieldGet(this, _RendererSequence_sequence, "f").splice(index, range).forEach(renderer => { renderer.remove(); });
+    update() {
     }
 }
-_RendererSequence_container_element = new WeakMap(), _RendererSequence_sequence = new WeakMap();
+_ParticlePointRenderer_particle = new WeakMap();
+class ParticleControlRenderer extends Renderer {
+    constructor(particle) {
+        const particle_element = document.createElement('div');
+        super(particle_element);
+        _ParticleControlRenderer_particle.set(this, void 0);
+        __classPrivateFieldSet(this, _ParticleControlRenderer_particle, particle, "f");
+        // boilerplate, far from done
+    }
+}
+_ParticleControlRenderer_particle = new WeakMap();
+class ParticleGroupControlRenderer extends Renderer {
+    constructor(particle) {
+        const particle_element = document.createElement('div');
+        super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
+        _ParticleGroupControlRenderer_particles.set(this, void 0);
+        this. = particle;
+    }
+}
+_ParticleGroupControlRenderer_particles = new WeakMap();
 function openModal(id_name, open) {
     const viewModal = document.querySelector(id_name);
     if (open) {

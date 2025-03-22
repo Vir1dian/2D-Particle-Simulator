@@ -1,57 +1,34 @@
-// Other Renderer classes soon
-class RendererSequence {
-  #container_element: HTMLElement;
-  #sequence: Renderer[];
-  constructor (container_element: HTMLElement, ...sequence_members: Renderer[]) {
-    this.#container_element = container_element;
-    this.#sequence = sequence_members;
-    this.#sequence.forEach(renderer => renderer.setParent(this.#container_element));
+// Other larger Renderer classes
+class ParticlePointRenderer extends Renderer {
+  #particle: Particle;
+  constructor(particle: Particle) {
+    const particle_element : HTMLDivElement = document.createElement('div');
+    super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
+    this.#particle = particle;
   }
-  getElement(): HTMLElement {
-    return this.#container_element;
-  }
-  push(renderer: Renderer): void {
-    this.#sequence.push(renderer);
-    renderer.setParent(this.#container_element);
-  }
-  at(index: number): Renderer {
-    if (index < 0 || index > this.#sequence.length) {
-      throw new Error("Invalid index.");
-    }
-    return this.#sequence[index];
-  }
-  swap(index1: number, index2: number): void {
-    if (index1 === index2) return;
-    const s: Renderer[] = this.#sequence;
-    if (index1 < 0 || index2 < 0 || 
-        index1 > s.length || 
-        index2 > s.length) {
-      throw new Error("Invalid indices.");
-    }
-    let temp: Renderer = s[index1];
-    s[index1] = s[index2];
-    s[index2] = temp;
-  }
-  remove(renderer: Renderer): void {
-    const index = this.#sequence.indexOf(renderer);
-    if (index !== -1) {
-      this.#sequence.splice(index, 1);
-      renderer.remove();
-    }
-  }
-  removeAtIndex(index: number, range: number): void {
-    if (index < 0 || range < 0 || index + range >= this.#sequence.length) {
-      throw new Error("Invalid range.");
-    }
-    this.#sequence.splice(index, range).forEach(renderer => {renderer.remove()});
+  update() {
+
   }
 }
 
+class ParticleControlRenderer extends Renderer {
+  #particle: Particle;
+  constructor(particle: Particle) {
+    const particle_element : HTMLDivElement = document.createElement('div');
+    super(particle_element);
+    this.#particle = particle;
+    // boilerplate, far from done
+  }
+}
 
-
-
-
-
+class ParticleGroupControlRenderer extends Renderer {
+  #particles: Particle[];
+  constructor(particle: Particle) {
+    const particle_element : HTMLDivElement = document.createElement('div');
+    super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
+    this.#particle = particle;
+  }
+}
 
 
 

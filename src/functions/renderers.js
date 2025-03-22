@@ -10,7 +10,10 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Renderer_element, _Renderer_classname, _Renderer_id, _InputRenderer_value, _InputRenderer_type, _InputRenderer_is_readonly, _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _TableCellRenderer_row, _TableCellRenderer_col, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells;
+var _Renderer_element, _Renderer_classname, _Renderer_id, _InputRenderer_value, _InputRenderer_type, _InputRenderer_is_readonly, _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _TableCellRenderer_row, _TableCellRenderer_col, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items;
+/**
+ *
+ */
 class Renderer {
     constructor(element, classname = '', id = '') {
         _Renderer_element.set(this, void 0);
@@ -32,6 +35,8 @@ class Renderer {
     setID(id) {
         __classPrivateFieldSet(this, _Renderer_id, id, "f");
         __classPrivateFieldGet(this, _Renderer_element, "f").id = id;
+    }
+    setStyle() {
     }
     setParent(parent) {
         const currentParent = __classPrivateFieldGet(this, _Renderer_element, "f").parentElement;
@@ -158,6 +163,9 @@ class TableCellRenderer extends Renderer {
         __classPrivateFieldSet(this, _TableCellRenderer_row, row, "f");
         __classPrivateFieldSet(this, _TableCellRenderer_col, col, "f");
     }
+    getElement() {
+        return super.getElement();
+    }
     getRow() {
         return __classPrivateFieldGet(this, _TableCellRenderer_row, "f");
     }
@@ -168,7 +176,7 @@ class TableCellRenderer extends Renderer {
         const cell = this.getElement();
         cell.innerHTML = '';
         if (typeof content === 'string') {
-            cell.textContent = content;
+            cell.innerHTML = content;
         }
         else {
             cell.appendChild(content);
@@ -211,6 +219,100 @@ class TableRenderer extends Renderer {
     }
 }
 _TableRenderer_rows = new WeakMap(), _TableRenderer_cols = new WeakMap(), _TableRenderer_cells = new WeakMap();
+class ListRenderer extends Renderer {
+    constructor(...items) {
+        const ul = document.createElement('ul');
+        super(ul);
+        _ListRenderer_items.set(this, void 0);
+        __classPrivateFieldSet(this, _ListRenderer_items, [], "f");
+        items.forEach(item => {
+            __classPrivateFieldGet(this, _ListRenderer_items, "f").push(item);
+            const li = document.createElement('li');
+            item.setParent(li);
+            ul.appendChild(li);
+        });
+    }
+    getElement() {
+        return super.getElement();
+    }
+    getLength() {
+        return __classPrivateFieldGet(this, _ListRenderer_items, "f").length;
+    }
+    push(item) {
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").push(item);
+        const ul = this.getElement();
+        const li = document.createElement('li');
+        item.setParent(li);
+        ul.appendChild(li);
+    }
+    at(index) {
+        if (index < 0 || index >= __classPrivateFieldGet(this, _ListRenderer_items, "f").length) {
+            throw new Error("Invalid index.");
+        }
+        return __classPrivateFieldGet(this, _ListRenderer_items, "f")[index];
+    }
+    map(callback) {
+        return __classPrivateFieldGet(this, _ListRenderer_items, "f").map(callback);
+    }
+    forEach(callback) {
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").forEach(callback);
+    }
+    filter(callback) {
+        return __classPrivateFieldGet(this, _ListRenderer_items, "f").filter(callback);
+    }
+    swap(index1, index2) {
+        if (index1 === index2)
+            return;
+        // Swap in array
+        const s = __classPrivateFieldGet(this, _ListRenderer_items, "f");
+        if (index1 < 0 || index2 < 0 ||
+            index1 >= s.length ||
+            index2 >= s.length) {
+            throw new Error("Invalid indices.");
+        }
+        let temp = s[index1];
+        s[index1] = s[index2];
+        s[index2] = temp;
+        // Swap in DOM
+        const ul = this.getElement();
+        const li1 = ul.children[index1];
+        const li2 = ul.children[index2];
+        if (li1 && li2) {
+            const next = li2.nextSibling; // Store next sibling for correct insertion order
+            ul.insertBefore(li2, li1);
+            if (next) {
+                ul.insertBefore(li1, next);
+            }
+            else {
+                ul.appendChild(li1); // If li2 was last, append li1 at the end
+            }
+        }
+    }
+    removeItem(item) {
+        const index = __classPrivateFieldGet(this, _ListRenderer_items, "f").indexOf(item);
+        if (index !== -1) {
+            __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, 1);
+            item.remove();
+        }
+    }
+    removeAtIndex(index, range) {
+        if (index < 0 || range < 0 || index + range > __classPrivateFieldGet(this, _ListRenderer_items, "f").length) {
+            throw new Error("Invalid range.");
+        }
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, range).forEach(item => { item.remove(); });
+    }
+    empty() {
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").forEach(item => {
+            item.remove();
+        });
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(0, Infinity);
+    }
+    remove() {
+        this.empty();
+        super.remove();
+    }
+}
+_ListRenderer_items = new WeakMap();
 class TooltipRenderer extends Renderer {
 }
 class DraggableRenderer extends Renderer {
