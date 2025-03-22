@@ -36,8 +36,6 @@ class Renderer {
         __classPrivateFieldSet(this, _Renderer_id, id, "f");
         __classPrivateFieldGet(this, _Renderer_element, "f").id = id;
     }
-    setStyle() {
-    }
     setParent(parent) {
         const currentParent = __classPrivateFieldGet(this, _Renderer_element, "f").parentElement;
         if (currentParent) {
@@ -79,6 +77,7 @@ class InputRenderer extends Renderer {
         return super.getElement();
     }
     setChild(child) {
+        // This is just to prevent setChild from being used for an InputRenderer
         throw new Error("InputRenderer does not support child elements.");
     }
     refreshValue() {

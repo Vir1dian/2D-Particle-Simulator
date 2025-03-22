@@ -1,13 +1,40 @@
 // Other larger Renderer classes
+class SimulationSettingsControlRenderer extends Renderer {
+
+}
+
 class ParticlePointRenderer extends Renderer {
   #particle: Particle;
-  constructor(particle: Particle) {
+  #container: BoxSpace;
+  constructor(particle: Particle, container: BoxSpace) {
     const particle_element : HTMLDivElement = document.createElement('div');
     super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
     this.#particle = particle;
+    this.#container = container;
+    // shape
+    particle_element.style.borderRadius = `${particle.radius}px`;
+    particle_element.style.width = `${2*particle.radius}px`;
+    particle_element.style.height = `${2*particle.radius}px`;
+    // positioning
+    particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
+    particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
+    // color
+    particle_element.style.backgroundColor = particle.color;
+  }
+  getElement(): HTMLDivElement {
+    return super.getElement() as HTMLDivElement;
   }
   update() {
-
+    const particle_element : HTMLDivElement = this.getElement() as HTMLDivElement;
+    // shape
+    particle_element.style.borderRadius = `${this.#particle.radius}px`;
+    particle_element.style.width = `${2*this.#particle.radius}px`;
+    particle_element.style.height = `${2*this.#particle.radius}px`;
+    // positioning
+    particle_element.style.left = `${(this.#particle.position.x - this.#particle.radius) - this.#container.x_min}px`;
+    particle_element.style.top = `${this.#container.y_max - (this.#particle.position.y + this.#particle.radius)}px`;
+    // color
+    particle_element.style.backgroundColor = this.#particle.color;
   }
 }
 
@@ -22,11 +49,12 @@ class ParticleControlRenderer extends Renderer {
 }
 
 class ParticleGroupControlRenderer extends Renderer {
-  #particles: Particle[];
-  constructor(particle: Particle) {
-    const particle_element : HTMLDivElement = document.createElement('div');
-    super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
-    this.#particle = particle;
+  #particles: ParticleControlRenderer[];
+  constructor(id: string, ...p_renderers: ParticleControlRenderer[]) {
+    const particle_group_element: HTMLElement = document.createElement('article');
+    super(particle_group_element, '', id);
+    this.#particles = p_renderers;
+    // boilerplate, far from done
   }
 }
 

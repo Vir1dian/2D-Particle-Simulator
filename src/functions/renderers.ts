@@ -24,9 +24,6 @@ class Renderer {
     this.#id = id;
     this.#element.id = id;
   }
-  setStyle(): void {
-
-  }
   setParent(parent: HTMLElement | Renderer): void {
     const currentParent = this.#element.parentElement;
     if (currentParent) {
@@ -64,6 +61,7 @@ class InputRenderer extends Renderer {
     return super.getElement() as HTMLInputElement;
   }
   setChild(child: HTMLElement | Renderer): void {
+    // This is just to prevent setChild from being used for an InputRenderer
     throw new Error("InputRenderer does not support child elements.");
   }
   refreshValue(): void {

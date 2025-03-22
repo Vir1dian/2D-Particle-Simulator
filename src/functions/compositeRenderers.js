@@ -5,19 +5,50 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _ParticlePointRenderer_particle, _ParticleControlRenderer_particle, _ParticleGroupControlRenderer_particles;
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var _ParticlePointRenderer_particle, _ParticlePointRenderer_container, _ParticleControlRenderer_particle, _ParticleGroupControlRenderer_particles;
 // Other larger Renderer classes
+class SimulationSettingsControlRenderer extends Renderer {
+}
 class ParticlePointRenderer extends Renderer {
-    constructor(particle) {
+    constructor(particle, container) {
         const particle_element = document.createElement('div');
         super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
         _ParticlePointRenderer_particle.set(this, void 0);
+        _ParticlePointRenderer_container.set(this, void 0);
         __classPrivateFieldSet(this, _ParticlePointRenderer_particle, particle, "f");
+        __classPrivateFieldSet(this, _ParticlePointRenderer_container, container, "f");
+        // shape
+        particle_element.style.borderRadius = `${particle.radius}px`;
+        particle_element.style.width = `${2 * particle.radius}px`;
+        particle_element.style.height = `${2 * particle.radius}px`;
+        // positioning
+        particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
+        particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
+        // color
+        particle_element.style.backgroundColor = particle.color;
+    }
+    getElement() {
+        return super.getElement();
     }
     update() {
+        const particle_element = this.getElement();
+        // shape
+        particle_element.style.borderRadius = `${__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius}px`;
+        particle_element.style.width = `${2 * __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius}px`;
+        particle_element.style.height = `${2 * __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius}px`;
+        // positioning
+        particle_element.style.left = `${(__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").position.x - __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius) - __classPrivateFieldGet(this, _ParticlePointRenderer_container, "f").x_min}px`;
+        particle_element.style.top = `${__classPrivateFieldGet(this, _ParticlePointRenderer_container, "f").y_max - (__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").position.y + __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius)}px`;
+        // color
+        particle_element.style.backgroundColor = __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").color;
     }
 }
-_ParticlePointRenderer_particle = new WeakMap();
+_ParticlePointRenderer_particle = new WeakMap(), _ParticlePointRenderer_container = new WeakMap();
 class ParticleControlRenderer extends Renderer {
     constructor(particle) {
         const particle_element = document.createElement('div');
@@ -29,11 +60,12 @@ class ParticleControlRenderer extends Renderer {
 }
 _ParticleControlRenderer_particle = new WeakMap();
 class ParticleGroupControlRenderer extends Renderer {
-    constructor(particle) {
-        const particle_element = document.createElement('div');
-        super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
+    constructor(id, ...p_renderers) {
+        const particle_group_element = document.createElement('article');
+        super(particle_group_element, '', id);
         _ParticleGroupControlRenderer_particles.set(this, void 0);
-        this. = particle;
+        __classPrivateFieldSet(this, _ParticleGroupControlRenderer_particles, p_renderers, "f");
+        // boilerplate, far from done
     }
 }
 _ParticleGroupControlRenderer_particles = new WeakMap();
