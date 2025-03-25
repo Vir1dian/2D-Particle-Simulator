@@ -1,6 +1,25 @@
-// Other larger Renderer classes
-class SimulationSettingsControlRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
+// Other larger Renderer classes, may move to separate files
+class UIControlRenderer extends Renderer {  // May extend from a TableRenderer or a ListRenderer instead
+  // WIP: Will need methods to handle Simulation Class's calls
+  #simulation: Simulation
+  // may create a UIConfig class soon
+  constructor(simulation: Simulation) {
+    const ui_settings_element : HTMLDivElement = document.createElement('div');
+    super(ui_settings_element);
+    this.#simulation = simulation;
+  }
+}
 
+class SimulationPresetRenderer extends Renderer {
+  #simulation: Simulation;
+  
+}
+
+class SimulationControlRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
+  #simulation: Simulation;
+  constructor(simulation: Simulation) {
+    this.#simulation = simulation;
+  }
 }
 
 class ParticlePointRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
@@ -189,17 +208,6 @@ class ParticleUnitGroupRenderer extends Renderer {  // WIP: Will need methods to
   };
 }
 
-function openModal(id_name: string, open: boolean): void {
-  const viewModal: HTMLDialogElement = document.querySelector(id_name) as HTMLDialogElement;
-  if (open) {
-    viewModal.showModal();
-    pauseSimulation();  // Won't matter for the new dialog, we actually want the simulation to keep running while we have it open here
-    console.log()
-  } else {
-    viewModal.close();
-  }
-}
-
 function loadContainerElement(container: BoxSpace) {
   const wrapper : HTMLElement | null = document.querySelector('.simulation_wrapper');
 
@@ -210,15 +218,6 @@ function loadContainerElement(container: BoxSpace) {
   wrapper?.appendChild(container_element);
 }
 
-const simulationSettingsElementFunctions = {
-  
-}
-
-const particleElementFunctions = {
-  createGroupElement() {
-
-  }
-}
 
 // TO BE REPLACED
 const simulationSettingsElementFunctionsOld = {
