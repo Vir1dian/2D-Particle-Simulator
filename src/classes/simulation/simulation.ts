@@ -128,7 +128,25 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
       focus_color: "yellow"
     },
     particle_groups: new Map([
-      [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, particles: [] }]
+      [DEFAULT_GROUPING.group_id, { 
+        grouping: {
+          group_id: DEFAULT_GROUPING.group_id,
+          position: 'random',
+          velocity: 'random',
+          mass: 'random',
+          color: 'random',
+        }, 
+        particles: Particle.createBatch(
+          {
+            group_id: DEFAULT_GROUPING.group_id,
+            position: 'random',
+            velocity: 'random',
+            mass: 'random',
+            color: 'random',
+          },
+          40
+        )
+      }]
     ])
   },
   rybg: {
@@ -140,7 +158,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
     },
     environment: {
       statics: {
-        elasticity: 1,
+        elasticity: 0.7,
         drag: 0,
         gravity: new Vector2D(),
         electric_field: new Vector2D(),
