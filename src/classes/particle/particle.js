@@ -1,8 +1,7 @@
 "use strict";
-const simulation_particles = [];
 const particle_colors = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
 class Particle {
-    constructor(mass = 1, radius = 5, position = new Vector2D(), velocity = new Vector2D(), acceleration = new Vector2D(), oscillation = new Vector2D(), color = 'black', trajectory = false, group_id = 0) {
+    constructor(config = {}) {
         Particle.instance_count++;
         this.id = Particle.instance_count;
         if (mass === 'random')
@@ -53,11 +52,6 @@ class Particle {
         this.group_id = group_id;
     }
     collideContainer(container) {
-        // const tangential_velocity = 
-        //   this.oscillation.x && this.oscillation.y 
-        //     ? new Vector2D(this.oscillation.x * Math.cos(time_elapsed), this.oscillation.y * Math.sin(time_elapsed))
-        //     : new Vector2D();
-        // const total_velocity = this.position.add(tangential_velocity);
         let hasCollided = false;
         if (this.position.x + this.radius > container.x_max) { // collision with right (totally elastic)
             this.velocity.x = -this.velocity.x;
@@ -186,44 +180,6 @@ class Particle {
         else {
             this.velocity.x = a;
             this.velocity.y = b;
-        }
-    }
-    /**
-     * Sets a new acceleration in a 2D space for a particle
-     *
-     * @param {number | 'random'} a Either the acceleration of the particle in the x-axis, or the setting for randomizing the particle acceleration
-     * @param {number} b Either the acceleration of the particle in the y-axis, or the set range (-max to +max) that the particle acceleration can be randomized
-     */
-    setAcceleration(a = 0, b = 0) {
-        if (a === 'random') {
-            let max = b === 0 ? 1 : b;
-            this.acceleration = this.acceleration.randomize_float(max);
-        }
-        else {
-            this.acceleration.x = a;
-            this.acceleration.y = b;
-        }
-    }
-    /**
-   * Sets new oscillation amplitudes in a 2D space for a particle
-   *
-   * @param {number | 'random'} a Either the amplitudes of the particle in the x-axis, or the setting for randomizing the oscillation amplitudes
-   * @param {number} b Either the amplitudes of the particle in the y-axis, or the set range (-max to +max) that the particle position can be randomized
-   * @param {'' | 'circular'} c Only used by the 'random' setting, constrains the randomized amplitudes to achieve circular motion
-   */
-    setOscillation(a = 0, b = 0, c = '') {
-        if (a === 'random') {
-            let max = b === 0 ? 1 : b;
-            this.oscillation = this.oscillation.randomize_float(max);
-            if (c === 'circular') {
-                const common_amplitude = Math.random() * (2 * max) - max;
-                this.oscillation.x = common_amplitude;
-                this.oscillation.y = common_amplitude;
-            }
-        }
-        else {
-            this.oscillation.x = a;
-            this.oscillation.y = b;
         }
     }
 }

@@ -12,19 +12,9 @@ interface SimEnvironment {
 }
 
 interface SimConfig {
-  trajectory_step: number,
+  path_trace_step: number,
   is_draggable: boolean,
   focus_color: string
-}
-
-interface ParticleGrouping {  // To be moved to particle.ts
-  group_id: string,
-  mass?: number | 'random',
-  radius?: number | 'random',
-  position?: Vector2D | 'random',
-  velocity?: Vector2D | 'random',
-  color?: string | 'random',
-  trajectory?: boolean
 }
 
 class Simulation {
@@ -34,15 +24,15 @@ class Simulation {
   #particle_groups: Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
 
   constructor(
-    container: BoxSpace = sim_defaults.box, 
-    environment: SimEnvironment = sim_defaults.environment, 
-    config: SimConfig = sim_defaults.config
+    container: BoxSpace = SIM_DEFAULTS.box, 
+    environment: SimEnvironment = SIM_DEFAULTS.environment, 
+    config: SimConfig = SIM_DEFAULTS.config
   ) {  
     this.#container = container;
     this.#environment = environment;
     this.#config = config;
     this.#particle_groups = new Map([
-      ["Ungrouped", { grouping: { group_id: "Ungrouped" }, particles: [] }]
+      [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, particles: [] }]
     ]);
     // particle_groups is populated after instantiation
   }
@@ -81,7 +71,7 @@ class Simulation {
   }
 }
 
-const sim_defaults = {
+const SIM_DEFAULTS = {
   box: {
     x_min: -250,
     x_max: 250,
@@ -99,13 +89,13 @@ const sim_defaults = {
     dynamics: {}
   },
   config: {
-    trajectory_step: 0.5,
+    path_trace_step: 0.5,
     is_draggable: false,
     focus_color: "yellow"
   }
 }
 
 // For testing Simulation class, will eventually save all presets in "simulation_presets.json"
-const temporary_presets = {
+const TEMPORARY_PRESETS = {
 
 }

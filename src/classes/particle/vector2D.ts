@@ -36,7 +36,7 @@ class Vector2D {
     return this.scalarMultiply(coefficient);
   }
 
-  randomize_int(max: number = 1, min?: number): Vector2D {
+  static randomize_int(max: number = 1, min?: number): Vector2D {
     if (min === undefined) {
       min = -max;
     }
@@ -46,7 +46,7 @@ class Vector2D {
     return new Vector2D(random_x, random_y);
   }
 
-  randomize_float(max: number = 1, min?: number): Vector2D {
+  static randomize_float(max: number = 1, min?: number): Vector2D {
     if (min === undefined) {
       min = -max;
     }

@@ -1,74 +1,78 @@
-const simulation_particles: Particle[] = [];
-const particle_colors: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
+interface ParticleGrouping {
+  group_id: string,
+  radius?: number | 'random',
+  position?: Vector2D | 'random',
+  velocity?: Vector2D | 'random',
+  mass?: number | 'random',
+  charge?: number | 'random',
+  color?: string | 'random',
+  enable_path_tracing?: boolean
+}
+
+const PARTICLE_COLORS: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
+
+const DEFAULT_GROUPING: ParticleGrouping = {
+  group_id: "Ungrouped",
+  radius: 5,
+  position: new Vector2D(),
+  velocity: new Vector2D(),
+  mass: 1,
+  charge: 0,
+  color: "black",
+  enable_path_tracing: false
+}
 
 class Particle {
-  static instance_count = 0;
-  id: number;
-  group_id: number;
-  mass: number;
+  static #instance_count = 0;
+
+  #id: number;
+  #group_id: string;
   radius: number;
   position: Vector2D;
   velocity: Vector2D;
-  acceleration: Vector2D;  // To be removed, a particle cannot accelerate by itself, this will be handled by the simulation environment soon
-  oscillation: Vector2D;  // To be removed, why did I even add this bruh
+  mass: number;
+  charge: number;
   color: string;
-  trajectory: boolean;  // will be strictly limited to certain simulation presets only, will be designed so the user cannot ever access this property
+  enable_path_tracing: boolean;  // will be strictly limited to certain simulation presets only, the user should not ever be able access this property
 
-  constructor(
-    mass: number | 'random' = 1,
-    radius: number | 'random' = 5,
-    position: Vector2D | 'random' = new Vector2D(), 
-    velocity: Vector2D | 'random' = new Vector2D(), 
-    acceleration: Vector2D | 'random' = new Vector2D(),
-    oscillation: Vector2D | 'random' = new Vector2D(),
-    color: string | 'random' = 'black',
-    trajectory: boolean = false,
-    group_id: number = 0
-  ) {
-    Particle.instance_count++;
-    this.id = Particle.instance_count;
-    if (mass === 'random') this.mass = Math.floor(Math.random() * (10 - 1 + 1) + 1);
-    else if (mass <= 0) throw new Error('Invalid mass argument.');
-    else this.mass = mass;
-    if (radius === 'random') this.radius = Math.floor(Math.random() * (20 - 5 + 1) + 5);
-    else if (radius <= 0) throw new Error('Invalid radius argument.');
-    else this.radius = radius;
-    if (position === 'random') {
-      this.position = new Vector2D();
-      this.setPosition('random', container.x_max - this.radius)
-    }
-    else this.position = new Vector2D(position.x, position.y);
-    if (velocity === 'random') {
-      this.velocity = new Vector2D();
-      this.setVelocity('random', 200)
-    }
-    else this.velocity = new Vector2D(velocity.x, velocity.y);
-    if (acceleration === 'random') {
-      this.acceleration = new Vector2D();
-      this.setAcceleration('random', 100)
-    }
-    else this.acceleration = new Vector2D(acceleration.x, acceleration.y);
-    if (oscillation === 'random') {
-      this.oscillation = new Vector2D();
-      this.setOscillation('random', 0.001)
-    }
-    else this.oscillation = new Vector2D(oscillation.x, oscillation.y);
-    if (color === 'random') {
-      this.color = particle_colors[Math.floor(Math.random() * particle_colors.length)];
-    }
-    else if (!particle_colors.includes(color)) this.color = 'black';
-    else this.color = color;
-    this.trajectory = trajectory;
-    simulation_particles.push(this);
-    this.group_id = group_id;
+  constructor(grouping: ParticleGrouping = DEFAULT_GROUPING) {
+    this.#id = ++Particle.#instance_count;
+    this.#group_id = grouping.group_id;
+    this.radius = this.resolveValue(grouping.radius, DEFAULT_GROUPING.radius as number, () => Math.floor(Math.random() * (20 - 5 + 1) + 5));
+    this.position = this.resolveVector(grouping.position, DEFAULT_GROUPING.position as Vector2D);
+    this.velocity = this.resolveVector(grouping.velocity, DEFAULT_GROUPING.velocity as Vector2D);
+    this.mass = this.resolveValue(grouping.mass, DEFAULT_GROUPING.mass as number, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
+    this.charge = this.resolveValue(grouping.charge, DEFAULT_GROUPING.charge as number, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
+    this.color = this.resolveColor(grouping.color);
+    this.enable_path_tracing = grouping.enable_path_tracing ?? DEFAULT_GROUPING.enable_path_tracing as boolean;
   }
 
+  private resolveValue<T>(value: T | 'random' | undefined, default_value: T, randomizer: () => T): T {
+    if (!value) return default_value;
+    if (value === 'random') return randomizer();
+    return value;
+  }
+  private resolveVector(vector: Vector2D | 'random' | undefined, default_vector: Vector2D, rand_range = 100): Vector2D {
+    if (!vector) return default_vector;
+    if (vector === 'random') return Vector2D.randomize_int(rand_range);
+    return vector;
+  }
+  private resolveColor(color: string | 'random' | undefined): string {
+    if (!color) return DEFAULT_GROUPING.color as string;
+    if (color === 'random') return PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+    if (!PARTICLE_COLORS.includes(color)) return "black";
+    return color;
+  }
+
+  getID(): number {
+    return this.#id;
+  }
+  getGroupID(): string {
+    return this.#group_id;
+  }
+
+  // Behavior (Called repeatedly by animation.js)
   collideContainer(container: BoxSpace): boolean {
-    // const tangential_velocity = 
-    //   this.oscillation.x && this.oscillation.y 
-    //     ? new Vector2D(this.oscillation.x * Math.cos(time_elapsed), this.oscillation.y * Math.sin(time_elapsed))
-    //     : new Vector2D();
-    // const total_velocity = this.position.add(tangential_velocity);
     let hasCollided: boolean = false;
 
     if (this.position.x + this.radius > container.x_max) {  // collision with right (totally elastic)
@@ -142,17 +146,12 @@ class Particle {
    * @param {'euler' | 'rungekutta'} method The calculation used, euler by default
    */
   move(dt: number, t: number, method: 'euler' | 'rungekutta' = 'euler') {
-    if (this.oscillation.x && this.oscillation.y) {
-      const tangential_velocity = new Vector2D(this.oscillation.x * Math.cos(t), this.oscillation.y * Math.sin(t));
-      this.position = this.position.add(tangential_velocity);
-    }
-
     // dv/dt = g - (b/m)*v
-    const gravity = simulation_settings.environment.acceleration;
+    const gravity = simulation_settings.environment.acceleration;  // Currently a global constant, will replace with inputs soon
     const dragOverMass = simulation_settings.environment.drag / this.mass;
     if (method === 'euler') {
       const drag_force = this.velocity.scalarMultiply(-dragOverMass)
-      const new_acceleration = this.acceleration.add(gravity.add(drag_force));
+      const new_acceleration = gravity.add(drag_force);
       this.velocity = this.velocity.add(new_acceleration.scalarMultiply(dt));
       this.position = this.position.add(this.velocity.scalarMultiply(dt));
     }
@@ -195,7 +194,7 @@ class Particle {
   setPosition(a: number | 'random' = 0, b: number = 0) {
     if (a === 'random') {
       let max = b === 0 ? 1 : b;
-      this.position = this.position.randomize_int(max);
+      this.position = Vector2D.randomize_int(max);
     }
     else {
       this.position.x = a;
@@ -212,51 +211,12 @@ class Particle {
   setVelocity(a: number | 'random' = 0, b: number = 0) {
     if (a === 'random') {
       let max = b === 0 ? 1 : b;
-      this.velocity = this.velocity.randomize_int(max);
+      this.velocity = Vector2D.randomize_int(max);
     }
     else {
       this.velocity.x = a;
       this.velocity.y = b;
     }
   }
-
-  /**
-   * Sets a new acceleration in a 2D space for a particle
-   * 
-   * @param {number | 'random'} a Either the acceleration of the particle in the x-axis, or the setting for randomizing the particle acceleration
-   * @param {number} b Either the acceleration of the particle in the y-axis, or the set range (-max to +max) that the particle acceleration can be randomized
-   */
-  setAcceleration(a: number | 'random' = 0, b: number = 0) {
-    if (a === 'random') {
-      let max = b === 0 ? 1 : b;
-      this.acceleration = this.acceleration.randomize_float(max);
-    }
-    else {
-      this.acceleration.x = a;
-      this.acceleration.y = b;
-    }
-  }
-
-    /**
-   * Sets new oscillation amplitudes in a 2D space for a particle
-   * 
-   * @param {number | 'random'} a Either the amplitudes of the particle in the x-axis, or the setting for randomizing the oscillation amplitudes
-   * @param {number} b Either the amplitudes of the particle in the y-axis, or the set range (-max to +max) that the particle position can be randomized
-   * @param {'' | 'circular'} c Only used by the 'random' setting, constrains the randomized amplitudes to achieve circular motion
-   */
-  setOscillation(a: number | 'random' = 0, b: number = 0, c: '' | 'circular' = '') {
-    if (a === 'random') {
-      let max = b === 0 ? 1 : b;
-      this.oscillation = this.oscillation.randomize_float(max);
-      if (c === 'circular') {
-        const common_amplitude = Math.random() * (2*max) - max;
-        this.oscillation.x = common_amplitude;
-        this.oscillation.y = common_amplitude;
-      }
-    }
-    else {
-      this.oscillation.x = a;
-      this.oscillation.y = b;
-    }
-  }
 }
+
