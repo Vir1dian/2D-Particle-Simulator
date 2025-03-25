@@ -462,11 +462,9 @@ class NumberInputRenderer extends InputRenderer {
     super(id, value.toString());
     this.getElement().type = "number";
   }
-  getValue(): number {
-    return parseFloat(super.getValue()) || 0;
-  }
-  setValue(value: number): void {
-    super.setValue(value.toString());
+  setValue(value: string): void {
+    // prevents the setValue base method from attempting to set a non-parsable value into for a type="number"
+    super.setValue(parseFloat(value)?.toString() ?? '0');
   }
 }
 
@@ -476,12 +474,16 @@ class CheckboxInputRenderer extends InputRenderer {
     this.getElement().type = "checkbox";
     this.getElement().checked = checked;
   }
-  getValue(): boolean {
+  getValue(): string {
+    // prevents the getValue base method from attempting to return a value attribute for a type="checkbox"
+    return this.getElement().checked.toString();  
+  }
+  getBooleanValue(): boolean {
     return this.getElement().checked;
   }
-  setValue(checked: boolean): void {
-    this.getElement().checked = checked;
-    super.setValue(checked ? "true" : "false");
+  setValue(value: "true" | "false"): void {
+    this.getElement().checked = value === "true";
+    super.setValue(value);
   }
 }
 
