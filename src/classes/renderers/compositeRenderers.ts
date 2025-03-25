@@ -10,7 +10,7 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
   }
 }
 
-class SimulationPresetInputRenderer extends Renderer {  // WIP: No callback for apply button
+class SimulationPresetInputRenderer extends Renderer { 
   #simulation: Simulation;
   #preset_dropdown: DatalistInputRenderer;
   #apply_button: ButtonRenderer;
@@ -26,22 +26,35 @@ class SimulationPresetInputRenderer extends Renderer {  // WIP: No callback for 
     this.#apply_button.setParent(simulation_preset_input);
   }
   private setupPresetDropdown(): DatalistInputRenderer {
-    
+    const preset_data: OptionRenderer[] = [];
+    Object.keys(TEMPORARY_PRESETS).forEach((preset_name, preset) => {
+      preset_data.push(new OptionRenderer(preset_name, ''));
+    });
+    const dropdown: DatalistInputRenderer = new DatalistInputRenderer('simsetup_presets_input', preset_data, 'simsetup_presets');
+    return dropdown;
   }
   private setupApplyButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(
       () => {
-        // still figuring out how to load presets onto simulation class instance...
+        const preset_name: string = this.#preset_dropdown.getValue();
+        const preset: SimPreset = TEMPORARY_PRESETS[preset_name];
+        this.applyPreset(preset);
       }
     )
     button.setID('simsetup_presets_button');
     return button;
+  }
+
+  applyPreset(preset: SimPreset): void {
+    // TODO
   }
 }
 
 class SimulationControlRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
   #simulation: Simulation;
   constructor(simulation: Simulation) {
+    const simulation_settings: HTMLDivElement = document.createElement('div');
+    super(simulation_settings, '', 'simsetup_global_variables_wrapper');
     this.#simulation = simulation;
   }
 }

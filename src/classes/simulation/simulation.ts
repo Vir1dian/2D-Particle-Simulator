@@ -24,24 +24,22 @@ class Simulation {
   #particle_groups: Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
 
   constructor(
-    container: BoxSpace = SIM_DEFAULTS.box, 
-    environment: SimEnvironment = SIM_DEFAULTS.environment, 
-    config: SimConfig = SIM_DEFAULTS.config
+    container: BoxSpace = DEFAULT_PRESET.container, 
+    environment: SimEnvironment = DEFAULT_PRESET.environment, 
+    config: SimConfig = DEFAULT_PRESET.config
   ) {  
     this.#container = container;
     this.#environment = environment;
     this.#config = config;
-    this.#particle_groups = new Map([
-      [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, particles: [] }]
-    ]);
+    this.#particle_groups = DEFAULT_PRESET.particle_groups;
     // particle_groups is populated after instantiation
   }
-  addGroup(grouping: ParticleGrouping) {  
+  addGroup(grouping: ParticleGrouping): void {  
     // Assumes that group_id has valid formatting: i.e. no spaces, hash symbols, etc.
     if (this.#particle_groups.has(grouping.group_id)) throw new Error("Group name already exists.");
     this.#particle_groups.set(grouping.group_id, { grouping, particles: [] });
   }
-  addParticle(particle: Particle, group_id: string) {
+  addParticle(particle: Particle, group_id: string = DEFAULT_GROUPING.group_id): void {
     // Assumes that the particle already fits the grouping
     const group = this.#particle_groups.get(group_id);
     if (!group) throw new Error("Group name does not exist.");
@@ -49,13 +47,13 @@ class Simulation {
   }
 
   // Setters & Getters
-  setContainer(container: BoxSpace) {
+  setContainer(container: BoxSpace): void {
     this.#container = container;
   }
-  setEnvironment(environment: SimEnvironment) {
+  setEnvironment(environment: SimEnvironment): void {
     this.#environment = environment;
   }
-  setConfig(config: SimConfig) {
+  setConfig(config: SimConfig): void {
     this.#config = config;
   }
   getContainer(): BoxSpace {
@@ -72,8 +70,8 @@ class Simulation {
   }
 }
 
-const SIM_DEFAULTS = {
-  box: {
+const DEFAULT_PRESET: SimPreset = {
+  container: {
     x_min: -250,
     x_max: 250,
     y_min: -250,
@@ -93,7 +91,10 @@ const SIM_DEFAULTS = {
     path_trace_step: 0.5,
     is_draggable: false,
     focus_color: "yellow"
-  }
+  },
+  particle_groups: new Map([
+    [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, particles: [] }]
+  ])
 }
 
 // For testing Simulation class, will eventually save all presets in "simulation_presets.json"
