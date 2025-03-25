@@ -42,80 +42,6 @@ class Renderer {
   }
 }
 
-class InputRenderer extends Renderer {
-  #value: string;  // may not be strings for some Input types, will write derived InputRenderer classes for those as needed
-  #name: string;
-  #is_disabled: boolean;
-  #label: HTMLLabelElement;  // appended manually within the DOM, but not required
-  constructor(id: string, value: string = "", name: string = "", is_disabled: boolean = false) {
-    const input: HTMLInputElement = document.createElement('input');
-    input.value = value;
-    input.name = name;
-    input.disabled = is_disabled;
-    super(input, "", id);  // id required for labels
-    this.#value = value;
-    this.#name = name;
-    this.#is_disabled = is_disabled;
-    const label: HTMLLabelElement = document.createElement('label');
-    label.htmlFor = id;
-    this.#label = label;
-  }
-
-  // getters
-  getElement(): HTMLInputElement {
-    return super.getElement() as HTMLInputElement;
-  }
-  getValue(): string {  // Must be disabled if implementing a renderer input type="image"
-    return this.#value;
-  }
-  getName(): string {
-    return this.#name;
-  }
-  isDisabled(): boolean {
-    return this.#is_disabled;
-  }
-  getLabel(): HTMLLabelElement {  // Must be disabled if implementing a renderer input type="hidden"
-    return this.#label;
-  }
-
-  // setters
-  setChild(child: HTMLElement | Renderer): void {
-    // Prevents setChild from being used for an InputRenderer
-    throw new Error("InputRenderer does not support child elements.");
-  }
-  setValue(value: string): void {
-    this.#value = value;
-    this.getElement().value = value;
-  }
-  refreshValue(): void {  // Must be called manually for now, for flexibility with events
-    this.#value = this.getElement().value;
-  }
-  setName(name: string): void {
-    this.#name = name;
-    this.getElement().name = name;
-  }
-  toggleDisabled(): void {
-    this.#is_disabled = !this.#is_disabled;
-    this.getElement().disabled = this.#is_disabled;
-  }
-  setID(id: string): void {
-    super.setID(id);
-    this.#label.htmlFor = id;
-  }
-}
-
-class NumberInputRenderer extends InputRenderer {
-
-}
-
-class CheckboxInputRenderer extends InputRenderer {
-
-}
-
-class SelectInputRenderer extends InputRenderer {
-
-}
-
 class ButtonRenderer extends Renderer {
   #callback: (...args: any) => void;
   #event: string;
@@ -193,6 +119,9 @@ class TableCellRenderer extends Renderer {
   }
   getCol(): number {
     return this.#col;
+  }
+  setParent(parent: HTMLElement | Renderer): void {
+    throw new Error("Cannot append TableCellRenderer to a parent. Manipulate through TableRenderer instead.");
   }
   setContent(content: string | HTMLElement): void {
     const cell = this.getElement();
@@ -333,6 +262,231 @@ class ListRenderer extends Renderer {
     this.empty();
     super.remove();
   }
+}
+
+class OptionRenderer extends Renderer {
+  #value: string;
+  #label: string;
+  constructor(value: string, label?: string) {
+    const option: HTMLOptionElement = document.createElement('option');
+    super(option);
+    this.#value = value;
+    this.#label = label ? label : value;
+    option.value = this.#value;
+    option.innerHTML = this.#label;
+  }
+  getElement(): HTMLOptionElement {
+    return super.getElement() as HTMLOptionElement;
+  }
+  getValue(): string {
+    return this.#value;
+  }
+  getLabel(): string {
+    return this.#label;
+  }
+  setChild(child: HTMLElement | Renderer): void {
+    throw new Error("setChild() not allowed for OptionRenderer.");
+  }
+  setParent(parent: HTMLSelectElement | SelectRenderer): void {
+    super.setParent(parent);
+  }
+  // setValue(value: string): void {
+  //   this.#value = value;
+  //   this.getElement().value = value;
+  // }
+  // setLabel(label: string): void {
+  //   this.#label = label;
+  //   this.getElement().innerHTML = this.#label;
+  // }
+}
+
+class SelectRenderer extends Renderer {
+  #options: OptionRenderer[];
+  #selected: OptionRenderer;
+  #name: string;
+  #label_element: HTMLLabelElement;  // appended manually within the DOM, but not required
+  constructor(id: string, options: OptionRenderer[], selected_value: string = "", name: string = "") {
+    const select: HTMLSelectElement = document.createElement('select');
+    select.name = name;
+    super(select, "", id);  // id required for label elements
+
+    // Creates a trivial option at the start, intended to persist until the renderer is removed
+    this.#options = [new OptionRenderer("", ""), ...options];  
+    options.forEach(option => {
+      option.setParent(this);
+    });
+
+    this.#selected = this.resolveSelectedValue(selected_value);
+    this.#name = name;
+
+    select.value = this.#selected.getValue();
+    select.addEventListener("change", () => {
+      this.#selected = this.#options[this.getOptionIndex(this.getElement().value)];
+    });
+
+    const label: HTMLLabelElement = document.createElement('label');
+    label.htmlFor = id;
+    this.#label_element = label;
+  }
+  private resolveSelectedValue(selected_value: string): OptionRenderer {
+    // Returns the first available option or undefined if the selected_value does not exist among options
+    const selected_option = this.#options.find(option => option.getValue() === selected_value);
+    if (selected_option) return selected_option;
+    return this.#options[0];
+  }
+
+  // getters
+  getElement(): HTMLSelectElement {
+    return super.getElement() as HTMLSelectElement;
+  }
+  getOptions(): OptionRenderer[] {
+    return this.#options;
+  }
+  getSelectedOption(): OptionRenderer {
+    return this.#selected;
+  }
+  getName(): string {
+    return this.#name;
+  }
+  getLabelElement(): HTMLLabelElement {
+    return this.#label_element;
+  }
+  getOptionIndex(value: string): number {
+    return this.#options.findIndex(option => option.getValue() === value);
+  }
+
+  // setters
+  setChild(child: HTMLElement | Renderer): void {
+    // Prevents setChild from being used for an SelectRenderer
+    throw new Error("setChild() not allowed for SelectRenderer, use addOption().");
+  }
+  setName(name: string): void {
+    this.#name = name;
+    this.getElement().name = name;
+  }
+  setID(id: string): void {
+    super.setID(id);
+    this.#label_element.htmlFor = id;
+  }
+  addOption(option: OptionRenderer): void {
+    if (this.getOptionIndex(option.getValue()) !== -1) throw new Error("Value already exists in select.");
+    this.#options.push(option);
+    option.setParent(this);
+  }
+  removeOption(option: OptionRenderer): void {
+    const index: number = this.getOptionIndex(option.getValue());
+    if (index < 1) return;
+    this.#options[index].remove();
+    this.#options.splice(index, 1);
+
+    if (this.#selected === option) {
+      // Sets the selected option to the first nontrivial option if possible, if it was deleted.
+      this.#selected = this.#options.length > 1 ? this.#options[1] : this.#options[0];
+      this.getElement().value = this.#selected.getValue();
+    }
+  }
+  empty(): void {  // remove all optionRenderers except for the trivial renderer (index 0)
+    this.#options.slice(1).forEach(option => option.remove());
+    this.#options.splice(1, Infinity);
+  }
+  remove(): void {
+    this.empty();
+    super.remove();
+  }
+}
+
+class InputRenderer extends Renderer {
+  #value: string;  // may not be strings for some Input types, will write derived InputRenderer classes for those as needed
+  #name: string;
+  #is_disabled: boolean;
+  #label_element: HTMLLabelElement;  // appended manually within the DOM, but not required
+  constructor(id: string, value: string = "", name: string = "", is_disabled: boolean = false) {
+    const input: HTMLInputElement = document.createElement('input');
+    input.value = value;
+    input.name = name;
+    input.disabled = is_disabled;
+    super(input, "", id);  // id required for label elements
+    this.#value = value;
+    this.#name = name;
+    this.#is_disabled = is_disabled;
+    const label: HTMLLabelElement = document.createElement('label');
+    label.htmlFor = id;
+    this.#label_element = label;
+  }
+
+  // getters
+  getElement(): HTMLInputElement {
+    return super.getElement() as HTMLInputElement;
+  }
+  getValue(): string {  // Must be disabled if implementing a renderer input type="image"
+    return this.#value;
+  }
+  getName(): string {
+    return this.#name;
+  }
+  isDisabled(): boolean {
+    return this.#is_disabled;
+  }
+  getLabelElement(): HTMLLabelElement {  // Must be disabled if implementing a renderer input type="hidden"
+    return this.#label_element;
+  }
+
+  // setters
+  setChild(child: HTMLElement | Renderer): void {
+    // Prevents setChild from being used for an InputRenderer
+    throw new Error("InputRenderer does not support child elements.");
+  }
+  setValue(value: string): void {
+    this.#value = value;
+    this.getElement().value = value;
+  }
+  refreshValue(): void {  // Must be called manually for now, for flexibility with events
+    this.#value = this.getElement().value;
+  }
+  setName(name: string): void {
+    this.#name = name;
+    this.getElement().name = name;
+  }
+  toggleDisabled(): void {
+    this.#is_disabled = !this.#is_disabled;
+    this.getElement().disabled = this.#is_disabled;
+  }
+  setID(id: string): void {
+    super.setID(id);
+    this.#label_element.htmlFor = id;
+  }
+}
+
+class NumberInputRenderer extends InputRenderer {
+  constructor(id: string, value: number = 0) {
+    super(id, value.toString());
+    this.getElement().type = "number";
+  }
+  getValue(): number {
+    return parseFloat(super.getValue()) || 0;
+  }
+  setValue(value: number): void {
+    super.setValue(value.toString());
+  }
+}
+
+class CheckboxInputRenderer extends InputRenderer {
+  constructor(id: string, checked: boolean = false) {
+    super(id, checked ? "true" : "false");
+    this.getElement().type = "checkbox";
+    this.getElement().checked = checked;
+  }
+  getValue(): boolean {
+    return this.getElement().checked;
+  }
+  setValue(checked: boolean): void {
+    this.getElement().checked = checked;
+    super.setValue(checked ? "true" : "false");
+  }
+}
+
+class DatalistInputRenderer extends InputRenderer {
+
 }
 
 class TooltipRenderer extends Renderer {
