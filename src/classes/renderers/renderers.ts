@@ -43,43 +43,77 @@ class Renderer {
 }
 
 class InputRenderer extends Renderer {
-  #value: string | number | boolean;
-  #type: 'text' | 'number' | 'checkbox';
-  #is_readonly: boolean;
-  constructor(value: string | number | boolean, type: 'text' | 'number' | 'checkbox', is_readonly: boolean = false) {
+  #value: string;  // may not be strings for some Input types, will write derived InputRenderer classes for those as needed
+  #name: string;
+  #is_disabled: boolean;
+  #label: HTMLLabelElement;  // appended manually within the DOM, but not required
+  constructor(id: string, value: string = "", name: string = "", is_disabled: boolean = false) {
     const input: HTMLInputElement = document.createElement('input');
-    input.type = type;
-    input.value = value.toString();
-    input.readOnly = is_readonly;
-    super(input);
-    this.validateType(type, value);
+    input.value = value;
+    input.name = name;
+    input.disabled = is_disabled;
+    super(input, "", id);  // id required for labels
     this.#value = value;
-    this.#type = type;
-    this.#is_readonly = is_readonly;
+    this.#name = name;
+    this.#is_disabled = is_disabled;
+    const label: HTMLLabelElement = document.createElement('label');
+    label.htmlFor = id;
+    this.#label = label;
   }
+
+  // getters
   getElement(): HTMLInputElement {
     return super.getElement() as HTMLInputElement;
   }
+  getValue(): string {  // Must be disabled if implementing a renderer input type="image"
+    return this.#value;
+  }
+  getName(): string {
+    return this.#name;
+  }
+  isDisabled(): boolean {
+    return this.#is_disabled;
+  }
+  getLabel(): HTMLLabelElement {  // Must be disabled if implementing a renderer input type="hidden"
+    return this.#label;
+  }
+
+  // setters
   setChild(child: HTMLElement | Renderer): void {
-    // This is just to prevent setChild from being used for an InputRenderer
+    // Prevents setChild from being used for an InputRenderer
     throw new Error("InputRenderer does not support child elements.");
   }
-  refreshValue(): void {
+  setValue(value: string): void {
+    this.#value = value;
+    this.getElement().value = value;
+  }
+  refreshValue(): void {  // Must be called manually for now, for flexibility with events
     this.#value = this.getElement().value;
   }
-  setValue(value: string | number | boolean): void {
-    this.validateType(this.#type, value);
-    this.#value = value;
-    this.getElement().value = value.toString();
+  setName(name: string): void {
+    this.#name = name;
+    this.getElement().name = name;
   }
-  private validateType(type: 'text' | 'number' | 'checkbox', value: string | number | boolean): void {
-    const isInvalid1: boolean = type === 'text' && typeof value !== 'string';
-    const isInvalid2: boolean = type === 'number' && typeof value !== 'number';
-    const isInvalid3: boolean = type === 'checkbox' && typeof value !== 'boolean';
-    if (isInvalid1 || isInvalid2 || isInvalid3) {
-      throw new Error("InputRenderer parameter type mismatch.");
-    }
+  toggleDisabled(): void {
+    this.#is_disabled = !this.#is_disabled;
+    this.getElement().disabled = this.#is_disabled;
   }
+  setID(id: string): void {
+    super.setID(id);
+    this.#label.htmlFor = id;
+  }
+}
+
+class NumberInputRenderer extends InputRenderer {
+
+}
+
+class CheckboxInputRenderer extends InputRenderer {
+
+}
+
+class SelectInputRenderer extends InputRenderer {
+
 }
 
 class ButtonRenderer extends Renderer {
