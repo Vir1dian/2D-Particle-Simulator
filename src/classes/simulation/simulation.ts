@@ -154,7 +154,94 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
       focus_color: "yellow"
     },
     particle_groups: new Map([
-      [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, particles: [] }]
+      [DEFAULT_GROUPING.group_id, { 
+        grouping: DEFAULT_GROUPING, 
+        particles: [] 
+      }],
+      ["red", { 
+        grouping: {
+          group_id: "red",
+          radius: 15,
+          position: new Vector2D(-200,200),
+          velocity: new Vector2D(200,-200),
+          mass: 4,
+          color: 'red',
+        }, 
+        particles: Particle.createBatch(
+          {
+            group_id: "red",
+            radius: 15,
+            position: new Vector2D(-200,200),
+            velocity: new Vector2D(200,-200),
+            mass: 4,
+            color: 'red',
+          },
+          10
+        ) 
+      }],
+      ["yellow", { 
+        grouping: {
+          group_id: "yellow",
+          radius: 15,
+          position: new Vector2D(-200,-200),
+          velocity: new Vector2D(200,200),
+          mass: 2,
+          color: 'orange',
+        }, 
+        particles: Particle.createBatch(
+          {
+            group_id: "yellow",
+            radius: 15,
+            position: new Vector2D(-200,-200),
+            velocity: new Vector2D(200,200),
+            mass: 2,
+            color: 'orange',
+          },
+          10
+        ) 
+      }],
+      ["blue", { 
+        grouping: {
+          group_id: "blue",
+          radius: 15,
+          position: new Vector2D(200,200),
+          velocity: new Vector2D(-200,-200),
+          mass: 3,
+          color: 'blue',
+        }, 
+        particles: Particle.createBatch(
+          {
+            group_id: "blue",
+            radius: 15,
+            position: new Vector2D(200,200),
+            velocity: new Vector2D(-200,-200),
+            mass: 3,
+            color: 'blue',
+          },
+          10
+        ) 
+      }],
+      ["green", { 
+        grouping: {
+          group_id: "green",
+          radius: 15,
+          position: new Vector2D(200,-200),
+          velocity: new Vector2D(-200,200),
+          mass: 1,
+          color: 'green',
+        }, 
+        particles: Particle.createBatch(
+          {
+            group_id: "green",
+            radius: 15,
+            position: new Vector2D(200,-200),
+            velocity: new Vector2D(-200,200),
+            mass: 1,
+            color: 'green',
+          },
+          10
+        ) 
+      }]
     ])
   }
 }

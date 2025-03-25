@@ -64,6 +64,15 @@ class Particle {
     return color;
   }
 
+  static createBatch(grouping: ParticleGrouping = DEFAULT_GROUPING, amount: number): Particle[] {
+    const particle_batch: Particle[] = [];
+    for (let i = 0; i < amount; i++) {
+      const p: Particle = new Particle(grouping);
+      particle_batch.push(p);
+    }
+    return particle_batch;
+  }
+
   getID(): number {
     return this.#id;
   }
