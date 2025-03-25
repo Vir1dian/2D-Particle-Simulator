@@ -136,6 +136,10 @@ const setupElementRenderers = {
 
 // Sets the initial state of all elements
 function loadAll() {
+
+  const sim: Simulation = new Simulation();
+
+
   loadContainerElement(container);
   simulationSettingsElementFunctionsOld.loadPreset('empty');
 

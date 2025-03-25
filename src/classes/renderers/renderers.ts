@@ -253,9 +253,7 @@ class ListRenderer extends Renderer {
     this.#items.splice(index, range).forEach(item => {item.remove()});
   }
   empty(): void {
-    this.#items.forEach(item => {
-      item.remove();
-    });
+    this.#items.forEach(item => item.remove());
     this.#items.splice(0, Infinity);
   }
   remove(): void {
@@ -287,7 +285,7 @@ class OptionRenderer extends Renderer {
   setChild(child: HTMLElement | Renderer): void {
     throw new Error("setChild() not allowed for OptionRenderer.");
   }
-  setParent(parent: HTMLSelectElement | SelectRenderer): void {
+  setParent(parent: HTMLSelectElement | SelectRenderer | HTMLDataListElement): void {
     super.setParent(parent);
   }
   // setValue(value: string): void {
@@ -488,7 +486,51 @@ class CheckboxInputRenderer extends InputRenderer {
 }
 
 class DatalistInputRenderer extends InputRenderer {
+  // Note, datalists only require option elements with set values, no need for inner text labels
+  #data: OptionRenderer[];  
+  #datalist_element: HTMLDataListElement;
+  constructor(id: string, data: OptionRenderer[], data_id: string) {
+    super(id);
+    const datalist: HTMLDataListElement = document.createElement("datalist");
+    datalist.id = data_id;
+    this.getElement().setAttribute("list", data_id);
 
+    this.#data = data;
+    this.#datalist_element = datalist;
+  }
+  setParent(parent: HTMLElement | Renderer): void {
+    super.setParent(parent);
+    if (parent instanceof HTMLElement) parent.appendChild(this.#datalist_element);
+    else parent.getElement().appendChild(this.#datalist_element);
+  }
+  getDatalist(): OptionRenderer[] {
+    return this.#data;
+  }
+  getDatalistElement(): HTMLDataListElement {
+    return this.#datalist_element;
+  }
+  getOptionIndex(value: string): number {
+    return this.#data.findIndex(option => option.getValue() === value);
+  }
+  addOption(option: OptionRenderer): void {
+    if (this.getOptionIndex(option.getValue()) !== -1) throw new Error("Value already exists in datalist.");
+    this.#data.push(option);
+    option.setParent(this.#datalist_element);
+  }
+  removeOption(option: OptionRenderer): void {
+    const index: number = this.getOptionIndex(option.getValue());
+    if (index < 0) return;
+    this.#data[index].remove();
+    this.#data.splice(index, 1);
+  }
+  empty(): void {
+    this.#data.forEach(option => option.remove());
+    this.#data.splice(0, Infinity);
+  }
+  remove(): void {
+    this.empty();
+    super.remove();
+  }
 }
 
 class TooltipRenderer extends Renderer {
