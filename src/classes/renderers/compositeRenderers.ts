@@ -10,9 +10,33 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
   }
 }
 
-class SimulationPresetRenderer extends Renderer {
+class SimulationPresetInputRenderer extends Renderer {  // WIP: No callback for apply button
   #simulation: Simulation;
-  
+  #preset_dropdown: DatalistInputRenderer;
+  #apply_button: ButtonRenderer;
+  constructor(simulation: Simulation) {
+    const simulation_preset_input: HTMLDivElement = document.createElement('div');
+    super(simulation_preset_input, '', 'simsetup_presets_wrapper');
+    this.#simulation = simulation;
+    // saved renderers
+    this.#preset_dropdown = this.setupPresetDropdown();
+    this.#apply_button = this.setupApplyButton();
+    // contents
+    this.#preset_dropdown.setParent(simulation_preset_input);
+    this.#apply_button.setParent(simulation_preset_input);
+  }
+  private setupPresetDropdown(): DatalistInputRenderer {
+    
+  }
+  private setupApplyButton(): ButtonRenderer {
+    const button: ButtonRenderer = new ButtonRenderer(
+      () => {
+        // still figuring out how to load presets onto simulation class instance...
+      }
+    )
+    button.setID('simsetup_presets_button');
+    return button;
+  }
 }
 
 class SimulationControlRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls

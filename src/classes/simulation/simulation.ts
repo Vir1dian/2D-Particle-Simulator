@@ -130,5 +130,31 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
     particle_groups: new Map([
       [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, particles: [] }]
     ])
+  },
+  rybg: {
+    container: {
+      x_min: -250,
+      x_max: 250,
+      y_min: -250,
+      y_max: 250
+    },
+    environment: {
+      statics: {
+        elasticity: 1,
+        drag: 0,
+        gravity: new Vector2D(),
+        electric_field: new Vector2D(),
+        magnetic_field: new Vector2D()
+      },
+      dynamics: {}
+    },
+    config: {
+      path_trace_step: 0.5,
+      is_draggable: false,
+      focus_color: "yellow"
+    },
+    particle_groups: new Map([
+      [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, particles: [] }]
+    ])
   }
 }
