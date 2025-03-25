@@ -12,7 +12,6 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _Simulation_container, _Simulation_environment, _Simulation_config, _Simulation_particle_groups;
 class Simulation {
-    // No default variables, only one Simulation instance exists upon loading the website (unless I implement rigid exhibits/displays in the future)
     constructor(container = sim_defaults.box, environment = sim_defaults.environment, config = sim_defaults.config) {
         _Simulation_container.set(this, void 0);
         _Simulation_environment.set(this, void 0);
@@ -22,17 +21,21 @@ class Simulation {
         __classPrivateFieldSet(this, _Simulation_environment, environment, "f");
         __classPrivateFieldSet(this, _Simulation_config, config, "f");
         __classPrivateFieldSet(this, _Simulation_particle_groups, new Map([
-            [{ group_id: "Ungrouped" }, []]
+            ["Ungrouped", { grouping: { group_id: "Ungrouped" }, particles: [] }]
         ]), "f");
-        // particle_groups are populated after instantiation
+        // particle_groups is populated after instantiation
     }
     addGroup(grouping) {
-        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping, []);
+        if (__classPrivateFieldGet(this, _Simulation_particle_groups, "f").has(grouping.group_id))
+            throw new Error("Group name already exists.");
+        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, { grouping, particles: [] });
     }
     addParticle(particle, group_id) {
-        var _a;
-        const group = getGroupById(group_id); // To be implemented
-        (_a = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group)) === null || _a === void 0 ? void 0 : _a.push(particle);
+        // Assumes that the particle already fits the grouping
+        const group = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group_id);
+        if (!group)
+            throw new Error("Group name does not exist.");
+        group.particles.push(particle);
     }
     // Setters & Getters
     setContainer(container) {

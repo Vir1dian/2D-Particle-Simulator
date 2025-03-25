@@ -31,9 +31,8 @@ class Simulation {
   #container: BoxSpace;
   #environment: SimEnvironment;
   #config: SimConfig;
-  #particle_groups: Map<ParticleGrouping, Particle[]>;
+  #particle_groups: Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
 
-  // No default variables, only one Simulation instance exists upon loading the website (unless I implement rigid exhibits/displays in the future)
   constructor(
     container: BoxSpace = sim_defaults.box, 
     environment: SimEnvironment = sim_defaults.environment, 
@@ -43,18 +42,19 @@ class Simulation {
     this.#environment = environment;
     this.#config = config;
     this.#particle_groups = new Map([
-      [{group_id: "Ungrouped"}, []]
+      ["Ungrouped", { grouping: { group_id: "Ungrouped" }, particles: [] }]
     ]);
-    // particle_groups are populated after instantiation
+    // particle_groups is populated after instantiation
   }
   addGroup(grouping: ParticleGrouping) {
-    this.#particle_groups.set(
-      grouping, []
-    )
+    if (this.#particle_groups.has(grouping.group_id)) throw new Error("Group name already exists.");
+    this.#particle_groups.set(grouping.group_id, { grouping, particles: [] });
   }
   addParticle(particle: Particle, group_id: string) {
-    const group: ParticleGrouping = getGroupById(group_id);  // To be implemented
-    this.#particle_groups.get(group)?.push(particle);
+    // Assumes that the particle already fits the grouping
+    const group = this.#particle_groups.get(group_id);
+    if (!group) throw new Error("Group name does not exist.");
+    group.particles.push(particle);
   }
 
   // Setters & Getters
@@ -76,7 +76,7 @@ class Simulation {
   getConfig(): SimConfig {
     return this.#config;
   }
-  getParticles(): Map<ParticleGrouping, Particle[]> {
+  getParticles(): Map<string, { grouping: ParticleGrouping, particles: Particle[]}> {
     return this.#particle_groups;
   }
 }
