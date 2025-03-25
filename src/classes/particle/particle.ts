@@ -9,10 +9,10 @@ class Particle {
   radius: number;
   position: Vector2D;
   velocity: Vector2D;
-  acceleration: Vector2D;
-  oscillation: Vector2D;
+  acceleration: Vector2D;  // To be removed, a particle cannot accelerate by itself, this will be handled by the simulation environment soon
+  oscillation: Vector2D;  // To be removed, why did I even add this bruh
   color: string;
-  trajectory: boolean;
+  trajectory: boolean;  // will be strictly limited to certain simulation presets only, will be designed so the user cannot ever access this property
 
   constructor(
     mass: number | 'random' = 1,
