@@ -189,8 +189,6 @@ class ParticleUnitGroupRenderer extends Renderer {
   };
 }
 
-
-
 function openModal(id_name: string, open: boolean): void {
   const viewModal: HTMLDialogElement = document.querySelector(id_name) as HTMLDialogElement;
   if (open) {
