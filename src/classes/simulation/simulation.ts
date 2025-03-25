@@ -36,7 +36,8 @@ class Simulation {
     ]);
     // particle_groups is populated after instantiation
   }
-  addGroup(grouping: ParticleGrouping) {
+  addGroup(grouping: ParticleGrouping) {  
+    // Assumes that group_id has valid formatting: i.e. no spaces, hash symbols, etc.
     if (this.#particle_groups.has(grouping.group_id)) throw new Error("Group name already exists.");
     this.#particle_groups.set(grouping.group_id, { grouping, particles: [] });
   }

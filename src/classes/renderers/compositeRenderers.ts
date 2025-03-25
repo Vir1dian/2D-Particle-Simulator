@@ -1,14 +1,14 @@
 // Other larger Renderer classes
-class SimulationSettingsControlRenderer extends Renderer {
+class SimulationSettingsControlRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
 
 }
 
-class ParticlePointRenderer extends Renderer {
+class ParticlePointRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
   #particle: Particle;
   #container: BoxSpace;
   constructor(particle: Particle, container: BoxSpace) {
     const particle_element : HTMLDivElement = document.createElement('div');
-    super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
+    super(particle_element, 'particle_element', `particle_element_id${particle.getID()}`);
     this.#particle = particle;
     this.#container = container;
     // shape
@@ -46,7 +46,7 @@ class ParticlePointRenderer extends Renderer {
   }
 }
 
-class ParticleUnitRenderer extends Renderer {
+class ParticleUnitRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
   #particle_renderer: ParticlePointRenderer;
   #icon: Renderer;
   #details_dialog: DialogRenderer;
@@ -54,15 +54,15 @@ class ParticleUnitRenderer extends Renderer {
   constructor(p_renderer: ParticlePointRenderer) {
     const particle: Particle = p_renderer.getParticle();
     const particle_control_element : HTMLDivElement = document.createElement('div');
-    super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.id}`);
+    super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.getID()}`);
     // Saved renderers
     this.#particle_renderer = p_renderer;
     this.#icon = this.createIcon(particle.color);
-    this.#details_dialog = this.setupDetailsDialog(particle.id);
+    this.#details_dialog = this.setupDetailsDialog(particle.getID());
     this.#drag_button = this.setupDragButton(); 
     // Contents
     this.#particle_renderer.setContainer(container);
-    particle_control_element.appendChild(this.createTitleWrapper(particle.id));
+    particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));
     particle_control_element.appendChild(this.createButtonsWrapper());
     this.#details_dialog.setParent(particle_control_element);
   }
@@ -117,8 +117,8 @@ class ParticleUnitRenderer extends Renderer {
   }
 }
 
-class ParticleUnitGroupRenderer extends Renderer {
-  #particles: ParticleUnitRenderer[];
+class ParticleUnitGroupRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
+  #particle_renderers: ParticleUnitRenderer[];
   #icon: Renderer;
   #details_dialog: DialogRenderer;
   #drag_button: ButtonRenderer;
@@ -130,16 +130,16 @@ class ParticleUnitGroupRenderer extends Renderer {
     }
     const head_particle: Particle = p_renderers[0].getParticlePoint().getParticle();
     const particle_group_element: HTMLElement = document.createElement('article');
-    super(particle_group_element, 'parsetup_group', `parsetup_group_id${head_particle.group_id}`);
+    super(particle_group_element, 'parsetup_group', `parsetup_group_id${head_particle.getGroupID()}`);
     // Saved renderers
-    this.#particles = p_renderers;
+    this.#particle_renderers = p_renderers;
     this.#icon = this.createIcon(head_particle.color);
-    this.#details_dialog = this.setupDetailsDialog(head_particle.id);
+    this.#details_dialog = this.setupDetailsDialog(head_particle.getGroupID());
     this.#drag_button = this.setupDragButton();
     this.#unit_list = new ListRenderer(...p_renderers);
     // Contents
     const header: HTMLElement = document.createElement('header');
-    header.appendChild(this.createTitleWrapper(head_particle.group_id));
+    header.appendChild(this.createTitleWrapper(head_particle.getGroupID()));
     header.appendChild(this.createButtonsWrapper());
     particle_group_element.appendChild(header);
     this.#unit_list.setParent(particle_group_element);
@@ -150,7 +150,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     icon.getElement().style.backgroundColor = color;
     return icon;
   };
-  private setupDetailsDialog(group_id: number): DialogRenderer {
+  private setupDetailsDialog(group_id: string): DialogRenderer {
     const details_dialog = new DialogRenderer(`particle_group_dialog_id${group_id}`);
     details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
     details_dialog.getOpenButton().getElement().innerHTML = "keyboard_arrow_down";
@@ -170,7 +170,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     drag_button.getElement().innerHTML = "drag_handle";
     return drag_button;
   };
-  private createTitleWrapper(group_id: number): HTMLDivElement {
+  private createTitleWrapper(group_id: string): HTMLDivElement {
     const title_wrapper : HTMLDivElement = document.createElement('div');
     title_wrapper.className = "parsetup_group_title_wrapper";
     this.#icon.setParent(title_wrapper);
