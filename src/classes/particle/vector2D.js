@@ -27,7 +27,7 @@ class Vector2D {
         const coefficient = 1 / magnitude;
         return this.scalarMultiply(coefficient);
     }
-    randomize_int(max = 1, min) {
+    static randomize_int(max = 1, min) {
         if (min === undefined) {
             min = -max;
         }
@@ -35,7 +35,7 @@ class Vector2D {
         const random_y = Math.floor(Math.random() * (max - min + 1) + min);
         return new Vector2D(random_x, random_y);
     }
-    randomize_float(max = 1, min) {
+    static randomize_float(max = 1, min) {
         if (min === undefined) {
             min = -max;
         }

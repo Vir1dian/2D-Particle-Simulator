@@ -110,6 +110,7 @@ const setupElementRenderers = {
 };
 // Sets the initial state of all elements
 function loadAll() {
+    const sim = new Simulation();
     loadContainerElement(container);
     simulationSettingsElementFunctionsOld.loadPreset('empty');
     openControlItem(control_items_data[2]); // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle

@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Renderer_element, _Renderer_classname, _Renderer_id, _InputRenderer_value, _InputRenderer_type, _InputRenderer_is_readonly, _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _TableCellRenderer_row, _TableCellRenderer_col, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items;
+var _Renderer_element, _Renderer_classname, _Renderer_id, _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _TableCellRenderer_row, _TableCellRenderer_col, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element;
 /**
  *
  */
@@ -58,46 +58,6 @@ class Renderer {
     }
 }
 _Renderer_element = new WeakMap(), _Renderer_classname = new WeakMap(), _Renderer_id = new WeakMap();
-class InputRenderer extends Renderer {
-    constructor(value, type, is_readonly = false) {
-        const input = document.createElement('input');
-        input.type = type;
-        input.value = value.toString();
-        input.readOnly = is_readonly;
-        super(input);
-        _InputRenderer_value.set(this, void 0);
-        _InputRenderer_type.set(this, void 0);
-        _InputRenderer_is_readonly.set(this, void 0);
-        this.validateType(type, value);
-        __classPrivateFieldSet(this, _InputRenderer_value, value, "f");
-        __classPrivateFieldSet(this, _InputRenderer_type, type, "f");
-        __classPrivateFieldSet(this, _InputRenderer_is_readonly, is_readonly, "f");
-    }
-    getElement() {
-        return super.getElement();
-    }
-    setChild(child) {
-        // This is just to prevent setChild from being used for an InputRenderer
-        throw new Error("InputRenderer does not support child elements.");
-    }
-    refreshValue() {
-        __classPrivateFieldSet(this, _InputRenderer_value, this.getElement().value, "f");
-    }
-    setValue(value) {
-        this.validateType(__classPrivateFieldGet(this, _InputRenderer_type, "f"), value);
-        __classPrivateFieldSet(this, _InputRenderer_value, value, "f");
-        this.getElement().value = value.toString();
-    }
-    validateType(type, value) {
-        const isInvalid1 = type === 'text' && typeof value !== 'string';
-        const isInvalid2 = type === 'number' && typeof value !== 'number';
-        const isInvalid3 = type === 'checkbox' && typeof value !== 'boolean';
-        if (isInvalid1 || isInvalid2 || isInvalid3) {
-            throw new Error("InputRenderer parameter type mismatch.");
-        }
-    }
-}
-_InputRenderer_value = new WeakMap(), _InputRenderer_type = new WeakMap(), _InputRenderer_is_readonly = new WeakMap();
 class ButtonRenderer extends Renderer {
     constructor(callback, event = 'click') {
         const button = document.createElement('button');
@@ -176,6 +136,9 @@ class TableCellRenderer extends Renderer {
     }
     getCol() {
         return __classPrivateFieldGet(this, _TableCellRenderer_col, "f");
+    }
+    setParent(parent) {
+        throw new Error("Cannot append TableCellRenderer to a parent. Manipulate through TableRenderer instead.");
     }
     setContent(content) {
         const cell = this.getElement();
@@ -310,9 +273,7 @@ class ListRenderer extends Renderer {
         __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, range).forEach(item => { item.remove(); });
     }
     empty() {
-        __classPrivateFieldGet(this, _ListRenderer_items, "f").forEach(item => {
-            item.remove();
-        });
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").forEach(item => item.remove());
         __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(0, Infinity);
     }
     remove() {
@@ -321,6 +282,265 @@ class ListRenderer extends Renderer {
     }
 }
 _ListRenderer_items = new WeakMap();
+class OptionRenderer extends Renderer {
+    constructor(value, label) {
+        const option = document.createElement('option');
+        super(option);
+        _OptionRenderer_value.set(this, void 0);
+        _OptionRenderer_label.set(this, void 0);
+        __classPrivateFieldSet(this, _OptionRenderer_value, value, "f");
+        __classPrivateFieldSet(this, _OptionRenderer_label, label ? label : value, "f");
+        option.value = __classPrivateFieldGet(this, _OptionRenderer_value, "f");
+        option.innerHTML = __classPrivateFieldGet(this, _OptionRenderer_label, "f");
+    }
+    getElement() {
+        return super.getElement();
+    }
+    getValue() {
+        return __classPrivateFieldGet(this, _OptionRenderer_value, "f");
+    }
+    getLabel() {
+        return __classPrivateFieldGet(this, _OptionRenderer_label, "f");
+    }
+    setChild(child) {
+        throw new Error("setChild() not allowed for OptionRenderer.");
+    }
+    setParent(parent) {
+        super.setParent(parent);
+    }
+}
+_OptionRenderer_value = new WeakMap(), _OptionRenderer_label = new WeakMap();
+class SelectRenderer extends Renderer {
+    constructor(id, options, selected_value = "", name = "") {
+        const select = document.createElement('select');
+        select.name = name;
+        super(select, "", id); // id required for label elements
+        _SelectRenderer_options.set(this, void 0);
+        _SelectRenderer_selected.set(this, void 0);
+        _SelectRenderer_name.set(this, void 0);
+        _SelectRenderer_label_element.set(this, void 0); // appended manually within the DOM, but not required
+        // Creates a trivial option at the start, intended to persist until the renderer is removed
+        __classPrivateFieldSet(this, _SelectRenderer_options, [new OptionRenderer("", ""), ...options], "f");
+        options.forEach(option => {
+            option.setParent(this);
+        });
+        __classPrivateFieldSet(this, _SelectRenderer_selected, this.resolveSelectedValue(selected_value), "f");
+        __classPrivateFieldSet(this, _SelectRenderer_name, name, "f");
+        select.value = __classPrivateFieldGet(this, _SelectRenderer_selected, "f").getValue();
+        select.addEventListener("change", () => {
+            __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[this.getOptionIndex(this.getElement().value)], "f");
+        });
+        const label = document.createElement('label');
+        label.htmlFor = id;
+        __classPrivateFieldSet(this, _SelectRenderer_label_element, label, "f");
+    }
+    resolveSelectedValue(selected_value) {
+        // Returns the first available option or undefined if the selected_value does not exist among options
+        const selected_option = __classPrivateFieldGet(this, _SelectRenderer_options, "f").find(option => option.getValue() === selected_value);
+        if (selected_option)
+            return selected_option;
+        return __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0];
+    }
+    // getters
+    getElement() {
+        return super.getElement();
+    }
+    getOptions() {
+        return __classPrivateFieldGet(this, _SelectRenderer_options, "f");
+    }
+    getSelectedOption() {
+        return __classPrivateFieldGet(this, _SelectRenderer_selected, "f");
+    }
+    getName() {
+        return __classPrivateFieldGet(this, _SelectRenderer_name, "f");
+    }
+    getLabelElement() {
+        return __classPrivateFieldGet(this, _SelectRenderer_label_element, "f");
+    }
+    getOptionIndex(value) {
+        return __classPrivateFieldGet(this, _SelectRenderer_options, "f").findIndex(option => option.getValue() === value);
+    }
+    // setters
+    setChild(child) {
+        // Prevents setChild from being used for an SelectRenderer
+        throw new Error("setChild() not allowed for SelectRenderer, use addOption().");
+    }
+    setName(name) {
+        __classPrivateFieldSet(this, _SelectRenderer_name, name, "f");
+        this.getElement().name = name;
+    }
+    setID(id) {
+        super.setID(id);
+        __classPrivateFieldGet(this, _SelectRenderer_label_element, "f").htmlFor = id;
+    }
+    addOption(option) {
+        if (this.getOptionIndex(option.getValue()) !== -1)
+            throw new Error("Value already exists in select.");
+        __classPrivateFieldGet(this, _SelectRenderer_options, "f").push(option);
+        option.setParent(this);
+    }
+    removeOption(option) {
+        const index = this.getOptionIndex(option.getValue());
+        if (index < 1)
+            return;
+        __classPrivateFieldGet(this, _SelectRenderer_options, "f")[index].remove();
+        __classPrivateFieldGet(this, _SelectRenderer_options, "f").splice(index, 1);
+        if (__classPrivateFieldGet(this, _SelectRenderer_selected, "f") === option) {
+            // Sets the selected option to the first nontrivial option if possible, if it was deleted.
+            __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f").length > 1 ? __classPrivateFieldGet(this, _SelectRenderer_options, "f")[1] : __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0], "f");
+            this.getElement().value = __classPrivateFieldGet(this, _SelectRenderer_selected, "f").getValue();
+        }
+    }
+    empty() {
+        __classPrivateFieldGet(this, _SelectRenderer_options, "f").slice(1).forEach(option => option.remove());
+        __classPrivateFieldGet(this, _SelectRenderer_options, "f").splice(1, Infinity);
+    }
+    remove() {
+        this.empty();
+        super.remove();
+    }
+}
+_SelectRenderer_options = new WeakMap(), _SelectRenderer_selected = new WeakMap(), _SelectRenderer_name = new WeakMap(), _SelectRenderer_label_element = new WeakMap();
+class InputRenderer extends Renderer {
+    constructor(id, value = "", name = "", is_disabled = false) {
+        const input = document.createElement('input');
+        input.value = value;
+        input.name = name;
+        input.disabled = is_disabled;
+        super(input, "", id); // id required for label elements
+        _InputRenderer_value.set(this, void 0); // may not be strings for some Input types, will write derived InputRenderer classes for those as needed
+        _InputRenderer_name.set(this, void 0);
+        _InputRenderer_is_disabled.set(this, void 0);
+        _InputRenderer_label_element.set(this, void 0); // appended manually within the DOM, but not required
+        __classPrivateFieldSet(this, _InputRenderer_value, value, "f");
+        __classPrivateFieldSet(this, _InputRenderer_name, name, "f");
+        __classPrivateFieldSet(this, _InputRenderer_is_disabled, is_disabled, "f");
+        const label = document.createElement('label');
+        label.htmlFor = id;
+        __classPrivateFieldSet(this, _InputRenderer_label_element, label, "f");
+    }
+    // getters
+    getElement() {
+        return super.getElement();
+    }
+    getValue() {
+        return __classPrivateFieldGet(this, _InputRenderer_value, "f");
+    }
+    getName() {
+        return __classPrivateFieldGet(this, _InputRenderer_name, "f");
+    }
+    isDisabled() {
+        return __classPrivateFieldGet(this, _InputRenderer_is_disabled, "f");
+    }
+    getLabelElement() {
+        return __classPrivateFieldGet(this, _InputRenderer_label_element, "f");
+    }
+    // setters
+    setChild(child) {
+        // Prevents setChild from being used for an InputRenderer
+        throw new Error("InputRenderer does not support child elements.");
+    }
+    setValue(value) {
+        __classPrivateFieldSet(this, _InputRenderer_value, value, "f");
+        this.getElement().value = value;
+    }
+    refreshValue() {
+        __classPrivateFieldSet(this, _InputRenderer_value, this.getElement().value, "f");
+    }
+    setName(name) {
+        __classPrivateFieldSet(this, _InputRenderer_name, name, "f");
+        this.getElement().name = name;
+    }
+    toggleDisabled() {
+        __classPrivateFieldSet(this, _InputRenderer_is_disabled, !__classPrivateFieldGet(this, _InputRenderer_is_disabled, "f"), "f");
+        this.getElement().disabled = __classPrivateFieldGet(this, _InputRenderer_is_disabled, "f");
+    }
+    setID(id) {
+        super.setID(id);
+        __classPrivateFieldGet(this, _InputRenderer_label_element, "f").htmlFor = id;
+    }
+}
+_InputRenderer_value = new WeakMap(), _InputRenderer_name = new WeakMap(), _InputRenderer_is_disabled = new WeakMap(), _InputRenderer_label_element = new WeakMap();
+class NumberInputRenderer extends InputRenderer {
+    constructor(id, value = 0) {
+        super(id, value.toString());
+        this.getElement().type = "number";
+    }
+    setValue(value) {
+        var _a, _b;
+        // prevents the setValue base method from attempting to set a non-parsable value into for a type="number"
+        super.setValue((_b = (_a = parseFloat(value)) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '0');
+    }
+}
+class CheckboxInputRenderer extends InputRenderer {
+    constructor(id, checked = false) {
+        super(id, checked ? "true" : "false");
+        this.getElement().type = "checkbox";
+        this.getElement().checked = checked;
+    }
+    getValue() {
+        // prevents the getValue base method from attempting to return a value attribute for a type="checkbox"
+        return this.getElement().checked.toString();
+    }
+    getBooleanValue() {
+        return this.getElement().checked;
+    }
+    setValue(value) {
+        this.getElement().checked = value === "true";
+        super.setValue(value);
+    }
+}
+class DatalistInputRenderer extends InputRenderer {
+    constructor(id, data, data_id) {
+        super(id);
+        // Note, datalists only require option elements with set values, no need for inner text labels
+        _DatalistInputRenderer_data.set(this, void 0);
+        _DatalistInputRenderer_datalist_element.set(this, void 0);
+        const datalist = document.createElement("datalist");
+        datalist.id = data_id;
+        this.getElement().setAttribute("list", data_id);
+        __classPrivateFieldSet(this, _DatalistInputRenderer_data, data, "f");
+        __classPrivateFieldSet(this, _DatalistInputRenderer_datalist_element, datalist, "f");
+    }
+    setParent(parent) {
+        super.setParent(parent);
+        if (parent instanceof HTMLElement)
+            parent.appendChild(__classPrivateFieldGet(this, _DatalistInputRenderer_datalist_element, "f"));
+        else
+            parent.getElement().appendChild(__classPrivateFieldGet(this, _DatalistInputRenderer_datalist_element, "f"));
+    }
+    getDatalist() {
+        return __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f");
+    }
+    getDatalistElement() {
+        return __classPrivateFieldGet(this, _DatalistInputRenderer_datalist_element, "f");
+    }
+    getOptionIndex(value) {
+        return __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f").findIndex(option => option.getValue() === value);
+    }
+    addOption(option) {
+        if (this.getOptionIndex(option.getValue()) !== -1)
+            throw new Error("Value already exists in datalist.");
+        __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f").push(option);
+        option.setParent(__classPrivateFieldGet(this, _DatalistInputRenderer_datalist_element, "f"));
+    }
+    removeOption(option) {
+        const index = this.getOptionIndex(option.getValue());
+        if (index < 0)
+            return;
+        __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f")[index].remove();
+        __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f").splice(index, 1);
+    }
+    empty() {
+        __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f").forEach(option => option.remove());
+        __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f").splice(0, Infinity);
+    }
+    remove() {
+        this.empty();
+        super.remove();
+    }
+}
+_DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_element = new WeakMap();
 class TooltipRenderer extends Renderer {
 }
 class DraggableRenderer extends Renderer {

@@ -10,14 +10,69 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ParticlePointRenderer_particle, _ParticlePointRenderer_container, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticleUnitGroupRenderer_particles, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list;
-// Other larger Renderer classes
-class SimulationSettingsControlRenderer extends Renderer {
+var _UIControlRenderer_simulation, _SimulationPresetInputRenderer_simulation, _SimulationPresetInputRenderer_preset_dropdown, _SimulationPresetInputRenderer_apply_button, _SimulationControlRenderer_simulation, _ParticlePointRenderer_particle, _ParticlePointRenderer_container, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticleUnitGroupRenderer_particle_renderers, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list;
+// Other larger Renderer classes, may move to separate files
+class UIControlRenderer extends Renderer {
+    // may create a UIConfig class soon
+    constructor(simulation) {
+        const ui_settings_element = document.createElement('div');
+        super(ui_settings_element);
+        // WIP: Will need methods to handle Simulation Class's calls
+        _UIControlRenderer_simulation.set(this, void 0);
+        __classPrivateFieldSet(this, _UIControlRenderer_simulation, simulation, "f");
+    }
 }
+_UIControlRenderer_simulation = new WeakMap();
+class SimulationPresetInputRenderer extends Renderer {
+    constructor(simulation) {
+        const simulation_preset_input = document.createElement('div');
+        super(simulation_preset_input, '', 'simsetup_presets_wrapper');
+        _SimulationPresetInputRenderer_simulation.set(this, void 0);
+        _SimulationPresetInputRenderer_preset_dropdown.set(this, void 0);
+        _SimulationPresetInputRenderer_apply_button.set(this, void 0);
+        __classPrivateFieldSet(this, _SimulationPresetInputRenderer_simulation, simulation, "f");
+        // saved renderers
+        __classPrivateFieldSet(this, _SimulationPresetInputRenderer_preset_dropdown, this.setupPresetDropdown(), "f");
+        __classPrivateFieldSet(this, _SimulationPresetInputRenderer_apply_button, this.setupApplyButton(), "f");
+        // contents
+        __classPrivateFieldGet(this, _SimulationPresetInputRenderer_preset_dropdown, "f").setParent(simulation_preset_input);
+        __classPrivateFieldGet(this, _SimulationPresetInputRenderer_apply_button, "f").setParent(simulation_preset_input);
+    }
+    setupPresetDropdown() {
+        const preset_data = [];
+        Object.keys(TEMPORARY_PRESETS).forEach((preset_name, preset) => {
+            preset_data.push(new OptionRenderer(preset_name, ''));
+        });
+        const dropdown = new DatalistInputRenderer('simsetup_presets_input', preset_data, 'simsetup_presets');
+        return dropdown;
+    }
+    setupApplyButton() {
+        const button = new ButtonRenderer(() => {
+            const preset_name = __classPrivateFieldGet(this, _SimulationPresetInputRenderer_preset_dropdown, "f").getValue();
+            const preset = TEMPORARY_PRESETS[preset_name];
+            this.applyPreset(preset);
+        });
+        button.setID('simsetup_presets_button');
+        return button;
+    }
+    applyPreset(preset) {
+        // TODO
+    }
+}
+_SimulationPresetInputRenderer_simulation = new WeakMap(), _SimulationPresetInputRenderer_preset_dropdown = new WeakMap(), _SimulationPresetInputRenderer_apply_button = new WeakMap();
+class SimulationControlRenderer extends Renderer {
+    constructor(simulation) {
+        const simulation_settings = document.createElement('div');
+        super(simulation_settings, '', 'simsetup_global_variables_wrapper');
+        _SimulationControlRenderer_simulation.set(this, void 0);
+        __classPrivateFieldSet(this, _SimulationControlRenderer_simulation, simulation, "f");
+    }
+}
+_SimulationControlRenderer_simulation = new WeakMap();
 class ParticlePointRenderer extends Renderer {
     constructor(particle, container) {
         const particle_element = document.createElement('div');
-        super(particle_element, 'particle_element', `particle_element_id${particle.id}`);
+        super(particle_element, 'particle_element', `particle_element_id${particle.getID()}`);
         _ParticlePointRenderer_particle.set(this, void 0);
         _ParticlePointRenderer_container.set(this, void 0);
         __classPrivateFieldSet(this, _ParticlePointRenderer_particle, particle, "f");
@@ -62,7 +117,7 @@ class ParticleUnitRenderer extends Renderer {
     constructor(p_renderer) {
         const particle = p_renderer.getParticle();
         const particle_control_element = document.createElement('div');
-        super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.id}`);
+        super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.getID()}`);
         _ParticleUnitRenderer_particle_renderer.set(this, void 0);
         _ParticleUnitRenderer_icon.set(this, void 0);
         _ParticleUnitRenderer_details_dialog.set(this, void 0);
@@ -70,11 +125,11 @@ class ParticleUnitRenderer extends Renderer {
         // Saved renderers
         __classPrivateFieldSet(this, _ParticleUnitRenderer_particle_renderer, p_renderer, "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_icon, this.createIcon(particle.color), "f");
-        __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.id), "f");
+        __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.getID()), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_drag_button, this.setupDragButton(), "f");
         // Contents
         __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").setContainer(container);
-        particle_control_element.appendChild(this.createTitleWrapper(particle.id));
+        particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));
         particle_control_element.appendChild(this.createButtonsWrapper());
         __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").setParent(particle_control_element);
     }
@@ -132,21 +187,21 @@ class ParticleUnitGroupRenderer extends Renderer {
         }
         const head_particle = p_renderers[0].getParticlePoint().getParticle();
         const particle_group_element = document.createElement('article');
-        super(particle_group_element, 'parsetup_group', `parsetup_group_id${head_particle.group_id}`);
-        _ParticleUnitGroupRenderer_particles.set(this, void 0);
+        super(particle_group_element, 'parsetup_group', `parsetup_group_id${head_particle.getGroupID()}`);
+        _ParticleUnitGroupRenderer_particle_renderers.set(this, void 0);
         _ParticleUnitGroupRenderer_icon.set(this, void 0);
         _ParticleUnitGroupRenderer_details_dialog.set(this, void 0);
         _ParticleUnitGroupRenderer_drag_button.set(this, void 0);
         _ParticleUnitGroupRenderer_unit_list.set(this, void 0);
         // Saved renderers
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_particles, p_renderers, "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_particle_renderers, p_renderers, "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_icon, this.createIcon(head_particle.color), "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(head_particle.id), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(head_particle.getGroupID()), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_drag_button, this.setupDragButton(), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...p_renderers), "f");
         // Contents
         const header = document.createElement('header');
-        header.appendChild(this.createTitleWrapper(head_particle.group_id));
+        header.appendChild(this.createTitleWrapper(head_particle.getGroupID()));
         header.appendChild(this.createButtonsWrapper());
         particle_group_element.appendChild(header);
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").setParent(particle_group_element);
@@ -196,18 +251,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     }
     ;
 }
-_ParticleUnitGroupRenderer_particles = new WeakMap(), _ParticleUnitGroupRenderer_icon = new WeakMap(), _ParticleUnitGroupRenderer_details_dialog = new WeakMap(), _ParticleUnitGroupRenderer_drag_button = new WeakMap(), _ParticleUnitGroupRenderer_unit_list = new WeakMap();
-function openModal(id_name, open) {
-    const viewModal = document.querySelector(id_name);
-    if (open) {
-        viewModal.showModal();
-        pauseSimulation(); // Won't matter for the new dialog, we actually want the simulation to keep running while we have it open here
-        console.log();
-    }
-    else {
-        viewModal.close();
-    }
-}
+_ParticleUnitGroupRenderer_particle_renderers = new WeakMap(), _ParticleUnitGroupRenderer_icon = new WeakMap(), _ParticleUnitGroupRenderer_details_dialog = new WeakMap(), _ParticleUnitGroupRenderer_drag_button = new WeakMap(), _ParticleUnitGroupRenderer_unit_list = new WeakMap();
 function loadContainerElement(container) {
     const wrapper = document.querySelector('.simulation_wrapper');
     const container_element = document.createElement('div');
@@ -216,11 +260,6 @@ function loadContainerElement(container) {
     container_element.style.height = `${container.y_max - container.y_min}px`;
     wrapper === null || wrapper === void 0 ? void 0 : wrapper.appendChild(container_element);
 }
-const simulationSettingsElementFunctions = {};
-const particleElementFunctions = {
-    createGroupElement() {
-    }
-};
 // TO BE REPLACED
 const simulationSettingsElementFunctionsOld = {
     /**

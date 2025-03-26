@@ -1,56 +1,81 @@
 "use strict";
-const particle_colors = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
+var _a, _Particle_instance_count, _Particle_id, _Particle_group_id;
+const PARTICLE_COLORS = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
+const DEFAULT_GROUPING = {
+    group_id: "Ungrouped",
+    radius: 5,
+    position: new Vector2D(),
+    velocity: new Vector2D(),
+    mass: 1,
+    charge: 0,
+    color: "black",
+    enable_path_tracing: false
+};
 class Particle {
-    constructor(config = {}) {
-        Particle.instance_count++;
-        this.id = Particle.instance_count;
-        if (mass === 'random')
-            this.mass = Math.floor(Math.random() * (10 - 1 + 1) + 1);
-        else if (mass <= 0)
-            throw new Error('Invalid mass argument.');
-        else
-            this.mass = mass;
-        if (radius === 'random')
-            this.radius = Math.floor(Math.random() * (20 - 5 + 1) + 5);
-        else if (radius <= 0)
-            throw new Error('Invalid radius argument.');
-        else
-            this.radius = radius;
-        if (position === 'random') {
-            this.position = new Vector2D();
-            this.setPosition('random', container.x_max - this.radius);
-        }
-        else
-            this.position = new Vector2D(position.x, position.y);
-        if (velocity === 'random') {
-            this.velocity = new Vector2D();
-            this.setVelocity('random', 200);
-        }
-        else
-            this.velocity = new Vector2D(velocity.x, velocity.y);
-        if (acceleration === 'random') {
-            this.acceleration = new Vector2D();
-            this.setAcceleration('random', 100);
-        }
-        else
-            this.acceleration = new Vector2D(acceleration.x, acceleration.y);
-        if (oscillation === 'random') {
-            this.oscillation = new Vector2D();
-            this.setOscillation('random', 0.001);
-        }
-        else
-            this.oscillation = new Vector2D(oscillation.x, oscillation.y);
-        if (color === 'random') {
-            this.color = particle_colors[Math.floor(Math.random() * particle_colors.length)];
-        }
-        else if (!particle_colors.includes(color))
-            this.color = 'black';
-        else
-            this.color = color;
-        this.trajectory = trajectory;
-        simulation_particles.push(this);
-        this.group_id = group_id;
+    constructor(grouping = DEFAULT_GROUPING) {
+        var _b;
+        var _c, _d;
+        _Particle_id.set(this, void 0);
+        _Particle_group_id.set(this, void 0);
+        __classPrivateFieldSet(this, _Particle_id, __classPrivateFieldSet(_c = _a, _a, (_d = __classPrivateFieldGet(_c, _a, "f", _Particle_instance_count), ++_d), "f", _Particle_instance_count), "f");
+        __classPrivateFieldSet(this, _Particle_group_id, grouping.group_id, "f");
+        this.radius = this.resolveValue(grouping.radius, DEFAULT_GROUPING.radius, () => Math.floor(Math.random() * (20 - 5 + 1) + 5));
+        this.position = this.resolveVector(grouping.position, DEFAULT_GROUPING.position);
+        this.velocity = this.resolveVector(grouping.velocity, DEFAULT_GROUPING.velocity);
+        this.mass = this.resolveValue(grouping.mass, DEFAULT_GROUPING.mass, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
+        this.charge = this.resolveValue(grouping.charge, DEFAULT_GROUPING.charge, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
+        this.color = this.resolveColor(grouping.color);
+        this.enable_path_tracing = (_b = grouping.enable_path_tracing) !== null && _b !== void 0 ? _b : DEFAULT_GROUPING.enable_path_tracing;
     }
+    resolveValue(value, default_value, randomizer) {
+        if (!value)
+            return default_value;
+        if (value === 'random')
+            return randomizer();
+        return value;
+    }
+    resolveVector(vector, default_vector, rand_range = 100) {
+        if (!vector)
+            return default_vector;
+        if (vector === 'random')
+            return Vector2D.randomize_int(rand_range);
+        return vector;
+    }
+    resolveColor(color) {
+        if (!color)
+            return DEFAULT_GROUPING.color;
+        if (color === 'random')
+            return PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+        if (!PARTICLE_COLORS.includes(color))
+            return "black";
+        return color;
+    }
+    static createBatch(grouping = DEFAULT_GROUPING, amount) {
+        const particle_batch = [];
+        for (let i = 0; i < amount; i++) {
+            const p = new _a(grouping);
+            particle_batch.push(p);
+        }
+        return particle_batch;
+    }
+    getID() {
+        return __classPrivateFieldGet(this, _Particle_id, "f");
+    }
+    getGroupID() {
+        return __classPrivateFieldGet(this, _Particle_group_id, "f");
+    }
+    // Behavior (Called repeatedly by animation.js)
     collideContainer(container) {
         let hasCollided = false;
         if (this.position.x + this.radius > container.x_max) { // collision with right (totally elastic)
@@ -117,16 +142,12 @@ class Particle {
      * @param {'euler' | 'rungekutta'} method The calculation used, euler by default
      */
     move(dt, t, method = 'euler') {
-        if (this.oscillation.x && this.oscillation.y) {
-            const tangential_velocity = new Vector2D(this.oscillation.x * Math.cos(t), this.oscillation.y * Math.sin(t));
-            this.position = this.position.add(tangential_velocity);
-        }
         // dv/dt = g - (b/m)*v
-        const gravity = simulation_settings.environment.acceleration;
+        const gravity = simulation_settings.environment.acceleration; // Currently a global constant, will replace with inputs soon
         const dragOverMass = simulation_settings.environment.drag / this.mass;
         if (method === 'euler') {
             const drag_force = this.velocity.scalarMultiply(-dragOverMass);
-            const new_acceleration = this.acceleration.add(gravity.add(drag_force));
+            const new_acceleration = gravity.add(drag_force);
             this.velocity = this.velocity.add(new_acceleration.scalarMultiply(dt));
             this.position = this.position.add(this.velocity.scalarMultiply(dt));
         }
@@ -159,7 +180,7 @@ class Particle {
     setPosition(a = 0, b = 0) {
         if (a === 'random') {
             let max = b === 0 ? 1 : b;
-            this.position = this.position.randomize_int(max);
+            this.position = Vector2D.randomize_int(max);
         }
         else {
             this.position.x = a;
@@ -175,7 +196,7 @@ class Particle {
     setVelocity(a = 0, b = 0) {
         if (a === 'random') {
             let max = b === 0 ? 1 : b;
-            this.velocity = this.velocity.randomize_int(max);
+            this.velocity = Vector2D.randomize_int(max);
         }
         else {
             this.velocity.x = a;
@@ -183,4 +204,5 @@ class Particle {
         }
     }
 }
-Particle.instance_count = 0;
+_a = Particle, _Particle_id = new WeakMap(), _Particle_group_id = new WeakMap();
+_Particle_instance_count = { value: 0 };
