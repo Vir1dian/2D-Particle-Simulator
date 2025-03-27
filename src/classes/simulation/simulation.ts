@@ -177,9 +177,9 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         grouping: DEFAULT_GROUPING, 
         particles: [] 
       }],
-      ["red", { 
+      ["Red", { 
         grouping: {
-          group_id: "red",
+          group_id: "Red",
           radius: 15,
           position: new Vector2D(-200,200),
           velocity: new Vector2D(200,-200),
@@ -188,7 +188,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         }, 
         particles: Particle.createBatch(
           {
-            group_id: "red",
+            group_id: "Red",
             radius: 15,
             position: new Vector2D(-200,200),
             velocity: new Vector2D(200,-200),
@@ -198,9 +198,9 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           10
         ) 
       }],
-      ["yellow", { 
+      ["Yellow", { 
         grouping: {
-          group_id: "yellow",
+          group_id: "Yellow",
           radius: 15,
           position: new Vector2D(-200,-200),
           velocity: new Vector2D(200,200),
@@ -209,7 +209,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         }, 
         particles: Particle.createBatch(
           {
-            group_id: "yellow",
+            group_id: "Yellow",
             radius: 15,
             position: new Vector2D(-200,-200),
             velocity: new Vector2D(200,200),
@@ -219,9 +219,9 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           10
         ) 
       }],
-      ["blue", { 
+      ["Blue", { 
         grouping: {
-          group_id: "blue",
+          group_id: "Blue",
           radius: 15,
           position: new Vector2D(200,200),
           velocity: new Vector2D(-200,-200),
@@ -230,7 +230,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         }, 
         particles: Particle.createBatch(
           {
-            group_id: "blue",
+            group_id: "Blue",
             radius: 15,
             position: new Vector2D(200,200),
             velocity: new Vector2D(-200,-200),
@@ -240,9 +240,9 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           10
         ) 
       }],
-      ["green", { 
+      ["Green", { 
         grouping: {
-          group_id: "green",
+          group_id: "Green",
           radius: 15,
           position: new Vector2D(200,-200),
           velocity: new Vector2D(-200,200),
@@ -251,7 +251,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         }, 
         particles: Particle.createBatch(
           {
-            group_id: "green",
+            group_id: "Green",
             radius: 15,
             position: new Vector2D(200,-200),
             velocity: new Vector2D(-200,200),

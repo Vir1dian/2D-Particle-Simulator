@@ -114,8 +114,7 @@ class ParticlePointRenderer extends Renderer {
 }
 _ParticlePointRenderer_particle = new WeakMap(), _ParticlePointRenderer_container = new WeakMap();
 class ParticleUnitRenderer extends Renderer {
-    constructor(p_renderer) {
-        const particle = p_renderer.getParticle();
+    constructor(particle, container) {
         const particle_control_element = document.createElement('div');
         super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.getID()}`);
         _ParticleUnitRenderer_particle_renderer.set(this, void 0);
@@ -123,7 +122,7 @@ class ParticleUnitRenderer extends Renderer {
         _ParticleUnitRenderer_details_dialog.set(this, void 0);
         _ParticleUnitRenderer_drag_button.set(this, void 0);
         // Saved renderers
-        __classPrivateFieldSet(this, _ParticleUnitRenderer_particle_renderer, p_renderer, "f");
+        __classPrivateFieldSet(this, _ParticleUnitRenderer_particle_renderer, new ParticlePointRenderer(particle, container), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_icon, this.createIcon(particle.color), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.getID()), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_drag_button, this.setupDragButton(), "f");
@@ -181,13 +180,9 @@ class ParticleUnitRenderer extends Renderer {
 }
 _ParticleUnitRenderer_particle_renderer = new WeakMap(), _ParticleUnitRenderer_icon = new WeakMap(), _ParticleUnitRenderer_details_dialog = new WeakMap(), _ParticleUnitRenderer_drag_button = new WeakMap();
 class ParticleUnitGroupRenderer extends Renderer {
-    constructor(...p_renderers) {
-        if (p_renderers.length <= 0) {
-            throw new Error("Empty spread operator argument");
-        }
-        const head_particle = p_renderers[0].getParticlePoint().getParticle();
+    constructor(grouping, ...p_renderers) {
         const particle_group_element = document.createElement('article');
-        super(particle_group_element, 'parsetup_group', `parsetup_group_id${head_particle.getGroupID()}`);
+        super(particle_group_element, 'parsetup_group', `parsetup_group_id${grouping.group_id}`);
         _ParticleUnitGroupRenderer_particle_renderers.set(this, void 0);
         _ParticleUnitGroupRenderer_icon.set(this, void 0);
         _ParticleUnitGroupRenderer_details_dialog.set(this, void 0);
@@ -195,13 +190,13 @@ class ParticleUnitGroupRenderer extends Renderer {
         _ParticleUnitGroupRenderer_unit_list.set(this, void 0);
         // Saved renderers
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_particle_renderers, p_renderers, "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_icon, this.createIcon(head_particle.color), "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(head_particle.getGroupID()), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_icon, this.createIcon(grouping.color), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(grouping.group_id), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_drag_button, this.setupDragButton(), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...p_renderers), "f");
         // Contents
         const header = document.createElement('header');
-        header.appendChild(this.createTitleWrapper(head_particle.getGroupID()));
+        header.appendChild(this.createTitleWrapper(grouping.group_id));
         header.appendChild(this.createButtonsWrapper());
         particle_group_element.appendChild(header);
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").setParent(particle_group_element);
@@ -237,7 +232,7 @@ class ParticleUnitGroupRenderer extends Renderer {
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").setParent(title_wrapper);
         const title = document.createElement('span');
         title.className = "parsetup_group_title";
-        title.innerHTML = `Group ${group_id}`;
+        title.innerHTML = group_id;
         title_wrapper.appendChild(title);
         return title_wrapper;
     }

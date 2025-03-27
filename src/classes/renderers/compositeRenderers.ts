@@ -107,12 +107,11 @@ class ParticleUnitRenderer extends Renderer {  // WIP: Will need methods to hand
   #icon: Renderer;
   #details_dialog: DialogRenderer;
   #drag_button: ButtonRenderer;
-  constructor(p_renderer: ParticlePointRenderer) {
-    const particle: Particle = p_renderer.getParticle();
+  constructor(particle: Particle, container: BoxSpace) {
     const particle_control_element : HTMLDivElement = document.createElement('div');
     super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.getID()}`);
     // Saved renderers
-    this.#particle_renderer = p_renderer;
+    this.#particle_renderer = new ParticlePointRenderer(particle, container);
     this.#icon = this.createIcon(particle.color);
     this.#details_dialog = this.setupDetailsDialog(particle.getID());
     this.#drag_button = this.setupDragButton(); 
@@ -180,22 +179,18 @@ class ParticleUnitGroupRenderer extends Renderer {  // WIP: Will need methods to
   #drag_button: ButtonRenderer;
   #unit_list: ListRenderer;
   
-  constructor(...p_renderers: ParticleUnitRenderer[]) {
-    if (p_renderers.length <= 0) {
-      throw new Error("Empty spread operator argument");
-    }
-    const head_particle: Particle = p_renderers[0].getParticlePoint().getParticle();
+  constructor(grouping: ParticleGrouping, ...p_renderers: ParticleUnitRenderer[]) {
     const particle_group_element: HTMLElement = document.createElement('article');
-    super(particle_group_element, 'parsetup_group', `parsetup_group_id${head_particle.getGroupID()}`);
+    super(particle_group_element, 'parsetup_group', `parsetup_group_id${grouping.group_id}`);
     // Saved renderers
     this.#particle_renderers = p_renderers;
-    this.#icon = this.createIcon(head_particle.color);
-    this.#details_dialog = this.setupDetailsDialog(head_particle.getGroupID());
+    this.#icon = this.createIcon(grouping.color as string);
+    this.#details_dialog = this.setupDetailsDialog(grouping.group_id);
     this.#drag_button = this.setupDragButton();
     this.#unit_list = new ListRenderer(...p_renderers);
     // Contents
     const header: HTMLElement = document.createElement('header');
-    header.appendChild(this.createTitleWrapper(head_particle.getGroupID()));
+    header.appendChild(this.createTitleWrapper(grouping.group_id));
     header.appendChild(this.createButtonsWrapper());
     particle_group_element.appendChild(header);
     this.#unit_list.setParent(particle_group_element);
@@ -232,7 +227,7 @@ class ParticleUnitGroupRenderer extends Renderer {  // WIP: Will need methods to
     this.#icon.setParent(title_wrapper);
     const title : HTMLSpanElement = document.createElement('span');
     title.className = "parsetup_group_title";
-    title.innerHTML = `Group ${group_id}`;
+    title.innerHTML = group_id;
     title_wrapper.appendChild(title);
     return title_wrapper;
   };

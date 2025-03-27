@@ -189,9 +189,9 @@ class TableRenderer extends Renderer {
 _TableRenderer_rows = new WeakMap(), _TableRenderer_cols = new WeakMap(), _TableRenderer_cells = new WeakMap();
 class ListRenderer extends Renderer {
     constructor(...items) {
-        if (items.length <= 0) {
-            throw new Error("Empty spread operator argument");
-        }
+        // if (items.length <= 0) {
+        //   throw new Error("Empty spread operator argument");
+        // }
         const ul = document.createElement('ul');
         super(ul);
         _ListRenderer_items.set(this, void 0);
