@@ -23,16 +23,21 @@ class Simulation {
   #config: SimConfig;
   #particle_groups: Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
 
-  constructor(
-    container: BoxSpace = DEFAULT_PRESET.container, 
-    environment: SimEnvironment = DEFAULT_PRESET.environment, 
-    config: SimConfig = DEFAULT_PRESET.config
-  ) {  
-    this.#container = container;
-    this.#environment = environment;
-    this.#config = config;
-    this.#particle_groups = DEFAULT_PRESET.particle_groups;
-    // particle_groups is populated after instantiation
+  constructor(preset: SimPreset = DEFAULT_PRESET) {
+    const default_clone: SimPreset = structuredClone(DEFAULT_PRESET);
+    if (preset === DEFAULT_PRESET) {
+      this.#container = default_clone.container as BoxSpace;
+      this.#environment = default_clone.environment as SimEnvironment;
+      this.#config = default_clone.config as SimConfig;
+      this.#particle_groups = default_clone.particle_groups as Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
+    }
+    else {
+      let preset_clone: SimPreset = structuredClone(preset);
+      this.#container = preset_clone.container ?? default_clone.container as BoxSpace;
+      this.#environment = preset_clone.environment ?? default_clone.environment as SimEnvironment;
+      this.#config = preset_clone.config ?? default_clone.config as SimConfig;
+      this.#particle_groups = preset_clone.particle_groups ?? default_clone.particle_groups as Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
+    }
   }
   addGroup(grouping: ParticleGrouping): void {  
     // Assumes that group_id has valid formatting: i.e. no spaces, hash symbols, etc.
@@ -46,7 +51,23 @@ class Simulation {
     group.particles.push(particle);
   }
 
-  // Setters & Getters
+  setPreset(preset: SimPreset): void {
+    const preset_clone: SimPreset = structuredClone(preset);
+    if (preset_clone.container) {
+      this.#container = preset_clone.container;
+    }
+    if (preset_clone.environment) {
+      this.#environment = preset_clone.environment;
+    }
+    if (preset_clone.config) {
+      this.#config = preset_clone.config;
+    }
+    if (preset_clone.particle_groups) {
+      this.#particle_groups = preset_clone.particle_groups;
+    }
+  }
+
+  // Basic Setters & Getters
   setContainer(container: BoxSpace): void {
     this.#container = container;
   }
@@ -99,10 +120,10 @@ const DEFAULT_PRESET: SimPreset = {
 
 // For testing Simulation class, will eventually save all presets in "simulation_presets.json"
 interface SimPreset {
-  container: BoxSpace;
-  environment: SimEnvironment;
-  config: SimConfig;
-  particle_groups: Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
+  container?: BoxSpace;
+  environment?: SimEnvironment;
+  config?: SimConfig;
+  particle_groups?: Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
 }
 
 const TEMPORARY_PRESETS: Record<string, SimPreset> = {
