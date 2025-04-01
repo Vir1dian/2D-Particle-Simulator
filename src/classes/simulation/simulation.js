@@ -55,6 +55,9 @@ class Simulation {
             __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(updated_properties.particle_groups, ([group_id, group]) => [group_id, { grouping: group.grouping, particles: Particle.createBatch(group.grouping, group.size) }])), "f");
         }
     }
+    getParticleGroups() {
+        return __classPrivateFieldGet(this, _Simulation_particle_groups, "f");
+    }
     getAllParticles() {
         const particles = [];
         __classPrivateFieldGet(this, _Simulation_particle_groups, "f").forEach((group) => {

@@ -1,22 +1,3 @@
-interface SimEnvironment {
-  statics?: {
-    elasticity?: number,
-    drag?: number,
-    gravity?: Vector2D,
-    electric_field?: Vector2D,
-    magnetic_field?: Vector2D
-  }
-  dynamics?: {
-    // for the future
-  }
-}
-
-interface SimConfig {
-  path_trace_step?: number,
-  is_draggable?: boolean,
-  focus_color?: string
-}
-
 class Simulation {
   #container: BoxSpace;
   #environment: SimEnvironment;
@@ -71,6 +52,10 @@ class Simulation {
     }
   }
 
+  getParticleGroups(): Map<string, { grouping: ParticleGrouping, particles: Particle[] }> {
+    return this.#particle_groups;
+  }
+
   getAllParticles(): Particle[] { 
     const particles: Particle[] = [];
     this.#particle_groups.forEach((group) => {
@@ -105,14 +90,6 @@ const DEFAULT_PRESET: SimPreset = {
   particle_groups: new Map([
     [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, size: 0 }]
   ])
-}
-
-// Used to structure the contents of Simulation class
-interface SimPreset {
-  container?: BoxSpace;
-  environment?: SimEnvironment;
-  config?: SimConfig;
-  particle_groups?: Map<string, { grouping: ParticleGrouping, size: number}>;
 }
 
 // For testing Simulation class, will eventually save all presets in "simulation_presets.json"

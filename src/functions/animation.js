@@ -1,4 +1,5 @@
 "use strict";
+// TODO: Rewrite this into a class/es
 /**
  * Updates an element representing a moving particle in the HTML body, used for frame-by-frame animation
  *

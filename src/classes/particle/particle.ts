@@ -1,31 +1,9 @@
-interface ParticleGrouping {
-  group_id: string,
-  radius?: number | 'random',
-  position?: Vector2D | 'random',
-  velocity?: Vector2D | 'random',
-  mass?: number | 'random',
-  charge?: number | 'random',
-  color?: string | 'random',
-  enable_path_tracing?: boolean
-}
-
 const PARTICLE_COLORS: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
-
-const DEFAULT_GROUPING: ParticleGrouping = {
-  group_id: "Ungrouped",
-  radius: 5,
-  position: new Vector2D(),
-  velocity: new Vector2D(),
-  mass: 1,
-  charge: 0,
-  color: "black",
-  enable_path_tracing: false
-}
 
 class Particle {
   static #instance_count = 0;
 
-  #id: number;
+  readonly #id: number;
   #group_id: string;
   radius: number;
   position: Vector2D;
@@ -62,15 +40,6 @@ class Particle {
     if (color === 'random') return PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
     if (!PARTICLE_COLORS.includes(color)) return "black";
     return color;
-  }
-
-  static createBatch(grouping: ParticleGrouping = DEFAULT_GROUPING, amount: number): Particle[] {
-    const particle_batch: Particle[] = [];
-    for (let i = 0; i < amount; i++) {
-      const p: Particle = new Particle(grouping);
-      particle_batch.push(p);
-    }
-    return particle_batch;
   }
 
   getID(): number {

@@ -12,16 +12,6 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
 };
 var _a, _Particle_instance_count, _Particle_id, _Particle_group_id;
 const PARTICLE_COLORS = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
-const DEFAULT_GROUPING = {
-    group_id: "Ungrouped",
-    radius: 5,
-    position: new Vector2D(),
-    velocity: new Vector2D(),
-    mass: 1,
-    charge: 0,
-    color: "black",
-    enable_path_tracing: false
-};
 class Particle {
     constructor(grouping = DEFAULT_GROUPING) {
         var _b;
@@ -60,14 +50,6 @@ class Particle {
         if (!PARTICLE_COLORS.includes(color))
             return "black";
         return color;
-    }
-    static createBatch(grouping = DEFAULT_GROUPING, amount) {
-        const particle_batch = [];
-        for (let i = 0; i < amount; i++) {
-            const p = new _a(grouping);
-            particle_batch.push(p);
-        }
-        return particle_batch;
     }
     getID() {
         return __classPrivateFieldGet(this, _Particle_id, "f");
