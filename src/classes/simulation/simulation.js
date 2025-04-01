@@ -12,51 +12,55 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _Simulation_container, _Simulation_environment, _Simulation_config, _Simulation_particle_groups;
 class Simulation {
-    constructor(container = DEFAULT_PRESET.container, environment = DEFAULT_PRESET.environment, config = DEFAULT_PRESET.config) {
+    constructor(preset = {}) {
         _Simulation_container.set(this, void 0);
         _Simulation_environment.set(this, void 0);
         _Simulation_config.set(this, void 0);
         _Simulation_particle_groups.set(this, void 0);
-        __classPrivateFieldSet(this, _Simulation_container, container, "f");
-        __classPrivateFieldSet(this, _Simulation_environment, environment, "f");
-        __classPrivateFieldSet(this, _Simulation_config, config, "f");
-        __classPrivateFieldSet(this, _Simulation_particle_groups, DEFAULT_PRESET.particle_groups, "f");
-        // particle_groups is populated after instantiation
+        const preset_clone = structuredClone(preset);
+        const default_clone = structuredClone(DEFAULT_PRESET);
+        const final_preset = deepmerge(default_clone, preset_clone);
+        __classPrivateFieldSet(this, _Simulation_container, final_preset.container, "f");
+        __classPrivateFieldSet(this, _Simulation_environment, final_preset.environment, "f");
+        __classPrivateFieldSet(this, _Simulation_config, final_preset.config, "f");
+        __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(final_preset.particle_groups, ([group_id, group]) => [group_id, { grouping: group.grouping, particles: Particle.createBatch(group.grouping, group.size) }])), "f");
     }
     addGroup(grouping) {
-        // Assumes that group_id has valid formatting: i.e. no spaces, hash symbols, etc.
-        if (__classPrivateFieldGet(this, _Simulation_particle_groups, "f").has(grouping.group_id))
-            throw new Error("Group name already exists.");
-        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, { grouping, particles: [] });
+        // Assumes that string group_id has valid formatting: i.e. no spaces, alphanumeric.
+        if (__classPrivateFieldGet(this, _Simulation_particle_groups, "f").has(grouping.group_id)) {
+            throw new Error("Group name: " + grouping.group_id + " already exists."); // Implement something to catch this in the renderer inputs
+        }
+        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, { grouping: grouping, particles: Particle.createBatch(grouping, 0) });
     }
     addParticle(particle, group_id = DEFAULT_GROUPING.group_id) {
         // Assumes that the particle already fits the grouping
         const group = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group_id);
         if (!group)
-            throw new Error("Group name does not exist.");
-        group.particles.push(particle);
+            throw new Error(`Group '${group_id}' does not exist.`);
+        group === null || group === void 0 ? void 0 : group.particles.push(particle);
     }
     // Setters & Getters
-    setContainer(container) {
-        __classPrivateFieldSet(this, _Simulation_container, container, "f");
+    setPreset(preset) {
+        const current_properties = {
+            container: __classPrivateFieldGet(this, _Simulation_container, "f"),
+            environment: __classPrivateFieldGet(this, _Simulation_environment, "f"),
+            config: __classPrivateFieldGet(this, _Simulation_config, "f")
+        };
+        const preset_clone = structuredClone(preset);
+        const updated_properties = deepmerge(current_properties, preset_clone);
+        __classPrivateFieldSet(this, _Simulation_container, updated_properties.container, "f");
+        __classPrivateFieldSet(this, _Simulation_environment, updated_properties.environment, "f");
+        __classPrivateFieldSet(this, _Simulation_config, updated_properties.config, "f");
+        if (preset_clone.particle_groups) {
+            __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(updated_properties.particle_groups, ([group_id, group]) => [group_id, { grouping: group.grouping, particles: Particle.createBatch(group.grouping, group.size) }])), "f");
+        }
     }
-    setEnvironment(environment) {
-        __classPrivateFieldSet(this, _Simulation_environment, environment, "f");
-    }
-    setConfig(config) {
-        __classPrivateFieldSet(this, _Simulation_config, config, "f");
-    }
-    getContainer() {
-        return __classPrivateFieldGet(this, _Simulation_container, "f");
-    }
-    getEnvironment() {
-        return __classPrivateFieldGet(this, _Simulation_environment, "f");
-    }
-    getConfig() {
-        return __classPrivateFieldGet(this, _Simulation_config, "f");
-    }
-    getParticles() {
-        return __classPrivateFieldGet(this, _Simulation_particle_groups, "f");
+    getAllParticles() {
+        const particles = [];
+        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").forEach((group) => {
+            particles.push(...group.particles);
+        });
+        return particles;
     }
 }
 _Simulation_container = new WeakMap(), _Simulation_environment = new WeakMap(), _Simulation_config = new WeakMap(), _Simulation_particle_groups = new WeakMap();
@@ -83,9 +87,10 @@ const DEFAULT_PRESET = {
         focus_color: "yellow"
     },
     particle_groups: new Map([
-        [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, particles: [] }]
+        [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, size: 0 }]
     ])
 };
+// For testing Simulation class, will eventually save all presets in "simulation_presets.json"
 const TEMPORARY_PRESETS = {
     sandbox: {
         container: {
@@ -118,13 +123,7 @@ const TEMPORARY_PRESETS = {
                         mass: 'random',
                         color: 'random',
                     },
-                    particles: Particle.createBatch({
-                        group_id: DEFAULT_GROUPING.group_id,
-                        position: 'random',
-                        velocity: 'random',
-                        mass: 'random',
-                        color: 'random',
-                    }, 40)
+                    size: 40
                 }]
         ])
     },
@@ -153,7 +152,7 @@ const TEMPORARY_PRESETS = {
         particle_groups: new Map([
             [DEFAULT_GROUPING.group_id, {
                     grouping: DEFAULT_GROUPING,
-                    particles: []
+                    size: 0
                 }],
             ["Red", {
                     grouping: {
@@ -164,14 +163,7 @@ const TEMPORARY_PRESETS = {
                         mass: 4,
                         color: 'red',
                     },
-                    particles: Particle.createBatch({
-                        group_id: "Red",
-                        radius: 15,
-                        position: new Vector2D(-200, 200),
-                        velocity: new Vector2D(200, -200),
-                        mass: 4,
-                        color: 'red',
-                    }, 10)
+                    size: 10
                 }],
             ["Yellow", {
                     grouping: {
@@ -182,14 +174,7 @@ const TEMPORARY_PRESETS = {
                         mass: 2,
                         color: 'orange',
                     },
-                    particles: Particle.createBatch({
-                        group_id: "Yellow",
-                        radius: 15,
-                        position: new Vector2D(-200, -200),
-                        velocity: new Vector2D(200, 200),
-                        mass: 2,
-                        color: 'orange',
-                    }, 10)
+                    size: 10
                 }],
             ["Blue", {
                     grouping: {
@@ -200,14 +185,7 @@ const TEMPORARY_PRESETS = {
                         mass: 3,
                         color: 'blue',
                     },
-                    particles: Particle.createBatch({
-                        group_id: "Blue",
-                        radius: 15,
-                        position: new Vector2D(200, 200),
-                        velocity: new Vector2D(-200, -200),
-                        mass: 3,
-                        color: 'blue',
-                    }, 10)
+                    size: 10
                 }],
             ["Green", {
                     grouping: {
@@ -218,15 +196,41 @@ const TEMPORARY_PRESETS = {
                         mass: 1,
                         color: 'green',
                     },
-                    particles: Particle.createBatch({
-                        group_id: "Green",
-                        radius: 15,
-                        position: new Vector2D(200, -200),
-                        velocity: new Vector2D(-200, 200),
-                        mass: 1,
-                        color: 'green',
-                    }, 10)
+                    size: 10
                 }]
         ])
     }
 };
+/**
+ * Performs a deep merge onto a target object,
+ * can accept multiple sources, which are
+ * processed recursively.
+ * From Stack Overflow:
+ * https://stackoverflow.com/a/34749873
+ * @param {T} target Target object
+ * @param {Partial<T>[]} sources Objects to merge into target
+ */
+function deepmerge(target, ...sources) {
+    if (!sources.length)
+        return target;
+    const source = sources.shift();
+    if (source && isObject(target) && isObject(source)) {
+        for (const key in source) {
+            if (isObject(source[key])) {
+                if (!isObject(target[key]))
+                    target[key] = {};
+                deepmerge(target[key], source[key]);
+            }
+            else {
+                target[key] = source[key];
+            }
+        }
+    }
+    return deepmerge(target, ...sources);
+}
+/**
+ * Checks if a value is a defined object and not an array.
+ */
+function isObject(item) {
+    return !!item && typeof item === 'object' && !Array.isArray(item);
+}

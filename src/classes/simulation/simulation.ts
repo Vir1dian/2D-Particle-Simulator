@@ -1,93 +1,82 @@
 interface SimEnvironment {
-  statics: {
-    elasticity: number,
-    drag: number,
-    gravity: Vector2D,
-    electric_field: Vector2D,
-    magnetic_field: Vector2D
+  statics?: {
+    elasticity?: number,
+    drag?: number,
+    gravity?: Vector2D,
+    electric_field?: Vector2D,
+    magnetic_field?: Vector2D
   }
-  dynamics: {
+  dynamics?: {
     // for the future
   }
 }
 
 interface SimConfig {
-  path_trace_step: number,
-  is_draggable: boolean,
-  focus_color: string
+  path_trace_step?: number,
+  is_draggable?: boolean,
+  focus_color?: string
 }
 
 class Simulation {
   #container: BoxSpace;
   #environment: SimEnvironment;
   #config: SimConfig;
-  #particle_groups: Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
+  #particle_groups: Map<string, { grouping: ParticleGrouping, particles: Particle[] }>;
 
-  constructor(preset: SimPreset = DEFAULT_PRESET) {
+  constructor(preset: SimPreset = {}) {
+    const preset_clone: SimPreset = structuredClone(preset);
     const default_clone: SimPreset = structuredClone(DEFAULT_PRESET);
-    if (preset === DEFAULT_PRESET) {
-      this.#container = default_clone.container as BoxSpace;
-      this.#environment = default_clone.environment as SimEnvironment;
-      this.#config = default_clone.config as SimConfig;
-      this.#particle_groups = default_clone.particle_groups as Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
-    }
-    else {
-      let preset_clone: SimPreset = structuredClone(preset);
-      this.#container = preset_clone.container ?? default_clone.container as BoxSpace;
-      this.#environment = preset_clone.environment ?? default_clone.environment as SimEnvironment;
-      this.#config = preset_clone.config ?? default_clone.config as SimConfig;
-      this.#particle_groups = preset_clone.particle_groups ?? default_clone.particle_groups as Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
-    }
+    const final_preset: SimPreset = deepmerge(default_clone, preset_clone);
+    this.#container = final_preset.container as BoxSpace;
+    this.#environment = final_preset.environment as SimEnvironment;
+    this.#config = final_preset.config as SimConfig;
+    this.#particle_groups = new Map(Array.from(
+      final_preset.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, ([group_id, group]) => 
+      [group_id, {grouping: group.grouping, particles: Particle.createBatch(group.grouping, group.size)}]
+    ));
   }
   addGroup(grouping: ParticleGrouping): void {  
-    // Assumes that group_id has valid formatting: i.e. no spaces, hash symbols, etc.
-    if (this.#particle_groups.has(grouping.group_id)) throw new Error("Group name already exists.");
-    this.#particle_groups.set(grouping.group_id, { grouping, particles: [] });
+    // Assumes that string group_id has valid formatting: i.e. no spaces, alphanumeric.
+    if (this.#particle_groups.has(grouping.group_id)) {
+      throw new Error("Group name: " + grouping.group_id + " already exists.");  // Implement something to catch this in the renderer inputs
+    }
+    this.#particle_groups.set(grouping.group_id, {grouping: grouping, particles: Particle.createBatch(grouping, 0)});
   }
   addParticle(particle: Particle, group_id: string = DEFAULT_GROUPING.group_id): void {
     // Assumes that the particle already fits the grouping
     const group = this.#particle_groups.get(group_id);
-    if (!group) throw new Error("Group name does not exist.");
-    group.particles.push(particle);
+    if (!group) throw new Error(`Group '${group_id}' does not exist.`);
+    group?.particles.push(particle);
   }
 
-  setPreset(preset: SimPreset): void {
+  // Setters & Getters
+
+  setPreset(preset: SimPreset): void {  
+    const current_properties: SimPreset = {
+      container: this.#container,
+      environment: this.#environment,
+      config: this.#config
+    }
     const preset_clone: SimPreset = structuredClone(preset);
-    if (preset_clone.container) {
-      this.#container = preset_clone.container;
-    }
-    if (preset_clone.environment) {
-      this.#environment = preset_clone.environment;
-    }
-    if (preset_clone.config) {
-      this.#config = preset_clone.config;
-    }
+    const updated_properties = deepmerge(current_properties, preset_clone);
+    this.#container = updated_properties.container as BoxSpace;
+    this.#environment = updated_properties.environment as SimEnvironment;
+    this.#config = updated_properties.config as SimConfig;
+
     if (preset_clone.particle_groups) {
-      this.#particle_groups = preset_clone.particle_groups;
+      this.#particle_groups = new Map(Array.from(
+        updated_properties.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, ([group_id, group]) => 
+        [group_id, {grouping: group.grouping, particles: Particle.createBatch(group.grouping, group.size)}]
+      ));
     }
   }
 
-  // Basic Setters & Getters
-  setContainer(container: BoxSpace): void {
-    this.#container = container;
-  }
-  setEnvironment(environment: SimEnvironment): void {
-    this.#environment = environment;
-  }
-  setConfig(config: SimConfig): void {
-    this.#config = config;
-  }
-  getContainer(): BoxSpace {
-    return this.#container;
-  }
-  getEnvironment(): SimEnvironment {
-    return this.#environment;
-  }
-  getConfig(): SimConfig {
-    return this.#config;
-  }
-  getParticles(): Map<string, { grouping: ParticleGrouping, particles: Particle[]}> {
-    return this.#particle_groups;
+  getAllParticles(): Particle[] { 
+    const particles: Particle[] = [];
+    this.#particle_groups.forEach((group) => {
+      particles.push(...group.particles);
+    });
+    return particles;
   }
 }
 
@@ -114,18 +103,19 @@ const DEFAULT_PRESET: SimPreset = {
     focus_color: "yellow"
   },
   particle_groups: new Map([
-    [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, particles: [] }]
+    [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, size: 0 }]
   ])
 }
 
-// For testing Simulation class, will eventually save all presets in "simulation_presets.json"
+// Used to structure the contents of Simulation class
 interface SimPreset {
   container?: BoxSpace;
   environment?: SimEnvironment;
   config?: SimConfig;
-  particle_groups?: Map<string, { grouping: ParticleGrouping, particles: Particle[]}>;
+  particle_groups?: Map<string, { grouping: ParticleGrouping, size: number}>;
 }
 
+// For testing Simulation class, will eventually save all presets in "simulation_presets.json"
 const TEMPORARY_PRESETS: Record<string, SimPreset> = {
   sandbox: {
     container: {
@@ -158,16 +148,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           mass: 'random',
           color: 'random',
         }, 
-        particles: Particle.createBatch(
-          {
-            group_id: DEFAULT_GROUPING.group_id,
-            position: 'random',
-            velocity: 'random',
-            mass: 'random',
-            color: 'random',
-          },
-          40
-        )
+        size: 40
       }]
     ])
   },
@@ -196,7 +177,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
     particle_groups: new Map([
       [DEFAULT_GROUPING.group_id, { 
         grouping: DEFAULT_GROUPING, 
-        particles: [] 
+        size: 0 
       }],
       ["Red", { 
         grouping: {
@@ -207,17 +188,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           mass: 4,
           color: 'red',
         }, 
-        particles: Particle.createBatch(
-          {
-            group_id: "Red",
-            radius: 15,
-            position: new Vector2D(-200,200),
-            velocity: new Vector2D(200,-200),
-            mass: 4,
-            color: 'red',
-          },
-          10
-        ) 
+        size: 10 
       }],
       ["Yellow", { 
         grouping: {
@@ -228,17 +199,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           mass: 2,
           color: 'orange',
         }, 
-        particles: Particle.createBatch(
-          {
-            group_id: "Yellow",
-            radius: 15,
-            position: new Vector2D(-200,-200),
-            velocity: new Vector2D(200,200),
-            mass: 2,
-            color: 'orange',
-          },
-          10
-        ) 
+        size: 10 
       }],
       ["Blue", { 
         grouping: {
@@ -249,17 +210,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           mass: 3,
           color: 'blue',
         }, 
-        particles: Particle.createBatch(
-          {
-            group_id: "Blue",
-            radius: 15,
-            position: new Vector2D(200,200),
-            velocity: new Vector2D(-200,-200),
-            mass: 3,
-            color: 'blue',
-          },
-          10
-        ) 
+        size: 10
       }],
       ["Green", { 
         grouping: {
@@ -270,18 +221,41 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           mass: 1,
           color: 'green',
         }, 
-        particles: Particle.createBatch(
-          {
-            group_id: "Green",
-            radius: 15,
-            position: new Vector2D(200,-200),
-            velocity: new Vector2D(-200,200),
-            mass: 1,
-            color: 'green',
-          },
-          10
-        ) 
+        size: 10
       }]
     ])
   }
+}
+
+/**
+ * Performs a deep merge onto a target object,
+ * can accept multiple sources, which are 
+ * processed recursively.
+ * From Stack Overflow:
+ * https://stackoverflow.com/a/34749873 
+ * @param {T} target Target object
+ * @param {Partial<T>[]} sources Objects to merge into target
+ */
+function deepmerge<T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T {
+  if (!sources.length) return target;
+
+  const source = sources.shift();
+  if (source && isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!isObject(target[key])) target[key] = {} as any;
+        deepmerge(target[key], source[key] as any);
+      } else {
+        target[key] = source[key] as any;
+      }
+    }
+  }
+
+  return deepmerge(target, ...sources);
+}
+/**
+ * Checks if a value is a defined object and not an array.
+ */
+function isObject(item: unknown): item is Record<string, any> {
+  return !!item && typeof item === 'object' && !Array.isArray(item);
 }
