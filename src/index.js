@@ -69,7 +69,10 @@ const setupElementRenderers = {
 };
 // Sets the initial state of all elements
 function loadAll() {
-    const sim = new Simulation();
+    const sim = new Simulation(TEMPORARY_PRESETS["rybg"]);
+    const particle_setup = new ParticleSetupRenderer(sim);
+    const control_panel_element = document.querySelector(".control_items_wrapper");
+    particle_setup.setParent(control_panel_element);
     loadContainerElement(container);
     simulationSettingsElementFunctionsOld.loadPreset('empty');
     openControlItem(control_items_data[2]); // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle

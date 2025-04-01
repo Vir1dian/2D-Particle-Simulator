@@ -88,8 +88,10 @@ const setupElementRenderers = {
 
 // Sets the initial state of all elements
 function loadAll() {
-
-  const sim: Simulation = new Simulation();
+  const sim: Simulation = new Simulation(TEMPORARY_PRESETS["rybg"]);
+  const particle_setup: ParticleSetupRenderer = new ParticleSetupRenderer(sim);
+  const control_panel_element: HTMLElement = document.querySelector(".control_items_wrapper") as HTMLElement;
+  particle_setup.setParent(control_panel_element);
 
 
   loadContainerElement(container);

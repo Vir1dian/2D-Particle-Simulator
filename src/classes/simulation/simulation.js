@@ -133,26 +133,15 @@ const TEMPORARY_PRESETS = {
         ])
     },
     rybg: {
-        container: {
-            x_min: -250,
-            x_max: 250,
-            y_min: -250,
-            y_max: 250
-        },
         environment: {
             statics: {
-                elasticity: 0.7,
-                drag: 0,
-                gravity: new Vector2D(),
-                electric_field: new Vector2D(),
-                magnetic_field: new Vector2D()
-            },
-            dynamics: {}
+                elasticity: 0.7
+            }
         },
         config: {
             path_trace_step: 0.5,
             is_draggable: false,
-            focus_color: "yellow"
+            focus_color: "pink"
         },
         particle_groups: new Map([
             [DEFAULT_GROUPING.group_id, {
@@ -221,7 +210,14 @@ function deepmerge(target, ...sources) {
     const source = sources.shift();
     if (source && isObject(target) && isObject(source)) {
         for (const key in source) {
-            if (isObject(source[key])) {
+            if (isMap(source[key])) {
+                if (!isMap(target[key]))
+                    target[key] = new Map();
+                source[key].forEach((mapValue, mapKey) => {
+                    target[key].set(mapKey, mapValue);
+                });
+            }
+            else if (isObject(source[key])) {
                 if (!isObject(target[key]))
                     target[key] = {};
                 deepmerge(target[key], source[key]);
@@ -238,4 +234,10 @@ function deepmerge(target, ...sources) {
  */
 function isObject(item) {
     return !!item && typeof item === 'object' && !Array.isArray(item);
+}
+/**
+ * Type guard to check if a value is a Map.
+ */
+function isMap(item) {
+    return item instanceof Map;
 }

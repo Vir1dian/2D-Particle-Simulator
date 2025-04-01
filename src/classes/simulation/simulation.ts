@@ -133,26 +133,15 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
     ])
   },
   rybg: {
-    container: {
-      x_min: -250,
-      x_max: 250,
-      y_min: -250,
-      y_max: 250
-    },
     environment: {
       statics: {
-        elasticity: 0.7,
-        drag: 0,
-        gravity: new Vector2D(),
-        electric_field: new Vector2D(),
-        magnetic_field: new Vector2D()
-      },
-      dynamics: {}
+        elasticity: 0.7
+      }
     },
     config: {
       path_trace_step: 0.5,
       is_draggable: false,
-      focus_color: "yellow"
+      focus_color: "pink"
     },
     particle_groups: new Map([
       [DEFAULT_GROUPING.group_id, { 
@@ -222,7 +211,13 @@ function deepmerge<T extends Record<string, any>>(target: T, ...sources: Partial
   const source = sources.shift();
   if (source && isObject(target) && isObject(source)) {
     for (const key in source) {
-      if (isObject(source[key])) {
+      if (isMap(source[key])) {
+        if (!isMap(target[key])) target[key] = new Map() as any;
+        (source[key] as Map<any, any>).forEach((mapValue, mapKey) => {
+          (target[key] as Map<any, any>).set(mapKey, mapValue);
+        });
+      }
+      else if (isObject(source[key])) {
         if (!isObject(target[key])) target[key] = {} as any;
         deepmerge(target[key], source[key] as any);
       } else {
@@ -238,4 +233,10 @@ function deepmerge<T extends Record<string, any>>(target: T, ...sources: Partial
  */
 function isObject(item: unknown): item is Record<string, any> {
   return !!item && typeof item === 'object' && !Array.isArray(item);
+}
+/**
+ * Type guard to check if a value is a Map.
+ */
+function isMap(item: unknown): item is Map<any, any> {
+  return item instanceof Map;
 }
