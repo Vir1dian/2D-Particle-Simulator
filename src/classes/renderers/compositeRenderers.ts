@@ -67,11 +67,11 @@ class PresetInputRenderer extends Renderer {
  * Helper class for SimulationRenderer
  * Handles ParticleUnitGroupRenderers.
  */
-class ParticleSetupRenderer extends Renderer {
+class ParticleSetupRenderer extends Renderer {  // TODO: Add particles/groups, dialogs
   #simulation: Simulation;
   #add_particles_dialog: DialogRenderer;
   #create_group_dialog: DialogRenderer;
-  #group_list: ListRenderer;
+  #group_list: ListRenderer<ParticleUnitGroupRenderer>;
 
   constructor(simulation: Simulation) {
     const particle_setup: HTMLElement = document.createElement('article');
@@ -81,7 +81,7 @@ class ParticleSetupRenderer extends Renderer {
     // Saved Renderers
     this.#add_particles_dialog = this.setupAddParticlesDialog();
     this.#create_group_dialog = this.setupCreateGroupDialog();
-    this.#group_list = new ListRenderer(...Array.from(
+    this.#group_list = new ListRenderer<ParticleUnitGroupRenderer>(...Array.from(
       simulation.getParticleGroups() as Map<string, ParticleGroup>, 
       ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer())
     ));
@@ -121,6 +121,9 @@ class ParticleSetupRenderer extends Renderer {
     this.#create_group_dialog.getOpenButton().setParent(buttons_wrapper);
     return buttons_wrapper;
   }
+  getGroupList(): ListRenderer<ParticleUnitGroupRenderer> {
+    return this.#group_list;
+  }
 }
 
 /**
@@ -134,7 +137,7 @@ class ParticleUnitGroupRenderer extends Renderer {
   #icon: Renderer;
   #details_dialog: DialogRenderer;
   #drag_button: ButtonRenderer;
-  #unit_list: ListRenderer;
+  #unit_list: ListRenderer<ParticleUnitRenderer>;
   
   constructor(group: ParticleGroup, container: BoxSpace) {
     const particle_group_element: HTMLElement = document.createElement('article');
@@ -146,7 +149,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#icon = this.createIcon(group.getGrouping().color as string);
     this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id);
     this.#drag_button = this.setupDragButton();
-    this.#unit_list = new ListRenderer(...group.getParticles().map(particle => {
+    this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...group.getParticles().map(particle => {
       return new ParticleUnitRenderer(particle, container);
     }));
     // Contents
@@ -201,6 +204,9 @@ class ParticleUnitGroupRenderer extends Renderer {
   };
   getParticleGroup(): ParticleGroup {
     return this.#particle_group;
+  }
+  getUnitList(): ListRenderer<ParticleUnitRenderer> {
+    return this.#unit_list;
   }
 }
 

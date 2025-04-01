@@ -69,11 +69,14 @@ const setupElementRenderers = {
 };
 // Sets the initial state of all elements
 function loadAll() {
+    var _a;
     const sim = new Simulation(TEMPORARY_PRESETS["rybg"]);
     const particle_setup = new ParticleSetupRenderer(sim);
     const control_panel_element = document.querySelector(".control_items_wrapper");
     particle_setup.setParent(control_panel_element);
     control_item_elements = document.querySelectorAll(".control_item");
+    console.log(particle_setup.getGroupList().at(1).getUnitList().at(0).getParticlePoint().getParticle());
+    console.log((_a = sim.getParticleGroups().get("Red")) === null || _a === void 0 ? void 0 : _a.getParticles()[0]);
     loadContainerElement(container);
     simulationSettingsElementFunctionsOld.loadPreset('empty');
     openControlItem(control_items_data[2]); // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle

@@ -94,6 +94,9 @@ function loadAll() {
   particle_setup.setParent(control_panel_element);
   control_item_elements = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;
 
+  console.log(particle_setup.getGroupList().at(1).getUnitList().at(0).getParticlePoint().getParticle());
+  console.log(sim.getParticleGroups().get("Red")?.getParticles()[0]);
+
   loadContainerElement(container);
   simulationSettingsElementFunctionsOld.loadPreset('empty');
 

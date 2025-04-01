@@ -169,9 +169,9 @@ class TableRenderer extends Renderer {
   }
 }
 
-class ListRenderer extends Renderer {
-  #items: Renderer[];
-  constructor (...items: Renderer[]) {
+class ListRenderer<T extends Renderer> extends Renderer {
+  #items: T[];
+  constructor (...items: T[]) {
     // if (items.length <= 0) {
     //   throw new Error("Empty spread operator argument");
     // }
@@ -191,38 +191,38 @@ class ListRenderer extends Renderer {
   getLength(): number {
     return this.#items.length;
   }
-  push(item: Renderer): void {
+  push(item: T): void {
     this.#items.push(item);
     const ul: HTMLUListElement = this.getElement();
     const li: HTMLLIElement = document.createElement('li');
     item.setParent(li);
     ul.appendChild(li);
   }
-  at(index: number): Renderer {
+  at(index: number): T {
     if (index < 0 || index >= this.#items.length) {
       throw new Error("Invalid index.");
     }
     return this.#items[index];
   }
-  map<T>(callback: (item: Renderer, index: number) => T): T[] {
+  map<S>(callback: (item: Renderer, index: number) => S): S[] {
     return this.#items.map(callback);
   }
   forEach(callback: (item: Renderer, index: number) => void): void {
     this.#items.forEach(callback);
   }
-  filter(callback: (item: Renderer, index: number) => boolean): Renderer[] {
+  filter(callback: (item: Renderer, index: number) => boolean): T[] {
     return this.#items.filter(callback);
   }
   swap(index1: number, index2: number): void {
     if (index1 === index2) return;
     // Swap in array
-    const s: Renderer[] = this.#items;
+    const s: T[] = this.#items;
     if (index1 < 0 || index2 < 0 || 
         index1 >= s.length || 
         index2 >= s.length) {
       throw new Error("Invalid indices.");
     }
-    let temp: Renderer = s[index1];
+    let temp: T = s[index1];
     s[index1] = s[index2];
     s[index2] = temp;
     // Swap in DOM
@@ -239,7 +239,7 @@ class ListRenderer extends Renderer {
       }
     }
   }
-  removeItem(item: Renderer): void {
+  removeItem(item: T): void {
     const index = this.#items.indexOf(item);
     if (index !== -1) {
       this.#items.splice(index, 1);

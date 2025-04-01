@@ -118,6 +118,9 @@ class ParticleSetupRenderer extends Renderer {
         __classPrivateFieldGet(this, _ParticleSetupRenderer_create_group_dialog, "f").getOpenButton().setParent(buttons_wrapper);
         return buttons_wrapper;
     }
+    getGroupList() {
+        return __classPrivateFieldGet(this, _ParticleSetupRenderer_group_list, "f");
+    }
 }
 _ParticleSetupRenderer_simulation = new WeakMap(), _ParticleSetupRenderer_add_particles_dialog = new WeakMap(), _ParticleSetupRenderer_create_group_dialog = new WeakMap(), _ParticleSetupRenderer_group_list = new WeakMap();
 /**
@@ -196,6 +199,9 @@ class ParticleUnitGroupRenderer extends Renderer {
     ;
     getParticleGroup() {
         return __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f");
+    }
+    getUnitList() {
+        return __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f");
     }
 }
 _ParticleUnitGroupRenderer_particle_group = new WeakMap(), _ParticleUnitGroupRenderer_icon = new WeakMap(), _ParticleUnitGroupRenderer_details_dialog = new WeakMap(), _ParticleUnitGroupRenderer_drag_button = new WeakMap(), _ParticleUnitGroupRenderer_unit_list = new WeakMap();
