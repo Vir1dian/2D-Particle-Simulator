@@ -225,7 +225,6 @@ class ParticleUnitRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.getID()), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_drag_button, this.setupDragButton(), "f");
         // Contents
-        __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").setContainer(container);
         particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));
         particle_control_element.appendChild(this.createButtonsWrapper());
         __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").setParent(particle_control_element);
@@ -291,6 +290,8 @@ class ParticlePointRenderer extends Renderer {
         _ParticlePointRenderer_container.set(this, void 0);
         __classPrivateFieldSet(this, _ParticlePointRenderer_particle, particle, "f");
         __classPrivateFieldSet(this, _ParticlePointRenderer_container, container, "f");
+        const container_element = document.querySelector('.container_element');
+        container_element.appendChild(particle_element);
         // shape
         particle_element.style.borderRadius = `${particle.radius}px`;
         particle_element.style.width = `${2 * particle.radius}px`;
@@ -308,10 +309,11 @@ class ParticlePointRenderer extends Renderer {
         return __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f");
     }
     setContainer(container) {
-        if (__classPrivateFieldGet(this, _ParticlePointRenderer_container, "f") !== container)
-            __classPrivateFieldSet(this, _ParticlePointRenderer_container, container, "f");
+        if (__classPrivateFieldGet(this, _ParticlePointRenderer_container, "f") === container)
+            return;
+        __classPrivateFieldSet(this, _ParticlePointRenderer_container, container, "f");
         const container_element = document.querySelector('.container_element');
-        container_element === null || container_element === void 0 ? void 0 : container_element.appendChild(this.getElement());
+        container_element.appendChild(this.getElement());
     }
     update() {
         const particle_element = this.getElement();

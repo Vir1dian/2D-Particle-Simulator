@@ -88,17 +88,17 @@ const setupElementRenderers = {
 
 // Sets the initial state of all elements
 function loadAll() {
+  loadContainerElement(container);
+  simulationSettingsElementFunctionsOld.loadPreset('empty');
+
   const sim: Simulation = new Simulation(TEMPORARY_PRESETS["rybg"]);
   const particle_setup: ParticleSetupRenderer = new ParticleSetupRenderer(sim);
   const control_panel_element: HTMLElement = document.querySelector(".control_items_wrapper") as HTMLElement;
   particle_setup.setParent(control_panel_element);
   control_item_elements = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;
 
-  console.log(particle_setup.getGroupList().at(1).getUnitList().at(0).getParticlePoint().getParticle());
+  console.log(particle_setup.getGroupList().at(1).getUnitList().at(0).getParticlePoint().getElement());
   console.log(sim.getParticleGroups().get("Red")?.getParticles()[0]);
-
-  loadContainerElement(container);
-  simulationSettingsElementFunctionsOld.loadPreset('empty');
 
   openControlItem(control_items_data[2]);  // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
 

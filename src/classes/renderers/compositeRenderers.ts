@@ -231,7 +231,6 @@ class ParticleUnitRenderer extends Renderer {
     this.#details_dialog = this.setupDetailsDialog(particle.getID());
     this.#drag_button = this.setupDragButton(); 
     // Contents
-    this.#particle_renderer.setContainer(container);
     particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));
     particle_control_element.appendChild(this.createButtonsWrapper());
     this.#details_dialog.setParent(particle_control_element);
@@ -301,6 +300,10 @@ class ParticlePointRenderer extends Renderer {
     super(particle_element, 'particle_element', `particle_element_id${particle.getID()}`);
     this.#particle = particle;
     this.#container = container;
+
+    const container_element : HTMLDivElement = document.querySelector('.container_element') as HTMLDivElement;
+    container_element.appendChild(particle_element);
+
     // shape
     particle_element.style.borderRadius = `${particle.radius}px`;
     particle_element.style.width = `${2*particle.radius}px`;
@@ -317,12 +320,13 @@ class ParticlePointRenderer extends Renderer {
   getParticle(): Particle {
     return this.#particle;
   }
-  setContainer(container: BoxSpace) {
-    if (this.#container !== container) this.#container = container;
-    const container_element : HTMLElement | null = document.querySelector('.container_element');
-    container_element?.appendChild(this.getElement());
+  setContainer(container: BoxSpace): void {
+    if (this.#container === container) return;
+    this.#container = container;
+    const container_element : HTMLDivElement = document.querySelector('.container_element') as HTMLDivElement;
+    container_element.appendChild(this.getElement());
   }
-  update() {
+  update(): void {
     const particle_element : HTMLDivElement = this.getElement() as HTMLDivElement;
     // shape
     particle_element.style.borderRadius = `${this.#particle.radius}px`;
