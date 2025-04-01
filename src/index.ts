@@ -71,7 +71,7 @@ const setupElementRenderers = {
 
   },
   simulation : {
-    loadAvailablePresets() {
+    loadAvailablePresets() {  // Old
       const preset_datalist_element : HTMLDataListElement = document.getElementById("simsetup_presets") as HTMLDataListElement;
       Object.keys(presets).forEach((preset_name: string) => {
         const option_element : HTMLOptionElement = document.createElement('option');
@@ -79,24 +79,10 @@ const setupElementRenderers = {
         preset_datalist_element.appendChild(option_element);
       });
     },
+
   },
   particle : {
-    testSetup() {
-      // This is purely for testing the Renderer classes, final setup will likely be handled mostly in simulation
-
-      const test_preset: SimPreset = TEMPORARY_PRESETS["rybg"];
-      const particle_groups: ParticleUnitGroupRenderer[] = [];
-      test_preset.particle_groups.forEach((group) => {
-        const control_units = group.particles.map(particle => {
-          return new ParticleUnitRenderer(particle, test_preset.container);
-        })
-        particle_groups.push(new ParticleUnitGroupRenderer(group.grouping, ...control_units));
-      });
-      
-      const particle_set_element: ListRenderer = new ListRenderer(...particle_groups);
-      const particle_setup: HTMLElement = document.getElementById("parsetup_groups_wrapper") as HTMLElement;
-      particle_set_element.setParent(particle_setup);
-    }
+    
   }
 }
 
@@ -111,12 +97,4 @@ function loadAll() {
 
   openControlItem(control_items_data[2]);  // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
 
-  // Simulation Presets
-  setupElementRenderers.simulation.loadAvailablePresets();
-  const simsetup_presets_button : HTMLButtonElement = document.getElementById("simsetup_presets_button") as HTMLButtonElement;
-  const simsetup_presets_input : HTMLInputElement = document.getElementById("simsetup_presets_input") as HTMLInputElement;
-  simsetup_presets_button.addEventListener("click", () => simulationSettingsElementFunctionsOld.loadPreset(simsetup_presets_input.value));
-
-  // Particle Interface
-  setupElementRenderers.particle.testSetup();
 }

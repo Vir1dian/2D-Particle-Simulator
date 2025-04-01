@@ -1,4 +1,7 @@
-// Other larger Renderer classes, may move to separate files
+
+// Helper classes for SimulationRenderer, the ULTIMATE RENDERER!!!
+
+// UI Config Renderers -- May implement a separate UIHandler class from Simulation
 class UIControlRenderer extends Renderer {  // May extend from a TableRenderer or a ListRenderer instead
   // WIP: Will need methods to handle Simulation Class's calls
   #simulation: Simulation
@@ -10,7 +13,20 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
   }
 }
 
-class SimulationPresetInputRenderer extends Renderer { 
+// Environment Setup Renderers
+/**
+ * Helper class for SimulationRenderer
+ */
+class EnvironmentSetupRenderer extends Renderer {
+  #simulation: Simulation;
+  
+  constructor(simulation: Simulation) {
+    const simulation_settings: HTMLDivElement = document.createElement('div');
+    super(simulation_settings, '', 'simsetup_global_variables_wrapper');
+    this.#simulation = simulation;
+  }
+}
+class PresetInputRenderer extends Renderer { 
   #simulation: Simulation;
   #preset_dropdown: DatalistInputRenderer;
   #apply_button: ButtonRenderer;
@@ -46,68 +62,114 @@ class SimulationPresetInputRenderer extends Renderer {
   }
 }
 
-class SimulationControlRenderer extends Renderer {
-  #simulation: Simulation;
-  
-  constructor(simulation: Simulation) {
-    const simulation_settings: HTMLDivElement = document.createElement('div');
-    super(simulation_settings, '', 'simsetup_global_variables_wrapper');
-    this.#simulation = simulation;
-  }
-}
-
+// Particle Interface Renderers
 /**
- * Handles a Renderer belonging to a Simulation container 
- * that represents a Particle as a circular point with
- * the correct styling.
+ * Helper class for SimulationRenderer
+ * Handles ParticleUnitGroupRenderers.
  */
-class ParticlePointRenderer extends Renderer { 
-  #particle: Particle;
-  #container: BoxSpace;
-  constructor(particle: Particle, container: BoxSpace) {
-    const particle_element : HTMLDivElement = document.createElement('div');
-    super(particle_element, 'particle_element', `particle_element_id${particle.getID()}`);
-    this.#particle = particle;
-    this.#container = container;
-    // shape
-    particle_element.style.borderRadius = `${particle.radius}px`;
-    particle_element.style.width = `${2*particle.radius}px`;
-    particle_element.style.height = `${2*particle.radius}px`;
-    // positioning
-    particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
-    particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
-    // color
-    particle_element.style.backgroundColor = particle.color;
-  }
-  getElement(): HTMLDivElement {
-    return super.getElement() as HTMLDivElement;
-  }
-  getParticle(): Particle {
-    return this.#particle;
-  }
-  setContainer(container: BoxSpace) {
-    if (this.#container !== container) this.#container = container;
-    const container_element : HTMLElement | null = document.querySelector('.container_element');
-    container_element?.appendChild(this.getElement());
-  }
-  update() {
-    const particle_element : HTMLDivElement = this.getElement() as HTMLDivElement;
-    // shape
-    particle_element.style.borderRadius = `${this.#particle.radius}px`;
-    particle_element.style.width = `${2*this.#particle.radius}px`;
-    particle_element.style.height = `${2*this.#particle.radius}px`;
-    // positioning
-    particle_element.style.left = `${(this.#particle.position.x - this.#particle.radius) - this.#container.x_min}px`;
-    particle_element.style.top = `${this.#container.y_max - (this.#particle.position.y + this.#particle.radius)}px`;
-    // color
-    particle_element.style.backgroundColor = this.#particle.color;
+class ParticleSetupRenderer extends Renderer {
+  #simulation: Simulation;
+
+  constructor(simulation: Simulation) {
+    const particle_setup: HTMLElement = document.createElement('article');
+    super(particle_setup, 'control_item', 'control_parsetup');
+    this.#simulation = simulation;
+    // Saved Renderers
+
+    // Content
+    const header: HTMLElement = document.createElement('header');
+    header.innerHTML = "Particle Setup";
+    particle_setup.appendChild(header);
   }
 }
 
 /**
+ * Helper class for ParticleSetup Renderer.
+ * Handles a set of Renderers that represents the 
+ * user control interface for a ParticleGroup.
+ * Handles ParticleUnitRenderers.
+ */
+class ParticleUnitGroupRenderer extends Renderer {
+  #particle_group: ParticleGroup;
+  #icon: Renderer;
+  #details_dialog: DialogRenderer;
+  #drag_button: ButtonRenderer;
+  #unit_list: ListRenderer;
+  
+  constructor(group: ParticleGroup, container: BoxSpace) {
+    const particle_group_element: HTMLElement = document.createElement('article');
+    super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
+
+    this.#particle_group = group;
+
+    // Saved renderers
+    this.#icon = this.createIcon(group.getGrouping().color as string);
+    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id);
+    this.#drag_button = this.setupDragButton();
+    this.#unit_list = new ListRenderer(...group.getParticles().map(particle => {
+      return new ParticleUnitRenderer(particle, container);
+    }));
+    // Contents
+    const header: HTMLElement = document.createElement('header');
+    header.appendChild(this.createTitleWrapper(group.getGrouping().group_id));
+    header.appendChild(this.createButtonsWrapper());
+    particle_group_element.appendChild(header);
+    this.#unit_list.setParent(particle_group_element);
+  }
+  private createIcon(color: string): Renderer {
+    const icon = new Renderer(document.createElement("span"));
+    icon.setClassName("parsetup_group_icon");
+    icon.getElement().style.backgroundColor = color;
+    return icon;
+  };
+  private setupDetailsDialog(group_id: string): DialogRenderer {
+    const details_dialog = new DialogRenderer(`particle_group_dialog_id${group_id}`);
+    details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
+    details_dialog.getOpenButton().getElement().innerHTML = "keyboard_arrow_down";
+
+    // Entire setup for dialog details
+
+    return details_dialog;
+  };
+  private setupDragButton(): ButtonRenderer {
+    const drag_button = new ButtonRenderer(
+      ()=>{
+        // Draggable button WIP (see Drag and Drop API)
+      }, 
+      'drag'  // Draggable button WIP (see Drag and Drop API)
+    )
+    drag_button.setClassName("material-symbols-sharp icon drag_icon");
+    drag_button.getElement().innerHTML = "drag_handle";
+    return drag_button;
+  };
+  private createTitleWrapper(group_id: string): HTMLDivElement {
+    const title_wrapper : HTMLDivElement = document.createElement('div');
+    title_wrapper.className = "parsetup_group_title_wrapper";
+    this.#icon.setParent(title_wrapper);
+    const title : HTMLSpanElement = document.createElement('span');
+    title.className = "parsetup_group_title";
+    title.innerHTML = group_id;
+    title_wrapper.appendChild(title);
+    return title_wrapper;
+  };
+  private createButtonsWrapper(): HTMLDivElement {
+    const buttons_wrapper : HTMLDivElement = document.createElement('div');
+    buttons_wrapper.className = "parsetup_group_buttons_wrapper";
+    this.#details_dialog.getOpenButton().setParent(buttons_wrapper);
+    this.#drag_button.setParent(buttons_wrapper);
+    return buttons_wrapper;
+  };
+  getParticleGroup(): ParticleGroup {
+    return this.#particle_group;
+  }
+}
+
+
+/**
+ * Helper class for ParticleUnitGroupRenderer.
  * Handles a set of Renderers that represents
  * the user control interface of a Particle.
- * Maintains a single ParticlePointRenderer.
+ * Handles a single ParticlePointRenderer.
  */
 class ParticleUnitRenderer extends Renderer {
   #particle_renderer: ParticlePointRenderer;
@@ -180,75 +242,52 @@ class ParticleUnitRenderer extends Renderer {
 }
 
 /**
- * Handles a set of Renderers that represents the 
- * user control interface for a ParticleGroup.
- * Maintains a group of ParticleUnitRenderers.
+ * Helper class for ParticleUnitRenderer.
+ * Handles a Renderer belonging to a Simulation container 
+ * that represents a Particle as a circular point with
+ * the correct styling. 
  */
-class ParticleUnitGroupRenderer extends Renderer {
-  #particle_group: ParticleGroup;
-  #icon: Renderer;
-  #details_dialog: DialogRenderer;
-  #drag_button: ButtonRenderer;
-  #unit_list: ListRenderer;
-  
-  constructor(group: ParticleGroup, container: BoxSpace) {
-    const particle_group_element: HTMLElement = document.createElement('article');
-    super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
-    // Saved renderers
-    this.#icon = this.createIcon(group.getGrouping().color as string);
-    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id);
-    this.#drag_button = this.setupDragButton();
-    this.#unit_list = new ListRenderer(...group.getParticles().map(particle => {
-      return new ParticleUnitRenderer(particle, container);
-    }));
-    // Contents
-    const header: HTMLElement = document.createElement('header');
-    header.appendChild(this.createTitleWrapper(group.getGrouping().group_id));
-    header.appendChild(this.createButtonsWrapper());
-    particle_group_element.appendChild(header);
-    this.#unit_list.setParent(particle_group_element);
+class ParticlePointRenderer extends Renderer { 
+  #particle: Particle;
+  #container: BoxSpace;
+  constructor(particle: Particle, container: BoxSpace) {
+    const particle_element : HTMLDivElement = document.createElement('div');
+    super(particle_element, 'particle_element', `particle_element_id${particle.getID()}`);
+    this.#particle = particle;
+    this.#container = container;
+    // shape
+    particle_element.style.borderRadius = `${particle.radius}px`;
+    particle_element.style.width = `${2*particle.radius}px`;
+    particle_element.style.height = `${2*particle.radius}px`;
+    // positioning
+    particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
+    particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
+    // color
+    particle_element.style.backgroundColor = particle.color;
   }
-  private createIcon(color: string): Renderer {
-    const icon = new Renderer(document.createElement("span"));
-    icon.setClassName("parsetup_group_icon");
-    icon.getElement().style.backgroundColor = color;
-    return icon;
-  };
-  private setupDetailsDialog(group_id: string): DialogRenderer {
-    const details_dialog = new DialogRenderer(`particle_group_dialog_id${group_id}`);
-    details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
-    details_dialog.getOpenButton().getElement().innerHTML = "keyboard_arrow_down";
-
-    // Entire setup for dialog details
-
-    return details_dialog;
-  };
-  private setupDragButton(): ButtonRenderer {
-    const drag_button = new ButtonRenderer(
-      ()=>{
-        // Draggable button WIP (see Drag and Drop API)
-      }, 
-      'drag'  // Draggable button WIP (see Drag and Drop API)
-    )
-    drag_button.setClassName("material-symbols-sharp icon drag_icon");
-    drag_button.getElement().innerHTML = "drag_handle";
-    return drag_button;
-  };
-  private createTitleWrapper(group_id: string): HTMLDivElement {
-    const title_wrapper : HTMLDivElement = document.createElement('div');
-    title_wrapper.className = "parsetup_group_title_wrapper";
-    this.#icon.setParent(title_wrapper);
-    const title : HTMLSpanElement = document.createElement('span');
-    title.className = "parsetup_group_title";
-    title.innerHTML = group_id;
-    title_wrapper.appendChild(title);
-    return title_wrapper;
-  };
-  private createButtonsWrapper(): HTMLDivElement {
-    const buttons_wrapper : HTMLDivElement = document.createElement('div');
-    buttons_wrapper.className = "parsetup_group_buttons_wrapper";
-    this.#details_dialog.getOpenButton().setParent(buttons_wrapper);
-    this.#drag_button.setParent(buttons_wrapper);
-    return buttons_wrapper;
-  };
+  getElement(): HTMLDivElement {
+    return super.getElement() as HTMLDivElement;
+  }
+  getParticle(): Particle {
+    return this.#particle;
+  }
+  setContainer(container: BoxSpace) {
+    if (this.#container !== container) this.#container = container;
+    const container_element : HTMLElement | null = document.querySelector('.container_element');
+    container_element?.appendChild(this.getElement());
+  }
+  update() {
+    const particle_element : HTMLDivElement = this.getElement() as HTMLDivElement;
+    // shape
+    particle_element.style.borderRadius = `${this.#particle.radius}px`;
+    particle_element.style.width = `${2*this.#particle.radius}px`;
+    particle_element.style.height = `${2*this.#particle.radius}px`;
+    // positioning
+    particle_element.style.left = `${(this.#particle.position.x - this.#particle.radius) - this.#container.x_min}px`;
+    particle_element.style.top = `${this.#container.y_max - (this.#particle.position.y + this.#particle.radius)}px`;
+    // color
+    particle_element.style.backgroundColor = this.#particle.color;
+  }
 }
+
+

@@ -65,22 +65,7 @@ const setupElementRenderers = {
             });
         },
     },
-    particle: {
-        testSetup() {
-            // This is purely for testing the Renderer classes, final setup will likely be handled mostly in simulation
-            const test_preset = TEMPORARY_PRESETS["rybg"];
-            const particle_groups = [];
-            test_preset.particle_groups.forEach((group) => {
-                const control_units = group.particles.map(particle => {
-                    return new ParticleUnitRenderer(particle, test_preset.container);
-                });
-                particle_groups.push(new ParticleUnitGroupRenderer(group.grouping, ...control_units));
-            });
-            const particle_set_element = new ListRenderer(...particle_groups);
-            const particle_setup = document.getElementById("parsetup_groups_wrapper");
-            particle_set_element.setParent(particle_setup);
-        }
-    }
+    particle: {}
 };
 // Sets the initial state of all elements
 function loadAll() {
@@ -88,11 +73,4 @@ function loadAll() {
     loadContainerElement(container);
     simulationSettingsElementFunctionsOld.loadPreset('empty');
     openControlItem(control_items_data[2]); // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
-    // Simulation Presets
-    setupElementRenderers.simulation.loadAvailablePresets();
-    const simsetup_presets_button = document.getElementById("simsetup_presets_button");
-    const simsetup_presets_input = document.getElementById("simsetup_presets_input");
-    simsetup_presets_button.addEventListener("click", () => simulationSettingsElementFunctionsOld.loadPreset(simsetup_presets_input.value));
-    // Particle Interface
-    setupElementRenderers.particle.testSetup();
 }
