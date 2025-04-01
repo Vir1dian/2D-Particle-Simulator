@@ -69,17 +69,55 @@ class PresetInputRenderer extends Renderer {
  */
 class ParticleSetupRenderer extends Renderer {
   #simulation: Simulation;
+  #add_particles_dialog: DialogRenderer;
+  #create_group_dialog: DialogRenderer;
+  #group_list: ListRenderer;
 
   constructor(simulation: Simulation) {
     const particle_setup: HTMLElement = document.createElement('article');
     super(particle_setup, 'control_item', 'control_parsetup');
     this.#simulation = simulation;
+
     // Saved Renderers
+    this.#add_particles_dialog = this.setupAddParticlesDialog();
+    this.#create_group_dialog = this.setupCreateGroupDialog();
+    this.#group_list = new ListRenderer(...Array.from(
+      simulation.getParticleGroups() as Map<string, ParticleGroup>, 
+      ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer())
+    ));
 
     // Content
     const header: HTMLElement = document.createElement('header');
     header.innerHTML = "Particle Setup";
     particle_setup.appendChild(header);
+
+    particle_setup.appendChild(this.createButtonsWrapper());
+
+    const list_wrapper: HTMLDivElement = document.createElement('div');
+    list_wrapper.id = "parsetup_groups_wrapper";
+    this.#group_list.setParent(list_wrapper);
+    particle_setup.appendChild(list_wrapper);
+  }
+  private setupAddParticlesDialog(): DialogRenderer {
+    const details_dialog = new DialogRenderer('parsetup_add_particle_dialog');
+    
+    // Entire setup for dialog details
+
+    return details_dialog;
+  }
+  private setupCreateGroupDialog(): DialogRenderer {
+    const details_dialog = new DialogRenderer('parsetup_add_group_dialog');
+
+    // Entire setup for dialog details
+
+    return details_dialog;
+  }
+  private createButtonsWrapper(): HTMLDivElement {
+    const buttons_wrapper : HTMLDivElement = document.createElement('div');
+    buttons_wrapper.id = "parsetup_buttons_wrapper";
+    this.#add_particles_dialog.getOpenButton().setParent(buttons_wrapper);
+    this.#create_group_dialog.getOpenButton().setParent(buttons_wrapper);
+    return buttons_wrapper;
   }
 }
 

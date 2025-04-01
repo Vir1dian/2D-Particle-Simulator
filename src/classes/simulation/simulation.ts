@@ -45,6 +45,16 @@ class Simulation {
     }
   }
 
+  getContainer(): BoxSpace {
+    return this.#container;
+  }
+  getEnvironment(): SimEnvironment {
+    return this.#environment;
+  }
+  getConfig(): SimConfig {
+    return this.#config;
+  }
+
   getParticleGroups(): Map<string, ParticleGroup> {
     return this.#particle_groups;
   }

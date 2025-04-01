@@ -234,8 +234,7 @@ button:hover .tooltip_text {
   padding: 4px;
 }
 
-#parsetup_add_particle,
-#parsetup_add_group {
+#parsetup_buttons_wrapper button {
   margin-right: 4px;
   padding: 8px;
   border: none;

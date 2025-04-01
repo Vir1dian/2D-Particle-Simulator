@@ -48,6 +48,15 @@ class Simulation {
             __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(updated_properties.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
         }
     }
+    getContainer() {
+        return __classPrivateFieldGet(this, _Simulation_container, "f");
+    }
+    getEnvironment() {
+        return __classPrivateFieldGet(this, _Simulation_environment, "f");
+    }
+    getConfig() {
+        return __classPrivateFieldGet(this, _Simulation_config, "f");
+    }
     getParticleGroups() {
         return __classPrivateFieldGet(this, _Simulation_particle_groups, "f");
     }

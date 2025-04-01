@@ -11,7 +11,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _UIControlRenderer_simulation, _EnvironmentSetupRenderer_simulation, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button, _ParticleSetupRenderer_simulation, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
+var _UIControlRenderer_simulation, _EnvironmentSetupRenderer_simulation, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button, _ParticleSetupRenderer_simulation, _ParticleSetupRenderer_add_particles_dialog, _ParticleSetupRenderer_create_group_dialog, _ParticleSetupRenderer_group_list, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
 // UI Config Renderers -- May implement a separate UIHandler class from Simulation
 class UIControlRenderer extends Renderer {
     // may create a UIConfig class soon
@@ -81,15 +81,43 @@ class ParticleSetupRenderer extends Renderer {
         const particle_setup = document.createElement('article');
         super(particle_setup, 'control_item', 'control_parsetup');
         _ParticleSetupRenderer_simulation.set(this, void 0);
+        _ParticleSetupRenderer_add_particles_dialog.set(this, void 0);
+        _ParticleSetupRenderer_create_group_dialog.set(this, void 0);
+        _ParticleSetupRenderer_group_list.set(this, void 0);
         __classPrivateFieldSet(this, _ParticleSetupRenderer_simulation, simulation, "f");
         // Saved Renderers
+        __classPrivateFieldSet(this, _ParticleSetupRenderer_add_particles_dialog, this.setupAddParticlesDialog(), "f");
+        __classPrivateFieldSet(this, _ParticleSetupRenderer_create_group_dialog, this.setupCreateGroupDialog(), "f");
+        __classPrivateFieldSet(this, _ParticleSetupRenderer_group_list, new ListRenderer(...Array.from(simulation.getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer()))), "f");
         // Content
         const header = document.createElement('header');
         header.innerHTML = "Particle Setup";
         particle_setup.appendChild(header);
+        particle_setup.appendChild(this.createButtonsWrapper());
+        const list_wrapper = document.createElement('div');
+        list_wrapper.id = "parsetup_groups_wrapper";
+        __classPrivateFieldGet(this, _ParticleSetupRenderer_group_list, "f").setParent(list_wrapper);
+        particle_setup.appendChild(list_wrapper);
+    }
+    setupAddParticlesDialog() {
+        const details_dialog = new DialogRenderer('parsetup_add_particle_dialog');
+        // Entire setup for dialog details
+        return details_dialog;
+    }
+    setupCreateGroupDialog() {
+        const details_dialog = new DialogRenderer('parsetup_add_group_dialog');
+        // Entire setup for dialog details
+        return details_dialog;
+    }
+    createButtonsWrapper() {
+        const buttons_wrapper = document.createElement('div');
+        buttons_wrapper.id = "parsetup_buttons_wrapper";
+        __classPrivateFieldGet(this, _ParticleSetupRenderer_add_particles_dialog, "f").getOpenButton().setParent(buttons_wrapper);
+        __classPrivateFieldGet(this, _ParticleSetupRenderer_create_group_dialog, "f").getOpenButton().setParent(buttons_wrapper);
+        return buttons_wrapper;
     }
 }
-_ParticleSetupRenderer_simulation = new WeakMap();
+_ParticleSetupRenderer_simulation = new WeakMap(), _ParticleSetupRenderer_add_particles_dialog = new WeakMap(), _ParticleSetupRenderer_create_group_dialog = new WeakMap(), _ParticleSetupRenderer_group_list = new WeakMap();
 /**
  * Helper class for ParticleSetup Renderer.
  * Handles a set of Renderers that represents the
