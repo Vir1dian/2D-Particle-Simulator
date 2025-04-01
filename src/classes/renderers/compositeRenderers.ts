@@ -38,20 +38,17 @@ class SimulationPresetInputRenderer extends Renderer {
       () => {
         const preset_name: string = this.#preset_dropdown.getValue();
         const preset: SimPreset = TEMPORARY_PRESETS[preset_name];
-        this.applyPreset(preset);
+        this.#simulation.setPreset(preset);
       }
     )
     button.setID('simsetup_presets_button');
     return button;
   }
-
-  applyPreset(preset: SimPreset): void {
-    // TODO
-  }
 }
 
-class SimulationControlRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
+class SimulationControlRenderer extends Renderer {
   #simulation: Simulation;
+  
   constructor(simulation: Simulation) {
     const simulation_settings: HTMLDivElement = document.createElement('div');
     super(simulation_settings, '', 'simsetup_global_variables_wrapper');
@@ -59,7 +56,12 @@ class SimulationControlRenderer extends Renderer {  // WIP: Will need methods to
   }
 }
 
-class ParticlePointRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
+/**
+ * Handles a Renderer belonging to a Simulation container 
+ * that represents a Particle as a circular point with
+ * the correct styling.
+ */
+class ParticlePointRenderer extends Renderer { 
   #particle: Particle;
   #container: BoxSpace;
   constructor(particle: Particle, container: BoxSpace) {
@@ -102,7 +104,12 @@ class ParticlePointRenderer extends Renderer {  // WIP: Will need methods to han
   }
 }
 
-class ParticleUnitRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
+/**
+ * Handles a set of Renderers that represents
+ * the user control interface of a Particle.
+ * Maintains a single ParticlePointRenderer.
+ */
+class ParticleUnitRenderer extends Renderer {
   #particle_renderer: ParticlePointRenderer;
   #icon: Renderer;
   #details_dialog: DialogRenderer;
@@ -172,25 +179,31 @@ class ParticleUnitRenderer extends Renderer {  // WIP: Will need methods to hand
   }
 }
 
-class ParticleUnitGroupRenderer extends Renderer {  // WIP: Will need methods to handle Simulation Class's calls
-  #particle_renderers: ParticleUnitRenderer[];
+/**
+ * Handles a set of Renderers that represents the 
+ * user control interface for a ParticleGroup.
+ * Maintains a group of ParticleUnitRenderers.
+ */
+class ParticleUnitGroupRenderer extends Renderer {
+  #particle_group: ParticleGroup;
   #icon: Renderer;
   #details_dialog: DialogRenderer;
   #drag_button: ButtonRenderer;
   #unit_list: ListRenderer;
   
-  constructor(grouping: ParticleGrouping, ...p_renderers: ParticleUnitRenderer[]) {
+  constructor(group: ParticleGroup, container: BoxSpace) {
     const particle_group_element: HTMLElement = document.createElement('article');
-    super(particle_group_element, 'parsetup_group', `parsetup_group_id${grouping.group_id}`);
+    super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
     // Saved renderers
-    this.#particle_renderers = p_renderers;
-    this.#icon = this.createIcon(grouping.color as string);
-    this.#details_dialog = this.setupDetailsDialog(grouping.group_id);
+    this.#icon = this.createIcon(group.getGrouping().color as string);
+    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id);
     this.#drag_button = this.setupDragButton();
-    this.#unit_list = new ListRenderer(...p_renderers);
+    this.#unit_list = new ListRenderer(...group.getParticles().map(particle => {
+      return new ParticleUnitRenderer(particle, container);
+    }));
     // Contents
     const header: HTMLElement = document.createElement('header');
-    header.appendChild(this.createTitleWrapper(grouping.group_id));
+    header.appendChild(this.createTitleWrapper(group.getGrouping().group_id));
     header.appendChild(this.createButtonsWrapper());
     particle_group_element.appendChild(header);
     this.#unit_list.setParent(particle_group_element);

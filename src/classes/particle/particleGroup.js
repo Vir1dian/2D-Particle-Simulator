@@ -21,6 +21,11 @@ const DEFAULT_GROUPING = {
     color: "black",
     enable_path_tracing: false
 };
+/**
+ * Handles a group of Particles with
+ * enforced common properties described
+ * by a ParticleGrouping object
+ */
 class ParticleGroup {
     constructor(grouping = DEFAULT_GROUPING, size = 0) {
         _ParticleGroup_grouping.set(this, void 0);

@@ -20,6 +20,11 @@ const DEFAULT_GROUPING: ParticleGrouping = {
   enable_path_tracing: false
 }
 
+/**
+ * Handles a group of Particles with
+ * enforced common properties described
+ * by a ParticleGrouping object
+ */
 class ParticleGroup {
   #grouping: ParticleGrouping;
   #particles: Particle[];

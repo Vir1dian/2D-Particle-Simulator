@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _UIControlRenderer_simulation, _SimulationPresetInputRenderer_simulation, _SimulationPresetInputRenderer_preset_dropdown, _SimulationPresetInputRenderer_apply_button, _SimulationControlRenderer_simulation, _ParticlePointRenderer_particle, _ParticlePointRenderer_container, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticleUnitGroupRenderer_particle_renderers, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list;
+var _UIControlRenderer_simulation, _SimulationPresetInputRenderer_simulation, _SimulationPresetInputRenderer_preset_dropdown, _SimulationPresetInputRenderer_apply_button, _SimulationControlRenderer_simulation, _ParticlePointRenderer_particle, _ParticlePointRenderer_container, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list;
 // Other larger Renderer classes, may move to separate files
 class UIControlRenderer extends Renderer {
     // may create a UIConfig class soon
@@ -50,13 +50,10 @@ class SimulationPresetInputRenderer extends Renderer {
         const button = new ButtonRenderer(() => {
             const preset_name = __classPrivateFieldGet(this, _SimulationPresetInputRenderer_preset_dropdown, "f").getValue();
             const preset = TEMPORARY_PRESETS[preset_name];
-            this.applyPreset(preset);
+            __classPrivateFieldGet(this, _SimulationPresetInputRenderer_simulation, "f").setPreset(preset);
         });
         button.setID('simsetup_presets_button');
         return button;
-    }
-    applyPreset(preset) {
-        // TODO
     }
 }
 _SimulationPresetInputRenderer_simulation = new WeakMap(), _SimulationPresetInputRenderer_preset_dropdown = new WeakMap(), _SimulationPresetInputRenderer_apply_button = new WeakMap();
@@ -69,6 +66,11 @@ class SimulationControlRenderer extends Renderer {
     }
 }
 _SimulationControlRenderer_simulation = new WeakMap();
+/**
+ * Handles a Renderer belonging to a Simulation container
+ * that represents a Particle as a circular point with
+ * the correct styling.
+ */
 class ParticlePointRenderer extends Renderer {
     constructor(particle, container) {
         const particle_element = document.createElement('div');
@@ -113,6 +115,11 @@ class ParticlePointRenderer extends Renderer {
     }
 }
 _ParticlePointRenderer_particle = new WeakMap(), _ParticlePointRenderer_container = new WeakMap();
+/**
+ * Handles a set of Renderers that represents
+ * the user control interface of a Particle.
+ * Maintains a single ParticlePointRenderer.
+ */
 class ParticleUnitRenderer extends Renderer {
     constructor(particle, container) {
         const particle_control_element = document.createElement('div');
@@ -179,24 +186,30 @@ class ParticleUnitRenderer extends Renderer {
     }
 }
 _ParticleUnitRenderer_particle_renderer = new WeakMap(), _ParticleUnitRenderer_icon = new WeakMap(), _ParticleUnitRenderer_details_dialog = new WeakMap(), _ParticleUnitRenderer_drag_button = new WeakMap();
+/**
+ * Handles a set of Renderers that represents the
+ * user control interface for a ParticleGroup.
+ * Maintains a group of ParticleUnitRenderers.
+ */
 class ParticleUnitGroupRenderer extends Renderer {
-    constructor(grouping, ...p_renderers) {
+    constructor(group, container) {
         const particle_group_element = document.createElement('article');
-        super(particle_group_element, 'parsetup_group', `parsetup_group_id${grouping.group_id}`);
-        _ParticleUnitGroupRenderer_particle_renderers.set(this, void 0);
+        super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
+        _ParticleUnitGroupRenderer_particle_group.set(this, void 0);
         _ParticleUnitGroupRenderer_icon.set(this, void 0);
         _ParticleUnitGroupRenderer_details_dialog.set(this, void 0);
         _ParticleUnitGroupRenderer_drag_button.set(this, void 0);
         _ParticleUnitGroupRenderer_unit_list.set(this, void 0);
         // Saved renderers
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_particle_renderers, p_renderers, "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_icon, this.createIcon(grouping.color), "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(grouping.group_id), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_icon, this.createIcon(group.getGrouping().color), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(group.getGrouping().group_id), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_drag_button, this.setupDragButton(), "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...p_renderers), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...group.getParticles().map(particle => {
+            return new ParticleUnitRenderer(particle, container);
+        })), "f");
         // Contents
         const header = document.createElement('header');
-        header.appendChild(this.createTitleWrapper(grouping.group_id));
+        header.appendChild(this.createTitleWrapper(group.getGrouping().group_id));
         header.appendChild(this.createButtonsWrapper());
         particle_group_element.appendChild(header);
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").setParent(particle_group_element);
@@ -246,4 +259,4 @@ class ParticleUnitGroupRenderer extends Renderer {
     }
     ;
 }
-_ParticleUnitGroupRenderer_particle_renderers = new WeakMap(), _ParticleUnitGroupRenderer_icon = new WeakMap(), _ParticleUnitGroupRenderer_details_dialog = new WeakMap(), _ParticleUnitGroupRenderer_drag_button = new WeakMap(), _ParticleUnitGroupRenderer_unit_list = new WeakMap();
+_ParticleUnitGroupRenderer_particle_group = new WeakMap(), _ParticleUnitGroupRenderer_icon = new WeakMap(), _ParticleUnitGroupRenderer_details_dialog = new WeakMap(), _ParticleUnitGroupRenderer_drag_button = new WeakMap(), _ParticleUnitGroupRenderer_unit_list = new WeakMap();
