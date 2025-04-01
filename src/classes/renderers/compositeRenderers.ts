@@ -99,18 +99,20 @@ class ParticleSetupRenderer extends Renderer {
     particle_setup.appendChild(list_wrapper);
   }
   private setupAddParticlesDialog(): DialogRenderer {
-    const details_dialog = new DialogRenderer('parsetup_add_particle_dialog');
+    const dialog = new DialogRenderer('parsetup_add_particle_dialog');
+    dialog.getOpenButton().getElement().textContent = "Add Particles";
     
     // Entire setup for dialog details
 
-    return details_dialog;
+    return dialog;
   }
   private setupCreateGroupDialog(): DialogRenderer {
-    const details_dialog = new DialogRenderer('parsetup_add_group_dialog');
+    const dialog = new DialogRenderer('parsetup_add_group_dialog');
+    dialog.getOpenButton().getElement().textContent = "Create Group";
 
     // Entire setup for dialog details
 
-    return details_dialog;
+    return dialog;
   }
   private createButtonsWrapper(): HTMLDivElement {
     const buttons_wrapper : HTMLDivElement = document.createElement('div');

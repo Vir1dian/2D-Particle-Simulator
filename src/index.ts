@@ -8,7 +8,7 @@ interface control_item_data {
 
 const control_bar_items_element: HTMLSpanElement = document.getElementById("setting_icons") as HTMLSpanElement;  // not including the timer
 const control_item_icons: NodeListOf<HTMLSpanElement> = control_bar_items_element.querySelectorAll(`.icon`) as NodeListOf<HTMLSpanElement>;
-const control_item_elements: NodeListOf<HTMLElement> = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;
+let control_item_elements: NodeListOf<HTMLElement> = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;
 
 const control_items_data: control_item_data[] = [
   {
@@ -92,7 +92,7 @@ function loadAll() {
   const particle_setup: ParticleSetupRenderer = new ParticleSetupRenderer(sim);
   const control_panel_element: HTMLElement = document.querySelector(".control_items_wrapper") as HTMLElement;
   particle_setup.setParent(control_panel_element);
-
+  control_item_elements = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;
 
   loadContainerElement(container);
   simulationSettingsElementFunctionsOld.loadPreset('empty');

@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", loadAll);
 const control_bar_items_element = document.getElementById("setting_icons"); // not including the timer
 const control_item_icons = control_bar_items_element.querySelectorAll(`.icon`);
-const control_item_elements = document.querySelectorAll(".control_item");
+let control_item_elements = document.querySelectorAll(".control_item");
 const control_items_data = [
     {
         name: "ui",
@@ -73,6 +73,7 @@ function loadAll() {
     const particle_setup = new ParticleSetupRenderer(sim);
     const control_panel_element = document.querySelector(".control_items_wrapper");
     particle_setup.setParent(control_panel_element);
+    control_item_elements = document.querySelectorAll(".control_item");
     loadContainerElement(container);
     simulationSettingsElementFunctionsOld.loadPreset('empty');
     openControlItem(control_items_data[2]); // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
