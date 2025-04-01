@@ -2,7 +2,7 @@ class Simulation {
   #container: BoxSpace;
   #environment: SimEnvironment;
   #config: SimConfig;
-  #particle_groups: Map<string, { grouping: ParticleGrouping, particles: Particle[] }>;
+  #particle_groups: Map<string, ParticleGroup>;
 
   constructor(preset: SimPreset = {}) {
     const preset_clone: SimPreset = structuredClone(preset);
@@ -12,26 +12,19 @@ class Simulation {
     this.#environment = final_preset.environment as SimEnvironment;
     this.#config = final_preset.config as SimConfig;
     this.#particle_groups = new Map(Array.from(
-      final_preset.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, ([group_id, group]) => 
-      [group_id, {grouping: group.grouping, particles: Particle.createBatch(group.grouping, group.size)}]
+      final_preset.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, 
+      ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)]
     ));
   }
   addGroup(grouping: ParticleGrouping): void {  
     // Assumes that string group_id has valid formatting: i.e. no spaces, alphanumeric.
     if (this.#particle_groups.has(grouping.group_id)) {
-      throw new Error("Group name: " + grouping.group_id + " already exists.");  // Implement something to catch this in the renderer inputs
+      throw new Error(`Group name: ${grouping.group_id} already exists.`);
     }
-    this.#particle_groups.set(grouping.group_id, {grouping: grouping, particles: Particle.createBatch(grouping, 0)});
-  }
-  addParticle(particle: Particle, group_id: string = DEFAULT_GROUPING.group_id): void {
-    // Assumes that the particle already fits the grouping
-    const group = this.#particle_groups.get(group_id);
-    if (!group) throw new Error(`Group '${group_id}' does not exist.`);
-    group?.particles.push(particle);
+    this.#particle_groups.set(grouping.group_id, new ParticleGroup(grouping, 0));
   }
 
   // Setters & Getters
-
   setPreset(preset: SimPreset): void {  
     const current_properties: SimPreset = {
       container: this.#container,
@@ -46,20 +39,20 @@ class Simulation {
 
     if (preset_clone.particle_groups) {
       this.#particle_groups = new Map(Array.from(
-        updated_properties.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, ([group_id, group]) => 
-        [group_id, {grouping: group.grouping, particles: Particle.createBatch(group.grouping, group.size)}]
+        updated_properties.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, 
+        ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)]
       ));
     }
   }
 
-  getParticleGroups(): Map<string, { grouping: ParticleGrouping, particles: Particle[] }> {
+  getParticleGroups(): Map<string, ParticleGroup> {
     return this.#particle_groups;
   }
 
   getAllParticles(): Particle[] { 
     const particles: Particle[] = [];
-    this.#particle_groups.forEach((group) => {
-      particles.push(...group.particles);
+    this.#particle_groups.forEach(group => {
+      particles.push(...group.getParticles());
     });
     return particles;
   }

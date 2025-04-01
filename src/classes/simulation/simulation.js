@@ -23,21 +23,14 @@ class Simulation {
         __classPrivateFieldSet(this, _Simulation_container, final_preset.container, "f");
         __classPrivateFieldSet(this, _Simulation_environment, final_preset.environment, "f");
         __classPrivateFieldSet(this, _Simulation_config, final_preset.config, "f");
-        __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(final_preset.particle_groups, ([group_id, group]) => [group_id, { grouping: group.grouping, particles: Particle.createBatch(group.grouping, group.size) }])), "f");
+        __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(final_preset.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
     }
     addGroup(grouping) {
         // Assumes that string group_id has valid formatting: i.e. no spaces, alphanumeric.
         if (__classPrivateFieldGet(this, _Simulation_particle_groups, "f").has(grouping.group_id)) {
-            throw new Error("Group name: " + grouping.group_id + " already exists."); // Implement something to catch this in the renderer inputs
+            throw new Error(`Group name: ${grouping.group_id} already exists.`);
         }
-        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, { grouping: grouping, particles: Particle.createBatch(grouping, 0) });
-    }
-    addParticle(particle, group_id = DEFAULT_GROUPING.group_id) {
-        // Assumes that the particle already fits the grouping
-        const group = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group_id);
-        if (!group)
-            throw new Error(`Group '${group_id}' does not exist.`);
-        group === null || group === void 0 ? void 0 : group.particles.push(particle);
+        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, new ParticleGroup(grouping, 0));
     }
     // Setters & Getters
     setPreset(preset) {
@@ -52,7 +45,7 @@ class Simulation {
         __classPrivateFieldSet(this, _Simulation_environment, updated_properties.environment, "f");
         __classPrivateFieldSet(this, _Simulation_config, updated_properties.config, "f");
         if (preset_clone.particle_groups) {
-            __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(updated_properties.particle_groups, ([group_id, group]) => [group_id, { grouping: group.grouping, particles: Particle.createBatch(group.grouping, group.size) }])), "f");
+            __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(updated_properties.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
         }
     }
     getParticleGroups() {
@@ -60,8 +53,8 @@ class Simulation {
     }
     getAllParticles() {
         const particles = [];
-        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").forEach((group) => {
-            particles.push(...group.particles);
+        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").forEach(group => {
+            particles.push(...group.getParticles());
         });
         return particles;
     }
