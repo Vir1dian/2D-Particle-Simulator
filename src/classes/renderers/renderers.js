@@ -10,9 +10,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Renderer_element, _Renderer_classname, _Renderer_id, _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element;
+var _Renderer_element, _Renderer_classname, _Renderer_id, _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element;
 /**
- *
+ * Base class for storing and handling an HTMLElement
  */
 class Renderer {
     constructor(element, classname = '', id = '') {
@@ -58,6 +58,11 @@ class Renderer {
     }
 }
 _Renderer_element = new WeakMap(), _Renderer_classname = new WeakMap(), _Renderer_id = new WeakMap();
+/**
+ * Stores an HTMLButtonElement, maintains a callback
+ * and an event. Uses only one eventlistener at a
+ * time.
+ */
 class ButtonRenderer extends Renderer {
     constructor(callback, event = 'click') {
         const button = document.createElement('button');
@@ -90,20 +95,42 @@ class ButtonRenderer extends Renderer {
     }
 }
 _ButtonRenderer_callback = new WeakMap(), _ButtonRenderer_event = new WeakMap();
+/**
+ * Stores an empty HTMLDialogElement, an empty
+ * div Renderer for wrapping the content, and two
+ * ButtonRenderers for opening and closing the
+ * dialog. The buttons must be accessed and
+ * appended somewhere manually.
+ */
 class DialogRenderer extends Renderer {
     constructor(id) {
         const dialog = document.createElement('dialog');
-        dialog.id = id;
+        dialog.id = `dialog_id${id}`;
         super(dialog, '', id);
         _DialogRenderer_open_button.set(this, void 0);
         _DialogRenderer_close_button.set(this, void 0);
+        _DialogRenderer_content_wrapper.set(this, void 0);
         const open_button = new ButtonRenderer(this.openDialog);
         const close_button = new ButtonRenderer(this.closeDialog);
+        const content_wrapper = new Renderer(document.createElement('div'), 'dialog_wrapper', `dialog_wrapper_id${id}`);
         __classPrivateFieldSet(this, _DialogRenderer_open_button, open_button, "f");
         __classPrivateFieldSet(this, _DialogRenderer_close_button, close_button, "f");
+        __classPrivateFieldSet(this, _DialogRenderer_content_wrapper, content_wrapper, "f");
     }
     getElement() {
         return super.getElement();
+    }
+    getContentWrapper() {
+        return __classPrivateFieldGet(this, _DialogRenderer_content_wrapper, "f");
+    }
+    appendToContent(element) {
+        const wrapper = __classPrivateFieldGet(this, _DialogRenderer_content_wrapper, "f").getElement();
+        if (element instanceof Renderer) {
+            wrapper.appendChild(element.getElement());
+        }
+        else {
+            wrapper.appendChild(element);
+        }
     }
     getOpenButton() {
         return __classPrivateFieldGet(this, _DialogRenderer_open_button, "f");
@@ -118,7 +145,10 @@ class DialogRenderer extends Renderer {
         this.getElement().close();
     }
 }
-_DialogRenderer_open_button = new WeakMap(), _DialogRenderer_close_button = new WeakMap();
+_DialogRenderer_open_button = new WeakMap(), _DialogRenderer_close_button = new WeakMap(), _DialogRenderer_content_wrapper = new WeakMap();
+/**
+ *
+ */
 class TableCellRenderer extends Renderer {
     constructor(row, col) {
         const cell = document.createElement('td');

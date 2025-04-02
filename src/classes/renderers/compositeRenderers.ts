@@ -167,7 +167,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     return icon;
   };
   private setupDetailsDialog(group_id: string): DialogRenderer {
-    const details_dialog = new DialogRenderer(`particle_group_dialog_id${group_id}`);
+    const details_dialog = new DialogRenderer(`particle_group_${group_id}`);
     details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
     details_dialog.getOpenButton().getElement().innerHTML = "keyboard_arrow_down";
 
@@ -243,7 +243,7 @@ class ParticleUnitRenderer extends Renderer {
     return icon;
   }
   private setupDetailsDialog(id: number): DialogRenderer {
-    const details_dialog = new DialogRenderer(`particle_dialog_id${id}`);
+    const details_dialog = new DialogRenderer(`particle_${id}`);
     details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
     details_dialog.getOpenButton().getElement().innerHTML = "visibility";
 

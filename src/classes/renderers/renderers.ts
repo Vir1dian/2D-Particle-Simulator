@@ -1,5 +1,5 @@
 /**
- * 
+ * Base class for storing and handling an HTMLElement
  */
 class Renderer {
   #element: HTMLElement;
@@ -42,6 +42,11 @@ class Renderer {
   }
 }
 
+/**
+ * Stores an HTMLButtonElement, maintains a callback
+ * and an event. Uses only one eventlistener at a
+ * time.
+ */
 class ButtonRenderer extends Renderer {
   #callback: (...args: any) => void;
   #event: string;
@@ -72,20 +77,41 @@ class ButtonRenderer extends Renderer {
   }
 }
 
+/**
+ * Stores an empty HTMLDialogElement, an empty 
+ * div Renderer for wrapping the content, and two 
+ * ButtonRenderers for opening and closing the 
+ * dialog. The buttons must be accessed and 
+ * appended somewhere manually.
+ */
 class DialogRenderer extends Renderer {
-  #open_button: ButtonRenderer;
+  #open_button: ButtonRenderer; 
   #close_button: ButtonRenderer;
+  #content_wrapper: Renderer;
   constructor(id: string) {
     const dialog: HTMLDialogElement = document.createElement('dialog');
-    dialog.id = id;
+    dialog.id = `dialog_id${id}`;
     super(dialog, '', id);
     const open_button: ButtonRenderer = new ButtonRenderer(this.openDialog);
     const close_button: ButtonRenderer = new ButtonRenderer(this.closeDialog);
+    const content_wrapper: Renderer = new Renderer(document.createElement('div'), 'dialog_wrapper', `dialog_wrapper_id${id}`);
     this.#open_button = open_button;
     this.#close_button = close_button;
+    this.#content_wrapper = content_wrapper;
   }
   getElement(): HTMLDialogElement {
     return super.getElement() as HTMLDialogElement;
+  }
+  getContentWrapper(): Renderer {
+    return this.#content_wrapper;
+  }
+  appendToContent(element: HTMLElement | Renderer) {
+    const wrapper = this.#content_wrapper.getElement();
+    if (element instanceof Renderer) {
+      wrapper.appendChild(element.getElement());
+    } else {
+      wrapper.appendChild(element);
+    }
   }
   getOpenButton(): ButtonRenderer {
     return this.#open_button;
@@ -101,6 +127,9 @@ class DialogRenderer extends Renderer {
   }
 }
 
+/**
+ * 
+ */
 class TableCellRenderer<R extends Renderer> extends Renderer {  // stores at most a Renderer type
   #row: number;
   #col: number;
