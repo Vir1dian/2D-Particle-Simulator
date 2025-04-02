@@ -11,7 +11,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _UIControlRenderer_simulation, _EnvironmentSetupRenderer_simulation, _EnvironmentSetupRenderer_input_table, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button, _ParticleSetupRenderer_simulation, _ParticleSetupRenderer_add_particles_dialog, _ParticleSetupRenderer_create_group_dialog, _ParticleSetupRenderer_group_list, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
+var _UIControlRenderer_simulation, _EnvironmentSetupRenderer_simulation, _EnvironmentSetupRenderer_inputs, _EnvironmentSetupRenderer_input_table, _EnvironmentSetupRenderer_sumbit_button, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button, _ParticleSetupRenderer_simulation, _ParticleSetupRenderer_add_particles_dialog, _ParticleSetupRenderer_create_group_dialog, _ParticleSetupRenderer_group_list, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
 // UI Config Renderers -- May implement a separate UIHandler class from Simulation
 class UIControlRenderer extends Renderer {
     // may create a UIConfig class soon
@@ -26,18 +26,25 @@ class UIControlRenderer extends Renderer {
 _UIControlRenderer_simulation = new WeakMap();
 // Environment Setup Renderers
 /**
- * Helper class for SimulationRenderer
+ * Helper class for SimulationRenderer.
+ * Handles user inputs and sends changes to
+ * Simulation's #environment property.
  */
 class EnvironmentSetupRenderer extends Renderer {
     constructor(simulation) {
         const simulation_settings = document.createElement('div');
         super(simulation_settings, '', 'simsetup_global_variables_wrapper');
         _EnvironmentSetupRenderer_simulation.set(this, void 0);
+        _EnvironmentSetupRenderer_inputs.set(this, void 0);
         _EnvironmentSetupRenderer_input_table.set(this, void 0);
+        _EnvironmentSetupRenderer_sumbit_button.set(this, void 0);
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_simulation, simulation, "f");
+        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_inputs, new Map(), "f");
+        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, new TableRenderer(), "f");
+        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_sumbit_button, new ButtonRenderer(() => { }), "f");
     }
 }
-_EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap();
+_EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_inputs = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap(), _EnvironmentSetupRenderer_sumbit_button = new WeakMap();
 class PresetInputRenderer extends Renderer {
     constructor(simulation) {
         const simulation_preset_input = document.createElement('div');
@@ -75,7 +82,9 @@ _PresetInputRenderer_simulation = new WeakMap(), _PresetInputRenderer_preset_dro
 // Particle Interface Renderers
 /**
  * Helper class for SimulationRenderer
- * Handles ParticleUnitGroupRenderers.
+ * Handles ParticleUnitGroupRenderers which
+ * collectively send changes to Simulation's
+ * #particle_groups property.
  */
 class ParticleSetupRenderer extends Renderer {
     constructor(simulation) {

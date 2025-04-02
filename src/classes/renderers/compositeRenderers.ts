@@ -15,18 +15,26 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
 
 // Environment Setup Renderers
 /**
- * Helper class for SimulationRenderer
+ * Helper class for SimulationRenderer.
+ * Handles user inputs and sends changes to
+ * Simulation's #environment property.
  */
 class EnvironmentSetupRenderer extends Renderer {
   #simulation: Simulation;
+  #inputs: Map<string, InputRenderer | NumberInputRenderer>;
   #input_table: TableRenderer;
+  #sumbit_button: ButtonRenderer;
 
   constructor(simulation: Simulation) {
     const simulation_settings: HTMLDivElement = document.createElement('div');
     super(simulation_settings, '', 'simsetup_global_variables_wrapper');
     this.#simulation = simulation;
+    this.#inputs = new Map();
+    this.#input_table = new TableRenderer();
+    this.#sumbit_button = new ButtonRenderer(() => {});
   }
 }
+
 class PresetInputRenderer extends Renderer { 
   #simulation: Simulation;
   #preset_dropdown: DatalistInputRenderer;
@@ -66,7 +74,9 @@ class PresetInputRenderer extends Renderer {
 // Particle Interface Renderers
 /**
  * Helper class for SimulationRenderer
- * Handles ParticleUnitGroupRenderers.
+ * Handles ParticleUnitGroupRenderers which
+ * collectively send changes to Simulation's
+ * #particle_groups property.
  */
 class ParticleSetupRenderer extends Renderer {  // TODO: Add particles/groups, dialogs
   #simulation: Simulation;
