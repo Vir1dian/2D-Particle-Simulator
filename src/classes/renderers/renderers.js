@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Renderer_element, _Renderer_classname, _Renderer_id, _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _TableCellRenderer_row, _TableCellRenderer_col, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element;
+var _Renderer_element, _Renderer_classname, _Renderer_id, _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element;
 /**
  *
  */
@@ -125,6 +125,7 @@ class TableCellRenderer extends Renderer {
         super(cell);
         _TableCellRenderer_row.set(this, void 0);
         _TableCellRenderer_col.set(this, void 0);
+        _TableCellRenderer_content.set(this, void 0);
         __classPrivateFieldSet(this, _TableCellRenderer_row, row, "f");
         __classPrivateFieldSet(this, _TableCellRenderer_col, col, "f");
     }
@@ -142,16 +143,23 @@ class TableCellRenderer extends Renderer {
     }
     setContent(content) {
         const cell = this.getElement();
-        cell.innerHTML = '';
+        cell.innerHTML = ''; // Clear previous content
         if (typeof content === 'string') {
-            cell.innerHTML = content;
+            cell.textContent = content;
         }
-        else {
+        else if (content instanceof HTMLElement) {
             cell.appendChild(content);
         }
+        else if (content instanceof Renderer) {
+            cell.appendChild(content.getElement());
+        }
+        __classPrivateFieldSet(this, _TableCellRenderer_content, content, "f");
+    }
+    getContent() {
+        return __classPrivateFieldGet(this, _TableCellRenderer_content, "f");
     }
 }
-_TableCellRenderer_row = new WeakMap(), _TableCellRenderer_col = new WeakMap();
+_TableCellRenderer_row = new WeakMap(), _TableCellRenderer_col = new WeakMap(), _TableCellRenderer_content = new WeakMap();
 class TableRenderer extends Renderer {
     constructor(rows = 1, cols = 1) {
         if (rows < 1 || cols < 1) {
@@ -161,7 +169,7 @@ class TableRenderer extends Renderer {
         super(table);
         _TableRenderer_rows.set(this, void 0);
         _TableRenderer_cols.set(this, void 0);
-        _TableRenderer_cells.set(this, void 0);
+        _TableRenderer_cells.set(this, void 0); // Allow any type of renderer and maintain polymorphism
         __classPrivateFieldSet(this, _TableRenderer_rows, rows, "f");
         __classPrivateFieldSet(this, _TableRenderer_cols, cols, "f");
         __classPrivateFieldSet(this, _TableRenderer_cells, [], "f");
@@ -170,7 +178,7 @@ class TableRenderer extends Renderer {
             __classPrivateFieldGet(this, _TableRenderer_cells, "f")[i] = [];
             for (let j = 0; j < cols; j++) {
                 const cell_renderer = new TableCellRenderer(i, j);
-                cell_renderer.setParent(table_row);
+                table_row.appendChild(cell_renderer.getElement());
                 __classPrivateFieldGet(this, _TableRenderer_cells, "f")[i][j] = cell_renderer;
             }
             table.appendChild(table_row);

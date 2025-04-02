@@ -101,9 +101,10 @@ class DialogRenderer extends Renderer {
   }
 }
 
-class TableCellRenderer extends Renderer {
+class TableCellRenderer<R extends Renderer> extends Renderer {  // stores at most a Renderer type
   #row: number;
   #col: number;
+  #content?: string | HTMLElement | R;
   
   constructor(row: number, col: number) {
     const cell: HTMLTableCellElement = document.createElement('td');
@@ -123,21 +124,30 @@ class TableCellRenderer extends Renderer {
   setParent(parent: HTMLElement | Renderer): void {
     throw new Error("Cannot append TableCellRenderer to a parent. Manipulate through TableRenderer instead.");
   }
-  setContent(content: string | HTMLElement): void {
+  setContent(content: string | HTMLElement | R): void {
     const cell = this.getElement();
-    cell.innerHTML = '';
+    cell.innerHTML = ''; // Clear previous content
+
     if (typeof content === 'string') {
-      cell.innerHTML = content;
-    } else {
+      cell.textContent = content;
+    } else if (content instanceof HTMLElement) {
       cell.appendChild(content);
+    } else if (content instanceof Renderer) {
+      cell.appendChild(content.getElement());
     }
+    
+    this.#content = content;
+  }
+
+  getContent(): string | HTMLElement | R | undefined {
+    return this.#content;
   }
 }
 
 class TableRenderer extends Renderer {
   #rows: number;
   #cols: number;
-  #cells: TableCellRenderer[][];
+  #cells: TableCellRenderer<any>[][]; // Allow any type of renderer and maintain polymorphism
   constructor(rows: number = 1, cols: number = 1) {
     if (rows < 1 || cols < 1) {
       throw new Error('Invalid table dimensions');
@@ -151,14 +161,14 @@ class TableRenderer extends Renderer {
       const table_row: HTMLTableRowElement = document.createElement('tr');
       this.#cells[i] = [];
       for (let j = 0; j < cols; j++) {
-        const cell_renderer: TableCellRenderer = new TableCellRenderer(i, j);
-        cell_renderer.setParent(table_row);
+        const cell_renderer: TableCellRenderer<any> = new TableCellRenderer<any>(i, j);
+        table_row.appendChild(cell_renderer.getElement());
         this.#cells[i][j] = cell_renderer;
       }
       table.appendChild(table_row);
     }
   }
-  getCell(row: number, col: number): TableCellRenderer {
+  getCell(row: number, col: number): TableCellRenderer<any> {
     if (row >= this.#rows || row < 0 || col >= this.#cols || col < 0) {
       throw new Error(`Invalid cell at (${row}, ${col})`);
     }

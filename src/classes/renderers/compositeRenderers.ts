@@ -19,7 +19,8 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
  */
 class EnvironmentSetupRenderer extends Renderer {
   #simulation: Simulation;
-  
+  #input_table: TableRenderer;
+
   constructor(simulation: Simulation) {
     const simulation_settings: HTMLDivElement = document.createElement('div');
     super(simulation_settings, '', 'simsetup_global_variables_wrapper');
