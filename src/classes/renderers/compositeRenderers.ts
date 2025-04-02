@@ -17,7 +17,8 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
 /**
  * Helper class for SimulationRenderer.
  * Handles user inputs and sends changes to
- * Simulation's #environment property.
+ * Simulation's #environment property as a
+ * partial preset object.
  */
 class EnvironmentSetupRenderer extends Renderer {
   #simulation: Simulation;
@@ -30,8 +31,34 @@ class EnvironmentSetupRenderer extends Renderer {
     super(simulation_settings, '', 'simsetup_global_variables_wrapper');
     this.#simulation = simulation;
     this.#inputs = new Map();
-    this.#input_table = new TableRenderer();
-    this.#sumbit_button = new ButtonRenderer(() => {});
+    this.#input_table = this.populateInputTable();
+    this.#sumbit_button = new ButtonRenderer(this.submitChanges);
+  }
+
+  private populateInputTable(): TableRenderer {
+    const statics = this.#simulation.getEnvironment().statics;  // statics for now because dynamics is still empty
+    if (!statics) return new TableRenderer();
+
+    const env_setup_data: string[] = Object.keys(statics);
+
+    // 1 extra row for table headings, 2 columns for labels and inputs
+    const input_table: TableRenderer = new TableRenderer(env_setup_data.length + 1, 2)  
+    
+    env_setup_data.forEach(key => {
+      const value: number | Vector2D | undefined = statics[key as keyof typeof statics];
+      if (typeof value === 'number') {
+        // TODO - create one InputRenderer
+      }
+      else if (value instanceof Vector2D) {
+        // TODO - create two InputRenderers
+      }
+    });
+
+    return input_table;
+  }
+
+  private submitChanges(): void {
+    // TODO - iterate through all inputs and send changes to Simulation as a preset object containing only the environment properties
   }
 }
 

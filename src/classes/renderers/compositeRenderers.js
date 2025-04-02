@@ -28,7 +28,8 @@ _UIControlRenderer_simulation = new WeakMap();
 /**
  * Helper class for SimulationRenderer.
  * Handles user inputs and sends changes to
- * Simulation's #environment property.
+ * Simulation's #environment property as a
+ * partial preset object.
  */
 class EnvironmentSetupRenderer extends Renderer {
     constructor(simulation) {
@@ -40,8 +41,29 @@ class EnvironmentSetupRenderer extends Renderer {
         _EnvironmentSetupRenderer_sumbit_button.set(this, void 0);
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_inputs, new Map(), "f");
-        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, new TableRenderer(), "f");
-        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_sumbit_button, new ButtonRenderer(() => { }), "f");
+        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, this.populateInputTable(), "f");
+        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_sumbit_button, new ButtonRenderer(this.submitChanges), "f");
+    }
+    populateInputTable() {
+        const statics = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics; // statics for now because dynamics is still empty
+        if (!statics)
+            return new TableRenderer();
+        const env_setup_data = Object.keys(statics);
+        // 1 extra row for table headings, 2 columns for labels and inputs
+        const input_table = new TableRenderer(env_setup_data.length + 1, 2);
+        env_setup_data.forEach(key => {
+            const value = statics[key];
+            if (typeof value === 'number') {
+                // TODO - create one InputRenderer
+            }
+            else if (value instanceof Vector2D) {
+                // TODO - create two InputRenderers
+            }
+        });
+        return input_table;
+    }
+    submitChanges() {
+        // TODO - iterate through all inputs and send changes to Simulation as a preset object containing only the environment properties
     }
 }
 _EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_inputs = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap(), _EnvironmentSetupRenderer_sumbit_button = new WeakMap();

@@ -190,6 +190,12 @@ class TableCellRenderer extends Renderer {
     }
 }
 _TableCellRenderer_row = new WeakMap(), _TableCellRenderer_col = new WeakMap(), _TableCellRenderer_content = new WeakMap();
+/**
+ * Stores a HTMLTableElement, maintains a
+ * 2D array of TableCellRenderers. Is
+ * static, cannot modify dimensions
+ * after instantiation.
+ */
 class TableRenderer extends Renderer {
     constructor(rows = 1, cols = 1) {
         if (rows < 1 || cols < 1) {

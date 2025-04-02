@@ -173,6 +173,12 @@ class TableCellRenderer<R extends Renderer> extends Renderer {  // stores at mos
   }
 }
 
+/**
+ * Stores a HTMLTableElement, maintains a
+ * 2D array of TableCellRenderers. Is
+ * static, cannot modify dimensions
+ * after instantiation.
+ */
 class TableRenderer extends Renderer {
   #rows: number;
   #cols: number;
