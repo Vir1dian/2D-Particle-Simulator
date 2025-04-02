@@ -1,3 +1,8 @@
+/**
+ * Oversees most processes in the program.
+ * Only one instance of Simulation should
+ * exist at any time.
+ */
 class Simulation {
   #container: BoxSpace;
   #environment: SimEnvironment;

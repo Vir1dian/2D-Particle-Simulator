@@ -202,6 +202,9 @@ class ListRenderer extends Renderer {
             item.setParent(li);
             ul.appendChild(li);
         });
+        if (items.length <= 0) {
+            ul.style.display = "none";
+        }
     }
     getElement() {
         return super.getElement();
@@ -215,6 +218,7 @@ class ListRenderer extends Renderer {
         const li = document.createElement('li');
         item.setParent(li);
         ul.appendChild(li);
+        ul.style.display = "";
     }
     at(index) {
         if (index < 0 || index >= __classPrivateFieldGet(this, _ListRenderer_items, "f").length) {
@@ -265,16 +269,23 @@ class ListRenderer extends Renderer {
             __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, 1);
             item.remove();
         }
+        if (__classPrivateFieldGet(this, _ListRenderer_items, "f").length <= 0) {
+            this.getElement().style.display = "none";
+        }
     }
     removeAtIndex(index, range) {
         if (index < 0 || range < 0 || index + range > __classPrivateFieldGet(this, _ListRenderer_items, "f").length) {
             throw new Error("Invalid range.");
         }
         __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, range).forEach(item => { item.remove(); });
+        if (__classPrivateFieldGet(this, _ListRenderer_items, "f").length <= 0) {
+            this.getElement().style.display = "none";
+        }
     }
     empty() {
         __classPrivateFieldGet(this, _ListRenderer_items, "f").forEach(item => item.remove());
         __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(0, Infinity);
+        this.getElement().style.display = "none";
     }
     remove() {
         this.empty();

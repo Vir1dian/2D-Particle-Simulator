@@ -11,6 +11,11 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _Simulation_container, _Simulation_environment, _Simulation_config, _Simulation_particle_groups;
+/**
+ * Oversees most processes in the program.
+ * Only one instance of Simulation should
+ * exist at any time.
+ */
 class Simulation {
     constructor(preset = {}) {
         _Simulation_container.set(this, void 0);

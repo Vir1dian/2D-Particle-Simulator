@@ -184,6 +184,9 @@ class ListRenderer<T extends Renderer> extends Renderer {
       item.setParent(li);
       ul.appendChild(li);
     });
+    if (items.length <= 0) {
+      ul.style.display = "none";
+    }
   }
   getElement(): HTMLUListElement {
     return super.getElement() as HTMLUListElement;
@@ -197,6 +200,7 @@ class ListRenderer<T extends Renderer> extends Renderer {
     const li: HTMLLIElement = document.createElement('li');
     item.setParent(li);
     ul.appendChild(li);
+    ul.style.display = "";
   }
   at(index: number): T {
     if (index < 0 || index >= this.#items.length) {
@@ -245,16 +249,23 @@ class ListRenderer<T extends Renderer> extends Renderer {
       this.#items.splice(index, 1);
       item.remove();
     }
+    if (this.#items.length <= 0) {
+      this.getElement().style.display = "none";
+    }
   }
   removeAtIndex(index: number, range: number): void {
     if (index < 0 || range < 0 || index + range > this.#items.length) {
       throw new Error("Invalid range.");
     }
     this.#items.splice(index, range).forEach(item => {item.remove()});
+    if (this.#items.length <= 0) {
+      this.getElement().style.display = "none";
+    }
   }
   empty(): void {
     this.#items.forEach(item => item.remove());
     this.#items.splice(0, Infinity);
+    this.getElement().style.display = "none";
   }
   remove(): void {
     this.empty();
