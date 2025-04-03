@@ -92,13 +92,19 @@ function loadAll() {
   simulationSettingsElementFunctionsOld.loadPreset('empty');
 
   const sim: Simulation = new Simulation(TEMPORARY_PRESETS["rybg"]);
-  const particle_setup: ParticleSetupRenderer = new ParticleSetupRenderer(sim);
+  const environment_panel: EnvironmentPanelRenderer = new EnvironmentPanelRenderer(sim);
+  const particle_panel: ParticlePanelRenderer = new ParticlePanelRenderer(sim);
   const control_panel_element: HTMLElement = document.querySelector(".control_items_wrapper") as HTMLElement;
-  particle_setup.setParent(control_panel_element);
-  control_item_elements = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;
+  environment_panel.setParent(control_panel_element);
+  particle_panel.setParent(control_panel_element);
 
-  console.log(particle_setup.getGroupList().at(1).getUnitList().at(0).getParticlePoint().getElement());
-  console.log(sim.getParticleGroups().get("Red")?.getParticles()[0]);
+  console.log(environment_panel.getElement());
+
+  // Temporary fix for spin icon buttons, fix soon
+  control_item_elements = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;  
+
+  // console.log(particle_setup.getGroupList().at(1).getUnitList().at(0).getParticlePoint().getElement());
+  // console.log(sim.getParticleGroups().get("Red")?.getParticles()[0]);
 
   openControlItem(control_items_data[2]);  // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
 

@@ -11,7 +11,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _UIControlRenderer_simulation, _EnvironmentSetupRenderer_simulation, _EnvironmentSetupRenderer_inputs, _EnvironmentSetupRenderer_input_table, _EnvironmentSetupRenderer_sumbit_button, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button, _ParticleSetupRenderer_simulation, _ParticleSetupRenderer_add_particles_dialog, _ParticleSetupRenderer_create_group_dialog, _ParticleSetupRenderer_group_list, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
+var _UIControlRenderer_simulation, _EnvironmentPanelRenderer_simulation, _EnvironmentPanelRenderer_preset_handler, _EnvironmentPanelRenderer_environment_handler, _EnvironmentSetupRenderer_simulation, _EnvironmentSetupRenderer_inputs, _EnvironmentSetupRenderer_input_table, _EnvironmentSetupRenderer_sumbit_button, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button, _ParticlePanelRenderer_simulation, _ParticlePanelRenderer_add_particles_dialog, _ParticlePanelRenderer_create_group_dialog, _ParticlePanelRenderer_group_list, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
 // UI Config Renderers -- May implement a separate UIHandler class from Simulation
 class UIControlRenderer extends Renderer {
     // may create a UIConfig class soon
@@ -24,9 +24,29 @@ class UIControlRenderer extends Renderer {
     }
 }
 _UIControlRenderer_simulation = new WeakMap();
-// Environment Setup Renderers
+// Environment Setup Renderers MIGHT RENAME TO ...PanelRenderer
+class EnvironmentPanelRenderer extends Renderer {
+    constructor(simulation) {
+        const environment_panel = document.createElement('article');
+        super(environment_panel, 'control_item', 'control_simsetup');
+        _EnvironmentPanelRenderer_simulation.set(this, void 0);
+        _EnvironmentPanelRenderer_preset_handler.set(this, void 0);
+        _EnvironmentPanelRenderer_environment_handler.set(this, void 0);
+        // Stored Data
+        __classPrivateFieldSet(this, _EnvironmentPanelRenderer_simulation, simulation, "f");
+        __classPrivateFieldSet(this, _EnvironmentPanelRenderer_preset_handler, new PresetInputRenderer(simulation), "f");
+        __classPrivateFieldSet(this, _EnvironmentPanelRenderer_environment_handler, new EnvironmentSetupRenderer(simulation), "f");
+        // HTML Content
+        const header = document.createElement('header');
+        header.innerHTML = "Environment Setup";
+        environment_panel.appendChild(header);
+        __classPrivateFieldGet(this, _EnvironmentPanelRenderer_preset_handler, "f").setParent(environment_panel);
+        __classPrivateFieldGet(this, _EnvironmentPanelRenderer_environment_handler, "f").setParent(environment_panel);
+    }
+}
+_EnvironmentPanelRenderer_simulation = new WeakMap(), _EnvironmentPanelRenderer_preset_handler = new WeakMap(), _EnvironmentPanelRenderer_environment_handler = new WeakMap();
 /**
- * Helper class for SimulationRenderer.
+ * Helper class for EnvironmentPanelRenderer.
  * Handles user inputs and sends changes to
  * Simulation's #environment property as a
  * partial preset object.
@@ -36,13 +56,17 @@ class EnvironmentSetupRenderer extends Renderer {
         const simulation_settings = document.createElement('div');
         super(simulation_settings, '', 'simsetup_global_variables_wrapper');
         _EnvironmentSetupRenderer_simulation.set(this, void 0);
-        _EnvironmentSetupRenderer_inputs.set(this, void 0);
+        _EnvironmentSetupRenderer_inputs.set(this, void 0); // still have access to the inputs in this way
         _EnvironmentSetupRenderer_input_table.set(this, void 0);
         _EnvironmentSetupRenderer_sumbit_button.set(this, void 0);
+        // Saved Data
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_inputs, new Map(), "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, this.populateInputTable(), "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_sumbit_button, new ButtonRenderer(this.submitChanges), "f");
+        // Content
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setParent(simulation_settings);
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").setParent(simulation_settings);
     }
     populateInputTable() {
         const statics = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics; // statics for now because dynamics is still empty
@@ -51,13 +75,25 @@ class EnvironmentSetupRenderer extends Renderer {
         const env_setup_data = Object.keys(statics);
         // 1 extra row for table headings, 2 columns for labels and inputs
         const input_table = new TableRenderer(env_setup_data.length + 1, 2);
-        env_setup_data.forEach(key => {
+        env_setup_data.forEach((key, index) => {
             const value = statics[key];
             if (typeof value === 'number') {
-                // TODO - create one InputRenderer
+                const input = new NumberInputRenderer(`input_id_${key}`, value);
+                input_table.getCell(index, 0).setContent(input.getLabelElement());
+                input_table.getCell(index, 1).setContent(input);
+                __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").set(key, input);
             }
             else if (value instanceof Vector2D) {
                 // TODO - create two InputRenderers
+                const input_x = new NumberInputRenderer(`input_x_id_${key}`, value.x);
+                const input_y = new NumberInputRenderer(`input_y_id_${key}`, value.y);
+                const input_wrapper = document.createElement('div');
+                input_x.setParent(input_wrapper);
+                input_y.setParent(input_wrapper);
+                input_table.getCell(index, 0).setContent(input_x.getLabelElement());
+                input_table.getCell(index, 1).setContent(input_wrapper);
+                __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").set(`${key}_x`, input_x);
+                __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").set(`${key}_y`, input_y);
             }
         });
         return input_table;
@@ -65,12 +101,28 @@ class EnvironmentSetupRenderer extends Renderer {
     submitChanges() {
         // TODO - iterate through all inputs and send changes to Simulation as a preset object containing only the environment properties
     }
+    getInputs() {
+        return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f");
+    }
+    getTable() {
+        return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f");
+    }
+    getSubmitButton() {
+        return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f");
+    }
 }
 _EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_inputs = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap(), _EnvironmentSetupRenderer_sumbit_button = new WeakMap();
+/**
+ * Helper class for EnvironmentPanelRenderer.
+ * Handles a DatalistInputRenderer to allow
+ * user selection of existing Simulation
+ * presets. Sends changes to Simulation's
+ * properties as a preset object.
+ */
 class PresetInputRenderer extends Renderer {
     constructor(simulation) {
-        const simulation_preset_input = document.createElement('div');
-        super(simulation_preset_input, '', 'simsetup_presets_wrapper');
+        const simulation_preset_input_wrapper = document.createElement('div');
+        super(simulation_preset_input_wrapper, '', 'simsetup_presets_wrapper');
         _PresetInputRenderer_simulation.set(this, void 0);
         _PresetInputRenderer_preset_dropdown.set(this, void 0);
         _PresetInputRenderer_apply_button.set(this, void 0);
@@ -79,8 +131,8 @@ class PresetInputRenderer extends Renderer {
         __classPrivateFieldSet(this, _PresetInputRenderer_preset_dropdown, this.setupPresetDropdown(), "f");
         __classPrivateFieldSet(this, _PresetInputRenderer_apply_button, this.setupApplyButton(), "f");
         // contents
-        __classPrivateFieldGet(this, _PresetInputRenderer_preset_dropdown, "f").setParent(simulation_preset_input);
-        __classPrivateFieldGet(this, _PresetInputRenderer_apply_button, "f").setParent(simulation_preset_input);
+        __classPrivateFieldGet(this, _PresetInputRenderer_preset_dropdown, "f").setParent(simulation_preset_input_wrapper);
+        __classPrivateFieldGet(this, _PresetInputRenderer_apply_button, "f").setParent(simulation_preset_input_wrapper);
     }
     setupPresetDropdown() {
         const preset_data = [];
@@ -88,6 +140,7 @@ class PresetInputRenderer extends Renderer {
             preset_data.push(new OptionRenderer(preset_name, ''));
         });
         const dropdown = new DatalistInputRenderer('simsetup_presets_input', preset_data, 'simsetup_presets');
+        dropdown.getElement().placeholder = "Preset";
         return dropdown;
     }
     setupApplyButton() {
@@ -97,6 +150,7 @@ class PresetInputRenderer extends Renderer {
             __classPrivateFieldGet(this, _PresetInputRenderer_simulation, "f").setPreset(preset);
         });
         button.setID('simsetup_presets_button');
+        button.getElement().textContent = "Apply";
         return button;
     }
 }
@@ -108,28 +162,28 @@ _PresetInputRenderer_simulation = new WeakMap(), _PresetInputRenderer_preset_dro
  * collectively send changes to Simulation's
  * #particle_groups property.
  */
-class ParticleSetupRenderer extends Renderer {
+class ParticlePanelRenderer extends Renderer {
     constructor(simulation) {
-        const particle_setup = document.createElement('article');
-        super(particle_setup, 'control_item', 'control_parsetup');
-        _ParticleSetupRenderer_simulation.set(this, void 0);
-        _ParticleSetupRenderer_add_particles_dialog.set(this, void 0);
-        _ParticleSetupRenderer_create_group_dialog.set(this, void 0);
-        _ParticleSetupRenderer_group_list.set(this, void 0);
-        __classPrivateFieldSet(this, _ParticleSetupRenderer_simulation, simulation, "f");
+        const particle_panel = document.createElement('article');
+        super(particle_panel, 'control_item', 'control_parsetup');
+        _ParticlePanelRenderer_simulation.set(this, void 0);
+        _ParticlePanelRenderer_add_particles_dialog.set(this, void 0);
+        _ParticlePanelRenderer_create_group_dialog.set(this, void 0);
+        _ParticlePanelRenderer_group_list.set(this, void 0);
+        __classPrivateFieldSet(this, _ParticlePanelRenderer_simulation, simulation, "f");
         // Saved Renderers
-        __classPrivateFieldSet(this, _ParticleSetupRenderer_add_particles_dialog, this.setupAddParticlesDialog(), "f");
-        __classPrivateFieldSet(this, _ParticleSetupRenderer_create_group_dialog, this.setupCreateGroupDialog(), "f");
-        __classPrivateFieldSet(this, _ParticleSetupRenderer_group_list, new ListRenderer(...Array.from(simulation.getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer()))), "f");
+        __classPrivateFieldSet(this, _ParticlePanelRenderer_add_particles_dialog, this.setupAddParticlesDialog(), "f");
+        __classPrivateFieldSet(this, _ParticlePanelRenderer_create_group_dialog, this.setupCreateGroupDialog(), "f");
+        __classPrivateFieldSet(this, _ParticlePanelRenderer_group_list, new ListRenderer(...Array.from(simulation.getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer()))), "f");
         // Content
         const header = document.createElement('header');
         header.innerHTML = "Particle Setup";
-        particle_setup.appendChild(header);
-        particle_setup.appendChild(this.createButtonsWrapper());
+        particle_panel.appendChild(header);
+        particle_panel.appendChild(this.createButtonsWrapper());
         const list_wrapper = document.createElement('div');
         list_wrapper.id = "parsetup_groups_wrapper";
-        __classPrivateFieldGet(this, _ParticleSetupRenderer_group_list, "f").setParent(list_wrapper);
-        particle_setup.appendChild(list_wrapper);
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").setParent(list_wrapper);
+        particle_panel.appendChild(list_wrapper);
     }
     setupAddParticlesDialog() {
         const dialog = new DialogRenderer('parsetup_add_particle_dialog');
@@ -146,15 +200,15 @@ class ParticleSetupRenderer extends Renderer {
     createButtonsWrapper() {
         const buttons_wrapper = document.createElement('div');
         buttons_wrapper.id = "parsetup_buttons_wrapper";
-        __classPrivateFieldGet(this, _ParticleSetupRenderer_add_particles_dialog, "f").getOpenButton().setParent(buttons_wrapper);
-        __classPrivateFieldGet(this, _ParticleSetupRenderer_create_group_dialog, "f").getOpenButton().setParent(buttons_wrapper);
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_add_particles_dialog, "f").getOpenButton().setParent(buttons_wrapper);
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_create_group_dialog, "f").getOpenButton().setParent(buttons_wrapper);
         return buttons_wrapper;
     }
     getGroupList() {
-        return __classPrivateFieldGet(this, _ParticleSetupRenderer_group_list, "f");
+        return __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f");
     }
 }
-_ParticleSetupRenderer_simulation = new WeakMap(), _ParticleSetupRenderer_add_particles_dialog = new WeakMap(), _ParticleSetupRenderer_create_group_dialog = new WeakMap(), _ParticleSetupRenderer_group_list = new WeakMap();
+_ParticlePanelRenderer_simulation = new WeakMap(), _ParticlePanelRenderer_add_particles_dialog = new WeakMap(), _ParticlePanelRenderer_create_group_dialog = new WeakMap(), _ParticlePanelRenderer_group_list = new WeakMap();
 /**
  * Helper class for ParticleSetup Renderer.
  * Handles a set of Renderers that represents the

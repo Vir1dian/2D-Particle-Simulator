@@ -13,28 +13,58 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
   }
 }
 
-// Environment Setup Renderers
+// Environment Setup Renderers MIGHT RENAME TO ...PanelRenderer
+
+class EnvironmentPanelRenderer extends Renderer {
+  #simulation: Simulation;
+  #preset_handler: PresetInputRenderer;
+  #environment_handler: EnvironmentSetupRenderer;
+  constructor(simulation: Simulation) {
+    const environment_panel: HTMLElement = document.createElement('article');
+    super(environment_panel, 'control_item', 'control_simsetup');
+
+    // Stored Data
+    this.#simulation = simulation;
+    this.#preset_handler = new PresetInputRenderer(simulation);
+    this.#environment_handler = new EnvironmentSetupRenderer(simulation);
+
+    // HTML Content
+    const header: HTMLElement = document.createElement('header');
+    header.innerHTML = "Environment Setup";
+    environment_panel.appendChild(header);
+    this.#preset_handler.setParent(environment_panel);
+    this.#environment_handler.setParent(environment_panel);
+  }
+
+
+}
+
 /**
- * Helper class for SimulationRenderer.
+ * Helper class for EnvironmentPanelRenderer.
  * Handles user inputs and sends changes to
  * Simulation's #environment property as a
  * partial preset object.
  */
 class EnvironmentSetupRenderer extends Renderer {
   #simulation: Simulation;
-  #inputs: Map<string, InputRenderer | NumberInputRenderer>;
+  #inputs: Map<string, InputRenderer | NumberInputRenderer>;  // still have access to the inputs in this way
   #input_table: TableRenderer;
   #sumbit_button: ButtonRenderer;
 
   constructor(simulation: Simulation) {
     const simulation_settings: HTMLDivElement = document.createElement('div');
     super(simulation_settings, '', 'simsetup_global_variables_wrapper');
+
+    // Saved Data
     this.#simulation = simulation;
     this.#inputs = new Map();
     this.#input_table = this.populateInputTable();
     this.#sumbit_button = new ButtonRenderer(this.submitChanges);
-  }
 
+    // Content
+    this.#input_table.setParent(simulation_settings);
+    this.#sumbit_button.setParent(simulation_settings);
+  }
   private populateInputTable(): TableRenderer {
     const statics = this.#simulation.getEnvironment().statics;  // statics for now because dynamics is still empty
     if (!statics) return new TableRenderer();
@@ -44,38 +74,66 @@ class EnvironmentSetupRenderer extends Renderer {
     // 1 extra row for table headings, 2 columns for labels and inputs
     const input_table: TableRenderer = new TableRenderer(env_setup_data.length + 1, 2)  
     
-    env_setup_data.forEach(key => {
+    env_setup_data.forEach((key, index) => {
       const value: number | Vector2D | undefined = statics[key as keyof typeof statics];
       if (typeof value === 'number') {
-        // TODO - create one InputRenderer
+        const input = new NumberInputRenderer(`input_id_${key}`, value);
+        input_table.getCell(index, 0).setContent(input.getLabelElement()); 
+        input_table.getCell(index, 1).setContent(input); 
+        this.#inputs.set(key, input);
       }
       else if (value instanceof Vector2D) {
         // TODO - create two InputRenderers
+        const input_x = new NumberInputRenderer(`input_x_id_${key}`, value.x);
+        const input_y = new NumberInputRenderer(`input_y_id_${key}`, value.y);
+        const input_wrapper = document.createElement('div');
+        input_x.setParent(input_wrapper);
+        input_y.setParent(input_wrapper);
+        input_table.getCell(index, 0).setContent(input_x.getLabelElement());
+        input_table.getCell(index, 1).setContent(input_wrapper);
+        this.#inputs.set(`${key}_x`, input_x);
+        this.#inputs.set(`${key}_y`, input_y);
       }
     });
 
     return input_table;
   }
-
   private submitChanges(): void {
     // TODO - iterate through all inputs and send changes to Simulation as a preset object containing only the environment properties
   }
+
+  getInputs(): Map<string, InputRenderer | NumberInputRenderer> {
+    return this.#inputs;
+  }
+  getTable(): TableRenderer {
+    return this.#input_table;
+  }
+  getSubmitButton(): ButtonRenderer {
+    return this.#sumbit_button;
+  }
 }
 
+/**
+ * Helper class for EnvironmentPanelRenderer.
+ * Handles a DatalistInputRenderer to allow 
+ * user selection of existing Simulation
+ * presets. Sends changes to Simulation's 
+ * properties as a preset object.
+ */
 class PresetInputRenderer extends Renderer { 
   #simulation: Simulation;
   #preset_dropdown: DatalistInputRenderer;
   #apply_button: ButtonRenderer;
   constructor(simulation: Simulation) {
-    const simulation_preset_input: HTMLDivElement = document.createElement('div');
-    super(simulation_preset_input, '', 'simsetup_presets_wrapper');
+    const simulation_preset_input_wrapper: HTMLDivElement = document.createElement('div');
+    super(simulation_preset_input_wrapper, '', 'simsetup_presets_wrapper');
     this.#simulation = simulation;
     // saved renderers
     this.#preset_dropdown = this.setupPresetDropdown();
     this.#apply_button = this.setupApplyButton();
     // contents
-    this.#preset_dropdown.setParent(simulation_preset_input);
-    this.#apply_button.setParent(simulation_preset_input);
+    this.#preset_dropdown.setParent(simulation_preset_input_wrapper);
+    this.#apply_button.setParent(simulation_preset_input_wrapper);
   }
   private setupPresetDropdown(): DatalistInputRenderer {
     const preset_data: OptionRenderer[] = [];
@@ -83,6 +141,7 @@ class PresetInputRenderer extends Renderer {
       preset_data.push(new OptionRenderer(preset_name, ''));
     });
     const dropdown: DatalistInputRenderer = new DatalistInputRenderer('simsetup_presets_input', preset_data, 'simsetup_presets');
+    dropdown.getElement().placeholder = "Preset";
     return dropdown;
   }
   private setupApplyButton(): ButtonRenderer {
@@ -94,6 +153,7 @@ class PresetInputRenderer extends Renderer {
       }
     )
     button.setID('simsetup_presets_button');
+    button.getElement().textContent = "Apply";
     return button;
   }
 }
@@ -105,15 +165,15 @@ class PresetInputRenderer extends Renderer {
  * collectively send changes to Simulation's
  * #particle_groups property.
  */
-class ParticleSetupRenderer extends Renderer {  // TODO: Add particles/groups, dialogs
+class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, dialogs
   #simulation: Simulation;
   #add_particles_dialog: DialogRenderer;
   #create_group_dialog: DialogRenderer;
   #group_list: ListRenderer<ParticleUnitGroupRenderer>;
 
   constructor(simulation: Simulation) {
-    const particle_setup: HTMLElement = document.createElement('article');
-    super(particle_setup, 'control_item', 'control_parsetup');
+    const particle_panel: HTMLElement = document.createElement('article');
+    super(particle_panel, 'control_item', 'control_parsetup');
     this.#simulation = simulation;
 
     // Saved Renderers
@@ -127,14 +187,14 @@ class ParticleSetupRenderer extends Renderer {  // TODO: Add particles/groups, d
     // Content
     const header: HTMLElement = document.createElement('header');
     header.innerHTML = "Particle Setup";
-    particle_setup.appendChild(header);
+    particle_panel.appendChild(header);
 
-    particle_setup.appendChild(this.createButtonsWrapper());
+    particle_panel.appendChild(this.createButtonsWrapper());
 
     const list_wrapper: HTMLDivElement = document.createElement('div');
     list_wrapper.id = "parsetup_groups_wrapper";
     this.#group_list.setParent(list_wrapper);
-    particle_setup.appendChild(list_wrapper);
+    particle_panel.appendChild(list_wrapper);
   }
   private setupAddParticlesDialog(): DialogRenderer {
     const dialog = new DialogRenderer('parsetup_add_particle_dialog');
