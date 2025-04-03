@@ -10,7 +10,16 @@ class Simulation {
   #particle_groups: Map<string, ParticleGroup>;
 
   constructor(preset: SimPreset = {}) {
-    const preset_clone: SimPreset = structuredClone(preset);
+    /*
+    WARNING!
+    Potential issue for the future, structuredClone flattens all 
+    class types in the SimPreset objects, such as values of
+    type Vector2D. Currently, all Vector2D values that get flattened
+    so far do not require the class methods, which is okay for now.
+    Vector2D properies of particles stored in Simulation are thankfully
+    still fully Vector2D's since they are instantiated afterward.
+    */
+    const preset_clone: SimPreset = structuredClone(preset);  
     const default_clone: SimPreset = structuredClone(DEFAULT_PRESET);
     const final_preset: SimPreset = deepmerge(default_clone, preset_clone);
     this.#container = final_preset.container as BoxSpace;
@@ -212,7 +221,6 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
  */
 function deepmerge<T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T {
   if (!sources.length) return target;
-
   const source = sources.shift();
   if (source && isObject(target) && isObject(source)) {
     for (const key in source) {
@@ -222,6 +230,11 @@ function deepmerge<T extends Record<string, any>>(target: T, ...sources: Partial
           (target[key] as Map<any, any>).set(mapKey, mapValue);
         });
       }
+      // else if ((source as any)[key] instanceof Vector2D) {
+      //   // Ensure the Vector2D object remains a proper instance
+      //   console.log("found a Vector2D");
+      //   target[key] = new Vector2D(source[key].x, source[key].y) as any;
+      // }
       else if (isObject(source[key])) {
         if (!isObject(target[key])) target[key] = {} as any;
         deepmerge(target[key], source[key] as any);

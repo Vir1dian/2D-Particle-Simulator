@@ -22,6 +22,15 @@ class Simulation {
         _Simulation_environment.set(this, void 0);
         _Simulation_config.set(this, void 0);
         _Simulation_particle_groups.set(this, void 0);
+        /*
+        WARNING!
+        Potential issue for the future, structuredClone flattens all
+        class types in the SimPreset objects, such as values of
+        type Vector2D. Currently, all Vector2D values that get flattened
+        so far do not require the class methods, which is okay for now.
+        Vector2D properies of particles stored in Simulation are thankfully
+        still fully Vector2D's since they are instantiated afterward.
+        */
         const preset_clone = structuredClone(preset);
         const default_clone = structuredClone(DEFAULT_PRESET);
         const final_preset = deepmerge(default_clone, preset_clone);
@@ -222,6 +231,11 @@ function deepmerge(target, ...sources) {
                     target[key].set(mapKey, mapValue);
                 });
             }
+            // else if ((source as any)[key] instanceof Vector2D) {
+            //   // Ensure the Vector2D object remains a proper instance
+            //   console.log("found a Vector2D");
+            //   target[key] = new Vector2D(source[key].x, source[key].y) as any;
+            // }
             else if (isObject(source[key])) {
                 if (!isObject(target[key]))
                     target[key] = {};

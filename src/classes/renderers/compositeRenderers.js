@@ -77,19 +77,22 @@ class EnvironmentSetupRenderer extends Renderer {
         const input_table = new TableRenderer(env_setup_data.length + 1, 2);
         env_setup_data.forEach((key, index) => {
             const value = statics[key];
+            console.log(value);
             if (typeof value === 'number') {
                 const input = new NumberInputRenderer(`input_id_${key}`, value);
+                input.getLabelElement().innerText = key;
                 input_table.getCell(index, 0).setContent(input.getLabelElement());
                 input_table.getCell(index, 1).setContent(input);
                 __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").set(key, input);
             }
-            else if (value instanceof Vector2D) {
+            else if (isObject(value) && "x" in value && "y" in value) {
                 // TODO - create two InputRenderers
                 const input_x = new NumberInputRenderer(`input_x_id_${key}`, value.x);
                 const input_y = new NumberInputRenderer(`input_y_id_${key}`, value.y);
                 const input_wrapper = document.createElement('div');
                 input_x.setParent(input_wrapper);
                 input_y.setParent(input_wrapper);
+                input_x.getLabelElement().innerText = key;
                 input_table.getCell(index, 0).setContent(input_x.getLabelElement());
                 input_table.getCell(index, 1).setContent(input_wrapper);
                 __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").set(`${key}_x`, input_x);
