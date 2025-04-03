@@ -113,6 +113,13 @@ class EnvironmentSetupRenderer extends Renderer {
   }
   private submitChanges(): void {
     // TODO - iterate through all inputs and send changes to Simulation as a preset object containing only the environment properties
+    const current_data: SimEnvironment = this.#simulation.getEnvironment();
+    const changes: SimPreset = { environment: { statics: {}, dynamics: {} } };
+    this.#inputs.forEach((input_renderer, property) => {
+      input_renderer.refreshValue();
+      // if (current_data.statics?[property as keyof typeof current_data.statics] === parseFloat(input_renderer.getValue()))
+      // changes.environment?.statics?[property] 
+    });
   }
 
   getInputs(): Map<string, InputRenderer | NumberInputRenderer> {

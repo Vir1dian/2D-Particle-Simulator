@@ -554,6 +554,7 @@ class DatalistInputRenderer extends InputRenderer {
         const datalist = document.createElement("datalist");
         datalist.id = data_id;
         this.getElement().setAttribute("list", data_id);
+        data.forEach(option => option.setParent(datalist));
         __classPrivateFieldSet(this, _DatalistInputRenderer_data, data, "f");
         __classPrivateFieldSet(this, _DatalistInputRenderer_datalist_element, datalist, "f");
     }

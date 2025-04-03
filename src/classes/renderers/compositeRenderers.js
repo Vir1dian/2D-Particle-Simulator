@@ -111,6 +111,13 @@ class EnvironmentSetupRenderer extends Renderer {
     }
     submitChanges() {
         // TODO - iterate through all inputs and send changes to Simulation as a preset object containing only the environment properties
+        const current_data = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment();
+        const changes = { environment: { statics: {}, dynamics: {} } };
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").forEach((input_renderer, property) => {
+            input_renderer.refreshValue();
+            // if (current_data.statics?[property as keyof typeof current_data.statics] === parseFloat(input_renderer.getValue()))
+            // changes.environment?.statics?[property] 
+        });
     }
     getInputs() {
         return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f");

@@ -551,6 +551,8 @@ class DatalistInputRenderer extends InputRenderer {
     datalist.id = data_id;
     this.getElement().setAttribute("list", data_id);
 
+    data.forEach(option => option.setParent(datalist));
+
     this.#data = data;
     this.#datalist_element = datalist;
   }
