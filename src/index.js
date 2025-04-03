@@ -77,7 +77,6 @@ function loadAll() {
     const control_panel_element = document.querySelector(".control_items_wrapper");
     environment_panel.setParent(control_panel_element);
     particle_panel.setParent(control_panel_element);
-    console.log(environment_panel.getElement());
     // Temporary fix for spin icon buttons, fix soon
     control_item_elements = document.querySelectorAll(".control_item");
     // console.log(particle_setup.getGroupList().at(1).getUnitList().at(0).getParticlePoint().getElement());

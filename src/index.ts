@@ -98,8 +98,6 @@ function loadAll() {
   environment_panel.setParent(control_panel_element);
   particle_panel.setParent(control_panel_element);
 
-  console.log(environment_panel.getElement());
-
   // Temporary fix for spin icon buttons, fix soon
   control_item_elements = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;  
 

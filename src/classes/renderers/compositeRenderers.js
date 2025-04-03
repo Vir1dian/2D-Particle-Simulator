@@ -110,14 +110,35 @@ class EnvironmentSetupRenderer extends Renderer {
         return input_table;
     }
     submitChanges() {
-        // TODO - iterate through all inputs and send changes to Simulation as a preset object containing only the environment properties
-        const current_data = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment();
+        const statics = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics; // statics for now because dynamics is still empty
         const changes = { environment: { statics: {}, dynamics: {} } };
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").forEach((input_renderer, property) => {
-            input_renderer.refreshValue();
-            // if (current_data.statics?[property as keyof typeof current_data.statics] === parseFloat(input_renderer.getValue()))
-            // changes.environment?.statics?[property] 
-        });
+        const input_keys = Object.keys(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f"));
+        // Properties of type Vector2D in this.#inputs are represented by two InputRenderers instead of one,
+        // one for the x component, and the other for the y component, one after the other.
+        for (let i = 0; i < input_keys.length; i++) {
+            const key = input_keys[i];
+            const input = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").get(key);
+            input.refreshValue();
+            if (key.endsWith("_x")) { // Detect x component, y is always next
+                const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
+                const next_input = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").get(input_keys[++i]);
+                if (statics[baseKey].x === parseFloat(input.getValue()) &&
+                    statics[baseKey].y === parseFloat(next_input.getValue()))
+                    continue;
+                Object.defineProperty(changes.environment.statics, baseKey, { value: {
+                        x: parseFloat(input.getValue()),
+                        y: parseFloat(next_input.getValue())
+                    } });
+            }
+            else {
+                if (statics[key] === parseFloat(input.getValue()))
+                    continue;
+                Object.defineProperty(changes.environment.statics, key, { value: parseFloat(input.getValue()) });
+            }
+        }
+        console.log(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment());
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").setPreset(changes);
+        console.log(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment());
     }
     getInputs() {
         return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f");
