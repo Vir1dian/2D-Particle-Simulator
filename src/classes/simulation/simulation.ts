@@ -1,7 +1,9 @@
 /**
  * Oversees most processes in the program.
  * Only one instance of Simulation should
- * exist at any time.
+ * exist at any time. 
+ * NOTE: consider writing as a singleton
+ * in the future
  */
 class Simulation {
   #container: BoxSpace;

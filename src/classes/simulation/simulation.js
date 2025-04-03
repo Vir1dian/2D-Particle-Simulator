@@ -15,6 +15,8 @@ var _Simulation_container, _Simulation_environment, _Simulation_config, _Simulat
  * Oversees most processes in the program.
  * Only one instance of Simulation should
  * exist at any time.
+ * NOTE: consider writing as a singleton
+ * in the future
  */
 class Simulation {
     constructor(preset = {}) {

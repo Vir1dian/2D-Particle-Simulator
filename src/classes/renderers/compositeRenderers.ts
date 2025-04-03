@@ -13,8 +13,6 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
   }
 }
 
-// Environment Setup Renderers MIGHT RENAME TO ...PanelRenderer
-
 class EnvironmentPanelRenderer extends Renderer {
   #simulation: Simulation;
   #preset_handler: PresetInputRenderer;
@@ -64,7 +62,7 @@ class EnvironmentSetupRenderer extends Renderer {
     // Content
     this.#input_table.setParent(simulation_settings);
     const buttons_wrapper: HTMLDivElement = document.createElement('div');
-    buttons_wrapper.id = "simsetup_preset_button_wrapper";
+    buttons_wrapper.id = "simsetup_env_button_wrapper";
     this.#sumbit_button.getElement().textContent = "Apply Changes";
     this.#sumbit_button.setParent(buttons_wrapper);
     simulation_settings.appendChild(buttons_wrapper);
@@ -281,7 +279,7 @@ class ParticleUnitGroupRenderer extends Renderer {
   private setupDetailsDialog(group_id: string): DialogRenderer {
     const details_dialog = new DialogRenderer(`particle_group_${group_id}`);
     details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
-    details_dialog.getOpenButton().getElement().innerHTML = "keyboard_arrow_down";
+    details_dialog.getOpenButton().getElement().innerHTML = "expand_content";
 
     // Entire setup for dialog details
 
@@ -357,9 +355,13 @@ class ParticleUnitRenderer extends Renderer {
   private setupDetailsDialog(id: number): DialogRenderer {
     const details_dialog = new DialogRenderer(`particle_${id}`);
     details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
-    details_dialog.getOpenButton().getElement().innerHTML = "visibility";
+    details_dialog.getOpenButton().getElement().innerHTML = "expand_content";
 
     // Entire setup for dialog details
+    // IDEA: on open, focus on the particles by overlaying a 
+    // translucent div the size of the container over the others
+    // only the selected particles are of z-index greater than
+    // this overlay
 
     return details_dialog;
   }

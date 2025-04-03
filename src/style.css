@@ -118,6 +118,10 @@ input:not(input[type="checkbox"]), textarea {
   border-radius: 4px;
   box-shadow: inset 0px 1px 1px hsla(0, 0%, 0%, 0.075);
 }
+.input_wrapper_xy {
+  display: flex;
+  justify-content: space-between;
+}
 .input_wrapper_xy input {
   width: 60px;
 }
@@ -225,22 +229,40 @@ button:hover .tooltip_text {
   margin-bottom: 20px;
 }
 #simsetup_global_variables_wrapper {
-  background-color: #eeeeee;
+  border: solid 1px lightgray;
   padding: 16px;
   border-radius: 4px;
 }
+
 #simsetup_global_variables_wrapper table td {
-  text-align: center;
   width: 150px;
-  padding: 4px;
+  padding: 2px;
 }
-#simsetup_preset_button_wrapper {
+#simsetup_global_variables_wrapper input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  border-bottom: 1px solid rgb(222, 222, 222);
+  box-shadow: inset 0px 0px 0px 0px red;
+  border-radius: 0;
+}
+#simsetup_global_variables_wrapper input:focus {
+  border-bottom: 2px solid #2f72dc;
+}
+#simsetup_env_button_wrapper {
   display: flex;
   justify-content: center;
 }
 
+#simsetup_presets_wrapper input {
+  padding: 8px;
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+#simsetup_presets_wrapper button,
 #parsetup_buttons_wrapper button,
-#simsetup_preset_button_wrapper button {
+#simsetup_env_button_wrapper button {
   margin-right: 4px;
   padding: 8px;
   border: none;
@@ -252,8 +274,9 @@ button:hover .tooltip_text {
   color: #eeeeee;
   cursor: pointer;
 }
-#parsetup_add_particle:hover,
-#parsetup_add_group:hover {
+#simsetup_presets_wrapper button,
+#parsetup_buttons_wrapper button:hover,
+#simsetup_env_button_wrapper button:hover {
   background-image: 
     linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)),
     linear-gradient(rgb(221, 234, 238), rgb(171, 180, 180));

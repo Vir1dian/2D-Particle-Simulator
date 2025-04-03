@@ -24,7 +24,6 @@ class UIControlRenderer extends Renderer {
     }
 }
 _UIControlRenderer_simulation = new WeakMap();
-// Environment Setup Renderers MIGHT RENAME TO ...PanelRenderer
 class EnvironmentPanelRenderer extends Renderer {
     constructor(simulation) {
         const environment_panel = document.createElement('article');
@@ -67,7 +66,7 @@ class EnvironmentSetupRenderer extends Renderer {
         // Content
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setParent(simulation_settings);
         const buttons_wrapper = document.createElement('div');
-        buttons_wrapper.id = "simsetup_preset_button_wrapper";
+        buttons_wrapper.id = "simsetup_env_button_wrapper";
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").getElement().textContent = "Apply Changes";
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").setParent(buttons_wrapper);
         simulation_settings.appendChild(buttons_wrapper);
@@ -261,7 +260,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     setupDetailsDialog(group_id) {
         const details_dialog = new DialogRenderer(`particle_group_${group_id}`);
         details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
-        details_dialog.getOpenButton().getElement().innerHTML = "keyboard_arrow_down";
+        details_dialog.getOpenButton().getElement().innerHTML = "expand_content";
         // Entire setup for dialog details
         return details_dialog;
     }
@@ -336,8 +335,12 @@ class ParticleUnitRenderer extends Renderer {
     setupDetailsDialog(id) {
         const details_dialog = new DialogRenderer(`particle_${id}`);
         details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
-        details_dialog.getOpenButton().getElement().innerHTML = "visibility";
+        details_dialog.getOpenButton().getElement().innerHTML = "expand_content";
         // Entire setup for dialog details
+        // IDEA: on open, focus on the particles by overlaying a 
+        // translucent div the size of the container over the others
+        // only the selected particles are of z-index greater than
+        // this overlay
         return details_dialog;
     }
     setupDragButton() {
