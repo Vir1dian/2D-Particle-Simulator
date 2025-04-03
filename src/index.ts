@@ -106,6 +106,6 @@ function loadAll() {
   // console.log(particle_setup.getGroupList().at(1).getUnitList().at(0).getParticlePoint().getElement());
   // console.log(sim.getParticleGroups().get("Red")?.getParticles()[0]);
 
-  openControlItem(control_items_data[2]);  // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
+  openControlItem(control_items_data[1]);  // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
 
 }

@@ -66,7 +66,11 @@ class EnvironmentSetupRenderer extends Renderer {
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_sumbit_button, new ButtonRenderer(this.submitChanges), "f");
         // Content
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setParent(simulation_settings);
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").setParent(simulation_settings);
+        const buttons_wrapper = document.createElement('div');
+        buttons_wrapper.id = "simsetup_preset_button_wrapper";
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").getElement().textContent = "Apply Changes";
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").setParent(buttons_wrapper);
+        simulation_settings.appendChild(buttons_wrapper);
     }
     populateInputTable() {
         const statics = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics; // statics for now because dynamics is still empty
@@ -77,23 +81,28 @@ class EnvironmentSetupRenderer extends Renderer {
         const input_table = new TableRenderer(env_setup_data.length + 1, 2);
         env_setup_data.forEach((key, index) => {
             const value = statics[key];
-            console.log(value);
             if (typeof value === 'number') {
                 const input = new NumberInputRenderer(`input_id_${key}`, value);
-                input.getLabelElement().innerText = key;
+                input.getLabelElement().innerText = prettifyKey(key);
                 input_table.getCell(index, 0).setContent(input.getLabelElement());
                 input_table.getCell(index, 1).setContent(input);
                 __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").set(key, input);
             }
             else if (isObject(value) && "x" in value && "y" in value) {
-                // TODO - create two InputRenderers
                 const input_x = new NumberInputRenderer(`input_x_id_${key}`, value.x);
                 const input_y = new NumberInputRenderer(`input_y_id_${key}`, value.y);
                 const input_wrapper = document.createElement('div');
+                input_wrapper.className = "input_wrapper_xy";
+                input_x.getLabelElement().innerText = "x:";
+                input_y.getLabelElement().innerText = "y:";
+                input_wrapper.appendChild(input_x.getLabelElement());
                 input_x.setParent(input_wrapper);
+                input_wrapper.appendChild(input_y.getLabelElement());
                 input_y.setParent(input_wrapper);
-                input_x.getLabelElement().innerText = key;
-                input_table.getCell(index, 0).setContent(input_x.getLabelElement());
+                const label_xy = document.createElement('label');
+                label_xy.htmlFor = `input_x_id_${key}`;
+                label_xy.innerText = prettifyKey(key);
+                input_table.getCell(index, 0).setContent(label_xy);
                 input_table.getCell(index, 1).setContent(input_wrapper);
                 __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").set(`${key}_x`, input_x);
                 __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").set(`${key}_y`, input_y);

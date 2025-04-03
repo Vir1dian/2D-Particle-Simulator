@@ -118,6 +118,9 @@ input:not(input[type="checkbox"]), textarea {
   border-radius: 4px;
   box-shadow: inset 0px 1px 1px hsla(0, 0%, 0%, 0.075);
 }
+.input_wrapper_xy input {
+  width: 60px;
+}
 button {
   cursor: pointer;
 }
@@ -222,8 +225,6 @@ button:hover .tooltip_text {
   margin-bottom: 20px;
 }
 #simsetup_global_variables_wrapper {
-  display: flex;
-  justify-content: center;
   background-color: #eeeeee;
   padding: 16px;
   border-radius: 4px;
@@ -233,8 +234,13 @@ button:hover .tooltip_text {
   width: 150px;
   padding: 4px;
 }
+#simsetup_preset_button_wrapper {
+  display: flex;
+  justify-content: center;
+}
 
-#parsetup_buttons_wrapper button {
+#parsetup_buttons_wrapper button,
+#simsetup_preset_button_wrapper button {
   margin-right: 4px;
   padding: 8px;
   border: none;
