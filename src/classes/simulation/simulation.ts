@@ -1,3 +1,5 @@
+type SimEvent = 'update' | 'update_container' | 'update_environment' | 'update_config' | 'update_particle_groups';
+
 /**
  * Oversees most processes in the program.
  * Only one instance of Simulation should
@@ -10,6 +12,7 @@ class Simulation {
   #environment: SimEnvironment;
   #config: SimConfig;
   #particle_groups: Map<string, ParticleGroup>;
+  #observers: Map<SimEvent, Set<() => void>>;  // using a map with a set to avoid duplicate callbacks for an event type
 
   constructor(preset: SimPreset = {}) {
     /*
@@ -31,6 +34,25 @@ class Simulation {
       final_preset.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, 
       ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)]
     ));
+    this.#observers = new Map([
+      ['update', new Set()],
+      ['update_container', new Set()],
+      ['update_environment', new Set()],
+      ['update_config', new Set()],
+      ['update_particle_groups', new Set()]
+    ]);
+  }
+  // Setters & Getters
+  add_observer(event: SimEvent, callback: () => void): void {
+    this.#observers.get(event)!.add(callback);
+  }
+  remove_observer(event: SimEvent, callback: () => void): void {
+    this.#observers.get(event)!.delete(callback);
+  }
+  private notify_observers(...events: SimEvent[]): void {
+    events.forEach(event => {
+      this.#observers.get(event)!.forEach(callback => callback());
+    });
   }
   addGroup(grouping: ParticleGrouping): void {  
     // Assumes that string group_id has valid formatting: i.e. no spaces, alphanumeric.
@@ -38,27 +60,39 @@ class Simulation {
       throw new Error(`Group name: ${grouping.group_id} already exists.`);
     }
     this.#particle_groups.set(grouping.group_id, new ParticleGroup(grouping, 0));
+    this.notify_observers('update', 'update_particle_groups');
   }
-
-  // Setters & Getters
   setPreset(preset: SimPreset): void {  
     const current_properties: SimPreset = {
       container: this.#container,
       environment: this.#environment,
       config: this.#config
     }
-    const preset_clone: SimPreset = structuredClone(preset);
-    const updated_properties = deepmerge(current_properties, preset_clone);
-    this.#container = updated_properties.container as BoxSpace;
-    this.#environment = updated_properties.environment as SimEnvironment;
-    this.#config = updated_properties.config as SimConfig;
 
-    if (preset_clone.particle_groups) {
+    const preset_clone = structuredClone(preset);
+
+    if (preset.container) {
+      this.#container = deepmerge(current_properties.container!, preset_clone.container!)
+      this.notify_observers('update_container');
+    }
+    if (preset.environment) {
+      this.#environment = deepmerge(current_properties.environment!, preset_clone.environment!)
+      this.notify_observers('update_environment');
+    }
+    if (preset.config) {
+      this.#config = deepmerge(current_properties.config!, preset_clone.config!)
+      this.notify_observers('update_config');
+    }
+    
+    if (preset.particle_groups) {
       this.#particle_groups = new Map(Array.from(
-        updated_properties.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, 
+        preset_clone.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, 
         ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)]
       ));
+      this.notify_observers('update_particle_groups');
     }
+
+    if (preset) this.notify_observers('update');
   }
 
   getContainer(): BoxSpace {
@@ -70,11 +104,9 @@ class Simulation {
   getConfig(): SimConfig {
     return this.#config;
   }
-
   getParticleGroups(): Map<string, ParticleGroup> {
     return this.#particle_groups;
   }
-
   getAllParticles(): Particle[] { 
     const particles: Particle[] = [];
     this.#particle_groups.forEach(group => {

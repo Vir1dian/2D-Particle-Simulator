@@ -54,6 +54,7 @@ class EnvironmentSetupRenderer extends Renderer {
     super(simulation_settings, '', 'simsetup_global_variables_wrapper');
 
     // Saved Data
+    simulation.add_observer('update_environment', this.refreshInputs);
     this.#simulation = simulation;
     this.#inputs = new Map();
     this.#input_table = this.populateInputTable();

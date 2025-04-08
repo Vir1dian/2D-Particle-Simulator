@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Simulation_container, _Simulation_environment, _Simulation_config, _Simulation_particle_groups;
+var _Simulation_container, _Simulation_environment, _Simulation_config, _Simulation_particle_groups, _Simulation_observers;
 /**
  * Oversees most processes in the program.
  * Only one instance of Simulation should
@@ -24,6 +24,7 @@ class Simulation {
         _Simulation_environment.set(this, void 0);
         _Simulation_config.set(this, void 0);
         _Simulation_particle_groups.set(this, void 0);
+        _Simulation_observers.set(this, void 0); // using a map with a set to avoid duplicate callbacks for an event type
         /*
         WARNING!
         Potential issue for the future, structuredClone flattens all
@@ -40,6 +41,25 @@ class Simulation {
         __classPrivateFieldSet(this, _Simulation_environment, final_preset.environment, "f");
         __classPrivateFieldSet(this, _Simulation_config, final_preset.config, "f");
         __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(final_preset.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
+        __classPrivateFieldSet(this, _Simulation_observers, new Map([
+            ['update', new Set()],
+            ['update_container', new Set()],
+            ['update_environment', new Set()],
+            ['update_config', new Set()],
+            ['update_particle_groups', new Set()]
+        ]), "f");
+    }
+    // Setters & Getters
+    add_observer(event, callback) {
+        __classPrivateFieldGet(this, _Simulation_observers, "f").get(event).add(callback);
+    }
+    remove_observer(event, callback) {
+        __classPrivateFieldGet(this, _Simulation_observers, "f").get(event).delete(callback);
+    }
+    notify_observers(...events) {
+        events.forEach(event => {
+            __classPrivateFieldGet(this, _Simulation_observers, "f").get(event).forEach(callback => callback());
+        });
     }
     addGroup(grouping) {
         // Assumes that string group_id has valid formatting: i.e. no spaces, alphanumeric.
@@ -47,8 +67,8 @@ class Simulation {
             throw new Error(`Group name: ${grouping.group_id} already exists.`);
         }
         __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, new ParticleGroup(grouping, 0));
+        this.notify_observers('update', 'update_particle_groups');
     }
-    // Setters & Getters
     setPreset(preset) {
         const current_properties = {
             container: __classPrivateFieldGet(this, _Simulation_container, "f"),
@@ -56,13 +76,24 @@ class Simulation {
             config: __classPrivateFieldGet(this, _Simulation_config, "f")
         };
         const preset_clone = structuredClone(preset);
-        const updated_properties = deepmerge(current_properties, preset_clone);
-        __classPrivateFieldSet(this, _Simulation_container, updated_properties.container, "f");
-        __classPrivateFieldSet(this, _Simulation_environment, updated_properties.environment, "f");
-        __classPrivateFieldSet(this, _Simulation_config, updated_properties.config, "f");
-        if (preset_clone.particle_groups) {
-            __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(updated_properties.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
+        if (preset.container) {
+            __classPrivateFieldSet(this, _Simulation_container, deepmerge(current_properties.container, preset_clone.container), "f");
+            this.notify_observers('update_container');
         }
+        if (preset.environment) {
+            __classPrivateFieldSet(this, _Simulation_environment, deepmerge(current_properties.environment, preset_clone.environment), "f");
+            this.notify_observers('update_environment');
+        }
+        if (preset.config) {
+            __classPrivateFieldSet(this, _Simulation_config, deepmerge(current_properties.config, preset_clone.config), "f");
+            this.notify_observers('update_config');
+        }
+        if (preset.particle_groups) {
+            __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(preset_clone.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
+            this.notify_observers('update_particle_groups');
+        }
+        if (preset)
+            this.notify_observers('update');
     }
     getContainer() {
         return __classPrivateFieldGet(this, _Simulation_container, "f");
@@ -84,7 +115,7 @@ class Simulation {
         return particles;
     }
 }
-_Simulation_container = new WeakMap(), _Simulation_environment = new WeakMap(), _Simulation_config = new WeakMap(), _Simulation_particle_groups = new WeakMap();
+_Simulation_container = new WeakMap(), _Simulation_environment = new WeakMap(), _Simulation_config = new WeakMap(), _Simulation_particle_groups = new WeakMap(), _Simulation_observers = new WeakMap();
 const DEFAULT_PRESET = {
     container: {
         x_min: -250,

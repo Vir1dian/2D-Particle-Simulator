@@ -59,6 +59,7 @@ class EnvironmentSetupRenderer extends Renderer {
         _EnvironmentSetupRenderer_input_table.set(this, void 0);
         _EnvironmentSetupRenderer_sumbit_button.set(this, void 0);
         // Saved Data
+        simulation.add_observer('update_environment', this.refreshInputs);
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_inputs, new Map(), "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, this.populateInputTable(), "f");
