@@ -59,7 +59,7 @@ class EnvironmentSetupRenderer extends Renderer {
         _EnvironmentSetupRenderer_input_table.set(this, void 0);
         _EnvironmentSetupRenderer_sumbit_button.set(this, void 0);
         // Saved Data
-        simulation.add_observer('update_environment', this.refreshInputs);
+        simulation.add_observer(SimEvent.Update_Environment, this.refreshInputs.bind(this));
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_inputs, new Map(), "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, this.populateInputTable(), "f");
@@ -239,8 +239,9 @@ class ParticlePanelRenderer extends Renderer {
         _ParticlePanelRenderer_add_particles_dialog.set(this, void 0);
         _ParticlePanelRenderer_create_group_dialog.set(this, void 0);
         _ParticlePanelRenderer_group_list.set(this, void 0);
+        // Saved Data
+        simulation.add_observer(SimEvent.Overwrite_Particle_Groups, this.overwriteGroupList.bind(this));
         __classPrivateFieldSet(this, _ParticlePanelRenderer_simulation, simulation, "f");
-        // Saved Renderers
         __classPrivateFieldSet(this, _ParticlePanelRenderer_add_particles_dialog, this.setupAddParticlesDialog(), "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_create_group_dialog, this.setupCreateGroupDialog(), "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_group_list, new ListRenderer(...Array.from(simulation.getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer()))), "f");
@@ -275,6 +276,8 @@ class ParticlePanelRenderer extends Renderer {
     }
     getGroupList() {
         return __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f");
+    }
+    overwriteGroupList() {
     }
 }
 _ParticlePanelRenderer_simulation = new WeakMap(), _ParticlePanelRenderer_add_particles_dialog = new WeakMap(), _ParticlePanelRenderer_create_group_dialog = new WeakMap(), _ParticlePanelRenderer_group_list = new WeakMap();

@@ -1,4 +1,11 @@
-type SimEvent = 'update' | 'update_container' | 'update_environment' | 'update_config' | 'update_particle_groups';
+enum SimEvent {
+  Update,
+  Update_Container,
+  Update_Environment,
+  Update_Config,
+  Overwrite_Particle_Groups,
+  Edit_Particle_Groups
+};
 
 /**
  * Oversees most processes in the program.
@@ -34,13 +41,10 @@ class Simulation {
       final_preset.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, 
       ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)]
     ));
-    this.#observers = new Map([
-      ['update', new Set()],
-      ['update_container', new Set()],
-      ['update_environment', new Set()],
-      ['update_config', new Set()],
-      ['update_particle_groups', new Set()]
-    ]);
+    this.#observers = new Map();
+    Object.keys(SimEvent).forEach((_, event) => {
+      this.#observers.set(event, new Set());
+    });
   }
   // Setters & Getters
   add_observer(event: SimEvent, callback: () => void): void {
@@ -60,7 +64,7 @@ class Simulation {
       throw new Error(`Group name: ${grouping.group_id} already exists.`);
     }
     this.#particle_groups.set(grouping.group_id, new ParticleGroup(grouping, 0));
-    this.notify_observers('update', 'update_particle_groups');
+    this.notify_observers(SimEvent.Update, SimEvent.Edit_Particle_Groups);
   }
   setPreset(preset: SimPreset): void {  
     const current_properties: SimPreset = {
@@ -73,15 +77,18 @@ class Simulation {
 
     if (preset.container) {
       this.#container = deepmerge(current_properties.container!, preset_clone.container!)
-      this.notify_observers('update_container');
+      this.notify_observers(SimEvent.Update_Container);
+      console.log('update_container');
     }
     if (preset.environment) {
       this.#environment = deepmerge(current_properties.environment!, preset_clone.environment!)
-      this.notify_observers('update_environment');
+      this.notify_observers(SimEvent.Update_Environment);
+      console.log('update_environment');
     }
     if (preset.config) {
       this.#config = deepmerge(current_properties.config!, preset_clone.config!)
-      this.notify_observers('update_config');
+      this.notify_observers(SimEvent.Update_Config);
+      console.log('update_config');
     }
     
     if (preset.particle_groups) {
@@ -89,10 +96,12 @@ class Simulation {
         preset_clone.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, 
         ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)]
       ));
-      this.notify_observers('update_particle_groups');
+      this.notify_observers(SimEvent.Overwrite_Particle_Groups);
+      console.log('overwrite_particle_groups')
     }
 
-    if (preset) this.notify_observers('update');
+    if (preset) this.notify_observers(SimEvent.Update);
+    console.log('update');
   }
 
   getContainer(): BoxSpace {

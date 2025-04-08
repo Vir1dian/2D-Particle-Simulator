@@ -54,7 +54,7 @@ class EnvironmentSetupRenderer extends Renderer {
     super(simulation_settings, '', 'simsetup_global_variables_wrapper');
 
     // Saved Data
-    simulation.add_observer('update_environment', this.refreshInputs);
+    simulation.add_observer(SimEvent.Update_Environment, this.refreshInputs.bind(this));
     this.#simulation = simulation;
     this.#inputs = new Map();
     this.#input_table = this.populateInputTable();
@@ -251,9 +251,10 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   constructor(simulation: Simulation) {
     const particle_panel: HTMLElement = document.createElement('article');
     super(particle_panel, 'control_item', 'control_parsetup');
-    this.#simulation = simulation;
 
-    // Saved Renderers
+    // Saved Data
+    simulation.add_observer(SimEvent.Overwrite_Particle_Groups, this.overwriteGroupList.bind(this));
+    this.#simulation = simulation;
     this.#add_particles_dialog = this.setupAddParticlesDialog();
     this.#create_group_dialog = this.setupCreateGroupDialog();
     this.#group_list = new ListRenderer<ParticleUnitGroupRenderer>(...Array.from(
@@ -298,6 +299,9 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   }
   getGroupList(): ListRenderer<ParticleUnitGroupRenderer> {
     return this.#group_list;
+  }
+  overwriteGroupList(): void {
+    
   }
 }
 
