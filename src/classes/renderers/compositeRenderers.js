@@ -62,7 +62,7 @@ class EnvironmentSetupRenderer extends Renderer {
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_inputs, new Map(), "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, this.populateInputTable(), "f");
-        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_sumbit_button, new ButtonRenderer(this.submitChanges), "f");
+        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_sumbit_button, new ButtonRenderer(this.submitChanges.bind(this)), "f");
         // Content
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setParent(simulation_settings);
         const buttons_wrapper = document.createElement('div');
@@ -110,9 +110,9 @@ class EnvironmentSetupRenderer extends Renderer {
         return input_table;
     }
     submitChanges() {
-        const statics = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics; // statics for now because dynamics is still empty
+        const statics = structuredClone(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics); // statics for now because dynamics is still empty
         const changes = { environment: { statics: {}, dynamics: {} } };
-        const input_keys = Object.keys(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f"));
+        const input_keys = [...__classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").keys()];
         // Properties of type Vector2D in this.#inputs are represented by two InputRenderers instead of one,
         // one for the x component, and the other for the y component, one after the other.
         for (let i = 0; i < input_keys.length; i++) {
@@ -122,23 +122,30 @@ class EnvironmentSetupRenderer extends Renderer {
             if (key.endsWith("_x")) { // Detect x component, y is always next
                 const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
                 const next_input = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").get(input_keys[++i]);
-                if (statics[baseKey].x === parseFloat(input.getValue()) &&
-                    statics[baseKey].y === parseFloat(next_input.getValue()))
+                next_input.refreshValue();
+                const x = parseFloat(input.getValue());
+                const y = parseFloat(next_input.getValue());
+                if (statics[baseKey].x === x &&
+                    statics[baseKey].y === y)
                     continue;
-                Object.defineProperty(changes.environment.statics, baseKey, { value: {
-                        x: parseFloat(input.getValue()),
-                        y: parseFloat(next_input.getValue())
-                    } });
+                if (!changes.environment)
+                    continue;
+                if (!changes.environment.statics)
+                    continue;
+                changes.environment.statics[baseKey] = { x, y };
             }
             else {
-                if (statics[key] === parseFloat(input.getValue()))
+                const val = parseFloat(input.getValue());
+                if (statics[key] === val)
                     continue;
-                Object.defineProperty(changes.environment.statics, key, { value: parseFloat(input.getValue()) });
+                if (!changes.environment)
+                    continue;
+                if (!changes.environment.statics)
+                    continue;
+                changes.environment.statics[key] = val;
             }
         }
-        console.log(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment());
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").setPreset(changes);
-        console.log(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment());
     }
     getInputs() {
         return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f");

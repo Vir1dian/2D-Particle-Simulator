@@ -57,7 +57,7 @@ class EnvironmentSetupRenderer extends Renderer {
     this.#simulation = simulation;
     this.#inputs = new Map();
     this.#input_table = this.populateInputTable();
-    this.#sumbit_button = new ButtonRenderer(this.submitChanges);
+    this.#sumbit_button = new ButtonRenderer(this.submitChanges.bind(this));
 
     // Content
     this.#input_table.setParent(simulation_settings);
@@ -112,9 +112,9 @@ class EnvironmentSetupRenderer extends Renderer {
     return input_table;
   }
   private submitChanges(): void {
-    const statics = this.#simulation.getEnvironment().statics!;  // statics for now because dynamics is still empty
+    const statics = structuredClone(this.#simulation.getEnvironment().statics!);  // statics for now because dynamics is still empty
     const changes: SimPreset = { environment: { statics: {}, dynamics: {} } };
-    const input_keys: string[] = Object.keys(this.#inputs);  
+    const input_keys: string[] = [...this.#inputs.keys()];  
     // Properties of type Vector2D in this.#inputs are represented by two InputRenderers instead of one,
     // one for the x component, and the other for the y component, one after the other.
 
@@ -126,33 +126,30 @@ class EnvironmentSetupRenderer extends Renderer {
       if (key.endsWith("_x")) {  // Detect x component, y is always next
         const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
         const next_input = this.#inputs.get(input_keys[++i])!;
+        next_input.refreshValue();
         
+        const x = parseFloat(input.getValue());
+        const y = parseFloat(next_input.getValue());
+
         if (
-          (statics[baseKey as keyof typeof statics] as Vector2D).x === parseFloat(input.getValue()) && 
-          (statics[baseKey as keyof typeof statics] as Vector2D).y === parseFloat(next_input.getValue())
+          (statics[baseKey as keyof typeof statics] as Vector2D).x === x && 
+          (statics[baseKey as keyof typeof statics] as Vector2D).y === y
         ) continue;
   
-        Object.defineProperty(
-          changes.environment!.statics, 
-          baseKey, 
-          {value: { 
-            x: parseFloat(input.getValue()), 
-            y: parseFloat(next_input.getValue()) 
-          }}
-        );
+        if (!changes.environment) continue;
+        if (!changes.environment.statics) continue;
+        (changes.environment.statics[baseKey as keyof typeof statics] as {x: number, y: number}) = { x, y };
       } 
       else {
-        if (statics[key as keyof typeof statics] as number === parseFloat(input.getValue())) continue;
-        Object.defineProperty(
-          changes.environment!.statics, 
-          key, 
-          {value: parseFloat(input.getValue())}
-        );
+        const val = parseFloat(input.getValue());
+        if (statics[key as keyof typeof statics] as number === val) continue;
+
+        if (!changes.environment) continue;
+        if (!changes.environment.statics) continue;
+        (changes.environment!.statics[key as keyof typeof statics] as number) = val;
       }
     }
-    console.log(this.#simulation.getEnvironment());
     this.#simulation.setPreset(changes);
-    console.log(this.#simulation.getEnvironment());
   }
 
   getInputs(): Map<string, InputRenderer | NumberInputRenderer> {
