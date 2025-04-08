@@ -321,10 +321,10 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   }
   overwriteGroupList(): void {
     this.#group_list.empty();
-    this.#group_list = new ListRenderer<ParticleUnitGroupRenderer>(...Array.from(
+    Array.from(
       this.#simulation.getParticleGroups() as Map<string, ParticleGroup>, 
       ([group_id, group]) => new ParticleUnitGroupRenderer(group, this.#simulation.getContainer())
-    ));
+    ).forEach(group_renderer => this.#group_list.push(group_renderer));
   }
   remove(): void {
     this.#add_particles_dialog.remove();

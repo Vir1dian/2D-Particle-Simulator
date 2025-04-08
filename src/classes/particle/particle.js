@@ -21,7 +21,7 @@ class Particle {
         __classPrivateFieldSet(this, _Particle_id, __classPrivateFieldSet(_c = _a, _a, (_d = __classPrivateFieldGet(_c, _a, "f", _Particle_instance_count), ++_d), "f", _Particle_instance_count), "f");
         __classPrivateFieldSet(this, _Particle_group_id, grouping.group_id, "f");
         this.radius = this.resolveValue(grouping.radius, DEFAULT_GROUPING.radius, () => Math.floor(Math.random() * (20 - 5 + 1) + 5));
-        this.position = this.resolveVector(grouping.position, DEFAULT_GROUPING.position);
+        this.position = this.resolveVector(grouping.position, DEFAULT_GROUPING.position, 250 - this.radius);
         this.velocity = this.resolveVector(grouping.velocity, DEFAULT_GROUPING.velocity);
         this.mass = this.resolveValue(grouping.mass, DEFAULT_GROUPING.mass, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
         this.charge = this.resolveValue(grouping.charge, DEFAULT_GROUPING.charge, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));

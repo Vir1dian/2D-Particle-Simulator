@@ -298,7 +298,7 @@ class ParticlePanelRenderer extends Renderer {
     }
     overwriteGroupList() {
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").empty();
-        __classPrivateFieldSet(this, _ParticlePanelRenderer_group_list, new ListRenderer(...Array.from(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getContainer()))), "f");
+        Array.from(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getContainer())).forEach(group_renderer => __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(group_renderer));
     }
     remove() {
         __classPrivateFieldGet(this, _ParticlePanelRenderer_add_particles_dialog, "f").remove();

@@ -17,7 +17,7 @@ class Particle {
     this.#id = ++Particle.#instance_count;
     this.#group_id = grouping.group_id;
     this.radius = this.resolveValue(grouping.radius, DEFAULT_GROUPING.radius as number, () => Math.floor(Math.random() * (20 - 5 + 1) + 5));
-    this.position = this.resolveVector(grouping.position, DEFAULT_GROUPING.position as Vector2D);
+    this.position = this.resolveVector(grouping.position, DEFAULT_GROUPING.position as Vector2D, 250 - this.radius);
     this.velocity = this.resolveVector(grouping.velocity, DEFAULT_GROUPING.velocity as Vector2D);
     this.mass = this.resolveValue(grouping.mass, DEFAULT_GROUPING.mass as number, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
     this.charge = this.resolveValue(grouping.charge, DEFAULT_GROUPING.charge as number, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));

@@ -357,7 +357,11 @@ class ListRenderer extends Renderer {
         __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, range).forEach(item => { item.remove(); });
     }
     empty() {
-        __classPrivateFieldGet(this, _ListRenderer_items, "f").forEach(item => item.remove());
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").forEach(item => {
+            var _a;
+            (_a = item.getElement().parentElement) === null || _a === void 0 ? void 0 : _a.remove();
+            item.remove();
+        });
         __classPrivateFieldGet(this, _ListRenderer_items, "f").length = 0;
         this.getElement().style.display = "none";
     }

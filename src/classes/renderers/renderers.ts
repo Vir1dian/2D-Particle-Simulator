@@ -335,7 +335,10 @@ class ListRenderer<T extends Renderer> extends Renderer {
     this.#items.splice(index, range).forEach(item => {item.remove()});
   }
   empty(): void {
-    this.#items.forEach(item => item.remove());
+    this.#items.forEach(item => {
+      (item.getElement().parentElement as HTMLLIElement)?.remove();
+      item.remove();
+    });
     this.#items.length = 0;
     this.getElement().style.display = "none";
   }
