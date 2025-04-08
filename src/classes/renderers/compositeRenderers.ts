@@ -161,6 +161,31 @@ class EnvironmentSetupRenderer extends Renderer {
   getSubmitButton(): ButtonRenderer {
     return this.#sumbit_button;
   }
+  refreshInputs(): void {
+    const statics = structuredClone(this.#simulation.getEnvironment().statics!);  // statics for now because dynamics is still empty
+    const input_keys: string[] = [...this.#inputs.keys()];  
+    // Properties of type Vector2D in this.#inputs are represented by two InputRenderers instead of one,
+    // one for the x component, and the other for the y component, one after the other.
+
+    for (let i = 0; i < input_keys.length; i++) {
+      const key = input_keys[i];
+      const input = this.#inputs.get(key)!;
+  
+      if (key.endsWith("_x")) {  // Detect x component, y is always next
+        const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
+        const next_input = this.#inputs.get(input_keys[++i])!;
+
+        const vector = (statics[baseKey as keyof typeof statics] as Vector2D);
+        
+        input.setValue(vector.x.toString());
+        next_input.setValue(vector.y.toString());
+      } 
+      else {
+        const scalar = statics[key as keyof typeof statics] as number;
+        input.setValue(scalar.toString());
+      }
+    }
+  }
 }
 
 /**
@@ -197,6 +222,7 @@ class PresetInputRenderer extends Renderer {
   private setupApplyButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(
       () => {
+        this.#preset_dropdown.refreshValue();
         const preset_name: string = this.#preset_dropdown.getValue();
         const preset: SimPreset = TEMPORARY_PRESETS[preset_name];
         this.#simulation.setPreset(preset);

@@ -156,6 +156,27 @@ class EnvironmentSetupRenderer extends Renderer {
     getSubmitButton() {
         return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f");
     }
+    refreshInputs() {
+        const statics = structuredClone(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics); // statics for now because dynamics is still empty
+        const input_keys = [...__classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").keys()];
+        // Properties of type Vector2D in this.#inputs are represented by two InputRenderers instead of one,
+        // one for the x component, and the other for the y component, one after the other.
+        for (let i = 0; i < input_keys.length; i++) {
+            const key = input_keys[i];
+            const input = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").get(key);
+            if (key.endsWith("_x")) { // Detect x component, y is always next
+                const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
+                const next_input = __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").get(input_keys[++i]);
+                const vector = statics[baseKey];
+                input.setValue(vector.x.toString());
+                next_input.setValue(vector.y.toString());
+            }
+            else {
+                const scalar = statics[key];
+                input.setValue(scalar.toString());
+            }
+        }
+    }
 }
 _EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_inputs = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap(), _EnvironmentSetupRenderer_sumbit_button = new WeakMap();
 /**
@@ -191,6 +212,7 @@ class PresetInputRenderer extends Renderer {
     }
     setupApplyButton() {
         const button = new ButtonRenderer(() => {
+            __classPrivateFieldGet(this, _PresetInputRenderer_preset_dropdown, "f").refreshValue();
             const preset_name = __classPrivateFieldGet(this, _PresetInputRenderer_preset_dropdown, "f").getValue();
             const preset = TEMPORARY_PRESETS[preset_name];
             __classPrivateFieldGet(this, _PresetInputRenderer_simulation, "f").setPreset(preset);
