@@ -53,7 +53,10 @@ class Renderer {
             __classPrivateFieldGet(this, _Renderer_element, "f").appendChild(child.getElement());
     }
     remove() {
-        __classPrivateFieldGet(this, _Renderer_element, "f").replaceWith(__classPrivateFieldGet(this, _Renderer_element, "f").cloneNode(true)); // Nukes all attached event listeners
+        var _a;
+        const deafened_clone = __classPrivateFieldGet(this, _Renderer_element, "f").cloneNode(true);
+        __classPrivateFieldGet(this, _Renderer_element, "f").replaceWith(deafened_clone); // Nukes all attached event listeners
+        (_a = deafened_clone.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(deafened_clone);
         __classPrivateFieldGet(this, _Renderer_element, "f").remove();
     }
 }
@@ -92,6 +95,10 @@ class ButtonRenderer extends Renderer {
         this.deafen();
         __classPrivateFieldSet(this, _ButtonRenderer_event, event, "f");
         this.getElement().addEventListener(event, __classPrivateFieldGet(this, _ButtonRenderer_callback, "f"));
+    }
+    remove() {
+        this.deafen();
+        super.remove();
     }
 }
 _ButtonRenderer_callback = new WeakMap(), _ButtonRenderer_event = new WeakMap();
@@ -144,6 +151,12 @@ class DialogRenderer extends Renderer {
     closeDialog() {
         this.getElement().close();
     }
+    remove() {
+        __classPrivateFieldGet(this, _DialogRenderer_open_button, "f").remove();
+        __classPrivateFieldGet(this, _DialogRenderer_close_button, "f").remove();
+        __classPrivateFieldGet(this, _DialogRenderer_content_wrapper, "f").remove();
+        super.remove();
+    }
 }
 _DialogRenderer_open_button = new WeakMap(), _DialogRenderer_close_button = new WeakMap(), _DialogRenderer_content_wrapper = new WeakMap();
 /**
@@ -188,6 +201,13 @@ class TableCellRenderer extends Renderer {
     getContent() {
         return __classPrivateFieldGet(this, _TableCellRenderer_content, "f");
     }
+    remove() {
+        if (__classPrivateFieldGet(this, _TableCellRenderer_content, "f") instanceof Renderer)
+            __classPrivateFieldGet(this, _TableCellRenderer_content, "f").remove();
+        else if (__classPrivateFieldGet(this, _TableCellRenderer_content, "f") instanceof HTMLElement)
+            __classPrivateFieldGet(this, _TableCellRenderer_content, "f").remove();
+        super.remove();
+    }
 }
 _TableCellRenderer_row = new WeakMap(), _TableCellRenderer_col = new WeakMap(), _TableCellRenderer_content = new WeakMap();
 /**
@@ -228,6 +248,16 @@ class TableRenderer extends Renderer {
     }
     getElement() {
         return super.getElement();
+    }
+    remove() {
+        for (let i = 0; i < __classPrivateFieldGet(this, _TableRenderer_rows, "f"); i++) {
+            for (let j = 0; j < __classPrivateFieldGet(this, _TableRenderer_cols, "f"); j++) {
+                __classPrivateFieldGet(this, _TableRenderer_cells, "f")[i][j].remove();
+            }
+            __classPrivateFieldGet(this, _TableRenderer_cells, "f")[i].length = 0;
+        }
+        __classPrivateFieldGet(this, _TableRenderer_cells, "f").length = 0;
+        super.remove();
     }
 }
 _TableRenderer_rows = new WeakMap(), _TableRenderer_cols = new WeakMap(), _TableRenderer_cells = new WeakMap();
@@ -311,24 +341,24 @@ class ListRenderer extends Renderer {
         const index = __classPrivateFieldGet(this, _ListRenderer_items, "f").indexOf(item);
         if (index !== -1) {
             __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, 1);
+            if (__classPrivateFieldGet(this, _ListRenderer_items, "f").length <= 0) {
+                this.getElement().style.display = "none";
+            }
             item.remove();
-        }
-        if (__classPrivateFieldGet(this, _ListRenderer_items, "f").length <= 0) {
-            this.getElement().style.display = "none";
         }
     }
     removeAtIndex(index, range) {
         if (index < 0 || range < 0 || index + range > __classPrivateFieldGet(this, _ListRenderer_items, "f").length) {
             throw new Error("Invalid range.");
         }
-        __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, range).forEach(item => { item.remove(); });
         if (__classPrivateFieldGet(this, _ListRenderer_items, "f").length <= 0) {
             this.getElement().style.display = "none";
         }
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, range).forEach(item => { item.remove(); });
     }
     empty() {
         __classPrivateFieldGet(this, _ListRenderer_items, "f").forEach(item => item.remove());
-        __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(0, Infinity);
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").length = 0;
         this.getElement().style.display = "none";
     }
     remove() {
@@ -451,7 +481,9 @@ class SelectRenderer extends Renderer {
         __classPrivateFieldGet(this, _SelectRenderer_options, "f").splice(1, Infinity);
     }
     remove() {
-        this.empty();
+        __classPrivateFieldGet(this, _SelectRenderer_options, "f").length = 0;
+        __classPrivateFieldGet(this, _SelectRenderer_selected, "f").remove();
+        __classPrivateFieldGet(this, _SelectRenderer_label_element, "f").remove();
         super.remove();
     }
 }
@@ -513,6 +545,10 @@ class InputRenderer extends Renderer {
     setID(id) {
         super.setID(id);
         __classPrivateFieldGet(this, _InputRenderer_label_element, "f").htmlFor = id;
+    }
+    remove() {
+        __classPrivateFieldGet(this, _InputRenderer_label_element, "f").remove();
+        super.remove();
     }
 }
 _InputRenderer_value = new WeakMap(), _InputRenderer_name = new WeakMap(), _InputRenderer_is_disabled = new WeakMap(), _InputRenderer_label_element = new WeakMap();
@@ -589,10 +625,11 @@ class DatalistInputRenderer extends InputRenderer {
     }
     empty() {
         __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f").forEach(option => option.remove());
-        __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f").splice(0, Infinity);
+        __classPrivateFieldGet(this, _DatalistInputRenderer_data, "f").length = 0;
     }
     remove() {
         this.empty();
+        __classPrivateFieldGet(this, _DatalistInputRenderer_datalist_element, "f").remove();
         super.remove();
     }
 }

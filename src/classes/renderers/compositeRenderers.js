@@ -22,6 +22,9 @@ class UIControlRenderer extends Renderer {
         _UIControlRenderer_simulation.set(this, void 0);
         __classPrivateFieldSet(this, _UIControlRenderer_simulation, simulation, "f");
     }
+    remove() {
+        super.remove();
+    }
 }
 _UIControlRenderer_simulation = new WeakMap();
 class EnvironmentPanelRenderer extends Renderer {
@@ -41,6 +44,11 @@ class EnvironmentPanelRenderer extends Renderer {
         environment_panel.appendChild(header);
         __classPrivateFieldGet(this, _EnvironmentPanelRenderer_preset_handler, "f").setParent(environment_panel);
         __classPrivateFieldGet(this, _EnvironmentPanelRenderer_environment_handler, "f").setParent(environment_panel);
+    }
+    remove() {
+        __classPrivateFieldGet(this, _EnvironmentPanelRenderer_preset_handler, "f").remove();
+        __classPrivateFieldGet(this, _EnvironmentPanelRenderer_environment_handler, "f").remove();
+        super.remove();
     }
 }
 _EnvironmentPanelRenderer_simulation = new WeakMap(), _EnvironmentPanelRenderer_preset_handler = new WeakMap(), _EnvironmentPanelRenderer_environment_handler = new WeakMap();
@@ -178,6 +186,12 @@ class EnvironmentSetupRenderer extends Renderer {
             }
         }
     }
+    remove() {
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").clear();
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").remove();
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").remove();
+        super.remove();
+    }
 }
 _EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_inputs = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap(), _EnvironmentSetupRenderer_sumbit_button = new WeakMap();
 /**
@@ -221,6 +235,11 @@ class PresetInputRenderer extends Renderer {
         button.setID('simsetup_presets_button');
         button.getElement().textContent = "Apply";
         return button;
+    }
+    remove() {
+        __classPrivateFieldGet(this, _PresetInputRenderer_preset_dropdown, "f").remove();
+        __classPrivateFieldGet(this, _PresetInputRenderer_apply_button, "f").remove();
+        super.remove();
     }
 }
 _PresetInputRenderer_simulation = new WeakMap(), _PresetInputRenderer_preset_dropdown = new WeakMap(), _PresetInputRenderer_apply_button = new WeakMap();
@@ -278,6 +297,14 @@ class ParticlePanelRenderer extends Renderer {
         return __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f");
     }
     overwriteGroupList() {
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").empty();
+        __classPrivateFieldSet(this, _ParticlePanelRenderer_group_list, new ListRenderer(...Array.from(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getContainer()))), "f");
+    }
+    remove() {
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_add_particles_dialog, "f").remove();
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_create_group_dialog, "f").remove();
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").remove();
+        super.remove();
     }
 }
 _ParticlePanelRenderer_simulation = new WeakMap(), _ParticlePanelRenderer_add_particles_dialog = new WeakMap(), _ParticlePanelRenderer_create_group_dialog = new WeakMap(), _ParticlePanelRenderer_group_list = new WeakMap();
@@ -361,6 +388,13 @@ class ParticleUnitGroupRenderer extends Renderer {
     getUnitList() {
         return __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f");
     }
+    remove() {
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").remove();
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_details_dialog, "f").remove();
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_drag_button, "f").remove();
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").remove();
+        super.remove();
+    }
 }
 _ParticleUnitGroupRenderer_particle_group = new WeakMap(), _ParticleUnitGroupRenderer_icon = new WeakMap(), _ParticleUnitGroupRenderer_details_dialog = new WeakMap(), _ParticleUnitGroupRenderer_drag_button = new WeakMap(), _ParticleUnitGroupRenderer_unit_list = new WeakMap();
 /**
@@ -435,6 +469,13 @@ class ParticleUnitRenderer extends Renderer {
     }
     getParticlePoint() {
         return __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f");
+    }
+    remove() {
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").remove();
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_icon, "f").remove();
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").remove();
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_drag_button, "f").remove();
+        super.remove();
     }
 }
 _ParticleUnitRenderer_particle_renderer = new WeakMap(), _ParticleUnitRenderer_icon = new WeakMap(), _ParticleUnitRenderer_details_dialog = new WeakMap(), _ParticleUnitRenderer_drag_button = new WeakMap();

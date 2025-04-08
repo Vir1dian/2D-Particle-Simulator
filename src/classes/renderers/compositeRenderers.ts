@@ -11,6 +11,10 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
     super(ui_settings_element);
     this.#simulation = simulation;
   }
+
+  remove(): void {
+    super.remove();
+  }
 }
 
 class EnvironmentPanelRenderer extends Renderer {
@@ -34,7 +38,11 @@ class EnvironmentPanelRenderer extends Renderer {
     this.#environment_handler.setParent(environment_panel);
   }
 
-
+  remove(): void {
+    this.#preset_handler.remove();
+    this.#environment_handler.remove();
+    super.remove();
+  }
 }
 
 /**
@@ -187,6 +195,12 @@ class EnvironmentSetupRenderer extends Renderer {
       }
     }
   }
+  remove(): void {
+    this.#inputs.clear();
+    this.#input_table.remove();
+    this.#sumbit_button.remove();
+    super.remove();
+  }
 }
 
 /**
@@ -232,6 +246,11 @@ class PresetInputRenderer extends Renderer {
     button.setID('simsetup_presets_button');
     button.getElement().textContent = "Apply";
     return button;
+  }
+  remove(): void {
+    this.#preset_dropdown.remove();
+    this.#apply_button.remove();
+    super.remove();
   }
 }
 
@@ -301,7 +320,17 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     return this.#group_list;
   }
   overwriteGroupList(): void {
-    
+    this.#group_list.empty();
+    this.#group_list = new ListRenderer<ParticleUnitGroupRenderer>(...Array.from(
+      this.#simulation.getParticleGroups() as Map<string, ParticleGroup>, 
+      ([group_id, group]) => new ParticleUnitGroupRenderer(group, this.#simulation.getContainer())
+    ));
+  }
+  remove(): void {
+    this.#add_particles_dialog.remove();
+    this.#create_group_dialog.remove();
+    this.#group_list.remove();
+    super.remove();
   }
 }
 
@@ -387,6 +416,13 @@ class ParticleUnitGroupRenderer extends Renderer {
   getUnitList(): ListRenderer<ParticleUnitRenderer> {
     return this.#unit_list;
   }
+  remove(): void {
+    this.#icon.remove();
+    this.#details_dialog.remove();
+    this.#drag_button.remove();
+    this.#unit_list.remove();
+    super.remove();
+  }
 }
 
 
@@ -466,6 +502,13 @@ class ParticleUnitRenderer extends Renderer {
   }
   getParticlePoint(): ParticlePointRenderer {
     return this.#particle_renderer;
+  }
+  remove(): void {
+    this.#particle_renderer.remove();
+    this.#icon.remove();
+    this.#details_dialog.remove();
+    this.#drag_button.remove();
+    super.remove();
   }
 }
 

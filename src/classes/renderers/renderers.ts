@@ -37,7 +37,9 @@ class Renderer {
     else this.#element.appendChild(child.getElement());
   }
   remove(): void {
-    this.#element.replaceWith(this.#element.cloneNode(true));  // Nukes all attached event listeners
+    const deafened_clone = this.#element.cloneNode(true);
+    this.#element.replaceWith(deafened_clone);  // Nukes all attached event listeners
+    deafened_clone.parentNode?.removeChild(deafened_clone);
     this.#element.remove();
   }
 }
@@ -74,6 +76,10 @@ class ButtonRenderer extends Renderer {
     this.deafen();
     this.#event = event;
     this.getElement().addEventListener(event, this.#callback);
+  }
+  remove(): void {
+    this.deafen();
+    super.remove();
   }
 }
 
@@ -125,6 +131,12 @@ class DialogRenderer extends Renderer {
   closeDialog() {
     this.getElement().close();
   }
+  remove() {
+    this.#open_button.remove();
+    this.#close_button.remove();
+    this.#content_wrapper.remove();
+    super.remove();
+  }
 }
 
 /**
@@ -171,6 +183,11 @@ class TableCellRenderer<R extends Renderer> extends Renderer {  // stores at mos
   getContent(): string | HTMLElement | R | undefined {
     return this.#content;
   }
+  remove(): void {
+    if (this.#content instanceof Renderer) this.#content.remove();
+    else if (this.#content instanceof HTMLElement) this.#content.remove();
+    super.remove();
+  }
 }
 
 /**
@@ -211,6 +228,16 @@ class TableRenderer extends Renderer {
   }
   getElement(): HTMLTableElement {
     return super.getElement() as HTMLTableElement;
+  }
+  remove(): void {
+    for (let i = 0; i < this.#rows; i++) {
+      for (let j = 0; j < this.#cols; j++) {
+        this.#cells[i][j].remove();
+      }
+      this.#cells[i].length = 0;
+    }
+    this.#cells.length = 0;
+    super.remove();
   }
 }
 
@@ -292,24 +319,24 @@ class ListRenderer<T extends Renderer> extends Renderer {
     const index = this.#items.indexOf(item);
     if (index !== -1) {
       this.#items.splice(index, 1);
+      if (this.#items.length <= 0) {
+        this.getElement().style.display = "none";
+      }
       item.remove();
-    }
-    if (this.#items.length <= 0) {
-      this.getElement().style.display = "none";
     }
   }
   removeAtIndex(index: number, range: number): void {
     if (index < 0 || range < 0 || index + range > this.#items.length) {
       throw new Error("Invalid range.");
     }
-    this.#items.splice(index, range).forEach(item => {item.remove()});
     if (this.#items.length <= 0) {
       this.getElement().style.display = "none";
     }
+    this.#items.splice(index, range).forEach(item => {item.remove()});
   }
   empty(): void {
     this.#items.forEach(item => item.remove());
-    this.#items.splice(0, Infinity);
+    this.#items.length = 0;
     this.getElement().style.display = "none";
   }
   remove(): void {
@@ -444,7 +471,9 @@ class SelectRenderer extends Renderer {
     this.#options.splice(1, Infinity);
   }
   remove(): void {
-    this.empty();
+    this.#options.length = 0;
+    this.#selected.remove();
+    this.#label_element.remove();
     super.remove();
   }
 }
@@ -508,6 +537,10 @@ class InputRenderer extends Renderer {
   setID(id: string): void {
     super.setID(id);
     this.#label_element.htmlFor = id;
+  }
+  remove(): void {
+    this.#label_element.remove();
+    super.remove();
   }
 }
 
@@ -583,10 +616,11 @@ class DatalistInputRenderer extends InputRenderer {
   }
   empty(): void {
     this.#data.forEach(option => option.remove());
-    this.#data.splice(0, Infinity);
+    this.#data.length = 0;
   }
   remove(): void {
     this.empty();
+    this.#datalist_element.remove();
     super.remove();
   }
 }
