@@ -184,7 +184,7 @@ dialog {
   align-self: center;
 }
 dialog::backdrop {
-  background-color:rgba(44, 62, 80, 0.021);
+  background-color:rgba(0,0,0,0);
 }
 .dialog_wrapper {
   min-width: 200px;
@@ -193,6 +193,14 @@ dialog::backdrop {
   border-radius: 4px;
   background-color: white;
   padding: 8px;
+}
+.draggable {
+  position: absolute;
+  justify-self: auto;
+  align-self: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .container_element {

@@ -7,7 +7,7 @@
 class ParticleUnitGroupRenderer extends Renderer {
   #particle_group: ParticleGroup;
   #icon: Renderer;
-  #details_dialog: DialogRenderer;
+  #details_dialog: StandardDialogRenderer;  // maybe make this non-modal to edit outside of the popup?
   #drag_button: ButtonRenderer;
   #unit_list: ListRenderer<ParticleUnitRenderer>;
   
@@ -40,10 +40,11 @@ class ParticleUnitGroupRenderer extends Renderer {
     else icon.getElement().style.backgroundColor = color;
     return icon;
   };
-  private setupDetailsDialog(group_id: string): DialogRenderer {
-    const details_dialog = new DialogRenderer(`particle_group_${group_id}`);
-    details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
-    details_dialog.getOpenButton().getElement().innerHTML = "expand_content";
+  private setupDetailsDialog(group_id: string): StandardDialogRenderer {
+    const body = new Renderer(document.createElement('div'));
+    const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, group_id, true);
+    details_dialog.setOpenButtonLabel("expand_content", true);
+    details_dialog.setCloseButtonLabel("close", true);
 
     // Entire setup for dialog details
 
@@ -102,7 +103,7 @@ class ParticleUnitGroupRenderer extends Renderer {
 class ParticleUnitRenderer extends Renderer {
   #particle_renderer: ParticlePointRenderer;
   #icon: Renderer;
-  #details_dialog: DialogRenderer;
+  #details_dialog: StandardDialogRenderer;  // maybe make this non-modal to edit outside of the popup?
   #drag_button: ButtonRenderer;
   constructor(particle: Particle, container: BoxSpace) {
     const particle_control_element : HTMLDivElement = document.createElement('div');
@@ -123,10 +124,11 @@ class ParticleUnitRenderer extends Renderer {
     icon.getElement().style.backgroundColor = color;
     return icon;
   }
-  private setupDetailsDialog(id: number): DialogRenderer {
-    const details_dialog = new DialogRenderer(`particle_${id}`);
-    details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
-    details_dialog.getOpenButton().getElement().innerHTML = "expand_content";
+  private setupDetailsDialog(id: number): StandardDialogRenderer {
+    const body = new Renderer(document.createElement('div'));
+    const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle ${id}`, true);
+    details_dialog.setOpenButtonLabel("expand_content", true);
+    details_dialog.setCloseButtonLabel("close", true);
 
     // Entire setup for dialog details
     // IDEA: on open, focus on the particles by overlaying a 

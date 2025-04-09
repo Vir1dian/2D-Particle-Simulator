@@ -95,16 +95,14 @@ class DialogRenderer extends Renderer {
     setOpenButtonLabel(label, is_mdi = false) {
         const open_button = this.getOpenButton();
         if (is_mdi) {
-            open_button.setClassName("material-symbols-sharp");
-            open_button.getElement().style.fontSize = '18px';
+            open_button.setClassName("material-symbols-sharp icon");
         }
         open_button.getElement().textContent = label;
     }
     setCloseButtonLabel(label, is_mdi = false) {
         const close_button = this.getCloseButton();
         if (is_mdi) {
-            close_button.setClassName("material-symbols-sharp");
-            close_button.getElement().style.fontSize = '18px';
+            close_button.setClassName("material-symbols-sharp icon");
         }
         close_button.getElement().textContent = label;
     }
@@ -135,7 +133,7 @@ _DialogRenderer_open_button = new WeakMap(), _DialogRenderer_close_button = new 
  * and appended somewhere manually.
  */
 class StandardDialogRenderer extends DialogRenderer {
-    constructor(body, id, title_text = '') {
+    constructor(body, id, title_text = '', isDraggable = false) {
         super(id);
         _StandardDialogRenderer_body.set(this, void 0);
         const header = document.createElement('header');
@@ -149,6 +147,41 @@ class StandardDialogRenderer extends DialogRenderer {
         this.appendToContent(header);
         __classPrivateFieldSet(this, _StandardDialogRenderer_body, body, "f");
         this.appendToContent(__classPrivateFieldGet(this, _StandardDialogRenderer_body, "f"));
+        this.getElement().addEventListener('click', e => {
+            if (e.target instanceof HTMLDialogElement) {
+                this.closeDialog();
+            }
+        });
+        if (isDraggable)
+            this.setAsDraggable(header, this.getElement());
+    }
+    // From w3schools: https://www.w3schools.com/howto/howto_js_draggable.asp 
+    setAsDraggable(header, dialog) {
+        header.style.cursor = 'move';
+        dialog.classList.add('draggable');
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        header.onmousedown = dragMouseDown;
+        function dragMouseDown(e) {
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        }
+        function elementDrag(e) {
+            console.log(`1: ${pos1}, 2: ${pos2}, 3: ${pos3}, 4: ${pos4}`);
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            dialog.style.top = (dialog.offsetTop - pos2) + "px";
+            dialog.style.left = (dialog.offsetLeft - pos1) + "px";
+        }
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
     }
 }
 _StandardDialogRenderer_body = new WeakMap();

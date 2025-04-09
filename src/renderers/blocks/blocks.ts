@@ -81,16 +81,14 @@ class DialogRenderer extends Renderer {
   setOpenButtonLabel(label: string, is_mdi: boolean = false): void {
     const open_button: ButtonRenderer = this.getOpenButton();
     if (is_mdi) {
-      open_button.setClassName("material-symbols-sharp");
-      open_button.getElement().style.fontSize = '18px';
+      open_button.setClassName("material-symbols-sharp icon");
     }
     open_button.getElement().textContent = label;
   }
   setCloseButtonLabel(label: string, is_mdi: boolean = false): void {
     const close_button: ButtonRenderer = this.getCloseButton();
     if (is_mdi) {
-      close_button.setClassName("material-symbols-sharp");
-      close_button.getElement().style.fontSize = '18px';
+      close_button.setClassName("material-symbols-sharp icon");
     }
     close_button.getElement().textContent = label;
   }
@@ -122,7 +120,7 @@ class DialogRenderer extends Renderer {
  */
 class StandardDialogRenderer extends DialogRenderer {
   #body: Renderer;
-  constructor(body: Renderer, id: string, title_text: string = '') {
+  constructor(body: Renderer, id: string, title_text: string = '', isDraggable: boolean = false) {
     super(id);
     const header: HTMLElement = document.createElement('header');
     header.style.display = 'flex';
@@ -136,6 +134,45 @@ class StandardDialogRenderer extends DialogRenderer {
 
     this.#body = body;
     this.appendToContent(this.#body);
+    this.getElement().addEventListener('click', e => {
+      if (e.target instanceof HTMLDialogElement) {
+        this.closeDialog();
+      }
+    });
+
+    if (isDraggable) this.setAsDraggable(header, this.getElement());
+  }
+  // From w3schools: https://www.w3schools.com/howto/howto_js_draggable.asp 
+  private setAsDraggable(header: HTMLElement, dialog: HTMLElement): void {
+    header.style.cursor = 'move';
+    dialog.classList.add('draggable');
+
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    header.onmousedown = dragMouseDown;
+  
+    function dragMouseDown(e: MouseEvent) {
+      e.preventDefault();
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      document.onmousemove = elementDrag;
+    }
+  
+    function elementDrag(e: MouseEvent) {
+      console.log(`1: ${pos1}, 2: ${pos2}, 3: ${pos3}, 4: ${pos4}`)
+      e.preventDefault();
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      dialog.style.top = (dialog.offsetTop - pos2) + "px";
+      dialog.style.left = (dialog.offsetLeft - pos1) + "px";
+    }
+  
+    function closeDragElement() {
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
   }
 }
 

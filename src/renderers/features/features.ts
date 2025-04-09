@@ -85,7 +85,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   }
   private setupAddParticlesDialog(): StandardDialogRenderer {
     const body = new Renderer(document.createElement('div'));
-    const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles');
+    const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles', true);
     dialog.setOpenButtonLabel("Add Particles");
     dialog.setCloseButtonLabel("close", true);
     
@@ -96,7 +96,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   }
   private setupCreateGroupDialog(): StandardDialogRenderer {
     const body = new Renderer(document.createElement('div'));
-    const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group');
+    const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group', true);
     dialog.setOpenButtonLabel("Create Group");
     dialog.setCloseButtonLabel("close", true);
 

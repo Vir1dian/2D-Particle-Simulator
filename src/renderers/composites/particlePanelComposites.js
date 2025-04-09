@@ -23,7 +23,7 @@ class ParticleUnitGroupRenderer extends Renderer {
         super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
         _ParticleUnitGroupRenderer_particle_group.set(this, void 0);
         _ParticleUnitGroupRenderer_icon.set(this, void 0);
-        _ParticleUnitGroupRenderer_details_dialog.set(this, void 0);
+        _ParticleUnitGroupRenderer_details_dialog.set(this, void 0); // maybe make this non-modal to edit outside of the popup?
         _ParticleUnitGroupRenderer_drag_button.set(this, void 0);
         _ParticleUnitGroupRenderer_unit_list.set(this, void 0);
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_particle_group, group, "f");
@@ -53,9 +53,10 @@ class ParticleUnitGroupRenderer extends Renderer {
     }
     ;
     setupDetailsDialog(group_id) {
-        const details_dialog = new DialogRenderer(`particle_group_${group_id}`);
-        details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
-        details_dialog.getOpenButton().getElement().innerHTML = "expand_content";
+        const body = new Renderer(document.createElement('div'));
+        const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, group_id, true);
+        details_dialog.setOpenButtonLabel("expand_content", true);
+        details_dialog.setCloseButtonLabel("close", true);
         // Entire setup for dialog details
         return details_dialog;
     }
@@ -116,7 +117,7 @@ class ParticleUnitRenderer extends Renderer {
         super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.getID()}`);
         _ParticleUnitRenderer_particle_renderer.set(this, void 0);
         _ParticleUnitRenderer_icon.set(this, void 0);
-        _ParticleUnitRenderer_details_dialog.set(this, void 0);
+        _ParticleUnitRenderer_details_dialog.set(this, void 0); // maybe make this non-modal to edit outside of the popup?
         _ParticleUnitRenderer_drag_button.set(this, void 0);
         // Saved renderers
         __classPrivateFieldSet(this, _ParticleUnitRenderer_particle_renderer, new ParticlePointRenderer(particle, container), "f");
@@ -135,9 +136,10 @@ class ParticleUnitRenderer extends Renderer {
         return icon;
     }
     setupDetailsDialog(id) {
-        const details_dialog = new DialogRenderer(`particle_${id}`);
-        details_dialog.getOpenButton().setClassName("material-symbols-sharp icon");
-        details_dialog.getOpenButton().getElement().innerHTML = "expand_content";
+        const body = new Renderer(document.createElement('div'));
+        const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle ${id}`, true);
+        details_dialog.setOpenButtonLabel("expand_content", true);
+        details_dialog.setCloseButtonLabel("close", true);
         // Entire setup for dialog details
         // IDEA: on open, focus on the particles by overlaying a 
         // translucent div the size of the container over the others
