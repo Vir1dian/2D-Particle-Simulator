@@ -89,7 +89,6 @@ class ParticlePanelRenderer extends Renderer {
         const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles', true);
         dialog.setOpenButtonLabel("Add Particles");
         dialog.setCloseButtonLabel("close", true);
-        // Entire setup for dialog details
         return dialog;
     }
     setupCreateGroupDialog() {
@@ -97,7 +96,6 @@ class ParticlePanelRenderer extends Renderer {
         const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group', true);
         dialog.setOpenButtonLabel("Create Group");
         dialog.setCloseButtonLabel("close", true);
-        // Entire setup for dialog details
         return dialog;
     }
     createButtonsWrapper() {

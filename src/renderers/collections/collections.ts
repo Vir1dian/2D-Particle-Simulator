@@ -387,3 +387,111 @@ class DatalistInputRenderer extends InputRenderer {
     super.remove();
   }
 }
+
+class InputTableRenderer<T extends string | boolean | number | Vector2D> extends TableRenderer {
+  #dependents: Record<string, T>;
+  #inputs: Map<string, InputRenderer | CheckboxInputRenderer | NumberInputRenderer>;
+  #submit_button: ButtonRenderer;  // must be accessed then appended manually
+
+  constructor(dependents: Record<string, T>) {
+    const property_keys: string[] = Object.keys(dependents);
+    super(property_keys.length + 1, 2);
+
+    this.#dependents = dependents;
+    this.#inputs = new Map();
+    this.#submit_button = new ButtonRenderer(this.submitChanges.bind(this));
+
+    property_keys.forEach((key, index) => {
+      const value: T = dependents[key];
+      if (value instanceof Vector2D) {
+        const input_x = new NumberInputRenderer(`input_x_id_${key}`, value.x);
+        const input_y = new NumberInputRenderer(`input_y_id_${key}`, value.y);
+        const input_wrapper = document.createElement('div');
+        input_wrapper.className = "input_wrapper_xy";
+
+        input_x.getLabelElement().innerText = "x:";
+        input_y.getLabelElement().innerText = "y:";
+
+        input_wrapper.appendChild(input_x.getLabelElement());
+        input_x.setParent(input_wrapper);
+        input_wrapper.appendChild(input_y.getLabelElement());
+        input_y.setParent(input_wrapper);
+
+        const label_xy: HTMLLabelElement = document.createElement('label');
+        label_xy.htmlFor = `input_x_id_${key}`;
+        label_xy.innerText = prettifyKey(key);
+        this.getCell(index, 0).setContent(label_xy);
+        this.getCell(index, 1).setContent(input_wrapper);
+        this.#inputs.set(`${key}_x`, input_x);
+        this.#inputs.set(`${key}_y`, input_y);
+      }
+      else {
+        let input: InputRenderer;
+
+        if (typeof value === 'string') input = new InputRenderer(`input_id_${key}`, value);
+        else if (typeof value === 'boolean') input = new CheckboxInputRenderer(`input_id_${key}`, value);
+        else input = new NumberInputRenderer(`input_id_${key}`, value as number);
+
+        input.getLabelElement().innerText = prettifyKey(key);
+        this.getCell(index, 0).setContent(input.getLabelElement()); 
+        this.getCell(index, 1).setContent(input); 
+        this.#inputs.set(key, input);
+      }
+    });
+  }
+  private submitChanges(): void {
+    const changes: Record<string, T> = {};
+    const input_keys: string[] = [...this.#inputs.keys()];
+    for (let i = 0; i < input_keys.length; i++) {
+      const key = input_keys[i];
+      const input = this.#inputs.get(key)!;
+      input.refreshValue();
+  
+      if (key.endsWith("_x")) {  // Detect x component, y is always next
+        const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
+        const next_input = this.#inputs.get(input_keys[++i])!;
+        next_input.refreshValue();
+        
+        const x = parseFloat(input.getValue());
+        const y = parseFloat(next_input.getValue());
+        (changes[baseKey] as Vector2D) = new Vector2D(x, y);
+      } 
+      else if (input instanceof NumberInputRenderer) 
+        (changes[key] as number) = input.getNumberValue();
+      else if (input instanceof CheckboxInputRenderer) 
+        (changes[key] as boolean) = input.getBooleanValue();
+      else if (input instanceof InputRenderer)
+        (changes[key] as string) = input.getValue();
+    }
+    deepmerge(this.#dependents, changes);
+  }
+  refresh(): void {
+    const input_keys: string[] = [...this.#inputs.keys()];
+
+    for (let i = 0; i < input_keys.length; i++) {
+      const key = input_keys[i];
+      const input = this.#inputs.get(key)!;
+
+      if (key.endsWith("_x")) {  // Detect x component, y is always next
+        const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
+        const next_input = this.#inputs.get(input_keys[++i])!;
+
+        const vector = (this.#dependents[baseKey] as Vector2D);
+        
+        (input as NumberInputRenderer).setValue(vector.x.toString());
+        (next_input as NumberInputRenderer).setValue(vector.y.toString());
+      } 
+      else if (input instanceof NumberInputRenderer) 
+        input.setValue(this.#dependents[key].toString())
+      else if (input instanceof CheckboxInputRenderer) 
+        input.setValue(this.#dependents[key] ? "true" : "false");
+      else if (input instanceof InputRenderer)
+        input.setValue(this.#dependents[key] as string);
+    }
+  }
+  remove(): void {
+    this.#inputs.clear();
+    this.#submit_button.remove();
+    super.remove();
+  }
+}

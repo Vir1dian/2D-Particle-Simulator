@@ -61,6 +61,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
 
     // Saved Data
     simulation.add_observer(SimEvent.Overwrite_Particle_Groups, this.overwriteGroupList.bind(this));
+
     this.#simulation = simulation;
     this.#add_particles_dialog = this.setupAddParticlesDialog();
     this.#create_group_dialog = this.setupCreateGroupDialog();
@@ -85,22 +86,22 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   }
   private setupAddParticlesDialog(): StandardDialogRenderer {
     const body = new Renderer(document.createElement('div'));
+    
+
+
     const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles', true);
     dialog.setOpenButtonLabel("Add Particles");
     dialog.setCloseButtonLabel("close", true);
-    
-    // Entire setup for dialog details
-    
 
     return dialog;
   }
   private setupCreateGroupDialog(): StandardDialogRenderer {
     const body = new Renderer(document.createElement('div'));
+
+
     const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group', true);
     dialog.setOpenButtonLabel("Create Group");
     dialog.setCloseButtonLabel("close", true);
-
-    // Entire setup for dialog details
 
     return dialog;
   }

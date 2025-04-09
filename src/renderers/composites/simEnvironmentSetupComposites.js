@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _EnvironmentSetupRenderer_simulation, _EnvironmentSetupRenderer_inputs, _EnvironmentSetupRenderer_input_table, _EnvironmentSetupRenderer_sumbit_button, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button;
+var _EnvironmentSetupRenderer_simulation, _EnvironmentSetupRenderer_inputs, _EnvironmentSetupRenderer_input_table, _EnvironmentSetupRenderer_submit_button, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button;
 /**
  * Helper class for EnvironmentPanelRenderer.
  * Handles user inputs and sends changes to
@@ -24,19 +24,19 @@ class EnvironmentSetupRenderer extends Renderer {
         _EnvironmentSetupRenderer_simulation.set(this, void 0);
         _EnvironmentSetupRenderer_inputs.set(this, void 0); // still have access to the inputs in this way
         _EnvironmentSetupRenderer_input_table.set(this, void 0);
-        _EnvironmentSetupRenderer_sumbit_button.set(this, void 0);
+        _EnvironmentSetupRenderer_submit_button.set(this, void 0);
         // Saved Data
         simulation.add_observer(SimEvent.Update_Environment, this.refreshInputs.bind(this));
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_inputs, new Map(), "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, this.populateInputTable(), "f");
-        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_sumbit_button, new ButtonRenderer(this.submitChanges.bind(this)), "f");
+        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_submit_button, new ButtonRenderer(this.submitChanges.bind(this)), "f");
         // Content
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setParent(simulation_settings);
         const buttons_wrapper = document.createElement('div');
         buttons_wrapper.id = "simsetup_env_button_wrapper";
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").getElement().textContent = "Apply Changes";
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").setParent(buttons_wrapper);
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_submit_button, "f").getElement().textContent = "Apply Changes";
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_submit_button, "f").setParent(buttons_wrapper);
         simulation_settings.appendChild(buttons_wrapper);
     }
     populateInputTable() {
@@ -122,7 +122,7 @@ class EnvironmentSetupRenderer extends Renderer {
         return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f");
     }
     getSubmitButton() {
-        return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f");
+        return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_submit_button, "f");
     }
     refreshInputs() {
         const statics = structuredClone(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics); // statics for now because dynamics is still empty
@@ -148,11 +148,11 @@ class EnvironmentSetupRenderer extends Renderer {
     remove() {
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_inputs, "f").clear();
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").remove();
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_sumbit_button, "f").remove();
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_submit_button, "f").remove();
         super.remove();
     }
 }
-_EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_inputs = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap(), _EnvironmentSetupRenderer_sumbit_button = new WeakMap();
+_EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_inputs = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap(), _EnvironmentSetupRenderer_submit_button = new WeakMap();
 /**
  * Helper class for EnvironmentPanelRenderer.
  * Handles a DatalistInputRenderer to allow

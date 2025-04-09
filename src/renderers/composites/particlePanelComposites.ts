@@ -1,3 +1,7 @@
+class AddParticleWindowRenderer extends Renderer {
+  
+}
+
 /**
  * Helper class for ParticleSetup Renderer.
  * Handles a set of Renderers that represents the 

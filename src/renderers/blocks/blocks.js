@@ -259,6 +259,9 @@ class NumberInputRenderer extends InputRenderer {
         // prevents the setValue base method from attempting to set a non-parsable value into for a type="number"
         super.setValue((_b = (_a = parseFloat(value)) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '0');
     }
+    getNumberValue() {
+        return parseFloat(this.getValue());
+    }
 }
 class CheckboxInputRenderer extends InputRenderer {
     constructor(id, checked = false) {

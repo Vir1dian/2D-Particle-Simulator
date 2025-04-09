@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element;
+var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_dependents, _InputTableRenderer_inputs, _InputTableRenderer_submit_button;
 /**
  *
  */
@@ -394,3 +394,100 @@ class DatalistInputRenderer extends InputRenderer {
     }
 }
 _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_element = new WeakMap();
+class InputTableRenderer extends TableRenderer {
+    constructor(dependents) {
+        const property_keys = Object.keys(dependents);
+        super(property_keys.length + 1, 2);
+        _InputTableRenderer_dependents.set(this, void 0);
+        _InputTableRenderer_inputs.set(this, void 0);
+        _InputTableRenderer_submit_button.set(this, void 0); // must be accessed then appended manually
+        __classPrivateFieldSet(this, _InputTableRenderer_dependents, dependents, "f");
+        __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
+        __classPrivateFieldSet(this, _InputTableRenderer_submit_button, new ButtonRenderer(this.submitChanges.bind(this)), "f");
+        property_keys.forEach((key, index) => {
+            const value = dependents[key];
+            if (value instanceof Vector2D) {
+                const input_x = new NumberInputRenderer(`input_x_id_${key}`, value.x);
+                const input_y = new NumberInputRenderer(`input_y_id_${key}`, value.y);
+                const input_wrapper = document.createElement('div');
+                input_wrapper.className = "input_wrapper_xy";
+                input_x.getLabelElement().innerText = "x:";
+                input_y.getLabelElement().innerText = "y:";
+                input_wrapper.appendChild(input_x.getLabelElement());
+                input_x.setParent(input_wrapper);
+                input_wrapper.appendChild(input_y.getLabelElement());
+                input_y.setParent(input_wrapper);
+                const label_xy = document.createElement('label');
+                label_xy.htmlFor = `input_x_id_${key}`;
+                label_xy.innerText = prettifyKey(key);
+                this.getCell(index, 0).setContent(label_xy);
+                this.getCell(index, 1).setContent(input_wrapper);
+                __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(`${key}_x`, input_x);
+                __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(`${key}_y`, input_y);
+            }
+            else {
+                let input;
+                if (typeof value === 'string')
+                    input = new InputRenderer(`input_id_${key}`, value);
+                else if (typeof value === 'boolean')
+                    input = new CheckboxInputRenderer(`input_id_${key}`, value);
+                else
+                    input = new NumberInputRenderer(`input_id_${key}`, value);
+                input.getLabelElement().innerText = prettifyKey(key);
+                this.getCell(index, 0).setContent(input.getLabelElement());
+                this.getCell(index, 1).setContent(input);
+                __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(key, input);
+            }
+        });
+    }
+    submitChanges() {
+        const changes = {};
+        const input_keys = [...__classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").keys()];
+        for (let i = 0; i < input_keys.length; i++) {
+            const key = input_keys[i];
+            const input = __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").get(key);
+            input.refreshValue();
+            if (key.endsWith("_x")) { // Detect x component, y is always next
+                const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
+                const next_input = __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").get(input_keys[++i]);
+                next_input.refreshValue();
+                const x = parseFloat(input.getValue());
+                const y = parseFloat(next_input.getValue());
+                changes[baseKey] = new Vector2D(x, y);
+            }
+            else if (input instanceof NumberInputRenderer)
+                changes[key] = input.getNumberValue();
+            else if (input instanceof CheckboxInputRenderer)
+                changes[key] = input.getBooleanValue();
+            else if (input instanceof InputRenderer)
+                changes[key] = input.getValue();
+        }
+        deepmerge(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f"), changes);
+    }
+    refresh() {
+        const input_keys = [...__classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").keys()];
+        for (let i = 0; i < input_keys.length; i++) {
+            const key = input_keys[i];
+            const input = __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").get(key);
+            if (key.endsWith("_x")) { // Detect x component, y is always next
+                const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
+                const next_input = __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").get(input_keys[++i]);
+                const vector = __classPrivateFieldGet(this, _InputTableRenderer_dependents, "f")[baseKey];
+                input.setValue(vector.x.toString());
+                next_input.setValue(vector.y.toString());
+            }
+            else if (input instanceof NumberInputRenderer)
+                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f")[key].toString());
+            else if (input instanceof CheckboxInputRenderer)
+                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f")[key] ? "true" : "false");
+            else if (input instanceof InputRenderer)
+                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f")[key]);
+        }
+    }
+    remove() {
+        __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").clear();
+        __classPrivateFieldGet(this, _InputTableRenderer_submit_button, "f").remove();
+        super.remove();
+    }
+}
+_InputTableRenderer_dependents = new WeakMap(), _InputTableRenderer_inputs = new WeakMap(), _InputTableRenderer_submit_button = new WeakMap();
