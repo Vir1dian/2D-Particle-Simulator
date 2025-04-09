@@ -77,20 +77,26 @@ class ParticlePanelRenderer extends Renderer {
         header.innerHTML = "Particle Setup";
         particle_panel.appendChild(header);
         particle_panel.appendChild(this.createButtonsWrapper());
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_add_particles_dialog, "f").setParent(particle_panel);
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_create_group_dialog, "f").setParent(particle_panel);
         const list_wrapper = document.createElement('div');
         list_wrapper.id = "parsetup_groups_wrapper";
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").setParent(list_wrapper);
         particle_panel.appendChild(list_wrapper);
     }
     setupAddParticlesDialog() {
-        const dialog = new DialogRenderer('parsetup_add_particle_dialog');
-        dialog.getOpenButton().getElement().textContent = "Add Particles";
+        const body = new Renderer(document.createElement('div'));
+        const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles');
+        dialog.setOpenButtonLabel("Add Particles");
+        dialog.setCloseButtonLabel("close", true);
         // Entire setup for dialog details
         return dialog;
     }
     setupCreateGroupDialog() {
-        const dialog = new DialogRenderer('parsetup_add_group_dialog');
-        dialog.getOpenButton().getElement().textContent = "Create Group";
+        const body = new Renderer(document.createElement('div'));
+        const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group');
+        dialog.setOpenButtonLabel("Create Group");
+        dialog.setCloseButtonLabel("close", true);
         // Entire setup for dialog details
         return dialog;
     }

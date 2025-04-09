@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element;
+var _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _StandardDialogRenderer_body, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element;
 /**
  * Stores an HTMLButtonElement, maintains a callback
  * and an event. Uses only one eventlistener at a
@@ -67,12 +67,15 @@ class DialogRenderer extends Renderer {
         _DialogRenderer_open_button.set(this, void 0);
         _DialogRenderer_close_button.set(this, void 0);
         _DialogRenderer_content_wrapper.set(this, void 0);
-        const open_button = new ButtonRenderer(this.openDialog);
-        const close_button = new ButtonRenderer(this.closeDialog);
+        const open_button = new ButtonRenderer(this.openDialog.bind(this));
+        const close_button = new ButtonRenderer(this.closeDialog.bind(this));
         const content_wrapper = new Renderer(document.createElement('div'), 'dialog_wrapper', `dialog_wrapper_id${id}`);
         __classPrivateFieldSet(this, _DialogRenderer_open_button, open_button, "f");
         __classPrivateFieldSet(this, _DialogRenderer_close_button, close_button, "f");
         __classPrivateFieldSet(this, _DialogRenderer_content_wrapper, content_wrapper, "f");
+        open_button.getElement().textContent = `Open ${id}`;
+        close_button.getElement().textContent = `Close ${id}`;
+        this.setChild(__classPrivateFieldGet(this, _DialogRenderer_content_wrapper, "f"));
     }
     getElement() {
         return super.getElement();
@@ -88,6 +91,22 @@ class DialogRenderer extends Renderer {
         else {
             wrapper.appendChild(element);
         }
+    }
+    setOpenButtonLabel(label, is_mdi = false) {
+        const open_button = this.getOpenButton();
+        if (is_mdi) {
+            open_button.setClassName("material-symbols-sharp");
+            open_button.getElement().style.fontSize = '18px';
+        }
+        open_button.getElement().textContent = label;
+    }
+    setCloseButtonLabel(label, is_mdi = false) {
+        const close_button = this.getCloseButton();
+        if (is_mdi) {
+            close_button.setClassName("material-symbols-sharp");
+            close_button.getElement().style.fontSize = '18px';
+        }
+        close_button.getElement().textContent = label;
     }
     getOpenButton() {
         return __classPrivateFieldGet(this, _DialogRenderer_open_button, "f");
@@ -109,6 +128,30 @@ class DialogRenderer extends Renderer {
     }
 }
 _DialogRenderer_open_button = new WeakMap(), _DialogRenderer_close_button = new WeakMap(), _DialogRenderer_content_wrapper = new WeakMap();
+/**
+ * An extension of DialogRenderer with basic styling
+ * for a title and a close button, with a space for
+ * a renderer body. The open button must be accessed
+ * and appended somewhere manually.
+ */
+class StandardDialogRenderer extends DialogRenderer {
+    constructor(body, id, title_text = '') {
+        super(id);
+        _StandardDialogRenderer_body.set(this, void 0);
+        const header = document.createElement('header');
+        header.style.display = 'flex';
+        header.style.justifyContent = 'space-between';
+        header.style.alignItems = 'center';
+        const title = document.createElement('span');
+        title.innerHTML = title_text;
+        header.appendChild(title);
+        this.getCloseButton().setParent(header);
+        this.appendToContent(header);
+        __classPrivateFieldSet(this, _StandardDialogRenderer_body, body, "f");
+        this.appendToContent(__classPrivateFieldGet(this, _StandardDialogRenderer_body, "f"));
+    }
+}
+_StandardDialogRenderer_body = new WeakMap();
 class InputRenderer extends Renderer {
     constructor(id, value = "", name = "", is_disabled = false) {
         const input = document.createElement('input');

@@ -39,12 +39,16 @@ class ParticleUnitGroupRenderer extends Renderer {
         header.appendChild(this.createTitleWrapper(group.getGrouping().group_id));
         header.appendChild(this.createButtonsWrapper());
         particle_group_element.appendChild(header);
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_details_dialog, "f").setParent(particle_group_element);
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").setParent(particle_group_element);
     }
     createIcon(color) {
         const icon = new Renderer(document.createElement("span"));
         icon.setClassName("parsetup_group_icon");
-        icon.getElement().style.backgroundColor = color;
+        if (__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f").getGrouping().group_id === DEFAULT_GROUPING.group_id)
+            icon.getElement().style.display = 'none';
+        else
+            icon.getElement().style.backgroundColor = color;
         return icon;
     }
     ;
@@ -144,7 +148,7 @@ class ParticleUnitRenderer extends Renderer {
     setupDragButton() {
         const drag_button = new ButtonRenderer(() => {
             // Draggable button WIP (see Drag and Drop API)
-        }, 'drag' // Draggable button WIP (see Drag and Drop API)
+        }, 'drag' // Draggable button WIP (see Drag and Drop API) // might have to do manually
         );
         drag_button.setClassName("material-symbols-sharp icon drag_icon");
         drag_button.getElement().innerHTML = "drag_handle";

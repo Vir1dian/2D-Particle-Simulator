@@ -51,8 +51,8 @@ class EnvironmentPanelRenderer extends Renderer {
  */
 class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, dialogs
   #simulation: Simulation;
-  #add_particles_dialog: DialogRenderer;
-  #create_group_dialog: DialogRenderer;
+  #add_particles_dialog: StandardDialogRenderer;
+  #create_group_dialog: StandardDialogRenderer;
   #group_list: ListRenderer<ParticleUnitGroupRenderer>;
 
   constructor(simulation: Simulation) {
@@ -75,23 +75,30 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     particle_panel.appendChild(header);
 
     particle_panel.appendChild(this.createButtonsWrapper());
+    this.#add_particles_dialog.setParent(particle_panel);
+    this.#create_group_dialog.setParent(particle_panel);
 
     const list_wrapper: HTMLDivElement = document.createElement('div');
     list_wrapper.id = "parsetup_groups_wrapper";
     this.#group_list.setParent(list_wrapper);
     particle_panel.appendChild(list_wrapper);
   }
-  private setupAddParticlesDialog(): DialogRenderer {
-    const dialog = new DialogRenderer('parsetup_add_particle_dialog');
-    dialog.getOpenButton().getElement().textContent = "Add Particles";
+  private setupAddParticlesDialog(): StandardDialogRenderer {
+    const body = new Renderer(document.createElement('div'));
+    const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles');
+    dialog.setOpenButtonLabel("Add Particles");
+    dialog.setCloseButtonLabel("close", true);
     
     // Entire setup for dialog details
+    
 
     return dialog;
   }
-  private setupCreateGroupDialog(): DialogRenderer {
-    const dialog = new DialogRenderer('parsetup_add_group_dialog');
-    dialog.getOpenButton().getElement().textContent = "Create Group";
+  private setupCreateGroupDialog(): StandardDialogRenderer {
+    const body = new Renderer(document.createElement('div'));
+    const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group');
+    dialog.setOpenButtonLabel("Create Group");
+    dialog.setCloseButtonLabel("close", true);
 
     // Entire setup for dialog details
 

@@ -29,12 +29,15 @@ class ParticleUnitGroupRenderer extends Renderer {
     header.appendChild(this.createTitleWrapper(group.getGrouping().group_id));
     header.appendChild(this.createButtonsWrapper());
     particle_group_element.appendChild(header);
+    this.#details_dialog.setParent(particle_group_element);
     this.#unit_list.setParent(particle_group_element);
   }
   private createIcon(color: string): Renderer {
     const icon = new Renderer(document.createElement("span"));
     icon.setClassName("parsetup_group_icon");
-    icon.getElement().style.backgroundColor = color;
+    if (this.#particle_group.getGrouping().group_id === DEFAULT_GROUPING.group_id)
+      icon.getElement().style.display = 'none';
+    else icon.getElement().style.backgroundColor = color;
     return icon;
   };
   private setupDetailsDialog(group_id: string): DialogRenderer {
@@ -138,7 +141,7 @@ class ParticleUnitRenderer extends Renderer {
       ()=>{
         // Draggable button WIP (see Drag and Drop API)
       }, 
-      'drag'  // Draggable button WIP (see Drag and Drop API)
+      'drag'  // Draggable button WIP (see Drag and Drop API) // might have to do manually
     )
     drag_button.setClassName("material-symbols-sharp icon drag_icon");
     drag_button.getElement().innerHTML = "drag_handle";

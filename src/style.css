@@ -178,6 +178,22 @@ button:hover .tooltip_text {
   visibility: visible;
   opacity: 1;
 }
+dialog {
+  border: none;
+  justify-self: center;
+  align-self: center;
+}
+dialog::backdrop {
+  background-color:rgba(44, 62, 80, 0.021);
+}
+.dialog_wrapper {
+  min-width: 200px;
+  min-height: 150px;
+  border: solid 1px gray;
+  border-radius: 4px;
+  background-color: white;
+  padding: 8px;
+}
 
 .container_element {
   margin-inline: auto;

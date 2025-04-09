@@ -52,12 +52,17 @@ class DialogRenderer extends Renderer {
     const dialog: HTMLDialogElement = document.createElement('dialog');
     dialog.id = `dialog_id${id}`;
     super(dialog, '', id);
-    const open_button: ButtonRenderer = new ButtonRenderer(this.openDialog);
-    const close_button: ButtonRenderer = new ButtonRenderer(this.closeDialog);
+    const open_button: ButtonRenderer = new ButtonRenderer(this.openDialog.bind(this));
+    const close_button: ButtonRenderer = new ButtonRenderer(this.closeDialog.bind(this));
     const content_wrapper: Renderer = new Renderer(document.createElement('div'), 'dialog_wrapper', `dialog_wrapper_id${id}`);
+
     this.#open_button = open_button;
     this.#close_button = close_button;
     this.#content_wrapper = content_wrapper;
+
+    open_button.getElement().textContent = `Open ${id}`;
+    close_button.getElement().textContent = `Close ${id}`;
+    this.setChild(this.#content_wrapper);
   }
   getElement(): HTMLDialogElement {
     return super.getElement() as HTMLDialogElement;
@@ -72,6 +77,22 @@ class DialogRenderer extends Renderer {
     } else {
       wrapper.appendChild(element);
     }
+  }
+  setOpenButtonLabel(label: string, is_mdi: boolean = false): void {
+    const open_button: ButtonRenderer = this.getOpenButton();
+    if (is_mdi) {
+      open_button.setClassName("material-symbols-sharp");
+      open_button.getElement().style.fontSize = '18px';
+    }
+    open_button.getElement().textContent = label;
+  }
+  setCloseButtonLabel(label: string, is_mdi: boolean = false): void {
+    const close_button: ButtonRenderer = this.getCloseButton();
+    if (is_mdi) {
+      close_button.setClassName("material-symbols-sharp");
+      close_button.getElement().style.fontSize = '18px';
+    }
+    close_button.getElement().textContent = label;
   }
   getOpenButton(): ButtonRenderer {
     return this.#open_button;
@@ -90,6 +111,31 @@ class DialogRenderer extends Renderer {
     this.#close_button.remove();
     this.#content_wrapper.remove();
     super.remove();
+  }
+}
+
+/**
+ * An extension of DialogRenderer with basic styling
+ * for a title and a close button, with a space for
+ * a renderer body. The open button must be accessed 
+ * and appended somewhere manually.
+ */
+class StandardDialogRenderer extends DialogRenderer {
+  #body: Renderer;
+  constructor(body: Renderer, id: string, title_text: string = '') {
+    super(id);
+    const header: HTMLElement = document.createElement('header');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.alignItems = 'center';
+    const title : HTMLSpanElement = document.createElement('span');
+    title.innerHTML = title_text;
+    header.appendChild(title);
+    this.getCloseButton().setParent(header);
+    this.appendToContent(header);
+
+    this.#body = body;
+    this.appendToContent(this.#body);
   }
 }
 
