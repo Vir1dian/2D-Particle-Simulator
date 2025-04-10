@@ -394,6 +394,14 @@ class DatalistInputRenderer extends InputRenderer {
     }
 }
 _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_element = new WeakMap();
+/**
+ * Handles a table of inputs for a string record-type object.
+ * Left column contains prettified key names of the object,
+ * right column contains input fields for matching value
+ * data types. Stores the object for read-only operations,
+ * a map of renderers for inputs, and a submit_button that
+ * must be appended and configured manually.
+ */
 class InputTableRenderer extends TableRenderer {
     constructor(dependents) {
         const property_keys = Object.keys(dependents);
@@ -403,7 +411,7 @@ class InputTableRenderer extends TableRenderer {
         _InputTableRenderer_submit_button.set(this, void 0); // must be accessed then appended manually
         __classPrivateFieldSet(this, _InputTableRenderer_dependents, dependents, "f");
         __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
-        __classPrivateFieldSet(this, _InputTableRenderer_submit_button, new ButtonRenderer(this.submitChanges.bind(this)), "f");
+        __classPrivateFieldSet(this, _InputTableRenderer_submit_button, new ButtonRenderer(() => { }), "f");
         property_keys.forEach((key, index) => {
             const value = dependents[key];
             let input;
@@ -423,7 +431,7 @@ class InputTableRenderer extends TableRenderer {
             __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(key, input);
         });
     }
-    submitChanges() {
+    prepareChanges() {
         const changes = {};
         for (const [key, input] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
             input.refreshValue();
@@ -436,7 +444,7 @@ class InputTableRenderer extends TableRenderer {
             else if (input instanceof Vector2DInputRenderer)
                 changes[key] = input.getValue();
         }
-        deepmerge(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f"), changes);
+        return changes;
     }
     refresh() {
         for (const [key, input] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {

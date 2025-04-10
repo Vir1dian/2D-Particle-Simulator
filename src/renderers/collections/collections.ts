@@ -388,6 +388,14 @@ class DatalistInputRenderer extends InputRenderer {
   }
 }
 
+/**
+ * Handles a table of inputs for a string record-type object. 
+ * Left column contains prettified key names of the object, 
+ * right column contains input fields for matching value
+ * data types. Stores the object for read-only operations,
+ * a map of renderers for inputs, and a submit_button that
+ * must be appended and configured manually.
+ */
 class InputTableRenderer<T extends string | boolean | number | Vector2D> extends TableRenderer {
   #dependents: Record<string, T>;
   #inputs: Map<string, InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer>;
@@ -399,7 +407,7 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D> extends
 
     this.#dependents = dependents;
     this.#inputs = new Map();
-    this.#submit_button = new ButtonRenderer(this.submitChanges.bind(this));
+    this.#submit_button = new ButtonRenderer(() => {});
 
     property_keys.forEach((key, index) => {
       const value: T = dependents[key];
@@ -417,7 +425,7 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D> extends
       this.#inputs.set(key, input!);
     });
   }
-  private submitChanges(): void {
+  prepareChanges(): Record<string, T> {
     const changes: Record<string, T> = {};
     for (const [key, input] of this.#inputs) {
       input.refreshValue();
@@ -431,7 +439,7 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D> extends
       else if (input instanceof Vector2DInputRenderer)
         (changes[key] as Vector2D) = input.getValue();
     }
-    deepmerge(this.#dependents, changes);
+    return changes;
   }
   refresh(): void {
     for (const [key, input] of this.#inputs) {

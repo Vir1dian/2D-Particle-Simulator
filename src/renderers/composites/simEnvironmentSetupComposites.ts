@@ -6,152 +6,44 @@
  */
 class EnvironmentSetupRenderer extends Renderer {
   #simulation: Simulation;
-  #inputs: Map<string, InputRenderer | NumberInputRenderer>;  // still have access to the inputs in this way
-  #input_table: TableRenderer;
-  #sumbit_button: ButtonRenderer;
+  #input_table: InputTableRenderer<number | Vector2D>;
 
   constructor(simulation: Simulation) {
-    const simulation_settings: HTMLDivElement = document.createElement('div');
-    super(simulation_settings, '', 'simsetup_global_variables_wrapper');
+    const environment_setup_wrapper: HTMLDivElement = document.createElement('div');
+    super(environment_setup_wrapper, '', 'simsetup_global_variables_wrapper');
 
     // Saved Data
-    simulation.add_observer(SimEvent.Update_Environment, this.refreshInputs.bind(this));
+    simulation.add_observer(SimEvent.Update_Environment, this.refresh);
     this.#simulation = simulation;
-    this.#inputs = new Map();
-    this.#input_table = this.populateInputTable();
-    this.#sumbit_button = new ButtonRenderer(this.submitChanges.bind(this));
+    this.#input_table = new InputTableRenderer(simulation.getEnvironment().statics!);  // statics for now because dynamics is still empty
+    this.#input_table.getSubmitButton().setCallback(this.submitChanges.bind(this));  // Manual config of submitButton so setPreset is used explicitly
 
     // Content
-    this.#input_table.setParent(simulation_settings);
+    this.#input_table.setParent(environment_setup_wrapper);
     const buttons_wrapper: HTMLDivElement = document.createElement('div');
     buttons_wrapper.id = "simsetup_env_button_wrapper";
-    this.#sumbit_button.getElement().textContent = "Apply Changes";
-    this.#sumbit_button.setParent(buttons_wrapper);
-    simulation_settings.appendChild(buttons_wrapper);
-  }
-  private populateInputTable(): TableRenderer {
-    const statics = this.#simulation.getEnvironment().statics;  // statics for now because dynamics is still empty
-    if (!statics) return new TableRenderer();
-
-    const env_setup_data: string[] = Object.keys(statics);
-
-    // 1 extra row for table headings, 2 columns for labels and inputs
-    const input_table: TableRenderer = new TableRenderer(env_setup_data.length + 1, 2)  
-    
-    env_setup_data.forEach((key, index) => {
-      const value: number | Vector2D | undefined = statics[key as keyof typeof statics];
-      if (typeof value === 'number') {
-        const input = new NumberInputRenderer(`input_id_${key}`, value);
-        input.getLabelElement().innerText = prettifyKey(key);
-        input_table.getCell(index, 0).setContent(input.getLabelElement()); 
-        input_table.getCell(index, 1).setContent(input); 
-        this.#inputs.set(key, input);
-      }
-      else if (isObject(value) && "x" in value && "y" in value) {
-        const input_x = new NumberInputRenderer(`input_x_id_${key}`, value.x);
-        const input_y = new NumberInputRenderer(`input_y_id_${key}`, value.y);
-        const input_wrapper = document.createElement('div');
-        input_wrapper.className = "input_wrapper_xy";
-
-        input_x.getLabelElement().innerText = "x:";
-        input_y.getLabelElement().innerText = "y:";
-
-        input_wrapper.appendChild(input_x.getLabelElement());
-        input_x.setParent(input_wrapper);
-        input_wrapper.appendChild(input_y.getLabelElement());
-        input_y.setParent(input_wrapper);
-
-        const label_xy: HTMLLabelElement = document.createElement('label');
-        label_xy.htmlFor = `input_x_id_${key}`;
-        label_xy.innerText = prettifyKey(key);
-        input_table.getCell(index, 0).setContent(label_xy);
-        input_table.getCell(index, 1).setContent(input_wrapper);
-        this.#inputs.set(`${key}_x`, input_x);
-        this.#inputs.set(`${key}_y`, input_y);
-      }
-    });
-
-    return input_table;
+    this.#input_table.getSubmitButton().getElement().textContent = "Apply Changes";
+    this.#input_table.getSubmitButton().setParent(buttons_wrapper);
+    environment_setup_wrapper.appendChild(buttons_wrapper);
   }
   private submitChanges(): void {
-    const statics = structuredClone(this.#simulation.getEnvironment().statics!);  // statics for now because dynamics is still empty
-    const changes: SimPreset = { environment: { statics: {}, dynamics: {} } };
-    const input_keys: string[] = [...this.#inputs.keys()];  
-    // Properties of type Vector2D in this.#inputs are represented by two InputRenderers instead of one,
-    // one for the x component, and the other for the y component, one after the other.
-
-    for (let i = 0; i < input_keys.length; i++) {
-      const key = input_keys[i];
-      const input = this.#inputs.get(key)!;
-      input.refreshValue();
-  
-      if (key.endsWith("_x")) {  // Detect x component, y is always next
-        const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
-        const next_input = this.#inputs.get(input_keys[++i])!;
-        next_input.refreshValue();
-        
-        const x = parseFloat(input.getValue());
-        const y = parseFloat(next_input.getValue());
-
-        if (
-          (statics[baseKey as keyof typeof statics] as Vector2D).x === x && 
-          (statics[baseKey as keyof typeof statics] as Vector2D).y === y
-        ) continue;
-  
-        if (!changes.environment) continue;
-        if (!changes.environment.statics) continue;
-        (changes.environment.statics[baseKey as keyof typeof statics] as {x: number, y: number}) = { x, y };
+    const changes: SimPreset = { 
+      environment: { 
+        statics: this.#input_table.prepareChanges(), 
+        dynamics: {} 
       } 
-      else {
-        const val = parseFloat(input.getValue());
-        if (statics[key as keyof typeof statics] as number === val) continue;
-
-        if (!changes.environment) continue;
-        if (!changes.environment.statics) continue;
-        (changes.environment!.statics[key as keyof typeof statics] as number) = val;
-      }
-    }
+    };
     this.#simulation.setPreset(changes);
   }
 
-  getInputs(): Map<string, InputRenderer | NumberInputRenderer> {
-    return this.#inputs;
-  }
   getTable(): TableRenderer {
     return this.#input_table;
   }
-  getSubmitButton(): ButtonRenderer {
-    return this.#sumbit_button;
-  }
-  refreshInputs(): void {
-    const statics = structuredClone(this.#simulation.getEnvironment().statics!);  // statics for now because dynamics is still empty
-    const input_keys: string[] = [...this.#inputs.keys()];  
-    // Properties of type Vector2D in this.#inputs are represented by two InputRenderers instead of one,
-    // one for the x component, and the other for the y component, one after the other.
-
-    for (let i = 0; i < input_keys.length; i++) {
-      const key = input_keys[i];
-      const input = this.#inputs.get(key)!;
-  
-      if (key.endsWith("_x")) {  // Detect x component, y is always next
-        const baseKey = key.slice(0, -2); // Remove "_x" to get the property name
-        const next_input = this.#inputs.get(input_keys[++i])!;
-
-        const vector = (statics[baseKey as keyof typeof statics] as Vector2D);
-        
-        input.setValue(vector.x.toString());
-        next_input.setValue(vector.y.toString());
-      } 
-      else {
-        const scalar = statics[key as keyof typeof statics] as number;
-        input.setValue(scalar.toString());
-      }
-    }
+  refresh(): void {
+    this.#input_table.refresh();
   }
   remove(): void {
-    this.#inputs.clear();
     this.#input_table.remove();
-    this.#sumbit_button.remove();
     super.remove();
   }
 }
