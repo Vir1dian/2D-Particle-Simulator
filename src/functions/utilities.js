@@ -22,35 +22,65 @@ function prettifyKey(key) {
  * @param {T} target Target object
  * @param {Partial<T>[]} sources Objects to merge into target
  */
-function deepmerge(target, ...sources) {
+function deepmergeCustom(target, ...sources) {
     if (!sources.length)
         return target;
     const source = sources.shift();
     if (source && isObject(target) && isObject(source)) {
         for (const key in source) {
-            if (isMap(source[key])) {
-                if (!isMap(target[key]))
+            const source_value = source[key];
+            const target_value = target[key];
+            if (source_value instanceof Map) {
+                if (!(target_value instanceof Map))
                     target[key] = new Map();
-                source[key].forEach((mapValue, mapKey) => {
-                    target[key].set(mapKey, mapValue);
+                source_value.forEach((map_value, map_key) => {
+                    target[key].set(map_key, map_value);
                 });
             }
-            // else if ((source as any)[key] instanceof Vector2D) {
-            //   // Ensure the Vector2D object remains a proper instance
-            //   console.log("found a Vector2D");
-            //   target[key] = new Vector2D(source[key].x, source[key].y) as any;
-            // }
+            else if (isVectorLike(source_value)) {
+                // If already a Vector2D instance, clone it; else, revive it
+                target[key] = new Vector2D(source_value.x, source_value.y);
+            }
             else if (isObject(source[key])) {
                 if (!isObject(target[key]))
                     target[key] = {};
-                deepmerge(target[key], source[key]);
+                deepmergeCustom(target[key], source[key]);
             }
             else {
                 target[key] = source[key];
             }
         }
     }
-    return deepmerge(target, ...sources);
+    return deepmergeCustom(target, ...sources);
+}
+function structuredCloneCustom(input) {
+    return cloneRecursive(input);
+}
+function cloneRecursive(value) {
+    if (value === null || typeof value !== 'object') {
+        return value; // Primitive values
+    }
+    else if (value instanceof Vector2D) {
+        return new Vector2D(value.x, value.y);
+    }
+    else if (isVectorLike(value)) {
+        return new Vector2D(value.x, value.y);
+    }
+    else if (value instanceof Map) {
+        const map_clone = new Map();
+        value.forEach((v, k) => {
+            map_clone.set(cloneRecursive(k), cloneRecursive(v));
+        });
+        return map_clone;
+    }
+    else if (Array.isArray(value)) {
+        return value.map(cloneRecursive);
+    }
+    const clone = {};
+    for (const key in value) {
+        clone[key] = cloneRecursive(value[key]);
+    }
+    return clone;
 }
 /**
  * Checks if a value is a defined object and not an array.
@@ -59,9 +89,9 @@ function isObject(item) {
     return !!item && typeof item === 'object' && !Array.isArray(item);
 }
 /**
- * Type guard to check if a value is a Map.
+ * Checks if a value is similar to a Vector
  */
-function isMap(item) {
-    return item instanceof Map;
+function isVectorLike(value) {
+    return isObject(value) && typeof value.x === 'number' && typeof value.y === 'number';
 }
 const INPUT_PREFIX = 'input_id_';

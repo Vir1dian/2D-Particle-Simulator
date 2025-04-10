@@ -22,18 +22,9 @@ class Simulation {
   #observers: Map<SimEvent, Set<() => void>>;  // using a map with a set to avoid duplicate callbacks for an event type
 
   constructor(preset: SimPreset = {}) {
-    /*
-    WARNING!
-    Potential issue for the future, structuredClone flattens all 
-    class types in the SimPreset objects, such as values of
-    type Vector2D. Currently, all Vector2D values that get flattened
-    so far do not require the class methods, which is okay for now.
-    Vector2D properies of particles stored in Simulation are thankfully
-    still fully Vector2D's since they are instantiated afterward.
-    */
-    const preset_clone: SimPreset = structuredClone(preset);  
-    const default_clone: SimPreset = structuredClone(DEFAULT_PRESET);
-    const final_preset: SimPreset = deepmerge(default_clone, preset_clone);
+    const preset_clone: SimPreset = structuredCloneCustom(preset);  
+    const default_clone: SimPreset = structuredCloneCustom(DEFAULT_PRESET);
+    const final_preset: SimPreset = deepmergeCustom(default_clone, preset_clone);
     this.#container = final_preset.container as BoxSpace;
     this.#environment = final_preset.environment as SimEnvironment;
     this.#config = final_preset.config as SimConfig;
@@ -45,6 +36,7 @@ class Simulation {
     Object.keys(SimEvent).forEach((_, event) => {
       this.#observers.set(event, new Set());
     });
+    console.log(this.#particle_groups);
   }
   // Setters & Getters
   add_observer(event: SimEvent, callback: () => void): void {
@@ -73,20 +65,20 @@ class Simulation {
       config: this.#config
     }
 
-    const preset_clone = structuredClone(preset);
+    const preset_clone = structuredCloneCustom(preset);
 
     if (preset.container) {
-      this.#container = deepmerge(current_properties.container!, preset_clone.container!)
+      this.#container = deepmergeCustom(current_properties.container!, preset_clone.container!)
       this.notify_observers(SimEvent.Update_Container);
       console.log('update_container');
     }
     if (preset.environment) {
-      this.#environment = deepmerge(current_properties.environment!, preset_clone.environment!)
+      this.#environment = deepmergeCustom(current_properties.environment!, preset_clone.environment!)
       this.notify_observers(SimEvent.Update_Environment);
       console.log('update_environment');
     }
     if (preset.config) {
-      this.#config = deepmerge(current_properties.config!, preset_clone.config!)
+      this.#config = deepmergeCustom(current_properties.config!, preset_clone.config!)
       this.notify_observers(SimEvent.Update_Config);
       console.log('update_config');
     }

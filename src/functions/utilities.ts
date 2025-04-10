@@ -23,33 +23,70 @@ function prettifyKey(key: string): string {
  * @param {T} target Target object
  * @param {Partial<T>[]} sources Objects to merge into target
  */
-function deepmerge<T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T {
+function deepmergeCustom<T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T {
   if (!sources.length) return target;
   const source = sources.shift();
   if (source && isObject(target) && isObject(source)) {
     for (const key in source) {
-      if (isMap(source[key])) {
-        if (!isMap(target[key])) target[key] = new Map() as any;
-        (source[key] as Map<any, any>).forEach((mapValue, mapKey) => {
-          (target[key] as Map<any, any>).set(mapKey, mapValue);
+      const source_value = source[key];
+      const target_value = target[key];
+
+      if ((source_value as any) instanceof Map) {
+        if (!((target_value as any) instanceof Map)) target[key] = new Map() as any;
+        (source_value as Map<any, any>).forEach((map_value, map_key) => {
+          (target[key] as Map<any, any>).set(map_key, map_value);
         });
       }
-      // else if ((source as any)[key] instanceof Vector2D) {
-      //   // Ensure the Vector2D object remains a proper instance
-      //   console.log("found a Vector2D");
-      //   target[key] = new Vector2D(source[key].x, source[key].y) as any;
-      // }
+      else if (isVectorLike(source_value)) {
+        // If already a Vector2D instance, clone it; else, revive it
+        (target[key] as Vector2D) = new Vector2D((source_value as any).x, (source_value as any).y);
+      }
       else if (isObject(source[key])) {
         if (!isObject(target[key])) target[key] = {} as any;
-        deepmerge(target[key], source[key] as any);
-      } else {
+        deepmergeCustom(target[key], source[key] as any);
+      } 
+      else {
         target[key] = source[key] as any;
       }
     }
   }
 
-  return deepmerge(target, ...sources);
+  return deepmergeCustom(target, ...sources);
 }
+function structuredCloneCustom<T>(input: T): T {
+  return cloneRecursive(input);
+}
+
+function cloneRecursive(value: any): any {
+  if (value === null || typeof value !== 'object') {
+    return value; // Primitive values
+  }
+  else if (value instanceof Vector2D) {
+    return new Vector2D(value.x, value.y);
+  }
+  else if (isVectorLike(value)) {
+    return new Vector2D(value.x, value.y);
+  }
+  else if (value instanceof Map) {
+    const map_clone = new Map();
+    value.forEach((v, k) => {
+      map_clone.set(cloneRecursive(k), cloneRecursive(v));
+    });
+    return map_clone;
+  }
+  else if (Array.isArray(value)) {
+    return value.map(cloneRecursive);
+  }
+
+  const clone: any = {};
+  for (const key in value) {
+    clone[key] = cloneRecursive(value[key]);
+  }
+
+  return clone;
+}
+
+
 /**
  * Checks if a value is a defined object and not an array.
  */
@@ -57,10 +94,10 @@ function isObject(item: unknown): item is Record<string, any> {
   return !!item && typeof item === 'object' && !Array.isArray(item);
 }
 /**
- * Type guard to check if a value is a Map.
+ * Checks if a value is similar to a Vector
  */
-function isMap(item: unknown): item is Map<any, any> {
-  return item instanceof Map;
+function isVectorLike(value: any): value is Vector2D | { x: number, y: number } {
+  return isObject(value) && typeof value.x === 'number' && typeof value.y === 'number';
 }
 
 const INPUT_PREFIX = 'input_id_';
