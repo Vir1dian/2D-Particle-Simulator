@@ -8,7 +8,7 @@ class EnvironmentSetupRenderer extends Renderer {
   #simulation: Simulation;
   #inputs: Map<string, InputRenderer | NumberInputRenderer>;  // still have access to the inputs in this way
   #input_table: TableRenderer;
-  #submit_button: ButtonRenderer;
+  #sumbit_button: ButtonRenderer;
 
   constructor(simulation: Simulation) {
     const simulation_settings: HTMLDivElement = document.createElement('div');
@@ -19,14 +19,14 @@ class EnvironmentSetupRenderer extends Renderer {
     this.#simulation = simulation;
     this.#inputs = new Map();
     this.#input_table = this.populateInputTable();
-    this.#submit_button = new ButtonRenderer(this.submitChanges.bind(this));
+    this.#sumbit_button = new ButtonRenderer(this.submitChanges.bind(this));
 
     // Content
     this.#input_table.setParent(simulation_settings);
     const buttons_wrapper: HTMLDivElement = document.createElement('div');
     buttons_wrapper.id = "simsetup_env_button_wrapper";
-    this.#submit_button.getElement().textContent = "Apply Changes";
-    this.#submit_button.setParent(buttons_wrapper);
+    this.#sumbit_button.getElement().textContent = "Apply Changes";
+    this.#sumbit_button.setParent(buttons_wrapper);
     simulation_settings.appendChild(buttons_wrapper);
   }
   private populateInputTable(): TableRenderer {
@@ -121,7 +121,7 @@ class EnvironmentSetupRenderer extends Renderer {
     return this.#input_table;
   }
   getSubmitButton(): ButtonRenderer {
-    return this.#submit_button;
+    return this.#sumbit_button;
   }
   refreshInputs(): void {
     const statics = structuredClone(this.#simulation.getEnvironment().statics!);  // statics for now because dynamics is still empty
@@ -151,7 +151,7 @@ class EnvironmentSetupRenderer extends Renderer {
   remove(): void {
     this.#inputs.clear();
     this.#input_table.remove();
-    this.#submit_button.remove();
+    this.#sumbit_button.remove();
     super.remove();
   }
 }

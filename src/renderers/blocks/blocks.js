@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _StandardDialogRenderer_body, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element;
+var _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _StandardDialogRenderer_body, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _Vector2DInputRenderer_value, _Vector2DInputRenderer_input_x, _Vector2DInputRenderer_input_y, _Vector2DInputRenderer_is_disabled, _Vector2DInputRenderer_label_element;
 /**
  * Stores an HTMLButtonElement, maintains a callback
  * and an event. Uses only one eventlistener at a
@@ -281,6 +281,85 @@ class CheckboxInputRenderer extends InputRenderer {
         super.setValue(value);
     }
 }
+class Vector2DInputRenderer extends Renderer {
+    constructor(id, value = new Vector2D(), is_disabled = false) {
+        const input_x = new NumberInputRenderer(`${id}_x`, value.x);
+        const input_y = new NumberInputRenderer(`${id}_y`, value.y);
+        const input_wrapper = document.createElement('div');
+        input_x.getLabelElement().innerText = "x:";
+        input_y.getLabelElement().innerText = "y:";
+        if (is_disabled) {
+            input_x.toggleDisabled();
+            input_y.toggleDisabled();
+        }
+        input_wrapper.appendChild(input_x.getLabelElement());
+        input_x.setParent(input_wrapper);
+        input_wrapper.appendChild(input_y.getLabelElement());
+        input_y.setParent(input_wrapper);
+        const label_xy = document.createElement('label');
+        label_xy.htmlFor = `${id}_x`;
+        label_xy.innerText = prettifyKey(id);
+        super(input_wrapper, 'input_wrapper_xy', `${id}_wrapper`);
+        _Vector2DInputRenderer_value.set(this, void 0);
+        _Vector2DInputRenderer_input_x.set(this, void 0);
+        _Vector2DInputRenderer_input_y.set(this, void 0);
+        _Vector2DInputRenderer_is_disabled.set(this, void 0);
+        _Vector2DInputRenderer_label_element.set(this, void 0); // appended manually within the DOM, but not required
+        __classPrivateFieldSet(this, _Vector2DInputRenderer_value, value, "f");
+        __classPrivateFieldSet(this, _Vector2DInputRenderer_input_x, input_x, "f");
+        __classPrivateFieldSet(this, _Vector2DInputRenderer_input_y, input_y, "f");
+        __classPrivateFieldSet(this, _Vector2DInputRenderer_is_disabled, is_disabled, "f");
+        __classPrivateFieldSet(this, _Vector2DInputRenderer_label_element, label_xy, "f");
+    }
+    getValue() {
+        return new Vector2D(__classPrivateFieldGet(this, _Vector2DInputRenderer_value, "f").x, __classPrivateFieldGet(this, _Vector2DInputRenderer_value, "f").y);
+    }
+    getInputX() {
+        return __classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f");
+    }
+    getInputY() {
+        return __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f");
+    }
+    isDisabled() {
+        return __classPrivateFieldGet(this, _Vector2DInputRenderer_is_disabled, "f");
+    }
+    getLabelElement() {
+        return __classPrivateFieldGet(this, _Vector2DInputRenderer_label_element, "f");
+    }
+    // setters
+    setChild(child) {
+        // Prevents setChild from being used for an InputRenderer
+        throw new Error("InputRenderer does not support child elements.");
+    }
+    setValue(value) {
+        __classPrivateFieldSet(this, _Vector2DInputRenderer_value, value, "f");
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f").setValue(value.x.toString());
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").setValue(value.y.toString());
+    }
+    refreshValue() {
+        __classPrivateFieldSet(this, _Vector2DInputRenderer_value, new Vector2D(__classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f").getNumberValue(), __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").getNumberValue()), "f");
+    }
+    toggleDisabled() {
+        __classPrivateFieldSet(this, _Vector2DInputRenderer_is_disabled, !__classPrivateFieldGet(this, _Vector2DInputRenderer_is_disabled, "f"), "f");
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f").toggleDisabled();
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").toggleDisabled();
+    }
+    setID(id) {
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f").setID(`${id}_x`);
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").setID(`${id}_y`);
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_label_element, "f").htmlFor = `${id}_x`;
+    }
+    setWrapperID(id) {
+        super.setID(`${id}_wrapper`);
+    }
+    remove() {
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f").remove();
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").remove();
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_label_element, "f").remove();
+        super.remove();
+    }
+}
+_Vector2DInputRenderer_value = new WeakMap(), _Vector2DInputRenderer_input_x = new WeakMap(), _Vector2DInputRenderer_input_y = new WeakMap(), _Vector2DInputRenderer_is_disabled = new WeakMap(), _Vector2DInputRenderer_label_element = new WeakMap();
 class TooltipRenderer extends Renderer {
 }
 class DraggableRenderer extends Renderer {

@@ -275,6 +275,93 @@ class CheckboxInputRenderer extends InputRenderer {
   }
 }
 
+class Vector2DInputRenderer extends Renderer {
+  #value: Vector2D;
+  #input_x: NumberInputRenderer;
+  #input_y: NumberInputRenderer;
+  #is_disabled: boolean;
+  #label_element: HTMLLabelElement;  // appended manually within the DOM, but not required
+  constructor(id: string, value: Vector2D = new Vector2D(), is_disabled: boolean = false) {
+    const input_x = new NumberInputRenderer(`${id}_x`, value.x);
+    const input_y = new NumberInputRenderer(`${id}_y`, value.y);
+    const input_wrapper = document.createElement('div');
+
+    input_x.getLabelElement().innerText = "x:";
+    input_y.getLabelElement().innerText = "y:";
+    if (is_disabled) {
+      input_x.toggleDisabled();
+      input_y.toggleDisabled();
+    }
+
+    input_wrapper.appendChild(input_x.getLabelElement());
+    input_x.setParent(input_wrapper);
+    input_wrapper.appendChild(input_y.getLabelElement());
+    input_y.setParent(input_wrapper);
+
+    const label_xy: HTMLLabelElement = document.createElement('label');
+    label_xy.htmlFor = `${id}_x`;
+    label_xy.innerText = prettifyKey(id);
+
+    super(input_wrapper, 'input_wrapper_xy', `${id}_wrapper`);
+    this.#value = value;
+    this.#input_x = input_x;
+    this.#input_y = input_y;
+    this.#is_disabled = is_disabled;
+    this.#label_element = label_xy;
+  }
+  getValue(): Vector2D {  // Must be disabled if implementing a renderer input type="image"
+    return new Vector2D(this.#value.x, this.#value.y);
+  }
+  getInputX(): NumberInputRenderer {
+    return this.#input_x;
+  }
+  getInputY(): NumberInputRenderer {
+    return this.#input_y;
+  }
+  isDisabled(): boolean {
+    return this.#is_disabled;
+  }
+  getLabelElement(): HTMLLabelElement {  // Must be disabled if implementing a renderer input type="hidden"
+    return this.#label_element;
+  }
+
+  // setters
+  setChild(child: HTMLElement | Renderer): void {
+    // Prevents setChild from being used for an InputRenderer
+    throw new Error("InputRenderer does not support child elements.");
+  }
+  setValue(value: Vector2D): void {
+    this.#value = value;
+    this.#input_x.setValue(value.x.toString());
+    this.#input_y.setValue(value.y.toString());
+  }
+  refreshValue(): void {  // Must be called manually for now, for flexibility with events
+    this.#value = new Vector2D(
+      this.#input_x.getNumberValue(),
+      this.#input_y.getNumberValue()
+    );
+  }
+  toggleDisabled(): void {
+    this.#is_disabled = !this.#is_disabled;
+    this.#input_x.toggleDisabled();
+    this.#input_y.toggleDisabled();
+  }
+  setID(id: string): void {
+    this.#input_x.setID(`${id}_x`);
+    this.#input_y.setID(`${id}_y`);
+    this.#label_element.htmlFor = `${id}_x`;
+  }
+  setWrapperID(id: string): void {
+    super.setID(`${id}_wrapper`);
+  }
+  remove(): void {
+    this.#input_x.remove();
+    this.#input_y.remove();
+    this.#label_element.remove();
+    super.remove();
+  }
+}
+
 class TooltipRenderer extends Renderer {
 
 }
