@@ -300,7 +300,6 @@ class Vector2DInputRenderer extends Renderer {
 
     const label_xy: HTMLLabelElement = document.createElement('label');
     label_xy.htmlFor = `${id}_x`;
-    label_xy.innerText = prettifyKey(id);
 
     super(input_wrapper, 'input_wrapper_xy', `${id}_wrapper`);
     this.#value = value;

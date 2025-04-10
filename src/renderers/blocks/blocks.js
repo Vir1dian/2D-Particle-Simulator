@@ -298,7 +298,6 @@ class Vector2DInputRenderer extends Renderer {
         input_y.setParent(input_wrapper);
         const label_xy = document.createElement('label');
         label_xy.htmlFor = `${id}_x`;
-        label_xy.innerText = prettifyKey(id);
         super(input_wrapper, 'input_wrapper_xy', `${id}_wrapper`);
         _Vector2DInputRenderer_value.set(this, void 0);
         _Vector2DInputRenderer_input_x.set(this, void 0);

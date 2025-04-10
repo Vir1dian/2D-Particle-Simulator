@@ -63,3 +63,4 @@ function isMap(item: unknown): item is Map<any, any> {
   return item instanceof Map;
 }
 
+const INPUT_PREFIX = 'input_id_';

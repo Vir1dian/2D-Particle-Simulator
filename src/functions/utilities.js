@@ -64,3 +64,4 @@ function isObject(item) {
 function isMap(item) {
     return item instanceof Map;
 }
+const INPUT_PREFIX = 'input_id_';
