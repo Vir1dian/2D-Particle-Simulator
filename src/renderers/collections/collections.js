@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_dependents, _InputTableRenderer_inputs;
+var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_properties, _InputTableRenderer_inputs;
 /**
  *
  */
@@ -402,15 +402,15 @@ _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_ele
  * a map of renderers for inputs.
  */
 class InputTableRenderer extends TableRenderer {
-    constructor(dependents) {
-        const property_keys = Object.keys(dependents);
+    constructor(properties) {
+        const property_keys = Object.keys(properties);
         super(property_keys.length + 1, 2);
-        _InputTableRenderer_dependents.set(this, void 0);
+        _InputTableRenderer_properties.set(this, void 0); // Read-only
         _InputTableRenderer_inputs.set(this, void 0);
-        __classPrivateFieldSet(this, _InputTableRenderer_dependents, dependents, "f");
+        __classPrivateFieldSet(this, _InputTableRenderer_properties, properties, "f");
         __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
         property_keys.forEach((key, index) => {
-            const value = dependents[key];
+            const value = properties[key];
             let input;
             if (typeof value === 'string')
                 input = new InputRenderer(`${INPUT_PREFIX}${key}`, value);
@@ -446,13 +446,13 @@ class InputTableRenderer extends TableRenderer {
     refresh() {
         for (const [key, input] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
             if (input instanceof NumberInputRenderer)
-                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f")[key].toString());
+                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key].toString());
             else if (input instanceof CheckboxInputRenderer)
-                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f")[key] ? "true" : "false");
+                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] ? "true" : "false");
             else if (input instanceof InputRenderer)
-                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f")[key]);
+                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key]);
             else if (input instanceof Vector2DInputRenderer)
-                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f")[key]);
+                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key]);
         }
     }
     remove() {
@@ -460,4 +460,4 @@ class InputTableRenderer extends TableRenderer {
         super.remove();
     }
 }
-_InputTableRenderer_dependents = new WeakMap(), _InputTableRenderer_inputs = new WeakMap();
+_InputTableRenderer_properties = new WeakMap(), _InputTableRenderer_inputs = new WeakMap();

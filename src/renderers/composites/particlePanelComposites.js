@@ -12,7 +12,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _AddParticleMenuRenderer_simulation, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_submit_button, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
 class AddParticleMenuRenderer extends Renderer {
-    constructor() {
+    constructor(simulation) {
         const menu_wrapper = document.createElement('div');
         super(menu_wrapper, 'dialog_menu', 'dialog_menu_add_particle');
         // To be placed inside an existing StandardDialogRenderer
@@ -21,17 +21,28 @@ class AddParticleMenuRenderer extends Renderer {
         _AddParticleMenuRenderer_input_table.set(this, void 0);
         _AddParticleMenuRenderer_submit_button.set(this, void 0);
         // Stored Data
+        simulation.add_observer(SimEvent.Overwrite_Particle_Groups, this.refresh.bind(this));
+        simulation.add_observer(SimEvent.Edit_Particle_Groups, this.refresh.bind(this));
+        __classPrivateFieldSet(this, _AddParticleMenuRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_group_selector, this.setupGroupSelector(), "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_input_table, this.setupInputTable(), "f");
+        __classPrivateFieldSet(this, _AddParticleMenuRenderer_submit_button, this.setupSubmitButton(), "f");
         // DOM Content
         const select_wrapper = document.createElement('div');
     }
     setupGroupSelector() {
-        return new SelectRenderer('menu_group_selector_add_particle', []);
+        return new SelectRenderer('menu_group_selector_add_particle', Array.from(__classPrivateFieldGet(this, _AddParticleMenuRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new OptionRenderer(group_id)));
     }
     setupInputTable() {
+        const properties = Object.assign({}, DEFAULT_GROUPING);
+        delete properties.enable_path_tracing;
+        return new InputTableRenderer(properties);
     }
-    prepareParticle() {
+    setupSubmitButton() {
+    }
+    refresh() {
+    }
+    submit() {
     }
 }
 _AddParticleMenuRenderer_simulation = new WeakMap(), _AddParticleMenuRenderer_group_selector = new WeakMap(), _AddParticleMenuRenderer_input_table = new WeakMap(), _AddParticleMenuRenderer_submit_button = new WeakMap();

@@ -38,6 +38,8 @@ class ParticleGroup {
         }
     }
     isValidFor(particle) {
+        if (__classPrivateFieldGet(this, _ParticleGroup_grouping, "f") === DEFAULT_GROUPING)
+            return true;
         return Object.keys(__classPrivateFieldGet(this, _ParticleGroup_grouping, "f")).every(property => {
             const grouping_value = __classPrivateFieldGet(this, _ParticleGroup_grouping, "f")[property];
             const particle_value = particle[property];

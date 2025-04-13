@@ -396,18 +396,18 @@ class DatalistInputRenderer extends InputRenderer {
  * a map of renderers for inputs.
  */
 class InputTableRenderer<T extends string | boolean | number | Vector2D> extends TableRenderer {
-  #dependents: Record<string, T>;
+  #properties: Record<string, T>;  // Read-only
   #inputs: Map<string, InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer>;
 
-  constructor(dependents: Record<string, T>) {
-    const property_keys: string[] = Object.keys(dependents);
+  constructor(properties: Record<string, T>) {
+    const property_keys: string[] = Object.keys(properties);
     super(property_keys.length + 1, 2);
 
-    this.#dependents = dependents;
+    this.#properties = properties;
     this.#inputs = new Map();
 
     property_keys.forEach((key, index) => {
-      const value: T = dependents[key];
+      const value: T = properties[key];
       let input: InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer | undefined;
 
       if (typeof value === 'string') input = new InputRenderer(`${INPUT_PREFIX}${key}`, value);
@@ -441,13 +441,13 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D> extends
   refresh(): void {
     for (const [key, input] of this.#inputs) {
       if (input instanceof NumberInputRenderer) 
-        input.setValue(this.#dependents[key].toString())
+        input.setValue(this.#properties[key].toString())
       else if (input instanceof CheckboxInputRenderer) 
-        input.setValue(this.#dependents[key] ? "true" : "false");
+        input.setValue(this.#properties[key] ? "true" : "false");
       else if (input instanceof InputRenderer)
-        input.setValue(this.#dependents[key] as string);
+        input.setValue(this.#properties[key] as string);
       else if (input instanceof Vector2DInputRenderer)
-        input.setValue(this.#dependents[key] as Vector2D);
+        input.setValue(this.#properties[key] as Vector2D);
     }
   }
   remove(): void {

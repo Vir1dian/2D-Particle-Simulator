@@ -39,6 +39,7 @@ class ParticleGroup {
   }
 
   isValidFor(particle: Particle): boolean {
+    if (this.#grouping === DEFAULT_GROUPING) return true;
     return (Object.keys(this.#grouping) as (keyof ParticleGrouping)[]).every(property => {
       const grouping_value = this.#grouping[property];
       const particle_value = (particle as any)[property];

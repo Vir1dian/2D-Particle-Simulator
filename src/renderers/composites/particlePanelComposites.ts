@@ -2,29 +2,46 @@ class AddParticleMenuRenderer extends Renderer {
   // To be placed inside an existing StandardDialogRenderer
   #simulation: Simulation;
   #group_selector: SelectRenderer;
-  #input_table: InputTableRenderer<string | number | Vector2D>;  
+  #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
   #submit_button: ButtonRenderer;
 
-  constructor() {
+  constructor(simulation: Simulation) {
     const menu_wrapper: HTMLDivElement = document.createElement('div');
     super(menu_wrapper, 'dialog_menu', 'dialog_menu_add_particle');
 
     // Stored Data
+    simulation.add_observer(SimEvent.Overwrite_Particle_Groups, this.refresh.bind(this));
+    simulation.add_observer(SimEvent.Edit_Particle_Groups, this.refresh.bind(this));
+    this.#simulation = simulation;
     this.#group_selector = this.setupGroupSelector();
     this.#input_table = this.setupInputTable();
+    this.#submit_button = this.setupSubmitButton();
 
     // DOM Content
     const select_wrapper: HTMLDivElement = document.createElement('div');
 
   }
   private setupGroupSelector(): SelectRenderer {
-
-    return new SelectRenderer('menu_group_selector_add_particle', []);
+    return new SelectRenderer(
+      'menu_group_selector_add_particle', 
+      Array.from(
+        this.#simulation.getParticleGroups() as Map<string, ParticleGroup>,
+        ([group_id, group]) => new OptionRenderer(group_id)
+      )
+    );
   }
-  private setupInputTable(): InputTableRenderer {
+  private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
+    const properties = {...DEFAULT_GROUPING};
+    delete properties.enable_path_tracing;
+    return new InputTableRenderer(properties);
+  }
+  private setupSubmitButton(): ButtonRenderer {
+    
+  }
+  refresh(): void {
 
   }
-  prepareParticle(): Particle {
+  submit(): void {
 
   }
 }
