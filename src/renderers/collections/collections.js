@@ -420,14 +420,18 @@ _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_ele
  * Handles a table of inputs for a string record-type object.
  * Left column contains prettified key names of the object,
  * right column contains input fields for matching value
- * data types. Stores the object for read-only operations,
- * a map of renderers for inputs.
+ * data types. Additional columns can be added for boolean
+ * overrides such as 'random' and 'unspecified'. Stores the
+ * record object for read-only operations, and a map of
+ * renderer arrays for inputs.
+ * Boolean overrides are specifically intended for the
+ * ParticleGrouping interface structure.
  */
 class InputTableRenderer extends TableRenderer {
-    constructor(properties) {
+    constructor(properties, ...boolean_overrides) {
         const property_keys = Object.keys(properties);
-        super(property_keys.length + 1, 2);
-        _InputTableRenderer_properties.set(this, void 0); // Read-only
+        super(property_keys.length, 2 + boolean_overrides.length);
+        _InputTableRenderer_properties.set(this, void 0); // Read-only, assume all properties are defined
         _InputTableRenderer_inputs.set(this, void 0);
         __classPrivateFieldSet(this, _InputTableRenderer_properties, properties, "f");
         __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
@@ -447,34 +451,59 @@ class InputTableRenderer extends TableRenderer {
             input.getLabelElement().innerText = prettifyKey(key);
             this.getCell(index, 0).setContent(input.getLabelElement());
             this.getCell(index, 1).setContent(input);
-            __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(key, input);
+            const override_inputs = []; // May may expand "override_inputs" to "modifier_inputs" in the future to allow non-overriding and non-boolean inputs
+            boolean_overrides.forEach((override, index) => {
+                const override_input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override`);
+                override_inputs.push(override_input);
+                this.getCell(index, 2 + index).setContent(override_input);
+            });
+            __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(key, [input, ...override_inputs]);
         });
     }
     prepareChanges() {
         const changes = {};
-        for (const [key, input] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
-            input.refreshValue();
-            if (input instanceof NumberInputRenderer)
-                changes[key] = input.getNumberValue();
-            else if (input instanceof CheckboxInputRenderer)
-                changes[key] = input.getBooleanValue();
-            else if (input instanceof InputRenderer)
-                changes[key] = input.getValue();
-            else if (input instanceof Vector2DInputRenderer)
-                changes[key] = input.getValue();
+        for (const [key, inputs] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
+            let is_unspecified = false;
+            inputs.forEach(input => {
+                input.refreshValue();
+                if (input.getElement().id.includes('_random_override') && input.getBooleanValue()) {
+                    changes[key] = 'random';
+                }
+                ;
+                if (input.getElement().id.includes('_unspecified_override') && input.getBooleanValue()) {
+                    is_unspecified = true;
+                }
+                ;
+            });
+            if (is_unspecified)
+                continue;
+            if (inputs[0] instanceof NumberInputRenderer)
+                changes[key] = inputs[0].getNumberValue();
+            else if (inputs[0] instanceof CheckboxInputRenderer)
+                changes[key] = inputs[0].getBooleanValue();
+            else if (inputs[0] instanceof InputRenderer)
+                changes[key] = inputs[0].getValue();
+            else if (inputs[0] instanceof Vector2DInputRenderer)
+                changes[key] = inputs[0].getValue();
         }
         return changes;
     }
     refresh() {
-        for (const [key, input] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
-            if (input instanceof NumberInputRenderer)
-                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key].toString());
-            else if (input instanceof CheckboxInputRenderer)
-                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] ? "true" : "false");
-            else if (input instanceof InputRenderer)
-                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key]);
-            else if (input instanceof Vector2DInputRenderer)
-                input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key]);
+        for (const [key, inputs] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
+            inputs.forEach(input => {
+                if (input.getElement().id.includes('_random_override'))
+                    input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] === 'random' ? "true" : "false");
+                else if (input.getElement().id.includes('_unspecified_override'))
+                    input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] ? "true" : "false");
+                else if (input instanceof NumberInputRenderer)
+                    input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key].toString());
+                else if (input instanceof CheckboxInputRenderer)
+                    input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] ? "true" : "false");
+                else if (input instanceof InputRenderer)
+                    input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key]);
+                else if (input instanceof Vector2DInputRenderer)
+                    input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key]);
+            });
         }
     }
     remove() {

@@ -412,16 +412,20 @@ class DatalistInputRenderer extends InputRenderer {
  * Handles a table of inputs for a string record-type object. 
  * Left column contains prettified key names of the object, 
  * right column contains input fields for matching value
- * data types. Stores the object for read-only operations,
- * a map of renderers for inputs.
+ * data types. Additional columns can be added for boolean
+ * overrides such as 'random' and 'unspecified'. Stores the 
+ * record object for read-only operations, and a map of 
+ * renderer arrays for inputs.
+ * Boolean overrides are specifically intended for the 
+ * ParticleGrouping interface structure.
  */
-class InputTableRenderer<T extends string | boolean | number | Vector2D> extends TableRenderer {
-  #properties: Record<string, T>;  // Read-only
-  #inputs: Map<string, InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer>;
+class InputTableRenderer<T extends string | boolean | number | Vector2D | undefined> extends TableRenderer {
+  #properties: Record<string, T>;  // Read-only, assume all properties are defined
+  #inputs: Map<string, (InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer)[]>;
 
-  constructor(properties: Record<string, T>) {
+  constructor(properties: Record<string, T>, ...boolean_overrides: ('random' | 'unspecified')[]) {
     const property_keys: string[] = Object.keys(properties);
-    super(property_keys.length + 1, 2);
+    super(property_keys.length, 2 + boolean_overrides.length);
 
     this.#properties = properties;
     this.#inputs = new Map();
@@ -439,35 +443,57 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D> extends
       input.getLabelElement().innerText = prettifyKey(key);
       this.getCell(index, 0).setContent(input.getLabelElement()); 
       this.getCell(index, 1).setContent(input); 
-      this.#inputs.set(key, input!);
+      const override_inputs: CheckboxInputRenderer[] = [];  // May may expand "override_inputs" to "modifier_inputs" in the future to allow non-overriding and non-boolean inputs
+      boolean_overrides.forEach((override, index) => {
+        const override_input: CheckboxInputRenderer = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override`);
+        override_inputs.push(override_input);
+        this.getCell(index, 2 + index).setContent(override_input);
+      });
+      this.#inputs.set(key, [input!, ...override_inputs]);
     });
   }
   prepareChanges(): Record<string, T> {
     const changes: Record<string, T> = {};
-    for (const [key, input] of this.#inputs) {
-      input.refreshValue();
-  
-      if (input instanceof NumberInputRenderer) 
-        (changes[key] as number) = input.getNumberValue();
-      else if (input instanceof CheckboxInputRenderer) 
-        (changes[key] as boolean) = input.getBooleanValue();
-      else if (input instanceof InputRenderer)
-        (changes[key] as string) = input.getValue();
-      else if (input instanceof Vector2DInputRenderer)
-        (changes[key] as Vector2D) = input.getValue();
+    for (const [key, inputs] of this.#inputs) {
+      let is_unspecified: boolean = false;
+      inputs.forEach(input => {
+        input.refreshValue();
+        if (input.getElement().id.includes('_random_override') && (input as CheckboxInputRenderer).getBooleanValue()) {
+          (changes[key] as string) = 'random';
+        };
+        if (input.getElement().id.includes('_unspecified_override') && (input as CheckboxInputRenderer).getBooleanValue()) {
+          is_unspecified = true;
+        };
+      });
+      if (is_unspecified) continue;
+
+      if (inputs[0] instanceof NumberInputRenderer) 
+        (changes[key] as number) = inputs[0].getNumberValue();
+      else if (inputs[0] instanceof CheckboxInputRenderer) 
+        (changes[key] as boolean) = inputs[0].getBooleanValue();
+      else if (inputs[0] instanceof InputRenderer)
+        (changes[key] as string) = inputs[0].getValue();
+      else if (inputs[0] instanceof Vector2DInputRenderer)
+        (changes[key] as Vector2D) = inputs[0].getValue();
     }
     return changes;
   }
   refresh(): void {
-    for (const [key, input] of this.#inputs) {
-      if (input instanceof NumberInputRenderer) 
-        input.setValue(this.#properties[key].toString())
-      else if (input instanceof CheckboxInputRenderer) 
-        input.setValue(this.#properties[key] ? "true" : "false");
-      else if (input instanceof InputRenderer)
-        input.setValue(this.#properties[key] as string);
-      else if (input instanceof Vector2DInputRenderer)
-        input.setValue(this.#properties[key] as Vector2D);
+    for (const [key, inputs] of this.#inputs) {
+      inputs.forEach(input => {
+        if (input.getElement().id.includes('_random_override'))
+          (input as CheckboxInputRenderer).setValue(this.#properties[key]! === 'random' ? "true" : "false");
+        else if (input.getElement().id.includes('_unspecified_override'))
+          (input as CheckboxInputRenderer).setValue(this.#properties[key] ? "true" : "false");
+        else if (input instanceof NumberInputRenderer) 
+          input.setValue(this.#properties[key]!.toString())
+        else if (input instanceof CheckboxInputRenderer) 
+          input.setValue(this.#properties[key]! ? "true" : "false");
+        else if (input instanceof InputRenderer)
+          input.setValue(this.#properties[key]! as string);
+        else if (input instanceof Vector2DInputRenderer)
+          input.setValue(this.#properties[key]! as Vector2D);
+      });
     }
   }
   remove(): void {
