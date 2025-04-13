@@ -1,5 +1,85 @@
-class AddParticleWindowRenderer extends Renderer {
-  
+class AddParticleMenuRenderer extends Renderer {
+  // To be placed inside an existing StandardDialogRenderer
+  #group_selector: SelectRenderer;
+  #input_table: InputTableRenderer<string | number | Vector2D>;  
+
+  constructor() {
+    const menu_wrapper: HTMLDivElement = document.createElement('div');
+    super(menu_wrapper, 'dialog_menu', 'dialog_menu_add_particle');
+
+    // Stored Data
+    this.#group_selector = this.setupGroupSelector();
+    this.#input_table = this.setupInputTable();
+
+    // DOM Content
+    const select_wrapper: HTMLDivElement = document.createElement('div');
+
+  }
+  private setupGroupSelector(): SelectRenderer {
+
+  }
+  private setupInputTable(): InputTableRenderer {
+
+  }
+  prepareParticle(): Particle {
+
+  }
+}
+
+class CreateGroupMenuRenderer extends Renderer {
+  // To be placed inside an existing StandardDialogRenderer
+  // Figure out how to make it so that filling out the rest of the forms are optional,
+  // maybe use checkboxes for users to tick if they want to specify that property?
+  constructor() {
+    const menu_wrapper: HTMLDivElement = document.createElement('div');
+    super(menu_wrapper, 'dialog_menu', 'dialog_menu_create_group');
+
+    // Stored Data
+
+
+    // DOM Content
+
+
+  }
+  prepareParticleGroup(): ParticleGroup {
+
+  }
+}
+
+class EditGroupMenuRenderer extends Renderer {
+  // To be placed inside an existing StandardDialogRenderer
+  // maybe use checkboxes for users to tick if they want to specify/unspecify a property?
+  // also option to delete the ParticleGroup
+  // "Focus" on the corresponding group of particles in the container when this window is open
+  constructor() {
+    const menu_wrapper: HTMLDivElement = document.createElement('div');
+    super(menu_wrapper, 'dialog_menu', `dialog_menu_edit_group_id_${0}`);
+
+    // Stored Data
+
+
+    // DOM Content
+
+
+  }
+}
+
+class EditParticleMenuRenderer extends Renderer {
+  // To be placed inside an existing StandardDialogRenderer
+  // input_table again
+  // option to delete the Particle
+  // "Focus" on the corresponding particle in the container when this window is open
+  constructor() {
+    const menu_wrapper: HTMLDivElement = document.createElement('div');
+    super(menu_wrapper, 'dialog_menu', `dialog_menu_edit_particle_id_${0}`);
+
+    // Stored Data
+
+
+    // DOM Content
+
+
+  }
 }
 
 /**

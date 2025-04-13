@@ -180,6 +180,7 @@ button:hover .tooltip_text {
 }
 dialog {
   border: none;
+  border-radius: 4px;
   justify-self: center;
   align-self: center;
 }
