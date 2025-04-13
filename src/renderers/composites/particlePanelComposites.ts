@@ -1,7 +1,9 @@
 class AddParticleMenuRenderer extends Renderer {
   // To be placed inside an existing StandardDialogRenderer
+  #simulation: Simulation;
   #group_selector: SelectRenderer;
   #input_table: InputTableRenderer<string | number | Vector2D>;  
+  #submit_button: ButtonRenderer;
 
   constructor() {
     const menu_wrapper: HTMLDivElement = document.createElement('div');
@@ -17,6 +19,7 @@ class AddParticleMenuRenderer extends Renderer {
   }
   private setupGroupSelector(): SelectRenderer {
 
+    return new SelectRenderer('menu_group_selector_add_particle', []);
   }
   private setupInputTable(): InputTableRenderer {
 

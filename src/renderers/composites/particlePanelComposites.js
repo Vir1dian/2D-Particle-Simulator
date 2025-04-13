@@ -10,14 +10,16 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
+var _AddParticleMenuRenderer_simulation, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_submit_button, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
 class AddParticleMenuRenderer extends Renderer {
     constructor() {
         const menu_wrapper = document.createElement('div');
         super(menu_wrapper, 'dialog_menu', 'dialog_menu_add_particle');
         // To be placed inside an existing StandardDialogRenderer
+        _AddParticleMenuRenderer_simulation.set(this, void 0);
         _AddParticleMenuRenderer_group_selector.set(this, void 0);
         _AddParticleMenuRenderer_input_table.set(this, void 0);
+        _AddParticleMenuRenderer_submit_button.set(this, void 0);
         // Stored Data
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_group_selector, this.setupGroupSelector(), "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_input_table, this.setupInputTable(), "f");
@@ -25,13 +27,14 @@ class AddParticleMenuRenderer extends Renderer {
         const select_wrapper = document.createElement('div');
     }
     setupGroupSelector() {
+        return new SelectRenderer('menu_group_selector_add_particle', []);
     }
     setupInputTable() {
     }
     prepareParticle() {
     }
 }
-_AddParticleMenuRenderer_group_selector = new WeakMap(), _AddParticleMenuRenderer_input_table = new WeakMap();
+_AddParticleMenuRenderer_simulation = new WeakMap(), _AddParticleMenuRenderer_group_selector = new WeakMap(), _AddParticleMenuRenderer_input_table = new WeakMap(), _AddParticleMenuRenderer_submit_button = new WeakMap();
 class CreateGroupMenuRenderer extends Renderer {
     // To be placed inside an existing StandardDialogRenderer
     // Figure out how to make it so that filling out the rest of the forms are optional,

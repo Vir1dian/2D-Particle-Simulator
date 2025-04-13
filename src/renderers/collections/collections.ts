@@ -393,13 +393,11 @@ class DatalistInputRenderer extends InputRenderer {
  * Left column contains prettified key names of the object, 
  * right column contains input fields for matching value
  * data types. Stores the object for read-only operations,
- * a map of renderers for inputs, and a submit_button that
- * must be appended and configured manually.
+ * a map of renderers for inputs.
  */
 class InputTableRenderer<T extends string | boolean | number | Vector2D> extends TableRenderer {
   #dependents: Record<string, T>;
   #inputs: Map<string, InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer>;
-  #submit_button: ButtonRenderer;  // must be accessed then appended manually
 
   constructor(dependents: Record<string, T>) {
     const property_keys: string[] = Object.keys(dependents);
@@ -407,7 +405,6 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D> extends
 
     this.#dependents = dependents;
     this.#inputs = new Map();
-    this.#submit_button = new ButtonRenderer(() => {});
 
     property_keys.forEach((key, index) => {
       const value: T = dependents[key];
@@ -453,12 +450,8 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D> extends
         input.setValue(this.#dependents[key] as Vector2D);
     }
   }
-  getSubmitButton(): ButtonRenderer {
-    return this.#submit_button;
-  }
   remove(): void {
     this.#inputs.clear();
-    this.#submit_button.remove();
     super.remove();
   }
 }

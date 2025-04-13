@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _EnvironmentSetupRenderer_simulation, _EnvironmentSetupRenderer_input_table, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button;
+var _EnvironmentSetupRenderer_simulation, _EnvironmentSetupRenderer_input_table, _EnvironmentSetupRenderer_apply_button, _PresetInputRenderer_simulation, _PresetInputRenderer_preset_dropdown, _PresetInputRenderer_apply_button;
 /**
  * Helper class for EnvironmentPanelRenderer.
  * Handles user inputs and sends changes to
@@ -23,17 +23,18 @@ class EnvironmentSetupRenderer extends Renderer {
         super(environment_setup_wrapper, '', 'simsetup_global_variables_wrapper');
         _EnvironmentSetupRenderer_simulation.set(this, void 0);
         _EnvironmentSetupRenderer_input_table.set(this, void 0);
+        _EnvironmentSetupRenderer_apply_button.set(this, void 0);
         // Saved Data
         simulation.add_observer(SimEvent.Update_Environment, this.refresh.bind(this));
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, new InputTableRenderer(simulation.getEnvironment().statics), "f"); // statics for now because dynamics is still empty
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").getSubmitButton().setCallback(this.submitChanges.bind(this)); // Manual config of submitButton so setPreset is used explicitly
+        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_apply_button, new ButtonRenderer(this.submitChanges.bind(this)), "f"); // Manual config of submitButton so setPreset is used explicitly
         // Content
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setParent(environment_setup_wrapper);
         const buttons_wrapper = document.createElement('div');
         buttons_wrapper.id = "simsetup_env_button_wrapper";
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").getSubmitButton().getElement().textContent = "Apply Changes";
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").getSubmitButton().setParent(buttons_wrapper);
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_apply_button, "f").getElement().textContent = "Apply Changes";
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_apply_button, "f").setParent(buttons_wrapper);
         environment_setup_wrapper.appendChild(buttons_wrapper);
     }
     submitChanges() {
@@ -44,6 +45,7 @@ class EnvironmentSetupRenderer extends Renderer {
             }
         };
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").setPreset(changes);
+        console.log(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment());
     }
     getTable() {
         return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f");
@@ -53,10 +55,11 @@ class EnvironmentSetupRenderer extends Renderer {
     }
     remove() {
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").remove();
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_apply_button, "f").remove();
         super.remove();
     }
 }
-_EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap();
+_EnvironmentSetupRenderer_simulation = new WeakMap(), _EnvironmentSetupRenderer_input_table = new WeakMap(), _EnvironmentSetupRenderer_apply_button = new WeakMap();
 /**
  * Helper class for EnvironmentPanelRenderer.
  * Handles a DatalistInputRenderer to allow

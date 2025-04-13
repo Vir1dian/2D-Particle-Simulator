@@ -7,6 +7,7 @@
 class EnvironmentSetupRenderer extends Renderer {
   #simulation: Simulation;
   #input_table: InputTableRenderer<number | Vector2D>;
+  #apply_button: ButtonRenderer;
 
   constructor(simulation: Simulation) {
     const environment_setup_wrapper: HTMLDivElement = document.createElement('div');
@@ -16,14 +17,14 @@ class EnvironmentSetupRenderer extends Renderer {
     simulation.add_observer(SimEvent.Update_Environment, this.refresh.bind(this));
     this.#simulation = simulation;
     this.#input_table = new InputTableRenderer(simulation.getEnvironment().statics!);  // statics for now because dynamics is still empty
-    this.#input_table.getSubmitButton().setCallback(this.submitChanges.bind(this));  // Manual config of submitButton so setPreset is used explicitly
+    this.#apply_button = new ButtonRenderer(this.submitChanges.bind(this)); // Manual config of submitButton so setPreset is used explicitly
 
     // Content
     this.#input_table.setParent(environment_setup_wrapper);
     const buttons_wrapper: HTMLDivElement = document.createElement('div');
     buttons_wrapper.id = "simsetup_env_button_wrapper";
-    this.#input_table.getSubmitButton().getElement().textContent = "Apply Changes";
-    this.#input_table.getSubmitButton().setParent(buttons_wrapper);
+    this.#apply_button.getElement().textContent = "Apply Changes";
+    this.#apply_button.setParent(buttons_wrapper);
     environment_setup_wrapper.appendChild(buttons_wrapper);
   }
   private submitChanges(): void {
@@ -34,6 +35,7 @@ class EnvironmentSetupRenderer extends Renderer {
       } 
     };
     this.#simulation.setPreset(changes);
+    console.log(this.#simulation.getEnvironment());
   }
 
   getTable(): TableRenderer {
@@ -44,6 +46,7 @@ class EnvironmentSetupRenderer extends Renderer {
   }
   remove(): void {
     this.#input_table.remove();
+    this.#apply_button.remove();
     super.remove();
   }
 }

@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_dependents, _InputTableRenderer_inputs, _InputTableRenderer_submit_button;
+var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_dependents, _InputTableRenderer_inputs;
 /**
  *
  */
@@ -399,8 +399,7 @@ _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_ele
  * Left column contains prettified key names of the object,
  * right column contains input fields for matching value
  * data types. Stores the object for read-only operations,
- * a map of renderers for inputs, and a submit_button that
- * must be appended and configured manually.
+ * a map of renderers for inputs.
  */
 class InputTableRenderer extends TableRenderer {
     constructor(dependents) {
@@ -408,10 +407,8 @@ class InputTableRenderer extends TableRenderer {
         super(property_keys.length + 1, 2);
         _InputTableRenderer_dependents.set(this, void 0);
         _InputTableRenderer_inputs.set(this, void 0);
-        _InputTableRenderer_submit_button.set(this, void 0); // must be accessed then appended manually
         __classPrivateFieldSet(this, _InputTableRenderer_dependents, dependents, "f");
         __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
-        __classPrivateFieldSet(this, _InputTableRenderer_submit_button, new ButtonRenderer(() => { }), "f");
         property_keys.forEach((key, index) => {
             const value = dependents[key];
             let input;
@@ -458,13 +455,9 @@ class InputTableRenderer extends TableRenderer {
                 input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_dependents, "f")[key]);
         }
     }
-    getSubmitButton() {
-        return __classPrivateFieldGet(this, _InputTableRenderer_submit_button, "f");
-    }
     remove() {
         __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").clear();
-        __classPrivateFieldGet(this, _InputTableRenderer_submit_button, "f").remove();
         super.remove();
     }
 }
-_InputTableRenderer_dependents = new WeakMap(), _InputTableRenderer_inputs = new WeakMap(), _InputTableRenderer_submit_button = new WeakMap();
+_InputTableRenderer_dependents = new WeakMap(), _InputTableRenderer_inputs = new WeakMap();
