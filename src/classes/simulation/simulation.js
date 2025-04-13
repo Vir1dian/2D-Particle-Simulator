@@ -46,7 +46,6 @@ class Simulation {
         Object.keys(SimEvent).forEach((_, event) => {
             __classPrivateFieldGet(this, _Simulation_observers, "f").set(event, new Set());
         });
-        console.log(__classPrivateFieldGet(this, _Simulation_particle_groups, "f"));
     }
     // Setters & Getters
     add_observer(event, callback) {
@@ -76,24 +75,24 @@ class Simulation {
         };
         const preset_clone = structuredCloneCustom(preset);
         if (preset.container) {
+            console.log('update_container');
             __classPrivateFieldSet(this, _Simulation_container, deepmergeCustom(current_properties.container, preset_clone.container), "f");
             this.notify_observers(SimEvent.Update_Container);
-            console.log('update_container');
         }
         if (preset.environment) {
+            console.log('update_environment');
             __classPrivateFieldSet(this, _Simulation_environment, deepmergeCustom(current_properties.environment, preset_clone.environment), "f");
             this.notify_observers(SimEvent.Update_Environment);
-            console.log('update_environment');
         }
         if (preset.config) {
+            console.log('update_config');
             __classPrivateFieldSet(this, _Simulation_config, deepmergeCustom(current_properties.config, preset_clone.config), "f");
             this.notify_observers(SimEvent.Update_Config);
-            console.log('update_config');
         }
         if (preset.particle_groups) {
+            console.log('overwrite_particle_groups');
             __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(preset_clone.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
             this.notify_observers(SimEvent.Overwrite_Particle_Groups);
-            console.log('overwrite_particle_groups');
         }
         if (preset)
             this.notify_observers(SimEvent.Update);

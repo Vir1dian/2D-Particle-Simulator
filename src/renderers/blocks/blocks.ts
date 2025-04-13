@@ -335,6 +335,8 @@ class Vector2DInputRenderer extends Renderer {
     this.#input_y.setValue(value.y.toString());
   }
   refreshValue(): void {  // Must be called manually for now, for flexibility with events
+    this.#input_x.refreshValue();
+    this.#input_y.refreshValue();
     this.#value = new Vector2D(
       this.#input_x.getNumberValue(),
       this.#input_y.getNumberValue()

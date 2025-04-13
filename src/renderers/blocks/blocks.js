@@ -336,6 +336,8 @@ class Vector2DInputRenderer extends Renderer {
         __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").setValue(value.y.toString());
     }
     refreshValue() {
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f").refreshValue();
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").refreshValue();
         __classPrivateFieldSet(this, _Vector2DInputRenderer_value, new Vector2D(__classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f").getNumberValue(), __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").getNumberValue()), "f");
     }
     toggleDisabled() {
