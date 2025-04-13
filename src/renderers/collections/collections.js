@@ -101,6 +101,28 @@ class TableRenderer extends Renderer {
     getElement() {
         return super.getElement();
     }
+    addRow() {
+        var _a;
+        __classPrivateFieldSet(this, _TableRenderer_rows, (_a = __classPrivateFieldGet(this, _TableRenderer_rows, "f"), _a++, _a), "f");
+        const table_row_element = document.createElement('tr');
+        const table_row_renderers = [];
+        for (let j = 0; j < __classPrivateFieldGet(this, _TableRenderer_cols, "f"); j++) {
+            const cell_renderer = new TableCellRenderer(__classPrivateFieldGet(this, _TableRenderer_rows, "f") - 1, j);
+            table_row_element.appendChild(cell_renderer.getElement());
+            table_row_renderers.push(cell_renderer);
+        }
+        this.getElement().appendChild(table_row_element);
+        __classPrivateFieldGet(this, _TableRenderer_cells, "f").push(table_row_renderers);
+    }
+    addColumn() {
+        var _a;
+        __classPrivateFieldSet(this, _TableRenderer_cols, (_a = __classPrivateFieldGet(this, _TableRenderer_cols, "f"), _a++, _a), "f");
+        for (let i = 0; i < __classPrivateFieldGet(this, _TableRenderer_rows, "f"); i++) {
+            const cell_renderer = new TableCellRenderer(i, __classPrivateFieldGet(this, _TableRenderer_cols, "f") - 1);
+            this.getElement().rows[i].appendChild(cell_renderer.getElement());
+            __classPrivateFieldGet(this, _TableRenderer_cells, "f")[i].push(cell_renderer);
+        }
+    }
     remove() {
         for (let i = 0; i < __classPrivateFieldGet(this, _TableRenderer_rows, "f"); i++) {
             for (let j = 0; j < __classPrivateFieldGet(this, _TableRenderer_cols, "f"); j++) {

@@ -88,6 +88,26 @@ class TableRenderer extends Renderer {
   getElement(): HTMLTableElement {
     return super.getElement() as HTMLTableElement;
   }
+  addRow(): void {
+    this.#rows++;
+    const table_row_element: HTMLTableRowElement = document.createElement('tr');
+    const table_row_renderers: TableCellRenderer<any>[] = [];
+    for (let j = 0; j < this.#cols; j++) {
+      const cell_renderer: TableCellRenderer<any> = new TableCellRenderer<any>(this.#rows - 1, j);
+      table_row_element.appendChild(cell_renderer.getElement());
+      table_row_renderers.push(cell_renderer);
+    }
+    this.getElement().appendChild(table_row_element);
+    this.#cells.push(table_row_renderers);
+  }
+  addColumn(): void {
+    this.#cols++;
+    for (let i = 0; i < this.#rows; i++) {
+      const cell_renderer: TableCellRenderer<any> = new TableCellRenderer<any>(i, this.#cols - 1);
+      this.getElement().rows[i].appendChild(cell_renderer.getElement());
+      this.#cells[i].push(cell_renderer);
+    }
+  }
   remove(): void {
     for (let i = 0; i < this.#rows; i++) {
       for (let j = 0; j < this.#cols; j++) {
