@@ -16,7 +16,7 @@ class EnvironmentSetupRenderer extends Renderer {
     // Saved Data
     simulation.add_observer(SimEvent.Update_Environment, this.refresh.bind(this));
     this.#simulation = simulation;
-    this.#input_table = new InputTableRenderer(simulation.getEnvironment().statics!);  // statics for now because dynamics is still empty
+    this.#input_table = new InputTableRenderer('environmentSetup', simulation.getEnvironment().statics!);  // statics for now because dynamics is still empty
     this.#apply_button = new ButtonRenderer(this.submitChanges.bind(this)); // Manual config of submitButton so setPreset is used explicitly
 
     // Content

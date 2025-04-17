@@ -27,7 +27,7 @@ class EnvironmentSetupRenderer extends Renderer {
         // Saved Data
         simulation.add_observer(SimEvent.Update_Environment, this.refresh.bind(this));
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_simulation, simulation, "f");
-        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, new InputTableRenderer(simulation.getEnvironment().statics), "f"); // statics for now because dynamics is still empty
+        __classPrivateFieldSet(this, _EnvironmentSetupRenderer_input_table, new InputTableRenderer('environmentSetup', simulation.getEnvironment().statics), "f"); // statics for now because dynamics is still empty
         __classPrivateFieldSet(this, _EnvironmentSetupRenderer_apply_button, new ButtonRenderer(this.submitChanges.bind(this)), "f"); // Manual config of submitButton so setPreset is used explicitly
         // Content
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setParent(environment_setup_wrapper);

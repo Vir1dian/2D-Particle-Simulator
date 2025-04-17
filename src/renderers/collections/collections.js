@@ -428,34 +428,36 @@ _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_ele
  * ParticleGrouping interface structure.
  */
 class InputTableRenderer extends TableRenderer {
-    constructor(properties, ...boolean_overrides) {
+    constructor(id, properties, ...boolean_overrides) {
         const property_keys = Object.keys(properties);
         super(property_keys.length, 2 + boolean_overrides.length);
         _InputTableRenderer_properties.set(this, void 0); // Read-only, assume all properties are defined
         _InputTableRenderer_inputs.set(this, void 0);
+        this.setID(id);
         __classPrivateFieldSet(this, _InputTableRenderer_properties, properties, "f");
         __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
         property_keys.forEach((key, index) => {
             const value = properties[key];
             let input;
             if (typeof value === 'string')
-                input = new InputRenderer(`${INPUT_PREFIX}${key}`, value);
+                input = new InputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
             else if (typeof value === 'boolean')
-                input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}`, value);
+                input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
             else if (typeof value === 'number')
-                input = new NumberInputRenderer(`${INPUT_PREFIX}${key}`, value);
+                input = new NumberInputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
             else if (value instanceof Vector2D)
-                input = new Vector2DInputRenderer(`${INPUT_PREFIX}${key}`, value);
+                input = new Vector2DInputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
             if (!input)
                 throw new Error(`Unsupported input type for key: ${key}`);
             input.getLabelElement().innerText = prettifyKey(key);
             this.getCell(index, 0).setContent(input.getLabelElement());
             this.getCell(index, 1).setContent(input);
             const override_inputs = []; // May may expand "override_inputs" to "modifier_inputs" in the future to allow non-overriding and non-boolean inputs
-            boolean_overrides.forEach((override, index) => {
-                const override_input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override`);
+            boolean_overrides.forEach((override, index1) => {
+                const override_input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override_of_${id}`);
                 override_inputs.push(override_input);
-                this.getCell(index, 2 + index).setContent(override_input);
+                this.getCell(index1, 2 + index1).setContent(override_input);
+                console.log(override_input.getElement());
             });
             __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(key, [input, ...override_inputs]);
         });
