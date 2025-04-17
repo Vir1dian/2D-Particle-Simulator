@@ -85,17 +85,17 @@ class ParticlePanelRenderer extends Renderer {
         particle_panel.appendChild(list_wrapper);
     }
     setupAddParticlesDialog() {
-        const body = new Renderer(document.createElement('div'));
+        const body = new AddParticleMenuRenderer(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f"));
         const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles', true);
-        dialog.setOpenButtonLabel("Add Particles");
-        dialog.setCloseButtonLabel("close", true);
+        dialog.getOpenButton().setLabel("Add Particles");
+        dialog.getCloseButton().setLabel("close", true);
         return dialog;
     }
     setupCreateGroupDialog() {
-        const body = new Renderer(document.createElement('div'));
+        const body = new CreateGroupMenuRenderer(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f"));
         const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group', true);
-        dialog.setOpenButtonLabel("Create Group");
-        dialog.setCloseButtonLabel("close", true);
+        dialog.getOpenButton().setLabel("Create Group");
+        dialog.getCloseButton().setLabel("close", true);
         return dialog;
     }
     createButtonsWrapper() {

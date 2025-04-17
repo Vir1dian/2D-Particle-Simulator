@@ -46,6 +46,12 @@ class ButtonRenderer extends Renderer {
         __classPrivateFieldSet(this, _ButtonRenderer_event, event, "f");
         this.getElement().addEventListener(event, __classPrivateFieldGet(this, _ButtonRenderer_callback, "f"));
     }
+    setLabel(label, is_mdi = false) {
+        if (is_mdi) {
+            this.setClassName("material-symbols-sharp icon");
+        }
+        this.getElement().textContent = label;
+    }
     remove() {
         this.deafen();
         super.remove();
@@ -91,20 +97,6 @@ class DialogRenderer extends Renderer {
         else {
             wrapper.appendChild(element);
         }
-    }
-    setOpenButtonLabel(label, is_mdi = false) {
-        const open_button = this.getOpenButton();
-        if (is_mdi) {
-            open_button.setClassName("material-symbols-sharp icon");
-        }
-        open_button.getElement().textContent = label;
-    }
-    setCloseButtonLabel(label, is_mdi = false) {
-        const close_button = this.getCloseButton();
-        if (is_mdi) {
-            close_button.setClassName("material-symbols-sharp icon");
-        }
-        close_button.getElement().textContent = label;
     }
     getOpenButton() {
         return __classPrivateFieldGet(this, _DialogRenderer_open_button, "f");
@@ -182,6 +174,9 @@ class StandardDialogRenderer extends DialogRenderer {
             document.onmouseup = null;
             document.onmousemove = null;
         }
+    }
+    getBody() {
+        return __classPrivateFieldGet(this, _StandardDialogRenderer_body, "f");
     }
 }
 _StandardDialogRenderer_body = new WeakMap();

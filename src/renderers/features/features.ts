@@ -51,8 +51,8 @@ class EnvironmentPanelRenderer extends Renderer {
  */
 class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, dialogs
   #simulation: Simulation;
-  #add_particles_dialog: StandardDialogRenderer;
-  #create_group_dialog: StandardDialogRenderer;
+  #add_particles_dialog: StandardDialogRenderer<AddParticleMenuRenderer>;
+  #create_group_dialog: StandardDialogRenderer<CreateGroupMenuRenderer>;
   #group_list: ListRenderer<ParticleUnitGroupRenderer>;
 
   constructor(simulation: Simulation) {
@@ -84,24 +84,18 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     this.#group_list.setParent(list_wrapper);
     particle_panel.appendChild(list_wrapper);
   }
-  private setupAddParticlesDialog(): StandardDialogRenderer {
-    const body = new Renderer(document.createElement('div'));
-    
-
-
+  private setupAddParticlesDialog(): StandardDialogRenderer<AddParticleMenuRenderer> {
+    const body = new AddParticleMenuRenderer(this.#simulation);
     const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles', true);
-    dialog.setOpenButtonLabel("Add Particles");
-    dialog.setCloseButtonLabel("close", true);
-
+    dialog.getOpenButton().setLabel("Add Particles");
+    dialog.getCloseButton().setLabel("close", true);
     return dialog;
   }
-  private setupCreateGroupDialog(): StandardDialogRenderer {
-    const body = new Renderer(document.createElement('div'));
-
-
+  private setupCreateGroupDialog(): StandardDialogRenderer<CreateGroupMenuRenderer> {
+    const body = new CreateGroupMenuRenderer(this.#simulation);
     const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group', true);
-    dialog.setOpenButtonLabel("Create Group");
-    dialog.setCloseButtonLabel("close", true);
+    dialog.getOpenButton().setLabel("Create Group");
+    dialog.getCloseButton().setLabel("close", true);
 
     return dialog;
   }

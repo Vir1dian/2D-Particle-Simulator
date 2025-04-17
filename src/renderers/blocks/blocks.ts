@@ -31,6 +31,12 @@ class ButtonRenderer extends Renderer {
     this.#event = event;
     this.getElement().addEventListener(event, this.#callback);
   }
+  setLabel(label: string, is_mdi: boolean = false): void {
+    if (is_mdi) {
+      this.setClassName("material-symbols-sharp icon");
+    }
+    this.getElement().textContent = label;
+  }
   remove(): void {
     this.deafen();
     super.remove();
@@ -78,20 +84,6 @@ class DialogRenderer extends Renderer {
       wrapper.appendChild(element);
     }
   }
-  setOpenButtonLabel(label: string, is_mdi: boolean = false): void {
-    const open_button: ButtonRenderer = this.getOpenButton();
-    if (is_mdi) {
-      open_button.setClassName("material-symbols-sharp icon");
-    }
-    open_button.getElement().textContent = label;
-  }
-  setCloseButtonLabel(label: string, is_mdi: boolean = false): void {
-    const close_button: ButtonRenderer = this.getCloseButton();
-    if (is_mdi) {
-      close_button.setClassName("material-symbols-sharp icon");
-    }
-    close_button.getElement().textContent = label;
-  }
   getOpenButton(): ButtonRenderer {
     return this.#open_button;
   }
@@ -118,9 +110,9 @@ class DialogRenderer extends Renderer {
  * a renderer body. The open button must be accessed 
  * and appended somewhere manually.
  */
-class StandardDialogRenderer extends DialogRenderer {
-  #body: Renderer;
-  constructor(body: Renderer, id: string, title_text: string = '', isDraggable: boolean = false) {
+class StandardDialogRenderer<T extends Renderer> extends DialogRenderer {
+  #body: T;
+  constructor(body: T, id: string, title_text: string = '', isDraggable: boolean = false) {
     super(id);
     const header: HTMLElement = document.createElement('header');
     header.style.display = 'flex';
@@ -173,6 +165,9 @@ class StandardDialogRenderer extends DialogRenderer {
       document.onmouseup = null;
       document.onmousemove = null;
     }
+  }
+  getBody(): T {
+    return this.#body;
   }
 }
 

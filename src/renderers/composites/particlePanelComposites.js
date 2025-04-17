@@ -10,7 +10,18 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _AddParticleMenuRenderer_simulation, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_submit_button, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+var _AddParticleMenuRenderer_simulation, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_submit_button, _CreateGroupMenuRenderer_simulation, _CreateGroupMenuRenderer_input_table, _CreateGroupMenuRenderer_submit_button, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
 class AddParticleMenuRenderer extends Renderer {
     constructor(simulation) {
         const menu_wrapper = document.createElement('div');
@@ -29,16 +40,39 @@ class AddParticleMenuRenderer extends Renderer {
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_submit_button, this.setupSubmitButton(), "f");
         // DOM Content
         const select_wrapper = document.createElement('div');
+        select_wrapper.className = 'menu_item';
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getLabelElement().innerText = "Group: ";
+        select_wrapper.appendChild(__classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getLabelElement());
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").setParent(select_wrapper);
+        menu_wrapper.appendChild(select_wrapper);
+        const table_wrapper = document.createElement('div');
+        table_wrapper.className = 'menu_item';
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").setParent(table_wrapper);
+        menu_wrapper.appendChild(table_wrapper);
+        const submit_wrapper = document.createElement('div');
+        submit_wrapper.style.display = 'flex';
+        submit_wrapper.style.justifyContent = 'center';
+        submit_wrapper.style.marginTop = '8px';
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_submit_button, "f").setParent(submit_wrapper);
+        menu_wrapper.appendChild(submit_wrapper);
     }
     setupGroupSelector() {
         return new SelectRenderer('menu_group_selector_add_particle', Array.from(__classPrivateFieldGet(this, _AddParticleMenuRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new OptionRenderer(group_id)));
     }
     setupInputTable() {
-        const properties = Object.assign({}, DEFAULT_GROUPING);
-        delete properties.enable_path_tracing;
-        return new InputTableRenderer(properties);
+        const properties = ((_a) => {
+            var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
+            return exposed_properties;
+        })(DEFAULT_GROUPING);
+        const input_table = new InputTableRenderer(properties, 'random');
+        input_table.setClassName('menu_table');
+        return input_table;
     }
     setupSubmitButton() {
+        const button = new ButtonRenderer(() => {
+        });
+        button.setLabel('Submit');
+        return button;
     }
     refresh() {
     }
@@ -47,18 +81,36 @@ class AddParticleMenuRenderer extends Renderer {
 }
 _AddParticleMenuRenderer_simulation = new WeakMap(), _AddParticleMenuRenderer_group_selector = new WeakMap(), _AddParticleMenuRenderer_input_table = new WeakMap(), _AddParticleMenuRenderer_submit_button = new WeakMap();
 class CreateGroupMenuRenderer extends Renderer {
-    // To be placed inside an existing StandardDialogRenderer
-    // Figure out how to make it so that filling out the rest of the forms are optional,
-    // maybe use checkboxes for users to tick if they want to specify that property?
-    constructor() {
+    constructor(simulation) {
         const menu_wrapper = document.createElement('div');
         super(menu_wrapper, 'dialog_menu', 'dialog_menu_create_group');
+        // To be placed inside an existing StandardDialogRenderer
+        _CreateGroupMenuRenderer_simulation.set(this, void 0);
+        _CreateGroupMenuRenderer_input_table.set(this, void 0);
+        _CreateGroupMenuRenderer_submit_button.set(this, void 0);
         // Stored Data
+        __classPrivateFieldSet(this, _CreateGroupMenuRenderer_simulation, simulation, "f");
+        __classPrivateFieldSet(this, _CreateGroupMenuRenderer_input_table, this.setupInputTable(), "f");
+        __classPrivateFieldSet(this, _CreateGroupMenuRenderer_submit_button, this.setupSubmitButton(), "f");
         // DOM Content
     }
-    prepareParticleGroup() {
+    setupInputTable() {
+        const properties = ((_a) => {
+            var { enable_path_tracing } = _a, exposed_properties = __rest(_a, ["enable_path_tracing"]);
+            return exposed_properties;
+        })(DEFAULT_GROUPING);
+        return new InputTableRenderer(properties, 'random', 'unspecified');
+    }
+    setupSubmitButton() {
+        return new ButtonRenderer(() => {
+        });
+    }
+    refresh() {
+    }
+    submit() {
     }
 }
+_CreateGroupMenuRenderer_simulation = new WeakMap(), _CreateGroupMenuRenderer_input_table = new WeakMap(), _CreateGroupMenuRenderer_submit_button = new WeakMap();
 class EditGroupMenuRenderer extends Renderer {
     // To be placed inside an existing StandardDialogRenderer
     // maybe use checkboxes for users to tick if they want to specify/unspecify a property?
@@ -127,8 +179,8 @@ class ParticleUnitGroupRenderer extends Renderer {
     setupDetailsDialog(group_id) {
         const body = new Renderer(document.createElement('div'));
         const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, group_id, true);
-        details_dialog.setOpenButtonLabel("expand_content", true);
-        details_dialog.setCloseButtonLabel("close", true);
+        details_dialog.getOpenButton().setLabel("expand_content", true);
+        details_dialog.getCloseButton().setLabel("close", true);
         // Entire setup for dialog details
         return details_dialog;
     }
@@ -210,8 +262,8 @@ class ParticleUnitRenderer extends Renderer {
     setupDetailsDialog(id) {
         const body = new Renderer(document.createElement('div'));
         const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle ${id}`, true);
-        details_dialog.setOpenButtonLabel("expand_content", true);
-        details_dialog.setCloseButtonLabel("close", true);
+        details_dialog.getOpenButton().setLabel("expand_content", true);
+        details_dialog.getCloseButton().setLabel("close", true);
         // Entire setup for dialog details
         // IDEA: on open, focus on the particles by overlaying a 
         // translucent div the size of the container over the others

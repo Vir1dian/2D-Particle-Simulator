@@ -19,7 +19,23 @@ class AddParticleMenuRenderer extends Renderer {
 
     // DOM Content
     const select_wrapper: HTMLDivElement = document.createElement('div');
+    select_wrapper.className = 'menu_item';
+    this.#group_selector.getLabelElement().innerText = "Group: ";
+    select_wrapper.appendChild(this.#group_selector.getLabelElement());
+    this.#group_selector.setParent(select_wrapper);
+    menu_wrapper.appendChild(select_wrapper);
 
+    const table_wrapper: HTMLDivElement = document.createElement('div');
+    table_wrapper.className = 'menu_item';
+    this.#input_table.setParent(table_wrapper);
+    menu_wrapper.appendChild(table_wrapper);
+
+    const submit_wrapper = document.createElement('div');
+    submit_wrapper.style.display = 'flex';
+    submit_wrapper.style.justifyContent = 'center';
+    submit_wrapper.style.marginTop = '8px';
+    this.#submit_button.setParent(submit_wrapper);
+    menu_wrapper.appendChild(submit_wrapper);
   }
   private setupGroupSelector(): SelectRenderer {
     return new SelectRenderer(
@@ -31,12 +47,19 @@ class AddParticleMenuRenderer extends Renderer {
     );
   }
   private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
-    const properties = {...DEFAULT_GROUPING};
-    delete properties.enable_path_tracing;
-    return new InputTableRenderer(properties);
+    const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
+    const input_table = new InputTableRenderer(properties, 'random');
+    input_table.setClassName('menu_table');
+    return input_table;
   }
   private setupSubmitButton(): ButtonRenderer {
-    
+    const button: ButtonRenderer = new ButtonRenderer(
+      () => {
+
+      }
+    );
+    button.setLabel('Submit');
+    return button;
   }
   refresh(): void {
 
@@ -48,20 +71,37 @@ class AddParticleMenuRenderer extends Renderer {
 
 class CreateGroupMenuRenderer extends Renderer {
   // To be placed inside an existing StandardDialogRenderer
-  // Figure out how to make it so that filling out the rest of the forms are optional,
-  // maybe use checkboxes for users to tick if they want to specify that property?
-  constructor() {
+  #simulation: Simulation;
+  #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
+  #submit_button: ButtonRenderer;
+
+  constructor(simulation: Simulation) {
     const menu_wrapper: HTMLDivElement = document.createElement('div');
     super(menu_wrapper, 'dialog_menu', 'dialog_menu_create_group');
 
     // Stored Data
-
+    this.#simulation = simulation;
+    this.#input_table = this.setupInputTable();
+    this.#submit_button = this.setupSubmitButton();
 
     // DOM Content
 
+  }
+  private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
+    const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
+    return new InputTableRenderer(properties, 'random', 'unspecified');
+  }
+  private setupSubmitButton(): ButtonRenderer {
+    return new ButtonRenderer(
+      () => {
+
+      }
+    );
+  }
+  refresh(): void {
 
   }
-  prepareParticleGroup(): ParticleGroup {
+  submit(): void {
 
   }
 }
@@ -111,7 +151,7 @@ class EditParticleMenuRenderer extends Renderer {
 class ParticleUnitGroupRenderer extends Renderer {
   #particle_group: ParticleGroup;
   #icon: Renderer;
-  #details_dialog: StandardDialogRenderer;  // maybe make this non-modal to edit outside of the popup?
+  #details_dialog: StandardDialogRenderer<Renderer>;  // maybe make this non-modal to edit outside of the popup?
   #drag_button: ButtonRenderer;
   #unit_list: ListRenderer<ParticleUnitRenderer>;
   
@@ -144,11 +184,11 @@ class ParticleUnitGroupRenderer extends Renderer {
     else icon.getElement().style.backgroundColor = color;
     return icon;
   };
-  private setupDetailsDialog(group_id: string): StandardDialogRenderer {
+  private setupDetailsDialog(group_id: string): StandardDialogRenderer<Renderer> {
     const body = new Renderer(document.createElement('div'));
     const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, group_id, true);
-    details_dialog.setOpenButtonLabel("expand_content", true);
-    details_dialog.setCloseButtonLabel("close", true);
+    details_dialog.getOpenButton().setLabel("expand_content", true);
+    details_dialog.getCloseButton().setLabel("close", true);
 
     // Entire setup for dialog details
 
@@ -207,7 +247,7 @@ class ParticleUnitGroupRenderer extends Renderer {
 class ParticleUnitRenderer extends Renderer {
   #particle_renderer: ParticlePointRenderer;
   #icon: Renderer;
-  #details_dialog: StandardDialogRenderer;  // maybe make this non-modal to edit outside of the popup?
+  #details_dialog: StandardDialogRenderer<Renderer>;  // maybe make this non-modal to edit outside of the popup?
   #drag_button: ButtonRenderer;
   constructor(particle: Particle, container: BoxSpace) {
     const particle_control_element : HTMLDivElement = document.createElement('div');
@@ -228,11 +268,11 @@ class ParticleUnitRenderer extends Renderer {
     icon.getElement().style.backgroundColor = color;
     return icon;
   }
-  private setupDetailsDialog(id: number): StandardDialogRenderer {
+  private setupDetailsDialog(id: number): StandardDialogRenderer<Renderer> {
     const body = new Renderer(document.createElement('div'));
     const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle ${id}`, true);
-    details_dialog.setOpenButtonLabel("expand_content", true);
-    details_dialog.setCloseButtonLabel("close", true);
+    details_dialog.getOpenButton().setLabel("expand_content", true);
+    details_dialog.getCloseButton().setLabel("close", true);
 
     // Entire setup for dialog details
     // IDEA: on open, focus on the particles by overlaying a 
