@@ -279,27 +279,23 @@ class SelectRenderer extends Renderer {
         _SelectRenderer_selected.set(this, void 0);
         _SelectRenderer_name.set(this, void 0);
         _SelectRenderer_label_element.set(this, void 0); // appended manually within the DOM, but not required
-        // Creates a trivial option at the start, intended to persist until the renderer is removed
-        __classPrivateFieldSet(this, _SelectRenderer_options, [new OptionRenderer("", ""), ...options], "f");
+        __classPrivateFieldSet(this, _SelectRenderer_options, options, "f");
+        if (options.length <= 0)
+            __classPrivateFieldSet(this, _SelectRenderer_options, [new OptionRenderer("", "")], "f");
         options.forEach(option => {
             option.setParent(this);
         });
         __classPrivateFieldSet(this, _SelectRenderer_selected, this.resolveSelectedValue(selected_value), "f");
         __classPrivateFieldSet(this, _SelectRenderer_name, name, "f");
         select.value = __classPrivateFieldGet(this, _SelectRenderer_selected, "f").getValue();
-        select.addEventListener("change", () => {
-            __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[this.getOptionIndex(this.getElement().value)], "f");
-        });
         const label = document.createElement('label');
         label.htmlFor = id;
         __classPrivateFieldSet(this, _SelectRenderer_label_element, label, "f");
     }
     resolveSelectedValue(selected_value) {
+        var _a;
         // Returns the first available option or undefined if the selected_value does not exist among options
-        const selected_option = __classPrivateFieldGet(this, _SelectRenderer_options, "f").find(option => option.getValue() === selected_value);
-        if (selected_option)
-            return selected_option;
-        return __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0];
+        return (_a = __classPrivateFieldGet(this, _SelectRenderer_options, "f").find(option => option.getValue() === selected_value)) !== null && _a !== void 0 ? _a : __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0];
     }
     // getters
     getElement() {
@@ -325,6 +321,12 @@ class SelectRenderer extends Renderer {
         // Prevents setChild from being used for an SelectRenderer
         throw new Error("setChild() not allowed for SelectRenderer, use addOption().");
     }
+    setSelected(index) {
+        if (index < 0 || index >= __classPrivateFieldGet(this, _SelectRenderer_options, "f").length)
+            throw new Error("Index out of bounds.");
+        __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[index], "f");
+        this.getElement().value = __classPrivateFieldGet(this, _SelectRenderer_selected, "f").getValue();
+    }
     setName(name) {
         __classPrivateFieldSet(this, _SelectRenderer_name, name, "f");
         this.getElement().name = name;
@@ -341,23 +343,32 @@ class SelectRenderer extends Renderer {
     }
     removeOption(option) {
         const index = this.getOptionIndex(option.getValue());
-        if (index < 1)
+        if (index < 0)
             return;
         __classPrivateFieldGet(this, _SelectRenderer_options, "f")[index].remove();
         __classPrivateFieldGet(this, _SelectRenderer_options, "f").splice(index, 1);
+        if (__classPrivateFieldGet(this, _SelectRenderer_options, "f").length <= 0) {
+            this.addOption(new OptionRenderer("", ""));
+        }
         if (__classPrivateFieldGet(this, _SelectRenderer_selected, "f") === option) {
-            // Sets the selected option to the first nontrivial option if possible, if it was deleted.
-            __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f").length > 1 ? __classPrivateFieldGet(this, _SelectRenderer_options, "f")[1] : __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0], "f");
+            __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0], "f");
             this.getElement().value = __classPrivateFieldGet(this, _SelectRenderer_selected, "f").getValue();
         }
     }
-    empty() {
-        __classPrivateFieldGet(this, _SelectRenderer_options, "f").slice(1).forEach(option => option.remove());
-        __classPrivateFieldGet(this, _SelectRenderer_options, "f").splice(1, Infinity);
+    refresh() {
+        __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[this.getOptionIndex(this.getElement().value)], "f");
+    }
+    empty(completely = false) {
+        __classPrivateFieldGet(this, _SelectRenderer_options, "f").forEach(option => option.remove());
+        __classPrivateFieldGet(this, _SelectRenderer_options, "f").length = 0;
+        if (!completely) {
+            this.addOption(new OptionRenderer("", ""));
+            __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0], "f");
+            this.getElement().value = __classPrivateFieldGet(this, _SelectRenderer_selected, "f").getValue();
+        }
     }
     remove() {
-        __classPrivateFieldGet(this, _SelectRenderer_options, "f").length = 0;
-        __classPrivateFieldGet(this, _SelectRenderer_selected, "f").remove();
+        this.empty(true);
         __classPrivateFieldGet(this, _SelectRenderer_label_element, "f").remove();
         super.remove();
     }
@@ -424,6 +435,7 @@ _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_ele
  * overrides such as 'random' and 'unspecified'. Stores the
  * record object for read-only operations, and a map of
  * renderer arrays for inputs.
+ * ID parameter required to prevent duplicate input ID's.
  * Boolean overrides are specifically intended for the
  * ParticleGrouping interface structure.
  */
@@ -436,7 +448,7 @@ class InputTableRenderer extends TableRenderer {
         this.setID(id);
         __classPrivateFieldSet(this, _InputTableRenderer_properties, properties, "f");
         __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
-        property_keys.forEach((key, index) => {
+        property_keys.forEach((key, row) => {
             const value = properties[key];
             let input;
             if (typeof value === 'string')
@@ -450,14 +462,13 @@ class InputTableRenderer extends TableRenderer {
             if (!input)
                 throw new Error(`Unsupported input type for key: ${key}`);
             input.getLabelElement().innerText = prettifyKey(key);
-            this.getCell(index, 0).setContent(input.getLabelElement());
-            this.getCell(index, 1).setContent(input);
+            this.getCell(row, 0).setContent(input.getLabelElement());
+            this.getCell(row, 1).setContent(input);
             const override_inputs = []; // May may expand "override_inputs" to "modifier_inputs" in the future to allow non-overriding and non-boolean inputs
-            boolean_overrides.forEach((override, index1) => {
+            boolean_overrides.forEach((override, column) => {
                 const override_input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override_of_${id}`);
                 override_inputs.push(override_input);
-                this.getCell(index1, 2 + index1).setContent(override_input);
-                console.log(override_input.getElement());
+                this.getCell(row, 2 + column).setContent(override_input);
             });
             __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(key, [input, ...override_inputs]);
         });

@@ -57,7 +57,9 @@ class AddParticleMenuRenderer extends Renderer {
         menu_wrapper.appendChild(submit_wrapper);
     }
     setupGroupSelector() {
-        return new SelectRenderer('menu_group_selector_add_particle', Array.from(__classPrivateFieldGet(this, _AddParticleMenuRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new OptionRenderer(group_id)));
+        const selector = new SelectRenderer('menu_group_selector_add_particle', Array.from(__classPrivateFieldGet(this, _AddParticleMenuRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new OptionRenderer(group_id)));
+        selector.setSelected(0);
+        return selector;
     }
     setupInputTable() {
         const properties = ((_a) => {

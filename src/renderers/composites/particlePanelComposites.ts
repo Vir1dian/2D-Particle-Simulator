@@ -38,13 +38,15 @@ class AddParticleMenuRenderer extends Renderer {
     menu_wrapper.appendChild(submit_wrapper);
   }
   private setupGroupSelector(): SelectRenderer {
-    return new SelectRenderer(
+    const selector = new SelectRenderer(
       'menu_group_selector_add_particle', 
       Array.from(
         this.#simulation.getParticleGroups() as Map<string, ParticleGroup>,
         ([group_id, group]) => new OptionRenderer(group_id)
       )
     );
+    selector.setSelected(0);
+    return selector;
   }
   private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);

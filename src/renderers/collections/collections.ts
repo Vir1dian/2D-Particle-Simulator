@@ -270,8 +270,8 @@ class SelectRenderer extends Renderer {
     select.name = name;
     super(select, "", id);  // id required for label elements
 
-    // Creates a trivial option at the start, intended to persist until the renderer is removed
-    this.#options = [new OptionRenderer("", ""), ...options];  
+    this.#options = options;  
+    if (options.length <= 0) this.#options = [new OptionRenderer("", "")];
     options.forEach(option => {
       option.setParent(this);
     });
@@ -280,9 +280,6 @@ class SelectRenderer extends Renderer {
     this.#name = name;
 
     select.value = this.#selected.getValue();
-    select.addEventListener("change", () => {
-      this.#selected = this.#options[this.getOptionIndex(this.getElement().value)];
-    });
 
     const label: HTMLLabelElement = document.createElement('label');
     label.htmlFor = id;
@@ -290,9 +287,7 @@ class SelectRenderer extends Renderer {
   }
   private resolveSelectedValue(selected_value: string): OptionRenderer {
     // Returns the first available option or undefined if the selected_value does not exist among options
-    const selected_option = this.#options.find(option => option.getValue() === selected_value);
-    if (selected_option) return selected_option;
-    return this.#options[0];
+    return this.#options.find(option => option.getValue() === selected_value) ?? this.#options[0];
   }
 
   // getters
@@ -320,6 +315,11 @@ class SelectRenderer extends Renderer {
     // Prevents setChild from being used for an SelectRenderer
     throw new Error("setChild() not allowed for SelectRenderer, use addOption().");
   }
+  setSelected(index: number): void {
+    if (index < 0 || index >= this.#options.length) throw new Error("Index out of bounds.");
+    this.#selected = this.#options[index];
+    this.getElement().value = this.#selected.getValue();
+  }
   setName(name: string): void {
     this.#name = name;
     this.getElement().name = name;
@@ -335,23 +335,33 @@ class SelectRenderer extends Renderer {
   }
   removeOption(option: OptionRenderer): void {
     const index: number = this.getOptionIndex(option.getValue());
-    if (index < 1) return;
+    if (index < 0) return;
     this.#options[index].remove();
     this.#options.splice(index, 1);
 
+    if (this.#options.length <= 0) {
+      this.addOption(new OptionRenderer("", ""));
+    }
+
     if (this.#selected === option) {
-      // Sets the selected option to the first nontrivial option if possible, if it was deleted.
-      this.#selected = this.#options.length > 1 ? this.#options[1] : this.#options[0];
+      this.#selected = this.#options[0];
       this.getElement().value = this.#selected.getValue();
     }
   }
-  empty(): void {  // remove all optionRenderers except for the trivial renderer (index 0)
-    this.#options.slice(1).forEach(option => option.remove());
-    this.#options.splice(1, Infinity);
+  refresh(): void {
+    this.#selected = this.#options[this.getOptionIndex(this.getElement().value)];
+  }
+  empty(completely: boolean = false): void {
+    this.#options.forEach(option => option.remove());
+    this.#options.length = 0;
+    if (!completely) {
+      this.addOption(new OptionRenderer("", ""));
+      this.#selected = this.#options[0];
+      this.getElement().value = this.#selected.getValue();
+    }
   }
   remove(): void {
-    this.#options.length = 0;
-    this.#selected.remove();
+    this.empty(true);
     this.#label_element.remove();
     super.remove();
   }
@@ -416,6 +426,7 @@ class DatalistInputRenderer extends InputRenderer {
  * overrides such as 'random' and 'unspecified'. Stores the 
  * record object for read-only operations, and a map of 
  * renderer arrays for inputs.
+ * ID parameter required to prevent duplicate input ID's.
  * Boolean overrides are specifically intended for the 
  * ParticleGrouping interface structure.
  */
@@ -431,7 +442,7 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
     this.#properties = properties;
     this.#inputs = new Map();
 
-    property_keys.forEach((key, index) => {
+    property_keys.forEach((key, row) => {
       const value: T = properties[key];
       let input: InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer | undefined;
 
@@ -442,14 +453,13 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
 
       if (!input) throw new Error(`Unsupported input type for key: ${key}`);
       input.getLabelElement().innerText = prettifyKey(key);
-      this.getCell(index, 0).setContent(input.getLabelElement()); 
-      this.getCell(index, 1).setContent(input); 
+      this.getCell(row, 0).setContent(input.getLabelElement()); 
+      this.getCell(row, 1).setContent(input); 
       const override_inputs: CheckboxInputRenderer[] = [];  // May may expand "override_inputs" to "modifier_inputs" in the future to allow non-overriding and non-boolean inputs
-      boolean_overrides.forEach((override, index1) => {
+      boolean_overrides.forEach((override, column) => {
         const override_input: CheckboxInputRenderer = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override_of_${id}`);
         override_inputs.push(override_input);
-        this.getCell(index1, 2 + index1).setContent(override_input);
-        console.log(override_input.getElement());
+        this.getCell(row, 2 + column).setContent(override_input);
       });
       this.#inputs.set(key, [input!, ...override_inputs]);
     });
