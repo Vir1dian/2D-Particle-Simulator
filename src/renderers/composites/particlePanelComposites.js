@@ -66,7 +66,7 @@ class AddParticleMenuRenderer extends Renderer {
             var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
             return exposed_properties;
         })(DEFAULT_GROUPING);
-        const input_table = new InputTableRenderer('addParticle', properties, 'random');
+        const input_table = new InputTableRenderer('addParticle', properties, true, 'random');
         input_table.setClassName('menu_table');
         return input_table;
     }
@@ -101,7 +101,7 @@ class CreateGroupMenuRenderer extends Renderer {
             var { enable_path_tracing } = _a, exposed_properties = __rest(_a, ["enable_path_tracing"]);
             return exposed_properties;
         })(DEFAULT_GROUPING);
-        return new InputTableRenderer('createGroup', properties, 'random', 'unspecified');
+        return new InputTableRenderer('createGroup', properties, true, 'random', 'unspecified');
     }
     setupSubmitButton() {
         return new ButtonRenderer(() => {

@@ -427,6 +427,8 @@ class DatalistInputRenderer extends InputRenderer {
  * record object for read-only operations, and a map of 
  * renderer arrays for inputs.
  * ID parameter required to prevent duplicate input ID's.
+ * Optional header, must be specified even when using
+ * boolean overrides.
  * Boolean overrides are specifically intended for the 
  * ParticleGrouping interface structure.
  */
@@ -434,16 +436,17 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
   #properties: Record<string, T>;  // Read-only, assume all properties are defined
   #inputs: Map<string, (InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer)[]>;
 
-  constructor(id: string, properties: Record<string, T>, ...boolean_overrides: ('random' | 'unspecified')[]) {
+  constructor(id: string, properties: Record<string, T>, has_header: boolean = false, ...boolean_overrides: ('random' | 'unspecified')[]) {
     const property_keys: string[] = Object.keys(properties);
-    super(property_keys.length, 2 + boolean_overrides.length);
+    super(property_keys.length + (has_header ? 1 : 0), 2 + boolean_overrides.length);
     this.setID(id);
 
     this.#properties = properties;
     this.#inputs = new Map();
 
-    property_keys.forEach((key, row) => {
+    property_keys.forEach((key, index) => {
       const value: T = properties[key];
+      const row = index  + (has_header ? 1 : 0);
       let input: InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer | undefined;
 
       if (typeof value === 'string') input = new InputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
@@ -459,7 +462,12 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
       boolean_overrides.forEach((override, column) => {
         const override_input: CheckboxInputRenderer = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override_of_${id}`);
         override_inputs.push(override_input);
-        this.getCell(row, 2 + column).setContent(override_input);
+        const cell: TableCellRenderer<CheckboxInputRenderer> = this.getCell(row, 2 + column);
+        cell.setContent(override_input);
+        if (has_header) {
+          this.getCell(0, 2 + column).setContent(prettifyKey(override));  // header row
+          cell.getElement().style.textAlign = 'center';
+        }
       });
       this.#inputs.set(key, [input!, ...override_inputs]);
     });

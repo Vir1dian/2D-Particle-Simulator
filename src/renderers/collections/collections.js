@@ -436,20 +436,23 @@ _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_ele
  * record object for read-only operations, and a map of
  * renderer arrays for inputs.
  * ID parameter required to prevent duplicate input ID's.
+ * Optional header, must be specified even when using
+ * boolean overrides.
  * Boolean overrides are specifically intended for the
  * ParticleGrouping interface structure.
  */
 class InputTableRenderer extends TableRenderer {
-    constructor(id, properties, ...boolean_overrides) {
+    constructor(id, properties, has_header = false, ...boolean_overrides) {
         const property_keys = Object.keys(properties);
-        super(property_keys.length, 2 + boolean_overrides.length);
+        super(property_keys.length + (has_header ? 1 : 0), 2 + boolean_overrides.length);
         _InputTableRenderer_properties.set(this, void 0); // Read-only, assume all properties are defined
         _InputTableRenderer_inputs.set(this, void 0);
         this.setID(id);
         __classPrivateFieldSet(this, _InputTableRenderer_properties, properties, "f");
         __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
-        property_keys.forEach((key, row) => {
+        property_keys.forEach((key, index) => {
             const value = properties[key];
+            const row = index + (has_header ? 1 : 0);
             let input;
             if (typeof value === 'string')
                 input = new InputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
@@ -468,7 +471,12 @@ class InputTableRenderer extends TableRenderer {
             boolean_overrides.forEach((override, column) => {
                 const override_input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override_of_${id}`);
                 override_inputs.push(override_input);
-                this.getCell(row, 2 + column).setContent(override_input);
+                const cell = this.getCell(row, 2 + column);
+                cell.setContent(override_input);
+                if (has_header) {
+                    this.getCell(0, 2 + column).setContent(prettifyKey(override)); // header row
+                    cell.getElement().style.textAlign = 'center';
+                }
             });
             __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(key, [input, ...override_inputs]);
         });

@@ -161,7 +161,6 @@ class StandardDialogRenderer extends DialogRenderer {
             document.onmousemove = elementDrag;
         }
         function elementDrag(e) {
-            console.log(`1: ${pos1}, 2: ${pos2}, 3: ${pos3}, 4: ${pos4}`);
             e.preventDefault();
             pos1 = pos3 - e.clientX;
             pos2 = pos4 - e.clientY;

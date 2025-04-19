@@ -50,7 +50,7 @@ class AddParticleMenuRenderer extends Renderer {
   }
   private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
-    const input_table = new InputTableRenderer('addParticle', properties, 'random');
+    const input_table = new InputTableRenderer('addParticle', properties, true, 'random');
     input_table.setClassName('menu_table');
     return input_table;
   }
@@ -91,7 +91,7 @@ class CreateGroupMenuRenderer extends Renderer {
   }
   private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
-    return new InputTableRenderer('createGroup', properties, 'random', 'unspecified');
+    return new InputTableRenderer('createGroup', properties, true, 'random', 'unspecified');
   }
   private setupSubmitButton(): ButtonRenderer {
     return new ButtonRenderer(
