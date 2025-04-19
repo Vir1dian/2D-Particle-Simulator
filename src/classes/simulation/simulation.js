@@ -14,13 +14,10 @@ var _Simulation_container, _Simulation_environment, _Simulation_config, _Simulat
 var SimEvent;
 (function (SimEvent) {
     SimEvent[SimEvent["Update"] = 0] = "Update";
-    SimEvent[SimEvent["Overwrite_Container"] = 1] = "Overwrite_Container";
-    SimEvent[SimEvent["Overwrite_Environment"] = 2] = "Overwrite_Environment";
-    SimEvent[SimEvent["Overwrite_Config"] = 3] = "Overwrite_Config";
-    SimEvent[SimEvent["Overwrite_Particle_Groups"] = 4] = "Overwrite_Particle_Groups";
-    SimEvent[SimEvent["Add_Particle_Group"] = 5] = "Add_Particle_Group";
-    SimEvent[SimEvent["Edit_Particle_Group"] = 6] = "Edit_Particle_Group";
-    SimEvent[SimEvent["Delete_Particle_group"] = 7] = "Delete_Particle_group";
+    SimEvent[SimEvent["Update_Container"] = 1] = "Update_Container";
+    SimEvent[SimEvent["Update_Environment"] = 2] = "Update_Environment";
+    SimEvent[SimEvent["Update_Config"] = 3] = "Update_Config";
+    SimEvent[SimEvent["Update_Particle_Groups"] = 4] = "Update_Particle_Groups";
 })(SimEvent || (SimEvent = {}));
 ;
 /**
@@ -66,8 +63,16 @@ class Simulation {
         if (__classPrivateFieldGet(this, _Simulation_particle_groups, "f").has(grouping.group_id)) {
             throw new Error(`Group name: ${grouping.group_id} already exists.`);
         }
-        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, new ParticleGroup(grouping, 0));
-        this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Add_Particle_Group, payload: grouping });
+        const group = new ParticleGroup(grouping, 0);
+        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, group);
+        this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Update_Particle_Groups, payload: { operation: "add", data: group } });
+    }
+    deleteGroup(group_id) {
+        const group = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group_id);
+        if (group)
+            group.getParticles().length = 0;
+        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").delete(group_id);
+        this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Update_Particle_Groups, payload: { operation: "delete", data: group_id } });
     }
     setPreset(preset) {
         const current_properties = {
@@ -79,22 +84,22 @@ class Simulation {
         if (preset.container) {
             console.log('update_container');
             __classPrivateFieldSet(this, _Simulation_container, deepmergeCustom(current_properties.container, preset_clone.container), "f");
-            this.notify_observers({ type: SimEvent.Overwrite_Container });
+            this.notify_observers({ type: SimEvent.Update_Container });
         }
         if (preset.environment) {
             console.log('update_environment');
             __classPrivateFieldSet(this, _Simulation_environment, deepmergeCustom(current_properties.environment, preset_clone.environment), "f");
-            this.notify_observers({ type: SimEvent.Overwrite_Environment });
+            this.notify_observers({ type: SimEvent.Update_Environment });
         }
         if (preset.config) {
             console.log('update_config');
             __classPrivateFieldSet(this, _Simulation_config, deepmergeCustom(current_properties.config, preset_clone.config), "f");
-            this.notify_observers({ type: SimEvent.Overwrite_Config });
+            this.notify_observers({ type: SimEvent.Update_Config });
         }
         if (preset.particle_groups) {
-            console.log('overwrite_particle_groups');
+            console.log('update_particle_groups');
             __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(preset_clone.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
-            this.notify_observers({ type: SimEvent.Overwrite_Particle_Groups });
+            this.notify_observers({ type: SimEvent.Update_Particle_Groups, payload: { operation: "overwrite" } });
         }
         if (preset)
             this.notify_observers({ type: SimEvent.Update });

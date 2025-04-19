@@ -67,7 +67,16 @@ class ParticlePanelRenderer extends Renderer {
         _ParticlePanelRenderer_create_group_dialog.set(this, void 0);
         _ParticlePanelRenderer_group_list.set(this, void 0);
         // Saved Data
-        simulation.add_observer(SimEvent.Overwrite_Particle_Groups, this.overwriteGroupList.bind(this));
+        simulation.add_observer(SimEvent.Update_Particle_Groups, (payload) => {
+            if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "add")
+                this.addGroup();
+            else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "edit")
+                this.editGroup(); // pass the data soon
+            else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "delete")
+                this.deleteGroup();
+            else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "overwrite")
+                this.overwriteGroupList();
+        });
         __classPrivateFieldSet(this, _ParticlePanelRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_add_particles_dialog, this.setupAddParticlesDialog(), "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_create_group_dialog, this.setupCreateGroupDialog(), "f");
@@ -108,7 +117,17 @@ class ParticlePanelRenderer extends Renderer {
     getGroupList() {
         return __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f");
     }
+    addGroup() {
+        console.log("adding a group");
+    }
+    editGroup() {
+        console.log("editing a group");
+    }
+    deleteGroup() {
+        console.log("deleting a group");
+    }
     overwriteGroupList() {
+        console.log("overwriting a group");
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").empty();
         Array.from(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f"), group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getContainer())).forEach(group_renderer => __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(group_renderer));
     }

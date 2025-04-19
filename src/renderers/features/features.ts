@@ -60,8 +60,12 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     super(particle_panel, 'control_item', 'control_parsetup');
 
     // Saved Data
-    simulation.add_observer(SimEvent.Overwrite_Particle_Groups, this.overwriteGroupList.bind(this));
-
+    simulation.add_observer(SimEvent.Update_Particle_Groups, (payload?) => {
+      if (payload?.operation === "add") this.addGroup();
+      else if (payload?.operation === "edit") this.editGroup();  // pass the data soon
+      else if (payload?.operation === "delete") this.deleteGroup();
+      else if (payload?.operation === "overwrite") this.overwriteGroupList();
+    });
     this.#simulation = simulation;
     this.#add_particles_dialog = this.setupAddParticlesDialog();
     this.#create_group_dialog = this.setupCreateGroupDialog();
@@ -109,7 +113,17 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   getGroupList(): ListRenderer<ParticleUnitGroupRenderer> {
     return this.#group_list;
   }
+  addGroup(): void {
+    console.log("adding a group")
+  }
+  editGroup(): void {
+    console.log("editing a group")
+  }
+  deleteGroup(): void {
+    console.log("deleting a group")
+  }
   overwriteGroupList(): void {
+    console.log("overwriting a group")
     this.#group_list.empty();
     Array.from(
       this.#simulation.getParticleGroups() as Map<string, ParticleGroup>, 

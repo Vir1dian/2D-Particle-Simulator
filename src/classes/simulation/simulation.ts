@@ -1,13 +1,15 @@
 enum SimEvent {
   Update,
-  Overwrite_Container,
-  Overwrite_Environment,
-  Overwrite_Config,
-  Overwrite_Particle_Groups,
-  Add_Particle_Group,
-  Edit_Particle_Group,
-  Delete_Particle_group
+  Update_Container,
+  Update_Environment,
+  Update_Config,
+  Update_Particle_Groups
 };
+
+type SimEventPayload = {
+  operation: "add" | "edit" | "delete" | "overwrite",
+  data?: string | Particle | ParticleGroup;
+}
 
 /**
  * Oversees most processes in the program.
@@ -21,7 +23,7 @@ class Simulation {
   #environment: SimEnvironment;
   #config: SimConfig;
   #particle_groups: Map<string, ParticleGroup>;
-  #observers: Map<SimEvent, Set<(payload?: any) => void>>;  // using a map with a set to avoid duplicate callbacks for an event type
+  #observers: Map<SimEvent, Set<(payload?: SimEventPayload) => void>>;  // using a map with a set to avoid duplicate callbacks for an event type
 
   constructor(preset: SimPreset = {}) {
     const preset_clone: SimPreset = structuredCloneCustom(preset);  
@@ -40,13 +42,13 @@ class Simulation {
     });
   }
   // Setters & Getters
-  add_observer(event: SimEvent, callback: (payload?: any) => void): void {
+  add_observer(event: SimEvent, callback: (payload?: SimEventPayload) => void): void {
     this.#observers.get(event)!.add(callback);
   }
-  remove_observer(event: SimEvent, callback: (payload?: any) => void): void {
+  remove_observer(event: SimEvent, callback: (payload?: SimEventPayload) => void): void {
     this.#observers.get(event)!.delete(callback);
   }
-  private notify_observers(...events: { type: SimEvent; payload?: any }[]): void {
+  private notify_observers(...events: { type: SimEvent; payload?: SimEventPayload }[]): void {
     events.forEach(({ type, payload }) => {
       this.#observers.get(type)!.forEach(callback => callback(payload));
     });
@@ -56,10 +58,20 @@ class Simulation {
     if (this.#particle_groups.has(grouping.group_id)) {
       throw new Error(`Group name: ${grouping.group_id} already exists.`);
     }
-    this.#particle_groups.set(grouping.group_id, new ParticleGroup(grouping, 0));
+    const group = new ParticleGroup(grouping, 0);
+    this.#particle_groups.set(grouping.group_id, group);
     this.notify_observers(
       { type: SimEvent.Update }, 
-      { type: SimEvent.Add_Particle_Group, payload: grouping}
+      { type: SimEvent.Update_Particle_Groups, payload: { operation: "add", data: group }}
+    );
+  }
+  deleteGroup(group_id: string): void {
+    const group = this.#particle_groups.get(group_id);
+    if (group) group.getParticles().length = 0;
+    this.#particle_groups.delete(group_id);
+    this.notify_observers(
+      { type: SimEvent.Update }, 
+      { type: SimEvent.Update_Particle_Groups, payload: { operation: "delete", data: group_id }}
     );
   }
   setPreset(preset: SimPreset): void {  
@@ -74,26 +86,26 @@ class Simulation {
     if (preset.container) {
       console.log('update_container');
       this.#container = deepmergeCustom(current_properties.container!, preset_clone.container!)
-      this.notify_observers({ type: SimEvent.Overwrite_Container });
+      this.notify_observers({ type: SimEvent.Update_Container });
     }
     if (preset.environment) {
       console.log('update_environment');
       this.#environment = deepmergeCustom(current_properties.environment!, preset_clone.environment!)
-      this.notify_observers({ type: SimEvent.Overwrite_Environment });
+      this.notify_observers({ type: SimEvent.Update_Environment });
     }
     if (preset.config) {
       console.log('update_config');
       this.#config = deepmergeCustom(current_properties.config!, preset_clone.config!)
-      this.notify_observers({ type: SimEvent.Overwrite_Config });
+      this.notify_observers({ type: SimEvent.Update_Config });
     }
     
     if (preset.particle_groups) {
-      console.log('overwrite_particle_groups')
+      console.log('update_particle_groups')
       this.#particle_groups = new Map(Array.from(
         preset_clone.particle_groups as Map<string, { grouping: ParticleGrouping, size: number}>, 
         ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)]
       ));
-      this.notify_observers({ type: SimEvent.Overwrite_Particle_Groups });
+      this.notify_observers({ type: SimEvent.Update_Particle_Groups, payload: { operation: "overwrite" } });
     }
 
     if (preset) this.notify_observers({ type: SimEvent.Update });

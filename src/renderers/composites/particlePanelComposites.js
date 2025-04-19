@@ -32,9 +32,16 @@ class AddParticleMenuRenderer extends Renderer {
         _AddParticleMenuRenderer_input_table.set(this, void 0);
         _AddParticleMenuRenderer_submit_button.set(this, void 0);
         // Stored Data
-        simulation.add_observer(SimEvent.Overwrite_Particle_Groups, this.refresh.bind(this));
-        simulation.add_observer(SimEvent.Add_Particle_Group, this.refresh.bind(this));
-        simulation.add_observer(SimEvent.Edit_Particle_Group, this.refresh.bind(this)); // Observers to update group_selector
+        simulation.add_observer(SimEvent.Update_Particle_Groups, (payload) => {
+            if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "add")
+                this.refresh();
+            else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "edit")
+                this.refresh(); // pass the data soon
+            else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "delete")
+                this.refresh();
+            else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "overwrite")
+                this.refresh();
+        });
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_group_selector, this.setupGroupSelector(), "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_input_table, this.setupInputTable(simulation.getContainer()), "f");
@@ -88,7 +95,7 @@ class AddParticleMenuRenderer extends Renderer {
         button.setLabel('Submit');
         return button;
     }
-    refresh() {
+    refresh(payload) {
     }
     submit() {
     }
@@ -139,7 +146,9 @@ class CreateGroupMenuRenderer extends Renderer {
     }
     setupSubmitButton() {
         const button = new ButtonRenderer(() => {
+            // const changes: ParticleGrouping = structuredCloneCustom(this.#input_table.prepareChanges() as ParticleGrouping);
             console.log(__classPrivateFieldGet(this, _CreateGroupMenuRenderer_input_table, "f").prepareChanges());
+            __classPrivateFieldGet(this, _CreateGroupMenuRenderer_simulation, "f").addGroup({ group_id: "test" });
         });
         button.setLabel('Submit');
         return button;

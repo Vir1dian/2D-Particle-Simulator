@@ -10,9 +10,12 @@ class AddParticleMenuRenderer extends Renderer {
     super(menu_wrapper, 'dialog_menu', 'dialog_menu_add_particle');
 
     // Stored Data
-    simulation.add_observer(SimEvent.Overwrite_Particle_Groups, this.refresh.bind(this));
-    simulation.add_observer(SimEvent.Add_Particle_Group, this.refresh.bind(this));
-    simulation.add_observer(SimEvent.Edit_Particle_Group, this.refresh.bind(this));  // Observers to update group_selector
+    simulation.add_observer(SimEvent.Update_Particle_Groups, (payload?) => {
+      if (payload?.operation === "add") this.refresh();
+      else if (payload?.operation === "edit") this.refresh();  // pass the data soon
+      else if (payload?.operation === "delete") this.refresh();
+      else if (payload?.operation === "overwrite") this.refresh();
+    });
     this.#simulation = simulation;
     this.#group_selector = this.setupGroupSelector();
     this.#input_table = this.setupInputTable(simulation.getContainer());
@@ -77,8 +80,8 @@ class AddParticleMenuRenderer extends Renderer {
     button.setLabel('Submit');
     return button;
   }
-  refresh(): void {
-
+  refresh(payload?: ParticleGrouping): void {
+    
   }
   submit(): void {
 
@@ -135,7 +138,9 @@ class CreateGroupMenuRenderer extends Renderer {
   private setupSubmitButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(
       () => {
+        // const changes: ParticleGrouping = structuredCloneCustom(this.#input_table.prepareChanges() as ParticleGrouping);
         console.log(this.#input_table.prepareChanges());
+        this.#simulation.addGroup({group_id: "test"});
       }
     );
     button.setLabel('Submit');
