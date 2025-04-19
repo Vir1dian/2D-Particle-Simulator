@@ -67,7 +67,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     this.#create_group_dialog = this.setupCreateGroupDialog();
     this.#group_list = new ListRenderer<ParticleUnitGroupRenderer>(...Array.from(
       simulation.getParticleGroups() as Map<string, ParticleGroup>, 
-      ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer())
+      ([group_id, group]) => new ParticleUnitGroupRenderer(simulation, group, simulation.getContainer())
     ));
 
     // Content
@@ -113,7 +113,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     this.#group_list.empty();
     Array.from(
       this.#simulation.getParticleGroups() as Map<string, ParticleGroup>, 
-      ([group_id, group]) => new ParticleUnitGroupRenderer(group, this.#simulation.getContainer())
+      ([group_id, group]) => new ParticleUnitGroupRenderer(this.#simulation, group, this.#simulation.getContainer())
     ).forEach(group_renderer => this.#group_list.push(group_renderer));
   }
   remove(): void {

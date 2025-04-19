@@ -475,17 +475,21 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
   prepareChanges(): Record<string, T> {
     const changes: Record<string, T> = {};
     for (const [key, inputs] of this.#inputs) {
-      let is_unspecified: boolean = false;
+      let is_unspecified: boolean = false;  // highest override
+      let is_random: boolean = false;
       inputs.forEach(input => {
         input.refreshValue();
         if (input.getElement().id.includes('_random_override') && (input as CheckboxInputRenderer).getBooleanValue()) {
           (changes[key] as string) = 'random';
+          is_random = true;
         };
         if (input.getElement().id.includes('_unspecified_override') && (input as CheckboxInputRenderer).getBooleanValue()) {
           is_unspecified = true;
+          delete changes[key];
         };
       });
       if (is_unspecified) continue;
+      if (is_random) continue;
 
       if (inputs[0] instanceof NumberInputRenderer) 
         (changes[key] as number) = inputs[0].getNumberValue();

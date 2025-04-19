@@ -484,19 +484,24 @@ class InputTableRenderer extends TableRenderer {
     prepareChanges() {
         const changes = {};
         for (const [key, inputs] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
-            let is_unspecified = false;
+            let is_unspecified = false; // highest override
+            let is_random = false;
             inputs.forEach(input => {
                 input.refreshValue();
                 if (input.getElement().id.includes('_random_override') && input.getBooleanValue()) {
                     changes[key] = 'random';
+                    is_random = true;
                 }
                 ;
                 if (input.getElement().id.includes('_unspecified_override') && input.getBooleanValue()) {
                     is_unspecified = true;
+                    delete changes[key];
                 }
                 ;
             });
             if (is_unspecified)
+                continue;
+            if (is_random)
                 continue;
             if (inputs[0] instanceof NumberInputRenderer)
                 changes[key] = inputs[0].getNumberValue();

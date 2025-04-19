@@ -71,7 +71,7 @@ class ParticlePanelRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticlePanelRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_add_particles_dialog, this.setupAddParticlesDialog(), "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_create_group_dialog, this.setupCreateGroupDialog(), "f");
-        __classPrivateFieldSet(this, _ParticlePanelRenderer_group_list, new ListRenderer(...Array.from(simulation.getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer()))), "f");
+        __classPrivateFieldSet(this, _ParticlePanelRenderer_group_list, new ListRenderer(...Array.from(simulation.getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(simulation, group, simulation.getContainer()))), "f");
         // Content
         const header = document.createElement('header');
         header.innerHTML = "Particle Setup";
@@ -110,7 +110,7 @@ class ParticlePanelRenderer extends Renderer {
     }
     overwriteGroupList() {
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").empty();
-        Array.from(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getContainer())).forEach(group_renderer => __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(group_renderer));
+        Array.from(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f"), group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getContainer())).forEach(group_renderer => __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(group_renderer));
     }
     remove() {
         __classPrivateFieldGet(this, _ParticlePanelRenderer_add_particles_dialog, "f").remove();

@@ -400,7 +400,8 @@ dialog::backdrop {
   display: inline-block;
   width: auto;
 }
-.parsetup_group button {
+.parsetup_group_buttons_wrapper > button,
+.parsetup_par_buttons_wrapper > button {
   position: relative;
   background-color: transparent;
   background-repeat: no-repeat;

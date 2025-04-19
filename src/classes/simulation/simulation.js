@@ -18,7 +18,9 @@ var SimEvent;
     SimEvent[SimEvent["Update_Environment"] = 2] = "Update_Environment";
     SimEvent[SimEvent["Update_Config"] = 3] = "Update_Config";
     SimEvent[SimEvent["Overwrite_Particle_Groups"] = 4] = "Overwrite_Particle_Groups";
-    SimEvent[SimEvent["Edit_Particle_Groups"] = 5] = "Edit_Particle_Groups";
+    SimEvent[SimEvent["Add_Particle_Group"] = 5] = "Add_Particle_Group";
+    SimEvent[SimEvent["Edit_Particle_Group"] = 6] = "Edit_Particle_Group";
+    SimEvent[SimEvent["Delete_Particle_group"] = 7] = "Delete_Particle_group";
 })(SimEvent || (SimEvent = {}));
 ;
 /**
@@ -65,7 +67,7 @@ class Simulation {
             throw new Error(`Group name: ${grouping.group_id} already exists.`);
         }
         __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, new ParticleGroup(grouping, 0));
-        this.notify_observers(SimEvent.Update, SimEvent.Edit_Particle_Groups);
+        this.notify_observers(SimEvent.Update, SimEvent.Add_Particle_Group);
     }
     setPreset(preset) {
         const current_properties = {

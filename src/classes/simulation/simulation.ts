@@ -4,7 +4,9 @@ enum SimEvent {
   Update_Environment,
   Update_Config,
   Overwrite_Particle_Groups,
-  Edit_Particle_Groups
+  Add_Particle_Group,
+  Edit_Particle_Group,
+  Delete_Particle_group
 };
 
 /**
@@ -55,7 +57,7 @@ class Simulation {
       throw new Error(`Group name: ${grouping.group_id} already exists.`);
     }
     this.#particle_groups.set(grouping.group_id, new ParticleGroup(grouping, 0));
-    this.notify_observers(SimEvent.Update, SimEvent.Edit_Particle_Groups);
+    this.notify_observers(SimEvent.Update, SimEvent.Add_Particle_Group);
   }
   setPreset(preset: SimPreset): void {  
     const current_properties: SimPreset = {
