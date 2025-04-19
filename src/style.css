@@ -118,6 +118,13 @@ input:not(input[type="checkbox"]), textarea {
   border-radius: 4px;
   box-shadow: inset 0px 1px 1px hsla(0, 0%, 0%, 0.075);
 }
+input:disabled {
+  cursor: not-allowed;
+}
+.disabled_input_label {
+  color: gray;
+  cursor: not-allowed;
+}
 .input_wrapper_xy {
   display: flex;
   justify-content: space-between;

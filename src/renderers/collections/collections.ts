@@ -423,19 +423,24 @@ class DatalistInputRenderer extends InputRenderer {
  * Left column contains prettified key names of the object, 
  * right column contains input fields for matching value
  * data types. Additional columns can be added for boolean
- * overrides such as 'random' and 'unspecified'. Stores the 
+ * overrides such as 'random' and 'unspecified'. Stores a 
  * record object for read-only operations, and a map of 
  * renderer arrays for inputs.
- * ID parameter required to prevent duplicate input ID's.
- * Optional header, must be specified even when using
+ * 
+ * ID parameter is required to prevent duplicate input ID's.
+ * Allows an optional header, must be specified even when using
  * boolean overrides.
+ * 
  * Boolean overrides are specifically intended for the 
- * ParticleGrouping interface structure.
+ * ParticleGrouping interface structure. The rightmost
+ * override has the highest priority, disabling the inputs
+ * to its left when checked.
  */
 class InputTableRenderer<T extends string | boolean | number | Vector2D | undefined> extends TableRenderer {
   #properties: Record<string, T>;  // Read-only, assume all properties are defined
   #inputs: Map<string, (InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer)[]>;
   // #validators: Record<string, (value: T) => true | string>;  // For the future, for more advanced error handling
+  #override_callbacks: Map<string, (() => void)[]>;
 
   constructor(id: string, properties: Record<string, T>, has_header: boolean = false, ...boolean_overrides: ('random' | 'unspecified')[]) {
     const property_keys: string[] = Object.keys(properties);
@@ -444,6 +449,7 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
 
     this.#properties = properties;
     this.#inputs = new Map();
+    this.#override_callbacks = new Map();
 
     property_keys.forEach((key, index) => {
       const value: T = properties[key];
@@ -462,6 +468,8 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
       const override_inputs: CheckboxInputRenderer[] = [];  // May may expand "override_inputs" to "modifier_inputs" in the future to allow non-overriding and non-boolean inputs
       boolean_overrides.forEach((override, column) => {
         const override_input: CheckboxInputRenderer = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override_of_${id}`);
+        this.setOverrideCallback(key, override_input, [input, ...override_inputs]);
+
         override_inputs.push(override_input);
         const cell: TableCellRenderer<CheckboxInputRenderer> = this.getCell(row, 2 + column);
         cell.setContent(override_input);
@@ -472,6 +480,31 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
       });
       this.#inputs.set(key, [input!, ...override_inputs]);
     });
+  }
+  private setOverrideCallback(key: string, override_input: CheckboxInputRenderer, left_inputs: (InputRenderer | Vector2DInputRenderer)[]): void {
+    const callback = () => {
+      const is_checked = override_input.getBooleanValue();
+      left_inputs.forEach(input => {
+        if (input instanceof InputRenderer) {
+          if (is_checked && !input.isDisabled()) input.toggleDisabled();
+          else if (!is_checked && input.isDisabled()) input.toggleDisabled();
+        }
+        else if (input instanceof Vector2DInputRenderer) {
+          if (is_checked && !input.isDisabled()) input.toggleDisabled();
+          else if (!is_checked && input.isDisabled()) input.toggleDisabled();
+        }
+      });
+    }
+    override_input.getElement().addEventListener('change', callback);
+    const existing_overrides = this.#override_callbacks.get(key);  // Overrides for a key may be 'random', 'unspecified', and potentially more
+    if (existing_overrides) existing_overrides.push(
+      () => {
+        override_input.getElement().removeEventListener('change', callback);
+      }
+    )
+    else this.#override_callbacks.set(key, [() => {
+      override_input.getElement().removeEventListener('change', callback);  // Saves the remove function for easy removal later
+    }]);
   }
   prepareChanges(): Record<string, T> {
     const changes: Record<string, T> = {};
@@ -544,6 +577,10 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
     });
   }
   remove(): void {
+    for (const removers of this.#override_callbacks.values()) {
+      removers.forEach(remove_callback => remove_callback());
+    }
+    this.#override_callbacks.clear();
     this.#inputs.clear();
     super.remove();
   }

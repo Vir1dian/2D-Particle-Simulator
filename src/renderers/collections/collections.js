@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_properties, _InputTableRenderer_inputs;
+var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_properties, _InputTableRenderer_inputs, _InputTableRenderer_override_callbacks;
 /**
  *
  */
@@ -432,25 +432,31 @@ _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_ele
  * Left column contains prettified key names of the object,
  * right column contains input fields for matching value
  * data types. Additional columns can be added for boolean
- * overrides such as 'random' and 'unspecified'. Stores the
+ * overrides such as 'random' and 'unspecified'. Stores a
  * record object for read-only operations, and a map of
  * renderer arrays for inputs.
- * ID parameter required to prevent duplicate input ID's.
- * Optional header, must be specified even when using
+ *
+ * ID parameter is required to prevent duplicate input ID's.
+ * Allows an optional header, must be specified even when using
  * boolean overrides.
+ *
  * Boolean overrides are specifically intended for the
- * ParticleGrouping interface structure.
+ * ParticleGrouping interface structure. The rightmost
+ * override has the highest priority, disabling the inputs
+ * to its left when checked.
  */
 class InputTableRenderer extends TableRenderer {
-    // #validators: Record<string, (value: T) => true | string>;  // For the future, for more advanced error handling
     constructor(id, properties, has_header = false, ...boolean_overrides) {
         const property_keys = Object.keys(properties);
         super(property_keys.length + (has_header ? 1 : 0), 2 + boolean_overrides.length);
         _InputTableRenderer_properties.set(this, void 0); // Read-only, assume all properties are defined
         _InputTableRenderer_inputs.set(this, void 0);
+        // #validators: Record<string, (value: T) => true | string>;  // For the future, for more advanced error handling
+        _InputTableRenderer_override_callbacks.set(this, void 0);
         this.setID(id);
         __classPrivateFieldSet(this, _InputTableRenderer_properties, properties, "f");
         __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
+        __classPrivateFieldSet(this, _InputTableRenderer_override_callbacks, new Map(), "f");
         property_keys.forEach((key, index) => {
             const value = properties[key];
             const row = index + (has_header ? 1 : 0);
@@ -471,6 +477,7 @@ class InputTableRenderer extends TableRenderer {
             const override_inputs = []; // May may expand "override_inputs" to "modifier_inputs" in the future to allow non-overriding and non-boolean inputs
             boolean_overrides.forEach((override, column) => {
                 const override_input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override_of_${id}`);
+                this.setOverrideCallback(key, override_input, [input, ...override_inputs]);
                 override_inputs.push(override_input);
                 const cell = this.getCell(row, 2 + column);
                 cell.setContent(override_input);
@@ -481,6 +488,35 @@ class InputTableRenderer extends TableRenderer {
             });
             __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(key, [input, ...override_inputs]);
         });
+    }
+    setOverrideCallback(key, override_input, left_inputs) {
+        const callback = () => {
+            const is_checked = override_input.getBooleanValue();
+            left_inputs.forEach(input => {
+                if (input instanceof InputRenderer) {
+                    if (is_checked && !input.isDisabled())
+                        input.toggleDisabled();
+                    else if (!is_checked && input.isDisabled())
+                        input.toggleDisabled();
+                }
+                else if (input instanceof Vector2DInputRenderer) {
+                    if (is_checked && !input.isDisabled())
+                        input.toggleDisabled();
+                    else if (!is_checked && input.isDisabled())
+                        input.toggleDisabled();
+                }
+            });
+        };
+        override_input.getElement().addEventListener('change', callback);
+        const existing_overrides = __classPrivateFieldGet(this, _InputTableRenderer_override_callbacks, "f").get(key); // Overrides for a key may be 'random', 'unspecified', and potentially more
+        if (existing_overrides)
+            existing_overrides.push(() => {
+                override_input.getElement().removeEventListener('change', callback);
+            });
+        else
+            __classPrivateFieldGet(this, _InputTableRenderer_override_callbacks, "f").set(key, [() => {
+                    override_input.getElement().removeEventListener('change', callback); // Saves the remove function for easy removal later
+                }]);
     }
     prepareChanges() {
         const changes = {};
@@ -551,8 +587,12 @@ class InputTableRenderer extends TableRenderer {
         });
     }
     remove() {
+        for (const removers of __classPrivateFieldGet(this, _InputTableRenderer_override_callbacks, "f").values()) {
+            removers.forEach(remove_callback => remove_callback());
+        }
+        __classPrivateFieldGet(this, _InputTableRenderer_override_callbacks, "f").clear();
         __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").clear();
         super.remove();
     }
 }
-_InputTableRenderer_properties = new WeakMap(), _InputTableRenderer_inputs = new WeakMap();
+_InputTableRenderer_properties = new WeakMap(), _InputTableRenderer_inputs = new WeakMap(), _InputTableRenderer_override_callbacks = new WeakMap();

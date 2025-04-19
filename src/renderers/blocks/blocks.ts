@@ -225,6 +225,8 @@ class InputRenderer extends Renderer {
   toggleDisabled(): void {
     this.#is_disabled = !this.#is_disabled;
     this.getElement().disabled = this.#is_disabled;
+    if (this.#is_disabled) this.#label_element.classList.add("disabled_input_label");
+    else this.#label_element.classList.remove("disabled_input_label");
   }
   setID(id: string): void {
     super.setID(id);
@@ -377,6 +379,8 @@ class Vector2DInputRenderer extends Renderer {
     this.#is_disabled = !this.#is_disabled;
     this.#input_x.toggleDisabled();
     this.#input_y.toggleDisabled();
+    if (this.#is_disabled) this.#label_element.classList.add("disabled_input_label");
+    else this.#label_element.classList.remove("disabled_input_label");
   }
   setID(id: string): void {
     this.#input_x.setID(`${id}_x`);
