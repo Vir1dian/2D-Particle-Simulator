@@ -535,8 +535,11 @@ class InputTableRenderer extends TableRenderer {
     }
     setNumberInputBounds(...bounds_definitions) {
         bounds_definitions.forEach(definition => {
-            const input = __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").get(definition.key);
-            if (input instanceof NumberInputRenderer && 'min' in definition && typeof definition.min !== 'object') {
+            const input = __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").get(definition.key)[0];
+            if (!input) {
+                throw new Error("setNumberInputBounds: Input key not found.");
+            }
+            else if (input instanceof NumberInputRenderer && 'min' in definition && typeof definition.min !== 'object') {
                 input.setBounds(definition.min, definition.max);
             }
             else if (input instanceof Vector2DInputRenderer && 'min' in definition && typeof definition.min === 'object') {

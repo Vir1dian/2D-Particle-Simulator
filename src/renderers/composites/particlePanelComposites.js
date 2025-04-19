@@ -68,7 +68,6 @@ class AddParticleMenuRenderer extends Renderer {
             return exposed_properties;
         })(DEFAULT_GROUPING);
         const input_table = new InputTableRenderer('addParticle', properties, true, 'random');
-        input_table.setClassName('menu_table');
         input_table.setNumberInputBounds(...DEFAULT_BOUNDS, {
             key: "position",
             min: {
@@ -125,7 +124,6 @@ class CreateGroupMenuRenderer extends Renderer {
             return exposed_properties;
         })(DEFAULT_GROUPING);
         const input_table = new InputTableRenderer('createGroup', properties, true, 'random', 'unspecified');
-        input_table.setClassName('menu_table');
         input_table.setNumberInputBounds(...DEFAULT_BOUNDS, {
             key: "position",
             min: {
@@ -190,7 +188,6 @@ class EditGroupMenuRenderer extends Renderer {
         })(DEFAULT_GROUPING);
         // set up this group instead of DEFAULT_GROUPING somehow
         const input_table = new InputTableRenderer('editGroup', properties, true, 'random', 'unspecified');
-        input_table.setClassName('menu_table');
         input_table.setNumberInputBounds(...DEFAULT_BOUNDS, {
             key: "position",
             min: {
@@ -261,7 +258,6 @@ class EditParticleMenuRenderer extends Renderer {
         })(__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f"));
         // allow only some fields to be editable depending on what is unspecified or randomized by the group
         const input_table = new InputTableRenderer('editParticle', properties);
-        input_table.setClassName('menu_table');
         input_table.setNumberInputBounds(...DEFAULT_BOUNDS, {
             key: "position",
             min: {

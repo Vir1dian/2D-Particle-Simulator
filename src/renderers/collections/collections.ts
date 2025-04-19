@@ -529,8 +529,11 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
     }[]
   ): void {
     bounds_definitions.forEach(definition => {
-      const input = this.#inputs.get(definition.key)
-      if (input instanceof NumberInputRenderer && 'min' in definition && typeof definition.min !== 'object') {
+      const input = this.#inputs.get(definition.key)![0];
+      if (!input) {
+        throw new Error ("setNumberInputBounds: Input key not found.");
+      }
+      else if (input instanceof NumberInputRenderer && 'min' in definition && typeof definition.min !== 'object') {
         input.setBounds(definition.min, definition.max as typeof definition.min);
       }
       else if (input instanceof Vector2DInputRenderer && 'min' in definition && typeof definition.min === 'object') {

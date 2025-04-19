@@ -229,13 +229,17 @@ dialog::backdrop {
 .menu_item table td:not(:last-child) {
   padding-right: 16px;
 }
-.menu_item table input {
+.menu_item table input:not(input[type="checkbox"]) {
+  width: 150px;
   border: 0;
   outline: 0;
   background: transparent;
   border-bottom: 1px solid rgb(222, 222, 222);
   box-shadow: inset 0px 0px 0px 0px red;
   border-radius: 0;
+}
+.menu_item table .input_wrapper_xy input:not(input[type="checkbox"]) {
+  width: 60px;
 }
 .menu_item table input:focus {
   border-bottom: 2px solid #2f72dc;

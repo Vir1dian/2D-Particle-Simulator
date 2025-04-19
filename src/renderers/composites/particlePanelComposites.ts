@@ -52,7 +52,6 @@ class AddParticleMenuRenderer extends Renderer {
   private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
     const input_table = new InputTableRenderer('addParticle', properties, true, 'random');
-    input_table.setClassName('menu_table');
     input_table.setNumberInputBounds(
       ...DEFAULT_BOUNDS, 
       { 
@@ -65,7 +64,7 @@ class AddParticleMenuRenderer extends Renderer {
           x: container.x_max, 
           y: container.y_max
         } 
-        }
+      }
     );
     return input_table;
   }
@@ -117,7 +116,6 @@ class CreateGroupMenuRenderer extends Renderer {
   private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
     const input_table = new InputTableRenderer('createGroup', properties, true, 'random', 'unspecified');
-    input_table.setClassName('menu_table');
     input_table.setNumberInputBounds(
       ...DEFAULT_BOUNDS, 
       { 
@@ -130,7 +128,7 @@ class CreateGroupMenuRenderer extends Renderer {
           x: container.x_max, 
           y: container.y_max
         } 
-        }
+      }
     );
     return input_table;
   }
@@ -188,7 +186,6 @@ class EditGroupMenuRenderer extends Renderer {
     const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);  
     // set up this group instead of DEFAULT_GROUPING somehow
     const input_table = new InputTableRenderer('editGroup', properties, true, 'random', 'unspecified');
-    input_table.setClassName('menu_table');
     input_table.setNumberInputBounds(
       ...DEFAULT_BOUNDS, 
       { 
@@ -201,7 +198,7 @@ class EditGroupMenuRenderer extends Renderer {
           x: container.x_max, 
           y: container.y_max
         } 
-        }
+      }
     );
     return input_table;
   }
@@ -269,7 +266,6 @@ class EditParticleMenuRenderer extends Renderer {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#particle);
     // allow only some fields to be editable depending on what is unspecified or randomized by the group
     const input_table = new InputTableRenderer('editParticle', properties);
-    input_table.setClassName('menu_table');
     input_table.setNumberInputBounds(
       ...DEFAULT_BOUNDS, 
       { 
@@ -282,7 +278,7 @@ class EditParticleMenuRenderer extends Renderer {
           x: container.x_max, 
           y: container.y_max
         } 
-        }
+      }
     );
     return input_table;
   }
