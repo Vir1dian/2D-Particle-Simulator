@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _StandardDialogRenderer_body, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _NumberInputRenderer_min, _NumberInputRenderer_max, _Vector2DInputRenderer_value, _Vector2DInputRenderer_input_x, _Vector2DInputRenderer_input_y, _Vector2DInputRenderer_is_disabled, _Vector2DInputRenderer_label_element;
+var _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _StandardDialogRenderer_body, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _NumberInputRenderer_min, _NumberInputRenderer_max, _NumberInputRenderer_clamp, _Vector2DInputRenderer_value, _Vector2DInputRenderer_input_x, _Vector2DInputRenderer_input_y, _Vector2DInputRenderer_is_disabled, _Vector2DInputRenderer_label_element;
 /**
  * Stores an HTMLButtonElement, maintains a callback
  * and an event. Uses only one eventlistener at a
@@ -248,6 +248,7 @@ class NumberInputRenderer extends InputRenderer {
         super(id, value.toString());
         _NumberInputRenderer_min.set(this, void 0);
         _NumberInputRenderer_max.set(this, void 0);
+        _NumberInputRenderer_clamp.set(this, void 0);
         __classPrivateFieldSet(this, _NumberInputRenderer_min, min, "f");
         __classPrivateFieldSet(this, _NumberInputRenderer_max, max, "f");
         this.setValue(value.toString());
@@ -257,9 +258,10 @@ class NumberInputRenderer extends InputRenderer {
             input.min = min.toString();
         if (max !== false)
             input.max = max.toString();
-        input.addEventListener("blur", () => {
+        __classPrivateFieldSet(this, _NumberInputRenderer_clamp, () => {
             this.setValue(input.value);
-        });
+        }, "f");
+        input.addEventListener("blur", __classPrivateFieldGet(this, _NumberInputRenderer_clamp, "f"));
     }
     resolveValue(value) {
         if (__classPrivateFieldGet(this, _NumberInputRenderer_min, "f") !== false && value < __classPrivateFieldGet(this, _NumberInputRenderer_min, "f"))
@@ -276,11 +278,29 @@ class NumberInputRenderer extends InputRenderer {
         else
             super.setValue(this.resolveValue(parsed_value).toString());
     }
+    setBounds(min = false, max = false) {
+        __classPrivateFieldSet(this, _NumberInputRenderer_min, min, "f");
+        __classPrivateFieldSet(this, _NumberInputRenderer_max, max, "f");
+        const input = this.getElement();
+        if (min !== false)
+            input.min = min.toString();
+        else
+            input.removeAttribute("min");
+        if (max !== false)
+            input.max = max.toString();
+        else
+            input.removeAttribute("max");
+        __classPrivateFieldGet(this, _NumberInputRenderer_clamp, "f").call(this);
+    }
     getNumberValue() {
         return parseFloat(this.getValue());
     }
+    remove() {
+        this.getElement().removeEventListener("blur", __classPrivateFieldGet(this, _NumberInputRenderer_clamp, "f"));
+        super.remove();
+    }
 }
-_NumberInputRenderer_min = new WeakMap(), _NumberInputRenderer_max = new WeakMap();
+_NumberInputRenderer_min = new WeakMap(), _NumberInputRenderer_max = new WeakMap(), _NumberInputRenderer_clamp = new WeakMap();
 class CheckboxInputRenderer extends InputRenderer {
     constructor(id, checked = false) {
         super(id, checked ? "true" : "false");

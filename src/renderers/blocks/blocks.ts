@@ -239,21 +239,23 @@ class InputRenderer extends Renderer {
 class NumberInputRenderer extends InputRenderer {
   #min: number | false;
   #max: number | false;
+  #clamp: () => void;
 
   constructor(id: string, value: number = 0, min: number | false = false, max: number | false = false) {
     super(id, value.toString());
     this.#min = min;
     this.#max = max;
     this.setValue(value.toString());
-    
+
     const input: HTMLInputElement = this.getElement();
     input.type = "number";
     if (min !== false) input.min = min.toString();
     if (max !== false) input.max = max.toString();
 
-    input.addEventListener("blur", () => {
+    this.#clamp = () => {
       this.setValue(input.value);
-    });
+    };
+    input.addEventListener("blur", this.#clamp);
   }
   private resolveValue(value: number): number {
     if (this.#min !== false && value < this.#min) return this.#min;
@@ -266,8 +268,22 @@ class NumberInputRenderer extends InputRenderer {
     if (Number.isNaN(parsed_value)) super.setValue((this.#min !== false ? this.#min : 0).toString());
     else super.setValue(this.resolveValue(parsed_value).toString());
   }
+  setBounds(min: number | false = false, max: number | false = false): void {
+    this.#min = min;
+    this.#max = max;
+    const input = this.getElement();
+    if (min !== false) input.min = min.toString();
+    else input.removeAttribute("min");
+    if (max !== false) input.max = max.toString();
+    else input.removeAttribute("max");
+    this.#clamp();
+  }
   getNumberValue(): number {
     return parseFloat(this.getValue());
+  }
+  remove(): void {
+    this.getElement().removeEventListener("blur", this.#clamp);
+    super.remove();
   }
 }
 
