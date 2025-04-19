@@ -204,9 +204,9 @@ class EditParticleMenuRenderer extends Renderer {
     menu_wrapper.appendChild(submit_wrapper);
   }
   private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
-    const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
-    // allow only some fields to be editable depending on what is unspecified by the group
-    return new InputTableRenderer('createGroup', properties, true, 'random', 'unspecified');
+    const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#particle);
+    // allow only some fields to be editable depending on what is unspecified or randomized by the group
+    return new InputTableRenderer('createGroup', properties);
   }
   private setupSubmitButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(

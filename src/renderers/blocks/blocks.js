@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _StandardDialogRenderer_body, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _Vector2DInputRenderer_value, _Vector2DInputRenderer_input_x, _Vector2DInputRenderer_input_y, _Vector2DInputRenderer_is_disabled, _Vector2DInputRenderer_label_element;
+var _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _StandardDialogRenderer_body, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _NumberInputRenderer_min, _NumberInputRenderer_max, _Vector2DInputRenderer_value, _Vector2DInputRenderer_input_x, _Vector2DInputRenderer_input_y, _Vector2DInputRenderer_is_disabled, _Vector2DInputRenderer_label_element;
 /**
  * Stores an HTMLButtonElement, maintains a callback
  * and an event. Uses only one eventlistener at a
@@ -244,19 +244,43 @@ class InputRenderer extends Renderer {
 }
 _InputRenderer_value = new WeakMap(), _InputRenderer_name = new WeakMap(), _InputRenderer_is_disabled = new WeakMap(), _InputRenderer_label_element = new WeakMap();
 class NumberInputRenderer extends InputRenderer {
-    constructor(id, value = 0) {
+    constructor(id, value = 0, min = false, max = false) {
         super(id, value.toString());
-        this.getElement().type = "number";
+        _NumberInputRenderer_min.set(this, void 0);
+        _NumberInputRenderer_max.set(this, void 0);
+        __classPrivateFieldSet(this, _NumberInputRenderer_min, min, "f");
+        __classPrivateFieldSet(this, _NumberInputRenderer_max, max, "f");
+        this.setValue(value.toString());
+        const input = this.getElement();
+        input.type = "number";
+        if (min !== false)
+            input.min = min.toString();
+        if (max !== false)
+            input.max = max.toString();
+        input.addEventListener("blur", () => {
+            this.setValue(input.value);
+        });
     }
+    resolveValue(value) {
+        if (__classPrivateFieldGet(this, _NumberInputRenderer_min, "f") !== false && value < __classPrivateFieldGet(this, _NumberInputRenderer_min, "f"))
+            return __classPrivateFieldGet(this, _NumberInputRenderer_min, "f");
+        if (__classPrivateFieldGet(this, _NumberInputRenderer_max, "f") !== false && value > __classPrivateFieldGet(this, _NumberInputRenderer_max, "f"))
+            return __classPrivateFieldGet(this, _NumberInputRenderer_max, "f");
+        return value;
+    }
+    // prevents the setValue base method from attempting to set a non-parsable value into for a type="number"
     setValue(value) {
-        var _a, _b;
-        // prevents the setValue base method from attempting to set a non-parsable value into for a type="number"
-        super.setValue((_b = (_a = parseFloat(value)) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '0');
+        const parsed_value = parseFloat(value);
+        if (Number.isNaN(parsed_value))
+            super.setValue((__classPrivateFieldGet(this, _NumberInputRenderer_min, "f") !== false ? __classPrivateFieldGet(this, _NumberInputRenderer_min, "f") : 0).toString());
+        else
+            super.setValue(this.resolveValue(parsed_value).toString());
     }
     getNumberValue() {
         return parseFloat(this.getValue());
     }
 }
+_NumberInputRenderer_min = new WeakMap(), _NumberInputRenderer_max = new WeakMap();
 class CheckboxInputRenderer extends InputRenderer {
     constructor(id, checked = false) {
         super(id, checked ? "true" : "false");

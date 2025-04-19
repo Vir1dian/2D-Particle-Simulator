@@ -237,13 +237,34 @@ class InputRenderer extends Renderer {
 }
 
 class NumberInputRenderer extends InputRenderer {
-  constructor(id: string, value: number = 0) {
+  #min: number | false;
+  #max: number | false;
+
+  constructor(id: string, value: number = 0, min: number | false = false, max: number | false = false) {
     super(id, value.toString());
-    this.getElement().type = "number";
+    this.#min = min;
+    this.#max = max;
+    this.setValue(value.toString());
+    
+    const input: HTMLInputElement = this.getElement();
+    input.type = "number";
+    if (min !== false) input.min = min.toString();
+    if (max !== false) input.max = max.toString();
+
+    input.addEventListener("blur", () => {
+      this.setValue(input.value);
+    });
   }
+  private resolveValue(value: number): number {
+    if (this.#min !== false && value < this.#min) return this.#min;
+    if (this.#max !== false && value > this.#max) return this.#max;
+    return value;
+  }
+  // prevents the setValue base method from attempting to set a non-parsable value into for a type="number"
   setValue(value: string): void {
-    // prevents the setValue base method from attempting to set a non-parsable value into for a type="number"
-    super.setValue(parseFloat(value)?.toString() ?? '0');
+    const parsed_value = parseFloat(value);
+    if (Number.isNaN(parsed_value)) super.setValue((this.#min !== false ? this.#min : 0).toString());
+    else super.setValue(this.resolveValue(parsed_value).toString());
   }
   getNumberValue(): number {
     return parseFloat(this.getValue());

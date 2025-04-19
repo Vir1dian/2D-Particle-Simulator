@@ -208,9 +208,9 @@ class EditParticleMenuRenderer extends Renderer {
         const properties = ((_a) => {
             var { enable_path_tracing } = _a, exposed_properties = __rest(_a, ["enable_path_tracing"]);
             return exposed_properties;
-        })(DEFAULT_GROUPING);
-        // allow only some fields to be editable depending on what is unspecified by the group
-        return new InputTableRenderer('createGroup', properties, true, 'random', 'unspecified');
+        })(__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f"));
+        // allow only some fields to be editable depending on what is unspecified or randomized by the group
+        return new InputTableRenderer('createGroup', properties);
     }
     setupSubmitButton() {
         const button = new ButtonRenderer(() => {
