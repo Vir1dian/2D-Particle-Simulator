@@ -15,7 +15,7 @@ class AddParticleMenuRenderer extends Renderer {
     simulation.add_observer(SimEvent.Edit_Particle_Group, this.refresh.bind(this));  // Observers to update group_selector
     this.#simulation = simulation;
     this.#group_selector = this.setupGroupSelector();
-    this.#input_table = this.setupInputTable();
+    this.#input_table = this.setupInputTable(simulation.getContainer());
     this.#submit_button = this.setupSubmitButton();
 
     // DOM Content
@@ -49,10 +49,24 @@ class AddParticleMenuRenderer extends Renderer {
     selector.setSelected(0);
     return selector;
   }
-  private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
+  private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
     const input_table = new InputTableRenderer('addParticle', properties, true, 'random');
     input_table.setClassName('menu_table');
+    input_table.setNumberInputBounds(
+      ...DEFAULT_BOUNDS, 
+      { 
+        key: "position", 
+        min: {
+          x: container.x_min, 
+          y: container.y_min
+        }, 
+        max: {
+          x: container.x_max, 
+          y: container.y_max
+        } 
+        }
+    );
     return input_table;
   }
   private setupSubmitButton(): ButtonRenderer {
@@ -84,7 +98,7 @@ class CreateGroupMenuRenderer extends Renderer {
 
     // Stored Data
     this.#simulation = simulation;
-    this.#input_table = this.setupInputTable();
+    this.#input_table = this.setupInputTable(simulation.getContainer());
     this.#submit_button = this.setupSubmitButton();
 
     // DOM Content
@@ -100,9 +114,25 @@ class CreateGroupMenuRenderer extends Renderer {
     this.#submit_button.setParent(submit_wrapper);
     menu_wrapper.appendChild(submit_wrapper);
   }
-  private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
+  private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
-    return new InputTableRenderer('createGroup', properties, true, 'random', 'unspecified');
+    const input_table = new InputTableRenderer('createGroup', properties, true, 'random', 'unspecified');
+    input_table.setClassName('menu_table');
+    input_table.setNumberInputBounds(
+      ...DEFAULT_BOUNDS, 
+      { 
+        key: "position", 
+        min: {
+          x: container.x_min, 
+          y: container.y_min
+        }, 
+        max: {
+          x: container.x_max, 
+          y: container.y_max
+        } 
+        }
+    );
+    return input_table;
   }
   private setupSubmitButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(
@@ -129,14 +159,16 @@ class EditGroupMenuRenderer extends Renderer {
   #group: ParticleGroup;
   #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
   #submit_button: ButtonRenderer;
-  constructor(group: ParticleGroup) {
+  #delete_button: ButtonRenderer;
+  constructor(group: ParticleGroup, container: BoxSpace) {
     const menu_wrapper: HTMLDivElement = document.createElement('div');
     super(menu_wrapper, 'dialog_menu', `dialog_menu_edit_group_id_${0}`);
 
     // Stored Data
     this.#group = group;
-    this.#input_table = this.setupInputTable();
+    this.#input_table = this.setupInputTable(container);
     this.#submit_button = this.setupSubmitButton();
+    this.#delete_button = this.setupDeleteButton();
 
     // DOM Content
     const table_wrapper: HTMLDivElement = document.createElement('div');
@@ -144,17 +176,34 @@ class EditGroupMenuRenderer extends Renderer {
     this.#input_table.setParent(table_wrapper);
     menu_wrapper.appendChild(table_wrapper);
 
-    const submit_wrapper = document.createElement('div');
-    submit_wrapper.style.display = 'flex';
-    submit_wrapper.style.justifyContent = 'center';
-    submit_wrapper.style.marginTop = '8px';
-    this.#submit_button.setParent(submit_wrapper);
-    menu_wrapper.appendChild(submit_wrapper);
+    const buttons_wrapper = document.createElement('div');
+    buttons_wrapper.style.display = 'flex';
+    buttons_wrapper.style.justifyContent = 'center';
+    buttons_wrapper.style.marginTop = '8px';
+    this.#submit_button.setParent(buttons_wrapper);
+    this.#delete_button.setParent(buttons_wrapper);
+    menu_wrapper.appendChild(buttons_wrapper);
   }
-  private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
+  private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);  
     // set up this group instead of DEFAULT_GROUPING somehow
-    return new InputTableRenderer('editGroup', properties, true, 'random', 'unspecified');
+    const input_table = new InputTableRenderer('editGroup', properties, true, 'random', 'unspecified');
+    input_table.setClassName('menu_table');
+    input_table.setNumberInputBounds(
+      ...DEFAULT_BOUNDS, 
+      { 
+        key: "position", 
+        min: {
+          x: container.x_min, 
+          y: container.y_min
+        }, 
+        max: {
+          x: container.x_max, 
+          y: container.y_max
+        } 
+        }
+    );
+    return input_table;
   }
   private setupSubmitButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(
@@ -163,6 +212,16 @@ class EditGroupMenuRenderer extends Renderer {
       }
     );
     button.setLabel('Submit');
+    return button;
+  }
+  private setupDeleteButton(): ButtonRenderer {
+    const button: ButtonRenderer = new ButtonRenderer(
+      () => {
+        
+      }
+    );
+    button.setLabel('Delete');
+    button.setClassName('delete_button');
     return button;
   }
   refresh(): void {
@@ -181,14 +240,16 @@ class EditParticleMenuRenderer extends Renderer {
   #particle: Particle;
   #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
   #submit_button: ButtonRenderer;
-  constructor(particle: Particle) {
+  #delete_button: ButtonRenderer;
+  constructor(particle: Particle, container: BoxSpace) {
     const menu_wrapper: HTMLDivElement = document.createElement('div');
     super(menu_wrapper, 'dialog_menu', `dialog_menu_edit_particle_id_${0}`);
 
     // Stored Data
     this.#particle = particle;
-    this.#input_table = this.setupInputTable();
+    this.#input_table = this.setupInputTable(container);
     this.#submit_button = this.setupSubmitButton();
+    this.#delete_button = this.setupDeleteButton();
 
     // DOM Content
     const table_wrapper: HTMLDivElement = document.createElement('div');
@@ -196,17 +257,34 @@ class EditParticleMenuRenderer extends Renderer {
     this.#input_table.setParent(table_wrapper);
     menu_wrapper.appendChild(table_wrapper);
 
-    const submit_wrapper = document.createElement('div');
-    submit_wrapper.style.display = 'flex';
-    submit_wrapper.style.justifyContent = 'center';
-    submit_wrapper.style.marginTop = '8px';
-    this.#submit_button.setParent(submit_wrapper);
-    menu_wrapper.appendChild(submit_wrapper);
+    const buttons_wrapper = document.createElement('div');
+    buttons_wrapper.style.display = 'flex';
+    buttons_wrapper.style.justifyContent = 'center';
+    buttons_wrapper.style.marginTop = '8px';
+    this.#submit_button.setParent(buttons_wrapper);
+    this.#delete_button.setParent(buttons_wrapper);
+    menu_wrapper.appendChild(buttons_wrapper);
   }
-  private setupInputTable(): InputTableRenderer<string | boolean | number | Vector2D> {
+  private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#particle);
     // allow only some fields to be editable depending on what is unspecified or randomized by the group
-    return new InputTableRenderer('createGroup', properties);
+    const input_table = new InputTableRenderer('editParticle', properties);
+    input_table.setClassName('menu_table');
+    input_table.setNumberInputBounds(
+      ...DEFAULT_BOUNDS, 
+      { 
+        key: "position", 
+        min: {
+          x: container.x_min, 
+          y: container.y_min
+        }, 
+        max: {
+          x: container.x_max, 
+          y: container.y_max
+        } 
+        }
+    );
+    return input_table;
   }
   private setupSubmitButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(
@@ -215,6 +293,16 @@ class EditParticleMenuRenderer extends Renderer {
       }
     );
     button.setLabel('Submit');
+    return button;
+  }
+  private setupDeleteButton(): ButtonRenderer {
+    const button: ButtonRenderer = new ButtonRenderer(
+      () => {
+        
+      }
+    );
+    button.setLabel('Delete');
+    button.setClassName('delete_button');
     return button;
   }
   refresh(): void {
@@ -245,7 +333,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     // Stored Data
     this.#particle_group = group;
     this.#icon = this.createIcon(group.getGrouping().color as string);
-    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id);
+    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, container);
     this.#drag_button = this.setupDragButton();
     this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...group.getParticles().map(particle => {
       return new ParticleUnitRenderer(simulation, particle, container);
@@ -267,8 +355,8 @@ class ParticleUnitGroupRenderer extends Renderer {
     else icon.getElement().style.backgroundColor = color;
     return icon;
   };
-  private setupDetailsDialog(group_id: string): StandardDialogRenderer<EditGroupMenuRenderer> {
-    const body = new EditGroupMenuRenderer(this.#particle_group);
+  private setupDetailsDialog(group_id: string, container: BoxSpace): StandardDialogRenderer<EditGroupMenuRenderer> {
+    const body = new EditGroupMenuRenderer(this.#particle_group, container);
     const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, `Group: ${group_id}`, true);
     details_dialog.getOpenButton().setLabel("expand_content", true);
     details_dialog.getCloseButton().setLabel("close", true);
@@ -339,7 +427,7 @@ class ParticleUnitRenderer extends Renderer {
     // Stored Data
     this.#particle_renderer = new ParticlePointRenderer(particle, container);
     this.#icon = this.createIcon(particle.color);
-    this.#details_dialog = this.setupDetailsDialog(particle.getID());
+    this.#details_dialog = this.setupDetailsDialog(particle.getID(), container);
     this.#drag_button = this.setupDragButton(); 
 
     // DOM Content
@@ -353,8 +441,8 @@ class ParticleUnitRenderer extends Renderer {
     icon.getElement().style.backgroundColor = color;
     return icon;
   }
-  private setupDetailsDialog(id: number): StandardDialogRenderer<EditParticleMenuRenderer> {
-    const body = new EditParticleMenuRenderer(this.#particle_renderer.getParticle());
+  private setupDetailsDialog(id: number, container: BoxSpace): StandardDialogRenderer<EditParticleMenuRenderer> {
+    const body = new EditParticleMenuRenderer(this.#particle_renderer.getParticle(), container);
     const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle: ${id}`, true);
     details_dialog.getOpenButton().setLabel("expand_content", true);
     details_dialog.getCloseButton().setLabel("close", true);

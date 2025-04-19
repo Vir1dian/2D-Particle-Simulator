@@ -247,3 +247,8 @@ const TEMPORARY_PRESETS = {
         ])
     }
 };
+const DEFAULT_BOUNDS = [
+    { key: "radius", min: 1, max: 75 },
+    { key: "position", min: { x: -1, y: -1 }, max: { x: 1, y: 1 } },
+    { key: "mass", min: 1, max: false },
+];

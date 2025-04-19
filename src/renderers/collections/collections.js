@@ -442,6 +442,7 @@ _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_ele
  * ParticleGrouping interface structure.
  */
 class InputTableRenderer extends TableRenderer {
+    // #validators: Record<string, (value: T) => true | string>;  // For the future, for more advanced error handling
     constructor(id, properties, has_header = false, ...boolean_overrides) {
         const property_keys = Object.keys(properties);
         super(property_keys.length + (has_header ? 1 : 0), 2 + boolean_overrides.length);
@@ -531,6 +532,20 @@ class InputTableRenderer extends TableRenderer {
                     input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key]);
             });
         }
+    }
+    setNumberInputBounds(...bounds_definitions) {
+        bounds_definitions.forEach(definition => {
+            const input = __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").get(definition.key);
+            if (input instanceof NumberInputRenderer && 'min' in definition && typeof definition.min !== 'object') {
+                input.setBounds(definition.min, definition.max);
+            }
+            else if (input instanceof Vector2DInputRenderer && 'min' in definition && typeof definition.min === 'object') {
+                input.getInputX().setBounds(definition.min.x, definition.max.x);
+                input.getInputY().setBounds(definition.min.y, definition.max.y);
+            }
+            else
+                throw new Error("setNumberInputBounds: Invalid input type.");
+        });
     }
     remove() {
         __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").clear();

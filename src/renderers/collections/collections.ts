@@ -435,6 +435,7 @@ class DatalistInputRenderer extends InputRenderer {
 class InputTableRenderer<T extends string | boolean | number | Vector2D | undefined> extends TableRenderer {
   #properties: Record<string, T>;  // Read-only, assume all properties are defined
   #inputs: Map<string, (InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer)[]>;
+  // #validators: Record<string, (value: T) => true | string>;  // For the future, for more advanced error handling
 
   constructor(id: string, properties: Record<string, T>, has_header: boolean = false, ...boolean_overrides: ('random' | 'unspecified')[]) {
     const property_keys: string[] = Object.keys(properties);
@@ -519,6 +520,25 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
           input.setValue(this.#properties[key]! as Vector2D);
       });
     }
+  }
+  setNumberInputBounds(
+    ...bounds_definitions: { 
+      key: string, 
+      min: number | false | {x: number | false, y: number | false}, 
+      max: number | false | {x: number | false, y: number | false} 
+    }[]
+  ): void {
+    bounds_definitions.forEach(definition => {
+      const input = this.#inputs.get(definition.key)
+      if (input instanceof NumberInputRenderer && 'min' in definition && typeof definition.min !== 'object') {
+        input.setBounds(definition.min, definition.max as typeof definition.min);
+      }
+      else if (input instanceof Vector2DInputRenderer && 'min' in definition && typeof definition.min === 'object') {
+        input.getInputX().setBounds(definition.min.x, (definition.max as typeof definition.min).x);
+        input.getInputY().setBounds(definition.min.y, (definition.max as typeof definition.min).y);
+      }
+      else throw new Error ("setNumberInputBounds: Invalid input type.");
+    });
   }
   remove(): void {
     this.#inputs.clear();

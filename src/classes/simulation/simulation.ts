@@ -245,3 +245,13 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
     ])
   }
 }
+
+const DEFAULT_BOUNDS: {  // Used to set a minimum and maximum for input elements
+  key: string, 
+  min: number | false | {x: number | false, y: number | false}, 
+  max: number | false | {x: number | false, y: number | false} 
+}[] = [
+  { key: "radius", min: 1, max: 75 },
+  { key: "position", min: {x: -1, y: -1}, max: {x: 1, y: 1} },
+  { key: "mass", min: 1, max: false },
+]
