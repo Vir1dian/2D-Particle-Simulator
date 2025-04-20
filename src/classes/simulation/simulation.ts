@@ -65,6 +65,15 @@ class Simulation {
       { type: SimEvent.Update_Particle_Groups, payload: { operation: "add", data: group }}
     );
   }
+  editGroup(group_id: string, grouping: ParticleGrouping): void {
+    const group = this.#particle_groups.get(group_id);
+    if (!group) throw new Error(`Group name: ${group_id} not found`);
+    group.setGrouping(grouping);
+    this.notify_observers(
+      { type: SimEvent.Update }, 
+      { type: SimEvent.Update_Particle_Groups, payload: { operation: "edit", data: group }}
+    );
+  }
   deleteGroup(group_id: string): void {
     const group = this.#particle_groups.get(group_id);
     if (group) group.getParticles().length = 0;

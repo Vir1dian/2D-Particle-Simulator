@@ -67,6 +67,13 @@ class Simulation {
         __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, group);
         this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Update_Particle_Groups, payload: { operation: "add", data: group } });
     }
+    editGroup(group_id, grouping) {
+        const group = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group_id);
+        if (!group)
+            throw new Error(`Group name: ${group_id} not found`);
+        group.setGrouping(grouping);
+        this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Update_Particle_Groups, payload: { operation: "edit", data: group } });
+    }
     deleteGroup(group_id) {
         const group = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group_id);
         if (group)

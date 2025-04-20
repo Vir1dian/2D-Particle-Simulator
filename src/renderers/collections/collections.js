@@ -469,8 +469,6 @@ class InputTableRenderer extends TableRenderer {
                 input = new NumberInputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
             else if (value instanceof Vector2D)
                 input = new Vector2DInputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
-            if (!input)
-                throw new Error(`Unsupported input type for key: ${key}`);
             input.getLabelElement().innerText = prettifyKey(key);
             this.getCell(row, 0).setContent(input.getLabelElement());
             this.getCell(row, 1).setContent(input);

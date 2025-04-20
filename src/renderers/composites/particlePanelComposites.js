@@ -157,6 +157,7 @@ class CreateGroupMenuRenderer extends Renderer {
     }
     submit() {
         // make sure to validate group_id if it already exists or not
+        // make group_id snake case
     }
 }
 _CreateGroupMenuRenderer_simulation = new WeakMap(), _CreateGroupMenuRenderer_input_table = new WeakMap(), _CreateGroupMenuRenderer_submit_button = new WeakMap();
@@ -227,6 +228,7 @@ class EditGroupMenuRenderer extends Renderer {
     refresh() {
     }
     submit() {
+        // call ParticleGroup::setGrouping for the following group by sending the changes to Simulation
     }
 }
 _EditGroupMenuRenderer_group = new WeakMap(), _EditGroupMenuRenderer_input_table = new WeakMap(), _EditGroupMenuRenderer_submit_button = new WeakMap(), _EditGroupMenuRenderer_delete_button = new WeakMap();

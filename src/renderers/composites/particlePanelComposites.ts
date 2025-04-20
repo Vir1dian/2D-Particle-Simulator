@@ -151,6 +151,7 @@ class CreateGroupMenuRenderer extends Renderer {
   }
   submit(): void {
     // make sure to validate group_id if it already exists or not
+    // make group_id snake case
   }
 }
 
@@ -230,7 +231,7 @@ class EditGroupMenuRenderer extends Renderer {
 
   }
   submit(): void {
-
+    // call ParticleGroup::setGrouping for the following group by sending the changes to Simulation
   }
 }
 

@@ -60,7 +60,7 @@ class ParticleGroup {
   }
 
   clone(): ParticleGroup {
-    return new ParticleGroup(this.#grouping, this.#particles.length);
+    return new ParticleGroup(structuredCloneCustom(this.#grouping), this.#particles.length);
   }
 
   getGrouping(): ParticleGrouping {
@@ -69,5 +69,21 @@ class ParticleGroup {
 
   getParticles(): Particle[] {
     return this.#particles;
+  }
+
+  setGrouping(grouping: ParticleGrouping): void {
+    this.#particles.forEach(particle => {
+      (Object.keys(grouping) as (keyof ParticleGrouping)[]).forEach(property => {
+        const new_value = grouping[property];
+        const current_value = (particle as any)[property];
+        if (new_value !== 'random' && new_value !== undefined && new_value !== current_value) {
+          if (isVectorLike(new_value) && (new_value.x !== current_value.x || new_value.y !== current_value.y))
+            (particle as any)[property] = new Vector2D(new_value.x, new_value.y);
+          else (particle as any)[property] = new_value;
+        }
+      });
+    });
+
+    this.#grouping = grouping;
   }
 }

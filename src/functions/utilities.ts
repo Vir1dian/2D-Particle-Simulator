@@ -2,7 +2,7 @@
  * Makes a key string capitalized and spaced,
  * intended for in dynamic creation of headers and
  * label elements.
- * @param key string key of an object property (snake_case & camelCase) 
+ * @param key String key of an object property (snake_case & camelCase) 
  * @returns Capitalized and spaced string
  */
 function prettifyKey(key: string): string {
@@ -11,6 +11,23 @@ function prettifyKey(key: string): string {
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+}
+
+/**
+ * Converts an alphanumeric string into snake_case.
+ * Intended for creating valid ID's from user inputs.
+ * @param string Alphanumeric string to be converted to snake_case.
+ * @returns A string in snake_case format.
+ */
+function toSnakeCase(string: string): string {
+  if (/[^a-zA-Z0-9\s]/.test(string)) {
+    throw new Error("String contains non-alphanumeric characters.");
+  }
+
+  return string
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .replace(/\s+/g, '_')
+    .toLowerCase();
 }
 
 

@@ -454,21 +454,20 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
     property_keys.forEach((key, index) => {
       const value: T = properties[key];
       const row = index  + (has_header ? 1 : 0);
-      let input: InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer | undefined;
+      let input: InputRenderer | CheckboxInputRenderer | NumberInputRenderer | Vector2DInputRenderer;
 
       if (typeof value === 'string') input = new InputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
       else if (typeof value === 'boolean') input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
       else if (typeof value === 'number') input = new NumberInputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
       else if (value instanceof Vector2D) input = new Vector2DInputRenderer(`${INPUT_PREFIX}${key}_of_${id}`, value);
 
-      if (!input) throw new Error(`Unsupported input type for key: ${key}`);
-      input.getLabelElement().innerText = prettifyKey(key);
-      this.getCell(row, 0).setContent(input.getLabelElement()); 
-      this.getCell(row, 1).setContent(input); 
+      input!.getLabelElement().innerText = prettifyKey(key);
+      this.getCell(row, 0).setContent(input!.getLabelElement()); 
+      this.getCell(row, 1).setContent(input!); 
       const override_inputs: CheckboxInputRenderer[] = [];  // May may expand "override_inputs" to "modifier_inputs" in the future to allow non-overriding and non-boolean inputs
       boolean_overrides.forEach((override, column) => {
         const override_input: CheckboxInputRenderer = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override_of_${id}`);
-        this.setOverrideCallback(key, override_input, [input, ...override_inputs]);
+        this.setOverrideCallback(key, override_input, [input!, ...override_inputs]);
 
         override_inputs.push(override_input);
         const cell: TableCellRenderer<CheckboxInputRenderer> = this.getCell(row, 2 + column);

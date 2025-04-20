@@ -58,13 +58,28 @@ class ParticleGroup {
         }
     }
     clone() {
-        return new ParticleGroup(__classPrivateFieldGet(this, _ParticleGroup_grouping, "f"), __classPrivateFieldGet(this, _ParticleGroup_particles, "f").length);
+        return new ParticleGroup(structuredCloneCustom(__classPrivateFieldGet(this, _ParticleGroup_grouping, "f")), __classPrivateFieldGet(this, _ParticleGroup_particles, "f").length);
     }
     getGrouping() {
         return __classPrivateFieldGet(this, _ParticleGroup_grouping, "f");
     }
     getParticles() {
         return __classPrivateFieldGet(this, _ParticleGroup_particles, "f");
+    }
+    setGrouping(grouping) {
+        __classPrivateFieldGet(this, _ParticleGroup_particles, "f").forEach(particle => {
+            Object.keys(grouping).forEach(property => {
+                const new_value = grouping[property];
+                const current_value = particle[property];
+                if (new_value !== 'random' && new_value !== undefined && new_value !== current_value) {
+                    if (isVectorLike(new_value) && (new_value.x !== current_value.x || new_value.y !== current_value.y))
+                        particle[property] = new Vector2D(new_value.x, new_value.y);
+                    else
+                        particle[property] = new_value;
+                }
+            });
+        });
+        __classPrivateFieldSet(this, _ParticleGroup_grouping, grouping, "f");
     }
 }
 _ParticleGroup_grouping = new WeakMap(), _ParticleGroup_particles = new WeakMap();
