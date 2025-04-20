@@ -330,12 +330,18 @@ class SelectRenderer extends Renderer {
   }
   addOption(option: OptionRenderer): void {
     if (this.getOptionIndex(option.getValue()) !== -1) throw new Error("Value already exists in select.");
+    if (this.#options.length === 1 && this.#options[0].getValue() === "") {
+      this.#options[0].remove();
+      this.#options.splice(0, 1);
+    }
     this.#options.push(option);
     option.setParent(this);
+    this.setSelected(this.getOptionIndex(option.getValue()));
   }
   removeOption(option: OptionRenderer): void {
     const index: number = this.getOptionIndex(option.getValue());
     if (index < 0) return;
+
     this.#options[index].remove();
     this.#options.splice(index, 1);
 
@@ -354,11 +360,8 @@ class SelectRenderer extends Renderer {
   empty(completely: boolean = false): void {
     this.#options.forEach(option => option.remove());
     this.#options.length = 0;
-    if (!completely) {
+    if (!completely) 
       this.addOption(new OptionRenderer("", ""));
-      this.#selected = this.#options[0];
-      this.getElement().value = this.#selected.getValue();
-    }
   }
   remove(): void {
     this.empty(true);

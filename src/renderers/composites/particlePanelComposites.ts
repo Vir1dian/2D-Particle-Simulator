@@ -12,10 +12,7 @@ class AddParticleMenuRenderer extends Renderer {
 
     // Stored Data
     simulation.add_observer(SimEvent.Update_Particle_Groups, (payload?) => {
-      if (payload?.operation === "add") this.refresh();
-      else if (payload?.operation === "edit") this.refresh();  // pass the data soon
-      else if (payload?.operation === "delete") this.refresh();
-      else if (payload?.operation === "overwrite") this.refresh();
+      this.refresh(payload);
     });
     this.#simulation = simulation;
     this.#group_selector = this.setupGroupSelector();
@@ -93,8 +90,23 @@ class AddParticleMenuRenderer extends Renderer {
     button.setLabel('Submit');
     return button;
   }
-  refresh(payload?: ParticleGrouping): void {
-    
+  refresh(payload?: SimEventPayload): void {
+    if (payload?.operation === 'add') {
+      console.log("adding a group")
+      this.#group_selector.addOption(new OptionRenderer((payload.data as ParticleGroup).getGrouping().group_id));
+    }
+    else if (payload?.operation === 'edit') {
+      console.log("editing a group")
+    }
+    else if (payload?.operation === 'delete') {
+      console.log("deleting a group")
+    }
+    else if (payload?.operation === 'overwrite') {
+      console.log("overwriting a group")
+      this.#group_selector.empty();
+      for (const key of this.#simulation.getParticleGroups().keys()) 
+        this.#group_selector.addOption(new OptionRenderer(key));
+    }
   }
   submit(): void {
 
@@ -149,22 +161,16 @@ class CreateGroupMenuRenderer extends Renderer {
     return input_table;
   }
   private setupSubmitButton(): ButtonRenderer {
-    const button: ButtonRenderer = new ButtonRenderer(
-      () => {
-        // const changes: ParticleGrouping = structuredCloneCustom(this.#input_table.prepareChanges() as ParticleGrouping);
-        console.log(this.#input_table.prepareChanges());
-        this.#simulation.addGroup({group_id: "test"});
-      }
-    );
+    const button: ButtonRenderer = new ButtonRenderer(this.submit.bind(this));
     button.setLabel('Submit');
     return button;
-  }
-  refresh(): void {
-
   }
   submit(): void {
     // make sure to validate group_id if it already exists or not
     // make group_id snake case
+    console.log(this.#input_table.prepareChanges());
+    const changes: ParticleGrouping = structuredCloneCustom(this.#input_table.prepareChanges() as unknown as ParticleGrouping);
+    this.#simulation.addGroup(changes);
   }
 }
 
@@ -341,7 +347,7 @@ class ParticleUnitGroupRenderer extends Renderer {
   #drag_button: ButtonRenderer;
   #unit_list: ListRenderer<ParticleUnitRenderer>;
   
-  constructor(simulation: Simulation, group: ParticleGroup, container: BoxSpace) {
+  constructor(group: ParticleGroup, container: BoxSpace) {
     const particle_group_element: HTMLElement = document.createElement('article');
     super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
 
@@ -351,7 +357,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, container);
     this.#drag_button = this.setupDragButton();
     this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...group.getParticles().map(particle => {
-      return new ParticleUnitRenderer(simulation, particle, container);
+      return new ParticleUnitRenderer(particle, container);
     }));
 
     // DOM Content
@@ -435,7 +441,7 @@ class ParticleUnitRenderer extends Renderer {
   #icon: Renderer;
   #details_dialog: StandardDialogRenderer<EditParticleMenuRenderer>;  // maybe make this non-modal to edit outside of the popup?
   #drag_button: ButtonRenderer;
-  constructor(simulation: Simulation, particle: Particle, container: BoxSpace) {
+  constructor(particle: Particle, container: BoxSpace) {
     const particle_control_element : HTMLDivElement = document.createElement('div');
     super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.getID()}`);
 

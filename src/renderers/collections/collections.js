@@ -338,8 +338,13 @@ class SelectRenderer extends Renderer {
     addOption(option) {
         if (this.getOptionIndex(option.getValue()) !== -1)
             throw new Error("Value already exists in select.");
+        if (__classPrivateFieldGet(this, _SelectRenderer_options, "f").length === 1 && __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0].getValue() === "") {
+            __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0].remove();
+            __classPrivateFieldGet(this, _SelectRenderer_options, "f").splice(0, 1);
+        }
         __classPrivateFieldGet(this, _SelectRenderer_options, "f").push(option);
         option.setParent(this);
+        this.setSelected(this.getOptionIndex(option.getValue()));
     }
     removeOption(option) {
         const index = this.getOptionIndex(option.getValue());
@@ -361,11 +366,8 @@ class SelectRenderer extends Renderer {
     empty(completely = false) {
         __classPrivateFieldGet(this, _SelectRenderer_options, "f").forEach(option => option.remove());
         __classPrivateFieldGet(this, _SelectRenderer_options, "f").length = 0;
-        if (!completely) {
+        if (!completely)
             this.addOption(new OptionRenderer("", ""));
-            __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0], "f");
-            this.getElement().value = __classPrivateFieldGet(this, _SelectRenderer_selected, "f").getValue();
-        }
     }
     remove() {
         this.empty(true);

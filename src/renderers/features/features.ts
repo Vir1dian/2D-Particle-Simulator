@@ -61,7 +61,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
 
     // Saved Data
     simulation.add_observer(SimEvent.Update_Particle_Groups, (payload?) => {
-      if (payload?.operation === "add") this.addGroup();
+      if (payload?.operation === "add") this.addGroup(payload.data as ParticleGroup);
       else if (payload?.operation === "edit") this.editGroup();  // pass the data soon
       else if (payload?.operation === "delete") this.deleteGroup();
       else if (payload?.operation === "overwrite") this.overwriteGroupList();
@@ -71,7 +71,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     this.#create_group_dialog = this.setupCreateGroupDialog();
     this.#group_list = new ListRenderer<ParticleUnitGroupRenderer>(...Array.from(
       simulation.getParticleGroups() as Map<string, ParticleGroup>, 
-      ([group_id, group]) => new ParticleUnitGroupRenderer(simulation, group, simulation.getContainer())
+      ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer())
     ));
 
     // Content
@@ -113,8 +113,9 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   getGroupList(): ListRenderer<ParticleUnitGroupRenderer> {
     return this.#group_list;
   }
-  addGroup(): void {
+  addGroup(group: ParticleGroup): void {
     console.log("adding a group")
+    this.#group_list.push(new ParticleUnitGroupRenderer(group, this.#simulation.getContainer()));
   }
   editGroup(): void {
     console.log("editing a group")
@@ -127,7 +128,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     this.#group_list.empty();
     Array.from(
       this.#simulation.getParticleGroups() as Map<string, ParticleGroup>, 
-      ([group_id, group]) => new ParticleUnitGroupRenderer(this.#simulation, group, this.#simulation.getContainer())
+      ([group_id, group]) => new ParticleUnitGroupRenderer(group, this.#simulation.getContainer())
     ).forEach(group_renderer => this.#group_list.push(group_renderer));
   }
   remove(): void {
