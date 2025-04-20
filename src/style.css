@@ -230,9 +230,6 @@ dialog::backdrop {
   border-radius: 4px;
   border: solid 1px lightgray;
 }
-.menu_item select:focus {
-  border: 2px solid #2f72dc;
-}
 .menu_item table td:not(:last-child) {
   padding-right: 16px;
 }
@@ -245,11 +242,14 @@ dialog::backdrop {
   box-shadow: inset 0px 0px 0px 0px red;
   border-radius: 0;
 }
+.menu_item select:focus {
+  border: 2px solid #2f72dc;
+}
 .menu_item table .input_wrapper_xy input:not(input[type="checkbox"]) {
   width: 60px;
 }
 .menu_item table input:focus {
-  border-bottom: 2px solid #2f72dc;
+  border-bottom: 2px solid #2f72dc !important;
 }
 
 .container_element {
@@ -320,7 +320,7 @@ dialog::backdrop {
   border-radius: 0;
 }
 #simsetup_global_variables_wrapper input:focus {
-  border-bottom: 2px solid #2f72dc;
+  border: 2px solid #2f72dc;
 }
 #simsetup_env_button_wrapper {
   display: flex;
@@ -331,6 +331,16 @@ dialog::backdrop {
   padding: 8px;
   font-size: 16px;
   margin-right: 4px;
+}
+
+#create_particles_amount {
+  width: 100px;
+  text-align: center;
+  font-size: 16px;
+  outline: 0;
+}
+#create_particles_amount:focus {
+  border: 2px solid #2f72dc;
 }
 
 .dialog_menu button,
@@ -569,3 +579,8 @@ input::-webkit-inner-spin-button {
   display: none;
 }
 
+/* Band aid fix to remove overrides from specific fields */
+#input_id_group_id_random_override_of_createGroup,
+#input_id_group_id_unspecified_override_of_createGroup {
+  display: none;
+}

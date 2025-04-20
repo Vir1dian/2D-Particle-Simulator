@@ -21,7 +21,7 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var _AddParticleMenuRenderer_simulation, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_submit_button, _CreateGroupMenuRenderer_simulation, _CreateGroupMenuRenderer_input_table, _CreateGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_group, _EditGroupMenuRenderer_input_table, _EditGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_delete_button, _EditParticleMenuRenderer_particle, _EditParticleMenuRenderer_input_table, _EditParticleMenuRenderer_submit_button, _EditParticleMenuRenderer_delete_button, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
+var _AddParticleMenuRenderer_simulation, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_amount_input, _AddParticleMenuRenderer_submit_button, _CreateGroupMenuRenderer_simulation, _CreateGroupMenuRenderer_input_table, _CreateGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_group, _EditGroupMenuRenderer_input_table, _EditGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_delete_button, _EditParticleMenuRenderer_particle, _EditParticleMenuRenderer_input_table, _EditParticleMenuRenderer_submit_button, _EditParticleMenuRenderer_delete_button, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
 class AddParticleMenuRenderer extends Renderer {
     constructor(simulation) {
         const menu_wrapper = document.createElement('div');
@@ -30,6 +30,7 @@ class AddParticleMenuRenderer extends Renderer {
         _AddParticleMenuRenderer_simulation.set(this, void 0);
         _AddParticleMenuRenderer_group_selector.set(this, void 0);
         _AddParticleMenuRenderer_input_table.set(this, void 0);
+        _AddParticleMenuRenderer_amount_input.set(this, void 0);
         _AddParticleMenuRenderer_submit_button.set(this, void 0);
         // Stored Data
         simulation.add_observer(SimEvent.Update_Particle_Groups, (payload) => {
@@ -45,6 +46,7 @@ class AddParticleMenuRenderer extends Renderer {
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_group_selector, this.setupGroupSelector(), "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_input_table, this.setupInputTable(simulation.getContainer()), "f");
+        __classPrivateFieldSet(this, _AddParticleMenuRenderer_amount_input, this.setupAmountInput(), "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_submit_button, this.setupSubmitButton(), "f");
         // DOM Content
         const select_wrapper = document.createElement('div');
@@ -57,6 +59,12 @@ class AddParticleMenuRenderer extends Renderer {
         table_wrapper.className = 'menu_item';
         __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").setParent(table_wrapper);
         menu_wrapper.appendChild(table_wrapper);
+        const amount_input_wrapper = document.createElement('div');
+        amount_input_wrapper.className = 'menu_item';
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").getLabelElement().innerText = "Amount: ";
+        amount_input_wrapper.appendChild(__classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").getLabelElement());
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").setParent(amount_input_wrapper);
+        menu_wrapper.appendChild(amount_input_wrapper);
         const submit_wrapper = document.createElement('div');
         submit_wrapper.style.display = 'flex';
         submit_wrapper.style.justifyContent = 'center';
@@ -88,6 +96,10 @@ class AddParticleMenuRenderer extends Renderer {
         });
         return input_table;
     }
+    setupAmountInput() {
+        const input = new NumberInputRenderer('create_particles_amount', 1, 1, 50);
+        return input;
+    }
     setupSubmitButton() {
         const button = new ButtonRenderer(() => {
             console.log(__classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges());
@@ -100,7 +112,7 @@ class AddParticleMenuRenderer extends Renderer {
     submit() {
     }
 }
-_AddParticleMenuRenderer_simulation = new WeakMap(), _AddParticleMenuRenderer_group_selector = new WeakMap(), _AddParticleMenuRenderer_input_table = new WeakMap(), _AddParticleMenuRenderer_submit_button = new WeakMap();
+_AddParticleMenuRenderer_simulation = new WeakMap(), _AddParticleMenuRenderer_group_selector = new WeakMap(), _AddParticleMenuRenderer_input_table = new WeakMap(), _AddParticleMenuRenderer_amount_input = new WeakMap(), _AddParticleMenuRenderer_submit_button = new WeakMap();
 class CreateGroupMenuRenderer extends Renderer {
     constructor(simulation) {
         const menu_wrapper = document.createElement('div');

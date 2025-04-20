@@ -3,6 +3,7 @@ class AddParticleMenuRenderer extends Renderer {
   #simulation: Simulation;
   #group_selector: SelectRenderer;
   #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
+  #amount_input: NumberInputRenderer;
   #submit_button: ButtonRenderer;
 
   constructor(simulation: Simulation) {
@@ -19,6 +20,7 @@ class AddParticleMenuRenderer extends Renderer {
     this.#simulation = simulation;
     this.#group_selector = this.setupGroupSelector();
     this.#input_table = this.setupInputTable(simulation.getContainer());
+    this.#amount_input = this.setupAmountInput();
     this.#submit_button = this.setupSubmitButton();
 
     // DOM Content
@@ -33,6 +35,13 @@ class AddParticleMenuRenderer extends Renderer {
     table_wrapper.className = 'menu_item';
     this.#input_table.setParent(table_wrapper);
     menu_wrapper.appendChild(table_wrapper);
+
+    const amount_input_wrapper: HTMLDivElement = document.createElement('div');
+    amount_input_wrapper.className = 'menu_item';
+    this.#amount_input.getLabelElement().innerText = "Amount: ";
+    amount_input_wrapper.appendChild(this.#amount_input.getLabelElement());
+    this.#amount_input.setParent(amount_input_wrapper);
+    menu_wrapper.appendChild(amount_input_wrapper);
 
     const submit_wrapper = document.createElement('div');
     submit_wrapper.style.display = 'flex';
@@ -70,6 +79,10 @@ class AddParticleMenuRenderer extends Renderer {
       }
     );
     return input_table;
+  }
+  private setupAmountInput(): NumberInputRenderer {
+    const input = new NumberInputRenderer('create_particles_amount', 1, 1, 50);
+    return input;
   }
   private setupSubmitButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(

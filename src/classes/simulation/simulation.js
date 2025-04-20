@@ -18,6 +18,7 @@ var SimEvent;
     SimEvent[SimEvent["Update_Environment"] = 2] = "Update_Environment";
     SimEvent[SimEvent["Update_Config"] = 3] = "Update_Config";
     SimEvent[SimEvent["Update_Particle_Groups"] = 4] = "Update_Particle_Groups";
+    SimEvent[SimEvent["Update_Particle"] = 5] = "Update_Particle";
 })(SimEvent || (SimEvent = {}));
 ;
 /**

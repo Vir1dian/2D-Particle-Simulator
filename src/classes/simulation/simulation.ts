@@ -3,7 +3,8 @@ enum SimEvent {
   Update_Container,
   Update_Environment,
   Update_Config,
-  Update_Particle_Groups
+  Update_Particle_Groups,
+  Update_Particle
 };
 
 type SimEventPayload = {
