@@ -492,24 +492,25 @@ class InputTableRenderer extends TableRenderer {
             __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").set(key, [input, ...override_inputs]);
         });
     }
+    applyOverride(override_input, left_inputs) {
+        const is_checked = override_input.getBooleanValue();
+        left_inputs.forEach(input => {
+            if (input instanceof InputRenderer) {
+                if (is_checked && !input.isDisabled())
+                    input.toggleDisabled();
+                else if (!is_checked && input.isDisabled())
+                    input.toggleDisabled();
+            }
+            else if (input instanceof Vector2DInputRenderer) {
+                if (is_checked && !input.isDisabled())
+                    input.toggleDisabled();
+                else if (!is_checked && input.isDisabled())
+                    input.toggleDisabled();
+            }
+        });
+    }
     setOverrideCallback(key, override_input, left_inputs) {
-        const callback = () => {
-            const is_checked = override_input.getBooleanValue();
-            left_inputs.forEach(input => {
-                if (input instanceof InputRenderer) {
-                    if (is_checked && !input.isDisabled())
-                        input.toggleDisabled();
-                    else if (!is_checked && input.isDisabled())
-                        input.toggleDisabled();
-                }
-                else if (input instanceof Vector2DInputRenderer) {
-                    if (is_checked && !input.isDisabled())
-                        input.toggleDisabled();
-                    else if (!is_checked && input.isDisabled())
-                        input.toggleDisabled();
-                }
-            });
-        };
+        const callback = () => this.applyOverride(override_input, left_inputs);
         override_input.getElement().addEventListener('change', callback);
         const existing_overrides = __classPrivateFieldGet(this, _InputTableRenderer_override_callbacks, "f").get(key); // Overrides for a key may be 'random', 'unspecified', and potentially more
         if (existing_overrides)
@@ -555,24 +556,25 @@ class InputTableRenderer extends TableRenderer {
         return changes;
     }
     refresh() {
-        console.log(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f"));
         for (const [key, inputs] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
-            console.log(key);
-            console.log(inputs[0].getElement());
             for (let i = inputs.length - 1; i >= 0; i--) {
                 const input = inputs[i];
                 if (input.getElement().id.includes('_unspecified_override')) {
                     if (__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] === undefined) {
                         input.setValue("true");
+                        this.applyOverride(input, inputs.slice(0, i));
                         break;
                     }
+                    this.applyOverride(input, inputs.slice(0, i));
                     input.setValue("false");
                 }
                 else if (input.getElement().id.includes('_random_override')) {
                     if (__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] === 'random') {
                         input.setValue("true");
+                        this.applyOverride(input, inputs.slice(0, i));
                         break;
                     }
+                    this.applyOverride(input, inputs.slice(0, i));
                     input.setValue("false");
                 }
                 else if (input instanceof NumberInputRenderer)
@@ -627,7 +629,6 @@ class InputTableRenderer extends TableRenderer {
             else
                 throw new Error("setProperties: type mismatch.");
         });
-        console.log(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f"));
         this.refresh();
     }
     remove() {

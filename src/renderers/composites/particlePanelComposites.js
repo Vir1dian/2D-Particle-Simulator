@@ -242,15 +242,18 @@ class EditGroupMenuRenderer extends Renderer {
     }
     setupDeleteButton() {
         const button = new ButtonRenderer(() => {
+            console.log(__classPrivateFieldGet(this, _EditGroupMenuRenderer_input_table, "f").prepareChanges());
         });
         button.setLabel('Delete');
         button.setClassName('delete_button');
         return button;
     }
-    refresh() {
-    }
+    // refresh(): void {
+    // }
     submit() {
         // call ParticleGroup::setGrouping for the following group by sending the changes to Simulation
+    }
+    submitDelete() {
     }
 }
 _EditGroupMenuRenderer_group = new WeakMap(), _EditGroupMenuRenderer_input_table = new WeakMap(), _EditGroupMenuRenderer_submit_button = new WeakMap(), _EditGroupMenuRenderer_delete_button = new WeakMap();

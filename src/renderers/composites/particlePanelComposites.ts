@@ -232,6 +232,7 @@ class EditGroupMenuRenderer extends Renderer {
     const button: ButtonRenderer = new ButtonRenderer(
       () => {
         console.log(this.#input_table.prepareChanges());
+        
       }
     );
     button.setLabel('Submit');
@@ -240,18 +241,22 @@ class EditGroupMenuRenderer extends Renderer {
   private setupDeleteButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(
       () => {
-        
+        console.log(this.#input_table.prepareChanges());
       }
     );
     button.setLabel('Delete');
     button.setClassName('delete_button');
     return button;
   }
-  refresh(): void {
+  // refresh(): void {
 
-  }
+  // }
   submit(): void {
     // call ParticleGroup::setGrouping for the following group by sending the changes to Simulation
+
+  }
+  submitDelete(): void {
+
   }
 }
 

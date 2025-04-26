@@ -486,20 +486,21 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
       this.#inputs.set(key, [input!, ...override_inputs]);
     });
   }
+  private applyOverride(override_input: CheckboxInputRenderer, left_inputs: (InputRenderer | Vector2DInputRenderer)[]): void {
+    const is_checked = override_input.getBooleanValue();
+    left_inputs.forEach(input => {
+      if (input instanceof InputRenderer) {
+        if (is_checked && !input.isDisabled()) input.toggleDisabled();
+        else if (!is_checked && input.isDisabled()) input.toggleDisabled();
+      }
+      else if (input instanceof Vector2DInputRenderer) {
+        if (is_checked && !input.isDisabled()) input.toggleDisabled();
+        else if (!is_checked && input.isDisabled()) input.toggleDisabled();
+      }
+    });
+  }
   private setOverrideCallback(key: string, override_input: CheckboxInputRenderer, left_inputs: (InputRenderer | Vector2DInputRenderer)[]): void {
-    const callback = () => {
-      const is_checked = override_input.getBooleanValue();
-      left_inputs.forEach(input => {
-        if (input instanceof InputRenderer) {
-          if (is_checked && !input.isDisabled()) input.toggleDisabled();
-          else if (!is_checked && input.isDisabled()) input.toggleDisabled();
-        }
-        else if (input instanceof Vector2DInputRenderer) {
-          if (is_checked && !input.isDisabled()) input.toggleDisabled();
-          else if (!is_checked && input.isDisabled()) input.toggleDisabled();
-        }
-      });
-    }
+    const callback = () => this.applyOverride(override_input, left_inputs);
     override_input.getElement().addEventListener('change', callback);
     const existing_overrides = this.#override_callbacks.get(key);  // Overrides for a key may be 'random', 'unspecified', and potentially more
     if (existing_overrides) existing_overrides.push(
@@ -542,25 +543,25 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
     return changes;
   }
   refresh(): void {
-    console.log(this.#properties);
     for (const [key, inputs] of this.#inputs) {
-      console.log(key);
-      console.log(inputs[0].getElement());
-
       for (let i = inputs.length - 1; i >= 0; i--) {
         const input = inputs[i];
         if (input.getElement().id.includes('_unspecified_override')) {
           if (this.#properties[key] === undefined) {
             (input as CheckboxInputRenderer).setValue("true");
+            this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
             break;
           }
+          this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
           (input as CheckboxInputRenderer).setValue("false");
         }
         else if (input.getElement().id.includes('_random_override')) {
           if (this.#properties[key] === 'random') {
             (input as CheckboxInputRenderer).setValue("true");
+            this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
             break;
           }
+          this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
           (input as CheckboxInputRenderer).setValue("false");
         }
         else if (input instanceof NumberInputRenderer) 
@@ -616,7 +617,6 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
       else 
         throw new Error("setProperties: type mismatch.");
     });
-    console.log(this.#properties);
     this.refresh();
   }
   remove(): void {
