@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_properties, _InputTableRenderer_inputs, _InputTableRenderer_override_callbacks;
+var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_properties, _InputTableRenderer_overrides, _InputTableRenderer_inputs, _InputTableRenderer_override_callbacks;
 /**
  *
  */
@@ -450,13 +450,16 @@ _DatalistInputRenderer_data = new WeakMap(), _DatalistInputRenderer_datalist_ele
 class InputTableRenderer extends TableRenderer {
     constructor(id, properties, has_header = false, ...boolean_overrides) {
         const property_keys = Object.keys(properties);
-        super(property_keys.length + (has_header ? 1 : 0), 2 + boolean_overrides.length);
-        _InputTableRenderer_properties.set(this, void 0); // Read-only, assume all properties are defined
+        const unique_overrides = [...new Set(boolean_overrides)];
+        super(property_keys.length + (has_header ? 1 : 0), 2 + unique_overrides.length);
+        _InputTableRenderer_properties.set(this, void 0); // Assume all properties are defined and not set to 'random'
+        _InputTableRenderer_overrides.set(this, void 0);
         _InputTableRenderer_inputs.set(this, void 0);
         // #validators: Record<string, (value: T) => true | string>;  // For the future, for more advanced error handling
         _InputTableRenderer_override_callbacks.set(this, void 0);
         this.setID(id);
-        __classPrivateFieldSet(this, _InputTableRenderer_properties, properties, "f");
+        __classPrivateFieldSet(this, _InputTableRenderer_properties, structuredCloneCustom(properties), "f");
+        __classPrivateFieldSet(this, _InputTableRenderer_overrides, unique_overrides, "f");
         __classPrivateFieldSet(this, _InputTableRenderer_inputs, new Map(), "f");
         __classPrivateFieldSet(this, _InputTableRenderer_override_callbacks, new Map(), "f");
         property_keys.forEach((key, index) => {
@@ -475,7 +478,7 @@ class InputTableRenderer extends TableRenderer {
             this.getCell(row, 0).setContent(input.getLabelElement());
             this.getCell(row, 1).setContent(input);
             const override_inputs = []; // May may expand "override_inputs" to "modifier_inputs" in the future to allow non-overriding and non-boolean inputs
-            boolean_overrides.forEach((override, column) => {
+            unique_overrides.forEach((override, column) => {
                 const override_input = new CheckboxInputRenderer(`${INPUT_PREFIX}${key}_${override}_override_of_${id}`);
                 this.setOverrideCallback(key, override_input, [input, ...override_inputs]);
                 override_inputs.push(override_input);
@@ -552,12 +555,26 @@ class InputTableRenderer extends TableRenderer {
         return changes;
     }
     refresh() {
+        console.log(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f"));
         for (const [key, inputs] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
-            inputs.forEach(input => {
-                if (input.getElement().id.includes('_random_override'))
-                    input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] === 'random' ? "true" : "false");
-                else if (input.getElement().id.includes('_unspecified_override'))
-                    input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] ? "true" : "false");
+            console.log(key);
+            console.log(inputs[0].getElement());
+            for (let i = inputs.length - 1; i >= 0; i--) {
+                const input = inputs[i];
+                if (input.getElement().id.includes('_unspecified_override')) {
+                    if (__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] === undefined) {
+                        input.setValue("true");
+                        break;
+                    }
+                    input.setValue("false");
+                }
+                else if (input.getElement().id.includes('_random_override')) {
+                    if (__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] === 'random') {
+                        input.setValue("true");
+                        break;
+                    }
+                    input.setValue("false");
+                }
                 else if (input instanceof NumberInputRenderer)
                     input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key].toString());
                 else if (input instanceof CheckboxInputRenderer)
@@ -566,7 +583,9 @@ class InputTableRenderer extends TableRenderer {
                     input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key]);
                 else if (input instanceof Vector2DInputRenderer)
                     input.setValue(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key]);
-            });
+                else
+                    throw new Error("InputTableRenderer failed to refresh an input.");
+            }
         }
     }
     setNumberInputBounds(...bounds_definitions) {
@@ -586,6 +605,31 @@ class InputTableRenderer extends TableRenderer {
                 throw new Error("setNumberInputBounds: Invalid input type.");
         });
     }
+    setProperties(properties) {
+        Object.keys(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")).forEach(key => {
+            const new_value = properties[key];
+            if (new_value === undefined) {
+                if (__classPrivateFieldGet(this, _InputTableRenderer_overrides, "f").includes('unspecified'))
+                    delete __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key];
+                else
+                    throw new Error("setProperties: undefined key but 'unspecified' override not enabled.");
+            }
+            else if (new_value === 'random') {
+                if (__classPrivateFieldGet(this, _InputTableRenderer_overrides, "f").includes('random'))
+                    __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = 'random';
+                else
+                    throw new Error("setProperties: key with value of 'random' but 'random' override not enabled.");
+            }
+            else if (new_value instanceof Vector2D && __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] instanceof Vector2D)
+                __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = new Vector2D(new_value.x, new_value.y);
+            else if (typeof new_value === typeof __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key])
+                __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = new_value;
+            else
+                throw new Error("setProperties: type mismatch.");
+        });
+        console.log(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f"));
+        this.refresh();
+    }
     remove() {
         for (const removers of __classPrivateFieldGet(this, _InputTableRenderer_override_callbacks, "f").values()) {
             removers.forEach(remove_callback => remove_callback());
@@ -595,4 +639,4 @@ class InputTableRenderer extends TableRenderer {
         super.remove();
     }
 }
-_InputTableRenderer_properties = new WeakMap(), _InputTableRenderer_inputs = new WeakMap(), _InputTableRenderer_override_callbacks = new WeakMap();
+_InputTableRenderer_properties = new WeakMap(), _InputTableRenderer_overrides = new WeakMap(), _InputTableRenderer_inputs = new WeakMap(), _InputTableRenderer_override_callbacks = new WeakMap();

@@ -210,12 +210,11 @@ class EditGroupMenuRenderer extends Renderer {
         menu_wrapper.appendChild(buttons_wrapper);
     }
     setupInputTable(container) {
-        const properties = ((_a) => {
+        const all_properties = ((_a) => {
             var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
             return exposed_properties;
         })(DEFAULT_GROUPING);
-        // set up this group instead of DEFAULT_GROUPING somehow
-        const input_table = new InputTableRenderer('editGroup', properties, true, 'random', 'unspecified');
+        const input_table = new InputTableRenderer(`editGroupId${__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping().group_id}`, all_properties, true, 'random', 'unspecified');
         input_table.setNumberInputBounds(...DEFAULT_BOUNDS, {
             key: "position",
             min: {
@@ -227,6 +226,11 @@ class EditGroupMenuRenderer extends Renderer {
                 y: container.y_max
             }
         });
+        const properties = ((_a) => {
+            var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
+            return exposed_properties;
+        })(__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping());
+        input_table.setProperties(properties);
         return input_table;
     }
     setupSubmitButton() {

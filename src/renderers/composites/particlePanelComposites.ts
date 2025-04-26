@@ -208,9 +208,8 @@ class EditGroupMenuRenderer extends Renderer {
     menu_wrapper.appendChild(buttons_wrapper);
   }
   private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
-    const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);  
-    // set up this group instead of DEFAULT_GROUPING somehow
-    const input_table = new InputTableRenderer('editGroup', properties, true, 'random', 'unspecified');
+    const all_properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);  
+    const input_table = new InputTableRenderer(`editGroupId${this.#group.getGrouping().group_id}`, all_properties, true, 'random', 'unspecified');
     input_table.setNumberInputBounds(
       ...DEFAULT_BOUNDS, 
       { 
@@ -225,6 +224,8 @@ class EditGroupMenuRenderer extends Renderer {
         } 
       }
     );
+    const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#group.getGrouping());
+    input_table.setProperties(properties);
     return input_table;
   }
   private setupSubmitButton(): ButtonRenderer {
