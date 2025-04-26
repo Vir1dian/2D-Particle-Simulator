@@ -62,8 +62,8 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     // Saved Data
     simulation.add_observer(SimEvent.Update_Particle_Groups, (payload?) => {
       if (payload?.operation === "add") this.addGroup(payload.data as ParticleGroup);
-      else if (payload?.operation === "edit") this.editGroup(payload.data as ParticleGroup);  // pass the data soon
-      else if (payload?.operation === "delete") this.deleteGroup();
+      else if (payload?.operation === "edit") this.editGroup(payload.data as ParticleGroup);
+      else if (payload?.operation === "delete") this.deleteGroup(payload.data as string);
       else if (payload?.operation === "overwrite") this.overwriteGroupList();
     });
     this.#simulation = simulation;
@@ -119,7 +119,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   }
   editGroup(group: ParticleGroup): void {
     console.log("editing a group")
-    this.#group_list.find(item => 
+    const group_renderer = this.#group_list.find(item => 
       item
       .getParticleGroup()
       .getGrouping()
@@ -128,10 +128,20 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
       group
       .getGrouping()
       .group_id
-    ).refresh();
+    );
+    group_renderer.refresh();
   }
-  deleteGroup(): void {
+  deleteGroup(group_id: string): void {
     console.log("deleting a group")
+    const group_renderer = this.#group_list.find(item => 
+      item
+      .getParticleGroup()
+      .getGrouping()
+      .group_id 
+      === 
+      group_id
+    );
+    this.#group_list.removeItem(group_renderer);
   }
   overwriteGroupList(): void {
     console.log("overwriting a group")

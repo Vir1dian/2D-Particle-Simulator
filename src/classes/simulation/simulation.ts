@@ -77,12 +77,12 @@ class Simulation {
   }
   deleteGroup(group_id: string): void {
     const group = this.#particle_groups.get(group_id);
-    if (group) group.getParticles().length = 0;
-    this.#particle_groups.delete(group_id);
     this.notify_observers(
       { type: SimEvent.Update }, 
       { type: SimEvent.Update_Particle_Groups, payload: { operation: "delete", data: group_id }}
     );
+    this.#particle_groups.delete(group_id);
+    if (group) group.getParticles().length = 0;
   }
   setPreset(preset: SimPreset): void {  
     const current_properties: SimPreset = {

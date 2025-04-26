@@ -71,9 +71,9 @@ class ParticlePanelRenderer extends Renderer {
             if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "add")
                 this.addGroup(payload.data);
             else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "edit")
-                this.editGroup(payload.data); // pass the data soon
+                this.editGroup(payload.data);
             else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "delete")
-                this.deleteGroup();
+                this.deleteGroup(payload.data);
             else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "overwrite")
                 this.overwriteGroupList();
         });
@@ -123,17 +123,25 @@ class ParticlePanelRenderer extends Renderer {
     }
     editGroup(group) {
         console.log("editing a group");
-        __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item
+        const group_renderer = __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item
             .getParticleGroup()
             .getGrouping()
             .group_id
             ===
                 group
                     .getGrouping()
-                    .group_id).refresh();
+                    .group_id);
+        group_renderer.refresh();
     }
-    deleteGroup() {
+    deleteGroup(group_id) {
         console.log("deleting a group");
+        const group_renderer = __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item
+            .getParticleGroup()
+            .getGrouping()
+            .group_id
+            ===
+                group_id);
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").removeItem(group_renderer);
     }
     overwriteGroupList() {
         console.log("overwriting a group");

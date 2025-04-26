@@ -217,21 +217,27 @@ class ListRenderer extends Renderer {
     removeItem(item) {
         const index = __classPrivateFieldGet(this, _ListRenderer_items, "f").indexOf(item);
         if (index !== -1) {
+            const li = item.getElement().parentElement;
             __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, 1);
             if (__classPrivateFieldGet(this, _ListRenderer_items, "f").length <= 0) {
                 this.getElement().style.display = "none";
             }
             item.remove();
+            li.remove();
         }
     }
     removeAtIndex(index, range) {
         if (index < 0 || range < 0 || index + range > __classPrivateFieldGet(this, _ListRenderer_items, "f").length) {
             throw new Error("Invalid range.");
         }
+        __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, range).forEach(item => {
+            const li = item.getElement().parentElement;
+            item.remove();
+            li.remove();
+        });
         if (__classPrivateFieldGet(this, _ListRenderer_items, "f").length <= 0) {
             this.getElement().style.display = "none";
         }
-        __classPrivateFieldGet(this, _ListRenderer_items, "f").splice(index, range).forEach(item => { item.remove(); });
     }
     empty() {
         __classPrivateFieldGet(this, _ListRenderer_items, "f").forEach(item => {

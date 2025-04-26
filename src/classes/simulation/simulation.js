@@ -77,10 +77,10 @@ class Simulation {
     }
     deleteGroup(group_id) {
         const group = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group_id);
+        this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Update_Particle_Groups, payload: { operation: "delete", data: group_id } });
+        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").delete(group_id);
         if (group)
             group.getParticles().length = 0;
-        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").delete(group_id);
-        this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Update_Particle_Groups, payload: { operation: "delete", data: group_id } });
     }
     setPreset(preset) {
         const current_properties = {

@@ -237,14 +237,13 @@ class EditGroupMenuRenderer extends Renderer {
         return button;
     }
     setupDeleteButton() {
-        const button = new ButtonRenderer(() => {
-            console.log(__classPrivateFieldGet(this, _EditGroupMenuRenderer_input_table, "f").prepareChanges());
-        });
+        const button = new ButtonRenderer(this.submitDelete.bind(this));
         button.setLabel('Delete');
         button.setClassName('delete_button');
         return button;
     }
     refresh() {
+        console.log(__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping());
     }
     submit() {
         const group_id_pair = { group_id: __classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping().group_id }; // group_id cannot be changed at this point
@@ -253,6 +252,12 @@ class EditGroupMenuRenderer extends Renderer {
     }
     submitDelete() {
         __classPrivateFieldGet(this, _EditGroupMenuRenderer_simulation, "f").deleteGroup(__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping().group_id);
+    }
+    remove() {
+        __classPrivateFieldGet(this, _EditGroupMenuRenderer_input_table, "f").remove();
+        __classPrivateFieldGet(this, _EditGroupMenuRenderer_submit_button, "f").remove();
+        __classPrivateFieldGet(this, _EditGroupMenuRenderer_delete_button, "f").remove();
+        super.remove();
     }
 }
 _EditGroupMenuRenderer_group = new WeakMap(), _EditGroupMenuRenderer_simulation = new WeakMap(), _EditGroupMenuRenderer_input_table = new WeakMap(), _EditGroupMenuRenderer_submit_button = new WeakMap(), _EditGroupMenuRenderer_delete_button = new WeakMap();
@@ -323,6 +328,12 @@ class EditParticleMenuRenderer extends Renderer {
     refresh() {
     }
     submit() {
+    }
+    remove() {
+        __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").remove();
+        __classPrivateFieldGet(this, _EditParticleMenuRenderer_submit_button, "f").remove();
+        __classPrivateFieldGet(this, _EditParticleMenuRenderer_delete_button, "f").remove();
+        super.remove();
     }
 }
 _EditParticleMenuRenderer_particle = new WeakMap(), _EditParticleMenuRenderer_input_table = new WeakMap(), _EditParticleMenuRenderer_submit_button = new WeakMap(), _EditParticleMenuRenderer_delete_button = new WeakMap();
@@ -417,9 +428,11 @@ class ParticleUnitGroupRenderer extends Renderer {
     refresh() {
         const color = __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f").getGrouping().color;
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").getElement().style.backgroundColor = color === undefined || color === 'random' ? 'black' : color;
-        // this.#details_dialog.refresh();
-        // propagate changes to each particle (partial edits for each, not full overwrite)
-        // this.#unit_list.
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_details_dialog, "f").getBody().refresh();
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").forEach(unit => {
+            unit.getDetailsDialog().getBody().refresh();
+            unit.refresh();
+        });
     }
     remove() {
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").remove();
@@ -504,6 +517,12 @@ class ParticleUnitRenderer extends Renderer {
     getParticlePoint() {
         return __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f");
     }
+    getDetailsDialog() {
+        return __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f");
+    }
+    refresh(...keys) {
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").update(...keys);
+    }
     remove() {
         __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").remove();
         __classPrivateFieldGet(this, _ParticleUnitRenderer_icon, "f").remove();
@@ -552,17 +571,20 @@ class ParticlePointRenderer extends Renderer {
         const container_element = document.querySelector('.container_element');
         container_element.appendChild(this.getElement());
     }
-    update() {
+    update(...keys) {
         const particle_element = this.getElement();
-        // shape
-        particle_element.style.borderRadius = `${__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius}px`;
-        particle_element.style.width = `${2 * __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius}px`;
-        particle_element.style.height = `${2 * __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius}px`;
-        // positioning
-        particle_element.style.left = `${(__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").position.x - __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius) - __classPrivateFieldGet(this, _ParticlePointRenderer_container, "f").x_min}px`;
-        particle_element.style.top = `${__classPrivateFieldGet(this, _ParticlePointRenderer_container, "f").y_max - (__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").position.y + __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius)}px`;
-        // color
-        particle_element.style.backgroundColor = __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").color;
+        if (keys.includes('radius')) {
+            particle_element.style.borderRadius = `${__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius}px`;
+            particle_element.style.width = `${2 * __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius}px`;
+            particle_element.style.height = `${2 * __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius}px`;
+        }
+        if (keys.includes('position')) {
+            particle_element.style.left = `${(__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").position.x - __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius) - __classPrivateFieldGet(this, _ParticlePointRenderer_container, "f").x_min}px`;
+            particle_element.style.top = `${__classPrivateFieldGet(this, _ParticlePointRenderer_container, "f").y_max - (__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").position.y + __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").radius)}px`;
+        }
+        if (keys.includes('color')) {
+            particle_element.style.backgroundColor = __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").color;
+        }
     }
 }
 _ParticlePointRenderer_particle = new WeakMap(), _ParticlePointRenderer_container = new WeakMap();

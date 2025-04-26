@@ -232,17 +232,13 @@ class EditGroupMenuRenderer extends Renderer {
     return button;
   }
   private setupDeleteButton(): ButtonRenderer {
-    const button: ButtonRenderer = new ButtonRenderer(
-      () => {
-        console.log(this.#input_table.prepareChanges());
-      }
-    );
+    const button: ButtonRenderer = new ButtonRenderer(this.submitDelete.bind(this));
     button.setLabel('Delete');
     button.setClassName('delete_button');
     return button;
   }
   refresh(): void {
-
+    console.log(this.#group.getGrouping())
   }
   submit(): void {
     const group_id_pair = { group_id: this.#group.getGrouping().group_id };  // group_id cannot be changed at this point
@@ -251,6 +247,12 @@ class EditGroupMenuRenderer extends Renderer {
   }
   submitDelete(): void {
     this.#simulation.deleteGroup(this.#group.getGrouping().group_id);
+  }
+  remove(): void {
+    this.#input_table.remove()
+    this.#submit_button.remove();
+    this.#delete_button.remove();
+    super.remove();
   }
 }
 
@@ -331,6 +333,12 @@ class EditParticleMenuRenderer extends Renderer {
   }
   submit(): void {
 
+  }
+  remove(): void {
+    this.#input_table.remove();
+    this.#submit_button.remove();
+    this.#delete_button.remove();
+    super.remove();
   }
 }
 
@@ -426,9 +434,11 @@ class ParticleUnitGroupRenderer extends Renderer {
   refresh(): void {
     const color = this.#particle_group.getGrouping().color;
     this.#icon.getElement().style.backgroundColor = color === undefined || color === 'random' ? 'black' : color;
-    // this.#details_dialog.refresh();
-    // propagate changes to each particle (partial edits for each, not full overwrite)
-    // this.#unit_list.
+    this.#details_dialog.getBody().refresh();
+    this.#unit_list.forEach(unit => {
+      unit.getDetailsDialog().getBody().refresh();
+      unit.refresh();
+    });
   }
   remove(): void {
     this.#icon.remove();
@@ -520,6 +530,12 @@ class ParticleUnitRenderer extends Renderer {
   getParticlePoint(): ParticlePointRenderer {
     return this.#particle_renderer;
   }
+  getDetailsDialog(): StandardDialogRenderer<EditParticleMenuRenderer> {
+    return this.#details_dialog;
+  }
+  refresh(...keys: ('radius' | 'position' | 'color')[]): void {
+    this.#particle_renderer.update(...keys);
+  }
   remove(): void {
     this.#particle_renderer.remove();
     this.#icon.remove();
@@ -569,16 +585,19 @@ class ParticlePointRenderer extends Renderer {
     const container_element : HTMLDivElement = document.querySelector('.container_element') as HTMLDivElement;
     container_element.appendChild(this.getElement());
   }
-  update(): void {
+  update(...keys: ('radius' | 'position' | 'color')[]): void {
     const particle_element : HTMLDivElement = this.getElement() as HTMLDivElement;
-    // shape
-    particle_element.style.borderRadius = `${this.#particle.radius}px`;
-    particle_element.style.width = `${2*this.#particle.radius}px`;
-    particle_element.style.height = `${2*this.#particle.radius}px`;
-    // positioning
-    particle_element.style.left = `${(this.#particle.position.x - this.#particle.radius) - this.#container.x_min}px`;
-    particle_element.style.top = `${this.#container.y_max - (this.#particle.position.y + this.#particle.radius)}px`;
-    // color
-    particle_element.style.backgroundColor = this.#particle.color;
+    if (keys.includes('radius')) {
+      particle_element.style.borderRadius = `${this.#particle.radius}px`;
+      particle_element.style.width = `${2*this.#particle.radius}px`;
+      particle_element.style.height = `${2*this.#particle.radius}px`;
+    }
+    if (keys.includes('position')) {
+      particle_element.style.left = `${(this.#particle.position.x - this.#particle.radius) - this.#container.x_min}px`;
+      particle_element.style.top = `${this.#container.y_max - (this.#particle.position.y + this.#particle.radius)}px`;
+    }
+    if (keys.includes('color')) {
+      particle_element.style.backgroundColor = this.#particle.color;
+    }
   }
 }

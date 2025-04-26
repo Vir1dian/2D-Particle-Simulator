@@ -199,21 +199,27 @@ class ListRenderer<T extends Renderer> extends Renderer {
   removeItem(item: T): void {
     const index = this.#items.indexOf(item);
     if (index !== -1) {
+      const li: HTMLLIElement = item.getElement().parentElement as HTMLLIElement;
       this.#items.splice(index, 1);
       if (this.#items.length <= 0) {
         this.getElement().style.display = "none";
       }
       item.remove();
+      li.remove();
     }
   }
   removeAtIndex(index: number, range: number): void {
     if (index < 0 || range < 0 || index + range > this.#items.length) {
       throw new Error("Invalid range.");
     }
+    this.#items.splice(index, range).forEach(item => {
+      const li: HTMLLIElement = item.getElement().parentElement as HTMLLIElement;
+      item.remove()
+      li.remove();
+    });
     if (this.#items.length <= 0) {
       this.getElement().style.display = "none";
     }
-    this.#items.splice(index, range).forEach(item => {item.remove()});
   }
   empty(): void {
     this.#items.forEach(item => {
