@@ -71,7 +71,7 @@ class ParticlePanelRenderer extends Renderer {
             if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "add")
                 this.addGroup(payload.data);
             else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "edit")
-                this.editGroup(payload.data);
+                this.editGroup(payload.data, payload.data2);
             else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "delete")
                 this.deleteGroup(payload.data);
             else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "overwrite")
@@ -121,7 +121,7 @@ class ParticlePanelRenderer extends Renderer {
         console.log("adding a group");
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f")));
     }
-    editGroup(group) {
+    editGroup(group, changes_log) {
         console.log("editing a group");
         const group_renderer = __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item
             .getParticleGroup()
@@ -131,7 +131,7 @@ class ParticlePanelRenderer extends Renderer {
                 group
                     .getGrouping()
                     .group_id);
-        group_renderer.refresh();
+        group_renderer.refresh(changes_log);
     }
     deleteGroup(group_id) {
         console.log("deleting a group");

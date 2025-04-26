@@ -117,4 +117,13 @@ function isVectorLike(value: any): value is Vector2D | { x: number, y: number } 
   return isObject(value) && typeof value.x === 'number' && typeof value.y === 'number';
 }
 
+
+function createBooleanKeyStates<T extends object>(example: T): { [K in keyof T]: boolean } {
+  const keys = Object.keys(example) as (keyof T)[];
+  return keys.reduce((acc, key) => {
+    acc[key] = false;
+    return acc;
+  }, {} as { [K in keyof T]: boolean });
+}
+
 const INPUT_PREFIX = 'input_id_';

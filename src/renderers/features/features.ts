@@ -62,7 +62,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     // Saved Data
     simulation.add_observer(SimEvent.Update_Particle_Groups, (payload?) => {
       if (payload?.operation === "add") this.addGroup(payload.data as ParticleGroup);
-      else if (payload?.operation === "edit") this.editGroup(payload.data as ParticleGroup);
+      else if (payload?.operation === "edit") this.editGroup(payload.data as ParticleGroup, payload.data2 as { [K in keyof ParticleGrouping]: boolean });
       else if (payload?.operation === "delete") this.deleteGroup(payload.data as string);
       else if (payload?.operation === "overwrite") this.overwriteGroupList();
     });
@@ -117,7 +117,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     console.log("adding a group")
     this.#group_list.push(new ParticleUnitGroupRenderer(group, this.#simulation));
   }
-  editGroup(group: ParticleGroup): void {
+  editGroup(group: ParticleGroup, changes_log: { [K in keyof ParticleGrouping]: boolean }): void {
     console.log("editing a group")
     const group_renderer = this.#group_list.find(item => 
       item
@@ -129,7 +129,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
       .getGrouping()
       .group_id
     );
-    group_renderer.refresh();
+    group_renderer.refresh(changes_log);
   }
   deleteGroup(group_id: string): void {
     console.log("deleting a group")

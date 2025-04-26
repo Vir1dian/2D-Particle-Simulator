@@ -109,4 +109,11 @@ function isObject(item) {
 function isVectorLike(value) {
     return isObject(value) && typeof value.x === 'number' && typeof value.y === 'number';
 }
+function createBooleanKeyStates(example) {
+    const keys = Object.keys(example);
+    return keys.reduce((acc, key) => {
+        acc[key] = false;
+        return acc;
+    }, {});
+}
 const INPUT_PREFIX = 'input_id_';

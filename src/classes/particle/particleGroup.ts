@@ -30,7 +30,7 @@ class ParticleGroup {
   #particles: Particle[];
 
   constructor(grouping: ParticleGrouping = DEFAULT_GROUPING, size: number = 0) {
-    this.#grouping = grouping;
+    this.#grouping = structuredCloneCustom(grouping);
     this.#particles = [];
     for (let i = 0; i < size; i++) {
       const p: Particle = new Particle(grouping);
@@ -71,7 +71,24 @@ class ParticleGroup {
     return this.#particles;
   }
 
-  setGrouping(grouping: ParticleGrouping): void {
+  setGrouping(grouping: ParticleGrouping): { [K in keyof ParticleGrouping]: boolean } {
+    const changes = createBooleanKeyStates(DEFAULT_GROUPING);
+    (Object.keys(changes) as (keyof ParticleGrouping)[]).forEach(property => {
+      const new_value = grouping[property];
+      const current_value = this.#grouping[property];
+      if (isVectorLike(new_value) && isVectorLike(current_value)) {
+        if (new_value.x !== current_value.x || new_value.y !== current_value.y) {
+          (this.#grouping[property] as Vector2D) = new Vector2D(new_value.x, new_value.y);
+          changes[property] = true;
+        }
+      }
+      else if (new_value !== current_value) {
+        (this.#grouping[property] as string | number | boolean | Vector2D | undefined) = new_value;
+        changes[property] = true;
+      }
+    });
+
+    // may have to improve this
     this.#particles.forEach(particle => {
       (Object.keys(grouping) as (keyof ParticleGrouping)[]).forEach(property => {
         const new_value = grouping[property];
@@ -84,6 +101,6 @@ class ParticleGroup {
       });
     });
 
-    this.#grouping = grouping;
+    return changes;
   }
 }

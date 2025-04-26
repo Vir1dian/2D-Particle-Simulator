@@ -244,6 +244,7 @@ class EditGroupMenuRenderer extends Renderer {
     }
     refresh() {
         console.log(__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping());
+        // figure this out
     }
     submit() {
         const group_id_pair = { group_id: __classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping().group_id }; // group_id cannot be changed at this point
@@ -326,6 +327,7 @@ class EditParticleMenuRenderer extends Renderer {
         return button;
     }
     refresh() {
+        console.log('EditParticleMenuRenderer refresh called');
     }
     submit() {
     }
@@ -425,13 +427,20 @@ class ParticleUnitGroupRenderer extends Renderer {
     getUnitList() {
         return __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f");
     }
-    refresh() {
+    refresh(changes_log) {
         const color = __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f").getGrouping().color;
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").getElement().style.backgroundColor = color === undefined || color === 'random' ? 'black' : color;
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_details_dialog, "f").getBody().refresh();
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").forEach(unit => {
             unit.getDetailsDialog().getBody().refresh();
-            unit.refresh();
+            const change_params = [];
+            if (changes_log.radius)
+                change_params.push('radius');
+            if (changes_log.position)
+                change_params.push('position');
+            if (changes_log.color)
+                change_params.push('color');
+            unit.refresh(...change_params);
         });
     }
     remove() {
@@ -521,6 +530,7 @@ class ParticleUnitRenderer extends Renderer {
         return __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f");
     }
     refresh(...keys) {
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").getBody().refresh();
         __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").update(...keys);
     }
     remove() {

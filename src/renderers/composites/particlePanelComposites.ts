@@ -239,6 +239,7 @@ class EditGroupMenuRenderer extends Renderer {
   }
   refresh(): void {
     console.log(this.#group.getGrouping())
+    // figure this out
   }
   submit(): void {
     const group_id_pair = { group_id: this.#group.getGrouping().group_id };  // group_id cannot be changed at this point
@@ -329,7 +330,7 @@ class EditParticleMenuRenderer extends Renderer {
     return button;
   }
   refresh(): void {
-
+    console.log('EditParticleMenuRenderer refresh called')
   }
   submit(): void {
 
@@ -431,13 +432,17 @@ class ParticleUnitGroupRenderer extends Renderer {
   getUnitList(): ListRenderer<ParticleUnitRenderer> {
     return this.#unit_list;
   }
-  refresh(): void {
+  refresh(changes_log: { [K in keyof ParticleGrouping]: boolean }): void {
     const color = this.#particle_group.getGrouping().color;
     this.#icon.getElement().style.backgroundColor = color === undefined || color === 'random' ? 'black' : color;
     this.#details_dialog.getBody().refresh();
     this.#unit_list.forEach(unit => {
       unit.getDetailsDialog().getBody().refresh();
-      unit.refresh();
+      const change_params: ('radius' | 'position' | 'color')[] = [];
+      if (changes_log.radius) change_params.push('radius');
+      if (changes_log.position) change_params.push('position');
+      if (changes_log.color) change_params.push('color');
+      unit.refresh(...change_params);
     });
   }
   remove(): void {
@@ -534,6 +539,7 @@ class ParticleUnitRenderer extends Renderer {
     return this.#details_dialog;
   }
   refresh(...keys: ('radius' | 'position' | 'color')[]): void {
+    this.#details_dialog.getBody().refresh();
     this.#particle_renderer.update(...keys);
   }
   remove(): void {

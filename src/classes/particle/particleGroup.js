@@ -30,7 +30,7 @@ class ParticleGroup {
     constructor(grouping = DEFAULT_GROUPING, size = 0) {
         _ParticleGroup_grouping.set(this, void 0);
         _ParticleGroup_particles.set(this, void 0);
-        __classPrivateFieldSet(this, _ParticleGroup_grouping, grouping, "f");
+        __classPrivateFieldSet(this, _ParticleGroup_grouping, structuredCloneCustom(grouping), "f");
         __classPrivateFieldSet(this, _ParticleGroup_particles, [], "f");
         for (let i = 0; i < size; i++) {
             const p = new Particle(grouping);
@@ -67,6 +67,22 @@ class ParticleGroup {
         return __classPrivateFieldGet(this, _ParticleGroup_particles, "f");
     }
     setGrouping(grouping) {
+        const changes = createBooleanKeyStates(DEFAULT_GROUPING);
+        Object.keys(changes).forEach(property => {
+            const new_value = grouping[property];
+            const current_value = __classPrivateFieldGet(this, _ParticleGroup_grouping, "f")[property];
+            if (isVectorLike(new_value) && isVectorLike(current_value)) {
+                if (new_value.x !== current_value.x || new_value.y !== current_value.y) {
+                    __classPrivateFieldGet(this, _ParticleGroup_grouping, "f")[property] = new Vector2D(new_value.x, new_value.y);
+                    changes[property] = true;
+                }
+            }
+            else if (new_value !== current_value) {
+                __classPrivateFieldGet(this, _ParticleGroup_grouping, "f")[property] = new_value;
+                changes[property] = true;
+            }
+        });
+        // may have to improve this
         __classPrivateFieldGet(this, _ParticleGroup_particles, "f").forEach(particle => {
             Object.keys(grouping).forEach(property => {
                 const new_value = grouping[property];
@@ -79,7 +95,7 @@ class ParticleGroup {
                 }
             });
         });
-        __classPrivateFieldSet(this, _ParticleGroup_grouping, grouping, "f");
+        return changes;
     }
 }
 _ParticleGroup_grouping = new WeakMap(), _ParticleGroup_particles = new WeakMap();

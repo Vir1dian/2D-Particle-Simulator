@@ -9,7 +9,8 @@ enum SimEvent {
 
 type SimEventPayload = {
   operation: "add" | "edit" | "delete" | "overwrite",
-  data?: string | Particle | ParticleGroup;
+  data?: string | Particle | ParticleGroup; 
+  data2?: { [K in keyof ParticleGrouping]: boolean };  // used by edit
 }
 
 /**
@@ -69,10 +70,10 @@ class Simulation {
   editGroup(group_id: string, grouping: ParticleGrouping): void {
     const group = this.#particle_groups.get(group_id);
     if (!group) throw new Error(`Group name: ${group_id} not found`);
-    group.setGrouping(grouping);
+    const changes_log = group.setGrouping(grouping);
     this.notify_observers(
       { type: SimEvent.Update }, 
-      { type: SimEvent.Update_Particle_Groups, payload: { operation: "edit", data: group }}
+      { type: SimEvent.Update_Particle_Groups, payload: { operation: "edit", data: group, data2: changes_log }}
     );
   }
   deleteGroup(group_id: string): void {
