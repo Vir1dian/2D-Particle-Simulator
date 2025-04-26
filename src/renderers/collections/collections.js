@@ -180,6 +180,12 @@ class ListRenderer extends Renderer {
     filter(callback) {
         return __classPrivateFieldGet(this, _ListRenderer_items, "f").filter(callback);
     }
+    find(callback) {
+        const item = __classPrivateFieldGet(this, _ListRenderer_items, "f").find(callback);
+        if (item === undefined)
+            throw new Error("ListRenderer: item not found.");
+        return item;
+    }
     swap(index1, index2) {
         if (index1 === index2)
             return;

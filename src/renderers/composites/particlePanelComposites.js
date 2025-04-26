@@ -21,7 +21,7 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var _AddParticleMenuRenderer_simulation, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_amount_input, _AddParticleMenuRenderer_submit_button, _CreateGroupMenuRenderer_simulation, _CreateGroupMenuRenderer_input_table, _CreateGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_group, _EditGroupMenuRenderer_input_table, _EditGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_delete_button, _EditParticleMenuRenderer_particle, _EditParticleMenuRenderer_input_table, _EditParticleMenuRenderer_submit_button, _EditParticleMenuRenderer_delete_button, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
+var _AddParticleMenuRenderer_simulation, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_amount_input, _AddParticleMenuRenderer_submit_button, _CreateGroupMenuRenderer_simulation, _CreateGroupMenuRenderer_input_table, _CreateGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_group, _EditGroupMenuRenderer_simulation, _EditGroupMenuRenderer_input_table, _EditGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_delete_button, _EditParticleMenuRenderer_particle, _EditParticleMenuRenderer_input_table, _EditParticleMenuRenderer_submit_button, _EditParticleMenuRenderer_delete_button, _ParticleUnitGroupRenderer_particle_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
 class AddParticleMenuRenderer extends Renderer {
     constructor(simulation) {
         const menu_wrapper = document.createElement('div');
@@ -180,20 +180,18 @@ class CreateGroupMenuRenderer extends Renderer {
 }
 _CreateGroupMenuRenderer_simulation = new WeakMap(), _CreateGroupMenuRenderer_input_table = new WeakMap(), _CreateGroupMenuRenderer_submit_button = new WeakMap();
 class EditGroupMenuRenderer extends Renderer {
-    constructor(group, container) {
+    constructor(group, simulation) {
         const menu_wrapper = document.createElement('div');
         super(menu_wrapper, 'dialog_menu', `dialog_menu_edit_group_id_${0}`);
-        // To be placed inside an existing StandardDialogRenderer
-        // maybe use checkboxes for users to tick if they want to specify/unspecify a property?
-        // also option to delete the ParticleGroup
-        // "Focus" on the corresponding group of particles in the container when this window is open
         _EditGroupMenuRenderer_group.set(this, void 0);
+        _EditGroupMenuRenderer_simulation.set(this, void 0);
         _EditGroupMenuRenderer_input_table.set(this, void 0);
         _EditGroupMenuRenderer_submit_button.set(this, void 0);
         _EditGroupMenuRenderer_delete_button.set(this, void 0);
         // Stored Data
         __classPrivateFieldSet(this, _EditGroupMenuRenderer_group, group, "f");
-        __classPrivateFieldSet(this, _EditGroupMenuRenderer_input_table, this.setupInputTable(container), "f");
+        __classPrivateFieldSet(this, _EditGroupMenuRenderer_simulation, simulation, "f");
+        __classPrivateFieldSet(this, _EditGroupMenuRenderer_input_table, this.setupInputTable(simulation.getContainer()), "f");
         __classPrivateFieldSet(this, _EditGroupMenuRenderer_submit_button, this.setupSubmitButton(), "f");
         __classPrivateFieldSet(this, _EditGroupMenuRenderer_delete_button, this.setupDeleteButton(), "f");
         // DOM Content
@@ -234,9 +232,7 @@ class EditGroupMenuRenderer extends Renderer {
         return input_table;
     }
     setupSubmitButton() {
-        const button = new ButtonRenderer(() => {
-            console.log(__classPrivateFieldGet(this, _EditGroupMenuRenderer_input_table, "f").prepareChanges());
-        });
+        const button = new ButtonRenderer(this.submit.bind(this));
         button.setLabel('Submit');
         return button;
     }
@@ -248,15 +244,18 @@ class EditGroupMenuRenderer extends Renderer {
         button.setClassName('delete_button');
         return button;
     }
-    // refresh(): void {
-    // }
+    refresh() {
+    }
     submit() {
-        // call ParticleGroup::setGrouping for the following group by sending the changes to Simulation
+        const group_id_pair = { group_id: __classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping().group_id }; // group_id cannot be changed at this point
+        const changes = structuredCloneCustom(Object.assign(Object.assign({}, group_id_pair), __classPrivateFieldGet(this, _EditGroupMenuRenderer_input_table, "f").prepareChanges()));
+        __classPrivateFieldGet(this, _EditGroupMenuRenderer_simulation, "f").editGroup(group_id_pair.group_id, changes);
     }
     submitDelete() {
+        __classPrivateFieldGet(this, _EditGroupMenuRenderer_simulation, "f").deleteGroup(__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping().group_id);
     }
 }
-_EditGroupMenuRenderer_group = new WeakMap(), _EditGroupMenuRenderer_input_table = new WeakMap(), _EditGroupMenuRenderer_submit_button = new WeakMap(), _EditGroupMenuRenderer_delete_button = new WeakMap();
+_EditGroupMenuRenderer_group = new WeakMap(), _EditGroupMenuRenderer_simulation = new WeakMap(), _EditGroupMenuRenderer_input_table = new WeakMap(), _EditGroupMenuRenderer_submit_button = new WeakMap(), _EditGroupMenuRenderer_delete_button = new WeakMap();
 class EditParticleMenuRenderer extends Renderer {
     constructor(particle, container) {
         const menu_wrapper = document.createElement('div');
@@ -334,7 +333,7 @@ _EditParticleMenuRenderer_particle = new WeakMap(), _EditParticleMenuRenderer_in
  * Handles ParticleUnitRenderers.
  */
 class ParticleUnitGroupRenderer extends Renderer {
-    constructor(group, container) {
+    constructor(group, simulation) {
         const particle_group_element = document.createElement('article');
         super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
         _ParticleUnitGroupRenderer_particle_group.set(this, void 0);
@@ -345,10 +344,10 @@ class ParticleUnitGroupRenderer extends Renderer {
         // Stored Data
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_particle_group, group, "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_icon, this.createIcon(group.getGrouping().color), "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(group.getGrouping().group_id, container), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(group.getGrouping().group_id, simulation), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_drag_button, this.setupDragButton(), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...group.getParticles().map(particle => {
-            return new ParticleUnitRenderer(particle, container);
+            return new ParticleUnitRenderer(particle, simulation.getContainer());
         })), "f");
         // DOM Content
         const header = document.createElement('header');
@@ -368,8 +367,8 @@ class ParticleUnitGroupRenderer extends Renderer {
         return icon;
     }
     ;
-    setupDetailsDialog(group_id, container) {
-        const body = new EditGroupMenuRenderer(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f"), container);
+    setupDetailsDialog(group_id, simulation) {
+        const body = new EditGroupMenuRenderer(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f"), simulation);
         const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, `Group: ${group_id}`, true);
         details_dialog.getOpenButton().setLabel("expand_content", true);
         details_dialog.getCloseButton().setLabel("close", true);
@@ -409,8 +408,18 @@ class ParticleUnitGroupRenderer extends Renderer {
     getParticleGroup() {
         return __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f");
     }
+    getDetailsDialog() {
+        return __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_details_dialog, "f");
+    }
     getUnitList() {
         return __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f");
+    }
+    refresh() {
+        const color = __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f").getGrouping().color;
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").getElement().style.backgroundColor = color === undefined || color === 'random' ? 'black' : color;
+        // this.#details_dialog.refresh();
+        // propagate changes to each particle (partial edits for each, not full overwrite)
+        // this.#unit_list.
     }
     remove() {
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").remove();

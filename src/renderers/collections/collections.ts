@@ -156,14 +156,19 @@ class ListRenderer<T extends Renderer> extends Renderer {
     }
     return this.#items[index];
   }
-  map<S>(callback: (item: Renderer, index: number) => S): S[] {
+  map<S>(callback: (item: T, index: number) => S): S[] {
     return this.#items.map(callback);
   }
-  forEach(callback: (item: Renderer, index: number) => void): void {
+  forEach(callback: (item: T, index: number) => void): void {
     this.#items.forEach(callback);
   }
-  filter(callback: (item: Renderer, index: number) => boolean): T[] {
+  filter(callback: (item: T, index: number) => boolean): T[] {
     return this.#items.filter(callback);
+  }
+  find(callback: (item: T, index: number) => boolean): T {
+    const item = this.#items.find(callback);
+    if (item === undefined) throw new Error("ListRenderer: item not found.");
+    return item;
   }
   swap(index1: number, index2: number): void {
     if (index1 === index2) return;

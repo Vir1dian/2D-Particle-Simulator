@@ -71,7 +71,7 @@ class ParticlePanelRenderer extends Renderer {
             if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "add")
                 this.addGroup(payload.data);
             else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "edit")
-                this.editGroup(); // pass the data soon
+                this.editGroup(payload.data); // pass the data soon
             else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "delete")
                 this.deleteGroup();
             else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "overwrite")
@@ -80,7 +80,7 @@ class ParticlePanelRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticlePanelRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_add_particles_dialog, this.setupAddParticlesDialog(), "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_create_group_dialog, this.setupCreateGroupDialog(), "f");
-        __classPrivateFieldSet(this, _ParticlePanelRenderer_group_list, new ListRenderer(...Array.from(simulation.getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation.getContainer()))), "f");
+        __classPrivateFieldSet(this, _ParticlePanelRenderer_group_list, new ListRenderer(...Array.from(simulation.getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation))), "f");
         // Content
         const header = document.createElement('header');
         header.innerHTML = "Particle Setup";
@@ -119,10 +119,18 @@ class ParticlePanelRenderer extends Renderer {
     }
     addGroup(group) {
         console.log("adding a group");
-        __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getContainer()));
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f")));
     }
-    editGroup() {
+    editGroup(group) {
         console.log("editing a group");
+        __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item
+            .getParticleGroup()
+            .getGrouping()
+            .group_id
+            ===
+                group
+                    .getGrouping()
+                    .group_id).refresh();
     }
     deleteGroup() {
         console.log("deleting a group");
@@ -130,7 +138,7 @@ class ParticlePanelRenderer extends Renderer {
     overwriteGroupList() {
         console.log("overwriting a group");
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").empty();
-        Array.from(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getContainer())).forEach(group_renderer => __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(group_renderer));
+        Array.from(__classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f").getParticleGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_simulation, "f"))).forEach(group_renderer => __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(group_renderer));
     }
     remove() {
         __classPrivateFieldGet(this, _ParticlePanelRenderer_add_particles_dialog, "f").remove();
