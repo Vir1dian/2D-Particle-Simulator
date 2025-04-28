@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Simulation_container, _Simulation_environment, _Simulation_config, _Simulation_particle_groups, _Simulation_observers;
+var _Simulation_container, _Simulation_environment, _Simulation_config, _Simulation_particles_handler, _Simulation_observers;
 var SimEvent;
 (function (SimEvent) {
     SimEvent[SimEvent["Update"] = 0] = "Update";
@@ -18,22 +18,19 @@ var SimEvent;
     SimEvent[SimEvent["Update_Environment"] = 2] = "Update_Environment";
     SimEvent[SimEvent["Update_Config"] = 3] = "Update_Config";
     SimEvent[SimEvent["Update_Particle_Groups"] = 4] = "Update_Particle_Groups";
-    SimEvent[SimEvent["Update_Particle"] = 5] = "Update_Particle";
 })(SimEvent || (SimEvent = {}));
 ;
 /**
  * Oversees most processes in the program.
  * Only one instance of Simulation should
  * exist at any time.
- * NOTE: consider writing as a singleton
- * in the future
  */
 class Simulation {
     constructor(preset = {}) {
         _Simulation_container.set(this, void 0);
         _Simulation_environment.set(this, void 0);
         _Simulation_config.set(this, void 0);
-        _Simulation_particle_groups.set(this, void 0);
+        _Simulation_particles_handler.set(this, void 0);
         _Simulation_observers.set(this, void 0); // using a map with a set to avoid duplicate callbacks for an event type
         const preset_clone = structuredCloneCustom(preset);
         const default_clone = structuredCloneCustom(DEFAULT_PRESET);
@@ -41,7 +38,7 @@ class Simulation {
         __classPrivateFieldSet(this, _Simulation_container, final_preset.container, "f");
         __classPrivateFieldSet(this, _Simulation_environment, final_preset.environment, "f");
         __classPrivateFieldSet(this, _Simulation_config, final_preset.config, "f");
-        __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(final_preset.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
+        __classPrivateFieldSet(this, _Simulation_particles_handler, new ParticlesHandler(final_preset.particle_groups), "f");
         __classPrivateFieldSet(this, _Simulation_observers, new Map(), "f");
         Object.keys(SimEvent).forEach((_, event) => {
             __classPrivateFieldGet(this, _Simulation_observers, "f").set(event, new Set());
@@ -55,32 +52,9 @@ class Simulation {
         __classPrivateFieldGet(this, _Simulation_observers, "f").get(event).delete(callback);
     }
     notify_observers(...events) {
-        events.forEach(({ type, payload }) => {
-            __classPrivateFieldGet(this, _Simulation_observers, "f").get(type).forEach(callback => callback(payload));
+        events.forEach(event => {
+            __classPrivateFieldGet(this, _Simulation_observers, "f").get(event).forEach(callback => callback());
         });
-    }
-    addGroup(grouping) {
-        // Assumes that string group_id has valid formatting: i.e. no spaces, alphanumeric.
-        if (__classPrivateFieldGet(this, _Simulation_particle_groups, "f").has(grouping.group_id)) {
-            throw new Error(`Group name: ${grouping.group_id} already exists.`);
-        }
-        const group = new ParticleGroup(grouping, 0);
-        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").set(grouping.group_id, group);
-        this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Update_Particle_Groups, payload: { operation: "add", data: group } });
-    }
-    editGroup(group_id, grouping) {
-        const group = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group_id);
-        if (!group)
-            throw new Error(`Group name: ${group_id} not found`);
-        const changes_log = group.setGrouping(grouping);
-        this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Update_Particle_Groups, payload: { operation: "edit", data: group, data2: changes_log } });
-    }
-    deleteGroup(group_id) {
-        const group = __classPrivateFieldGet(this, _Simulation_particle_groups, "f").get(group_id);
-        this.notify_observers({ type: SimEvent.Update }, { type: SimEvent.Update_Particle_Groups, payload: { operation: "delete", data: group_id } });
-        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").delete(group_id);
-        if (group)
-            group.getParticles().length = 0;
     }
     setPreset(preset) {
         const current_properties = {
@@ -92,25 +66,25 @@ class Simulation {
         if (preset.container) {
             console.log('update_container');
             __classPrivateFieldSet(this, _Simulation_container, deepmergeCustom(current_properties.container, preset_clone.container), "f");
-            this.notify_observers({ type: SimEvent.Update_Container });
+            this.notify_observers(SimEvent.Update_Container);
         }
         if (preset.environment) {
             console.log('update_environment');
             __classPrivateFieldSet(this, _Simulation_environment, deepmergeCustom(current_properties.environment, preset_clone.environment), "f");
-            this.notify_observers({ type: SimEvent.Update_Environment });
+            this.notify_observers(SimEvent.Update_Environment);
         }
         if (preset.config) {
             console.log('update_config');
             __classPrivateFieldSet(this, _Simulation_config, deepmergeCustom(current_properties.config, preset_clone.config), "f");
-            this.notify_observers({ type: SimEvent.Update_Config });
+            this.notify_observers(SimEvent.Update_Config);
         }
         if (preset.particle_groups) {
-            console.log('update_particle_groups');
-            __classPrivateFieldSet(this, _Simulation_particle_groups, new Map(Array.from(preset_clone.particle_groups, ([group_id, group]) => [group_id, new ParticleGroup(group.grouping, group.size)])), "f");
-            this.notify_observers({ type: SimEvent.Update_Particle_Groups, payload: { operation: "overwrite" } });
+            console.log('update_particle_groups (SimEvent)');
+            __classPrivateFieldGet(this, _Simulation_particles_handler, "f").overwriteGroups(preset.particle_groups);
+            this.notify_observers(SimEvent.Update_Particle_Groups);
         }
         if (preset)
-            this.notify_observers({ type: SimEvent.Update });
+            this.notify_observers(SimEvent.Update);
         console.log('update');
     }
     getContainer() {
@@ -122,18 +96,11 @@ class Simulation {
     getConfig() {
         return __classPrivateFieldGet(this, _Simulation_config, "f");
     }
-    getParticleGroups() {
-        return __classPrivateFieldGet(this, _Simulation_particle_groups, "f");
-    }
-    getAllParticles() {
-        const particles = [];
-        __classPrivateFieldGet(this, _Simulation_particle_groups, "f").forEach(group => {
-            particles.push(...group.getParticles());
-        });
-        return particles;
+    getParticlesHandler() {
+        return __classPrivateFieldGet(this, _Simulation_particles_handler, "f");
     }
 }
-_Simulation_container = new WeakMap(), _Simulation_environment = new WeakMap(), _Simulation_config = new WeakMap(), _Simulation_particle_groups = new WeakMap(), _Simulation_observers = new WeakMap();
+_Simulation_container = new WeakMap(), _Simulation_environment = new WeakMap(), _Simulation_config = new WeakMap(), _Simulation_particles_handler = new WeakMap(), _Simulation_observers = new WeakMap();
 const DEFAULT_PRESET = {
     container: {
         x_min: -250,

@@ -50,28 +50,30 @@ class EnvironmentPanelRenderer extends Renderer {
  * #particle_groups property.
  */
 class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, dialogs
-  #simulation: Simulation;
+  #particles_handler: ParticlesHandler;
+  #container: BoxSpace
   #add_particles_dialog: StandardDialogRenderer<AddParticleMenuRenderer>;
   #create_group_dialog: StandardDialogRenderer<CreateGroupMenuRenderer>;
   #group_list: ListRenderer<ParticleUnitGroupRenderer>;
 
-  constructor(simulation: Simulation) {
+  constructor(particles_handler: ParticlesHandler, container: BoxSpace) {
     const particle_panel: HTMLElement = document.createElement('article');
     super(particle_panel, 'control_item', 'control_parsetup');
 
     // Saved Data
-    simulation.add_observer(SimEvent.Update_Particle_Groups, (payload?) => {
+    particles_handler.add_observer(ParticleEvent.Update_Particle_Groups, (payload?) => {
       if (payload?.operation === "add") this.addGroup(payload.data as ParticleGroup);
       else if (payload?.operation === "edit") this.editGroup(payload.data as ParticleGroup, payload.data2 as { [K in keyof ParticleGrouping]: boolean });
       else if (payload?.operation === "delete") this.deleteGroup(payload.data as string);
       else if (payload?.operation === "overwrite") this.overwriteGroupList();
     });
-    this.#simulation = simulation;
+    this.#particles_handler = particles_handler;
+    this.#container = container;
     this.#add_particles_dialog = this.setupAddParticlesDialog();
     this.#create_group_dialog = this.setupCreateGroupDialog();
     this.#group_list = new ListRenderer<ParticleUnitGroupRenderer>(...Array.from(
-      simulation.getParticleGroups() as Map<string, ParticleGroup>, 
-      ([group_id, group]) => new ParticleUnitGroupRenderer(group, simulation)
+      particles_handler.getGroups() as Map<string, ParticleGroup>, 
+      ([group_id, group]) => new ParticleUnitGroupRenderer(group, particles_handler, container)
     ));
 
     // Content
@@ -89,14 +91,14 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     particle_panel.appendChild(list_wrapper);
   }
   private setupAddParticlesDialog(): StandardDialogRenderer<AddParticleMenuRenderer> {
-    const body = new AddParticleMenuRenderer(this.#simulation);
+    const body = new AddParticleMenuRenderer(this.#particles_handler, this.#container);
     const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles', true);
     dialog.getOpenButton().setLabel("Add Particles");
     dialog.getCloseButton().setLabel("close", true);
     return dialog;
   }
   private setupCreateGroupDialog(): StandardDialogRenderer<CreateGroupMenuRenderer> {
-    const body = new CreateGroupMenuRenderer(this.#simulation);
+    const body = new CreateGroupMenuRenderer(this.#particles_handler, this.#container);
     const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group', true);
     dialog.getOpenButton().setLabel("Create Group");
     dialog.getCloseButton().setLabel("close", true);
@@ -115,7 +117,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
   }
   addGroup(group: ParticleGroup): void {
     console.log("adding a group")
-    this.#group_list.push(new ParticleUnitGroupRenderer(group, this.#simulation));
+    this.#group_list.push(new ParticleUnitGroupRenderer(group, this.#particles_handler, this.#container));
   }
   editGroup(group: ParticleGroup, changes_log: { [K in keyof ParticleGrouping]: boolean }): void {
     console.log("editing a group")
@@ -147,8 +149,8 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     console.log("overwriting a group")
     this.#group_list.empty();
     Array.from(
-      this.#simulation.getParticleGroups() as Map<string, ParticleGroup>, 
-      ([group_id, group]) => new ParticleUnitGroupRenderer(group, this.#simulation)
+      this.#particles_handler.getGroups() as Map<string, ParticleGroup>, 
+      ([group_id, group]) => new ParticleUnitGroupRenderer(group, this.#particles_handler, this.#container)
     ).forEach(group_renderer => this.#group_list.push(group_renderer));
   }
   remove(): void {

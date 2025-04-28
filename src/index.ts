@@ -93,7 +93,7 @@ function loadAll() {
 
   const sim: Simulation = new Simulation(TEMPORARY_PRESETS["rybg"]);
   const environment_panel: EnvironmentPanelRenderer = new EnvironmentPanelRenderer(sim);
-  const particle_panel: ParticlePanelRenderer = new ParticlePanelRenderer(sim);
+  const particle_panel: ParticlePanelRenderer = new ParticlePanelRenderer(sim.getParticlesHandler(), sim.getContainer());
   const control_panel_element: HTMLElement = document.querySelector(".control_items_wrapper") as HTMLElement;
   environment_panel.setParent(control_panel_element);
   particle_panel.setParent(control_panel_element);

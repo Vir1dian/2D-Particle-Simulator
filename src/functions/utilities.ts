@@ -117,7 +117,15 @@ function isVectorLike(value: any): value is Vector2D | { x: number, y: number } 
   return isObject(value) && typeof value.x === 'number' && typeof value.y === 'number';
 }
 
-
+/**
+ * Creates a record object containing the same keys as a
+ * given type/interface, but only allowing boolean values,
+ * initially all set to false. 
+ * @param example intantiated object of the intended 
+ * type/interface containing all its keys (even if partial).
+ * Default/constant object recommended.
+ * @returns a record object as described above.
+ */
 function createBooleanKeyStates<T extends object>(example: T): { [K in keyof T]: boolean } {
   const keys = Object.keys(example) as (keyof T)[];
   return keys.reduce((acc, key) => {

@@ -1,22 +1,22 @@
 class AddParticleMenuRenderer extends Renderer {
   // To be placed inside an existing StandardDialogRenderer
-  #simulation: Simulation;
+  #particles_handler: ParticlesHandler;
   #group_selector: SelectRenderer;
   #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
   #amount_input: NumberInputRenderer;
   #submit_button: ButtonRenderer;
 
-  constructor(simulation: Simulation) {
+  constructor(particles_handler: ParticlesHandler, container: BoxSpace) {
     const menu_wrapper: HTMLDivElement = document.createElement('div');
     super(menu_wrapper, 'dialog_menu', 'dialog_menu_add_particle');
 
     // Stored Data
-    simulation.add_observer(SimEvent.Update_Particle_Groups, (payload?) => {
+    particles_handler.add_observer(ParticleEvent.Update_Particle_Groups, (payload?) => {
       this.refresh(payload);
     });
-    this.#simulation = simulation;
+    this.#particles_handler = particles_handler;
     this.#group_selector = this.setupGroupSelector();
-    this.#input_table = this.setupInputTable(simulation.getContainer());
+    this.#input_table = this.setupInputTable(container);
     this.#amount_input = this.setupAmountInput();
     this.#submit_button = this.setupSubmitButton();
 
@@ -51,7 +51,7 @@ class AddParticleMenuRenderer extends Renderer {
     const selector = new SelectRenderer(
       'menu_group_selector_add_particle', 
       Array.from(
-        this.#simulation.getParticleGroups() as Map<string, ParticleGroup>,
+        this.#particles_handler.getGroups() as Map<string, ParticleGroup>,
         ([group_id, group]) => new OptionRenderer(group_id)
       )
     );
@@ -90,21 +90,23 @@ class AddParticleMenuRenderer extends Renderer {
     button.setLabel('Submit');
     return button;
   }
-  refresh(payload?: SimEventPayload): void {
+  refresh(payload?: ParticleEventPayload): void {
     if (payload?.operation === 'add') {
       console.log("adding a group")
       this.#group_selector.addOption(new OptionRenderer((payload.data as ParticleGroup).getGrouping().group_id));
     }
     else if (payload?.operation === 'edit') {
       console.log("editing a group")
+      // TODO
     }
     else if (payload?.operation === 'delete') {
       console.log("deleting a group")
+      // TODO
     }
     else if (payload?.operation === 'overwrite') {
       console.log("overwriting a group")
       this.#group_selector.empty();
-      for (const key of this.#simulation.getParticleGroups().keys()) 
+      for (const key of this.#particles_handler.getGroups().keys()) 
         this.#group_selector.addOption(new OptionRenderer(key));
     }
   }
@@ -115,17 +117,17 @@ class AddParticleMenuRenderer extends Renderer {
 
 class CreateGroupMenuRenderer extends Renderer {
   // To be placed inside an existing StandardDialogRenderer
-  #simulation: Simulation;
+  #particles_handler: ParticlesHandler;
   #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
   #submit_button: ButtonRenderer;
 
-  constructor(simulation: Simulation) {
+  constructor(particles_handler: ParticlesHandler, container: BoxSpace) {
     const menu_wrapper: HTMLDivElement = document.createElement('div');
     super(menu_wrapper, 'dialog_menu', 'dialog_menu_create_group');
 
     // Stored Data
-    this.#simulation = simulation;
-    this.#input_table = this.setupInputTable(simulation.getContainer());
+    this.#particles_handler = particles_handler;
+    this.#input_table = this.setupInputTable(container);
     this.#submit_button = this.setupSubmitButton();
 
     // DOM Content
@@ -170,24 +172,24 @@ class CreateGroupMenuRenderer extends Renderer {
     // make group_id snake case
     console.log(this.#input_table.prepareChanges());
     const changes: ParticleGrouping = structuredCloneCustom(this.#input_table.prepareChanges() as unknown as ParticleGrouping);
-    this.#simulation.addGroup(changes);
+    this.#particles_handler.addGroup(changes);
   }
 }
 
 class EditGroupMenuRenderer extends Renderer {
   #group: ParticleGroup;
-  #simulation: Simulation;
+  #particles_handler: ParticlesHandler;
   #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
   #submit_button: ButtonRenderer;
   #delete_button: ButtonRenderer;
-  constructor(group: ParticleGroup, simulation: Simulation) {
+  constructor(group: ParticleGroup, particles_handler: ParticlesHandler, container: BoxSpace) {
     const menu_wrapper: HTMLDivElement = document.createElement('div');
     super(menu_wrapper, 'dialog_menu', `dialog_menu_edit_group_id_${0}`);
 
     // Stored Data
     this.#group = group;
-    this.#simulation = simulation;
-    this.#input_table = this.setupInputTable(simulation.getContainer());
+    this.#particles_handler = particles_handler;
+    this.#input_table = this.setupInputTable(container);
     this.#submit_button = this.setupSubmitButton();
     this.#delete_button = this.setupDeleteButton();
 
@@ -244,10 +246,10 @@ class EditGroupMenuRenderer extends Renderer {
   submit(): void {
     const group_id_pair = { group_id: this.#group.getGrouping().group_id };  // group_id cannot be changed at this point
     const changes: ParticleGrouping = structuredCloneCustom({...group_id_pair, ...this.#input_table.prepareChanges()} as unknown as ParticleGrouping);
-    this.#simulation.editGroup(group_id_pair.group_id, changes);
+    this.#particles_handler.editGroup(group_id_pair.group_id, changes);
   }
   submitDelete(): void {
-    this.#simulation.deleteGroup(this.#group.getGrouping().group_id);
+    this.#particles_handler.deleteGroup(this.#group.getGrouping().group_id);
   }
   remove(): void {
     this.#input_table.remove()
@@ -263,6 +265,7 @@ class EditParticleMenuRenderer extends Renderer {
   // option to delete the Particle
   // "Focus" on the corresponding particle in the container when this window is open
   #particle: Particle;
+  // #particles_handler: ParticlesHandler;
   #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
   #submit_button: ButtonRenderer;
   #delete_button: ButtonRenderer;
@@ -356,17 +359,17 @@ class ParticleUnitGroupRenderer extends Renderer {
   #drag_button: ButtonRenderer;
   #unit_list: ListRenderer<ParticleUnitRenderer>;
   
-  constructor(group: ParticleGroup, simulation: Simulation) {
+  constructor(group: ParticleGroup, particles_handler: ParticlesHandler, container: BoxSpace) {
     const particle_group_element: HTMLElement = document.createElement('article');
     super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
 
     // Stored Data
     this.#particle_group = group;
     this.#icon = this.createIcon(group.getGrouping().color as string);
-    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, simulation);
+    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container);
     this.#drag_button = this.setupDragButton();
     this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...group.getParticles().map(particle => {
-      return new ParticleUnitRenderer(particle, simulation.getContainer());
+      return new ParticleUnitRenderer(particle, container);
     }));
 
     // DOM Content
@@ -385,8 +388,8 @@ class ParticleUnitGroupRenderer extends Renderer {
     else icon.getElement().style.backgroundColor = color;
     return icon;
   };
-  private setupDetailsDialog(group_id: string, simulation: Simulation): StandardDialogRenderer<EditGroupMenuRenderer> {
-    const body = new EditGroupMenuRenderer(this.#particle_group, simulation);
+  private setupDetailsDialog(group_id: string, particles_handler: ParticlesHandler, container: BoxSpace): StandardDialogRenderer<EditGroupMenuRenderer> {
+    const body = new EditGroupMenuRenderer(this.#particle_group, particles_handler, container);
     const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, `Group: ${group_id}`, true);
     details_dialog.getOpenButton().setLabel("expand_content", true);
     details_dialog.getCloseButton().setLabel("close", true);
