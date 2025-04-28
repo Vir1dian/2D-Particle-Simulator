@@ -35,7 +35,7 @@ class EnvironmentSetupRenderer extends Renderer {
       } 
     };
     this.#simulation.setPreset(changes);
-    console.log(this.#simulation.getEnvironment());
+    this.#input_table.setProperties(this.#simulation.getEnvironment().statics!);
   }
 
   getTable(): TableRenderer {

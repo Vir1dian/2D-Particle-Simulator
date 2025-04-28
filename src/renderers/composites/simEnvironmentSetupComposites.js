@@ -45,7 +45,7 @@ class EnvironmentSetupRenderer extends Renderer {
             }
         };
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").setPreset(changes);
-        console.log(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment());
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setProperties(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics);
     }
     getTable() {
         return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f");
