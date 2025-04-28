@@ -102,16 +102,14 @@ class AddParticleMenuRenderer extends Renderer {
     }
     refresh(payload) {
         if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'add') {
-            console.log("adding a group");
             __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").addOption(new OptionRenderer(payload.data.getGrouping().group_id));
         }
-        else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'edit') {
-            console.log("editing a group");
-            // TODO
-        }
+        // currently group names cannot be edited after being created
+        // else if (payload?.operation === 'edit') {
+        //   console.log("editing a group") 
+        // }
         else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'delete') {
-            console.log("deleting a group");
-            // TODO
+            __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").removeOption(payload.data);
         }
         else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'overwrite') {
             console.log("overwriting a group");

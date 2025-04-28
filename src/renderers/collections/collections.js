@@ -359,7 +359,7 @@ class SelectRenderer extends Renderer {
         this.setSelected(this.getOptionIndex(option.getValue()));
     }
     removeOption(option) {
-        const index = this.getOptionIndex(option.getValue());
+        const index = this.getOptionIndex(typeof option === 'string' ? option : option.getValue());
         if (index < 0)
             return;
         __classPrivateFieldGet(this, _SelectRenderer_options, "f")[index].remove();

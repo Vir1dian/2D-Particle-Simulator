@@ -349,8 +349,9 @@ class SelectRenderer extends Renderer {
     option.setParent(this);
     this.setSelected(this.getOptionIndex(option.getValue()));
   }
-  removeOption(option: OptionRenderer): void {
-    const index: number = this.getOptionIndex(option.getValue());
+  removeOption(option: OptionRenderer | string): void {
+
+    const index: number = this.getOptionIndex(typeof option === 'string' ? option : option.getValue());
     if (index < 0) return;
 
     this.#options[index].remove();

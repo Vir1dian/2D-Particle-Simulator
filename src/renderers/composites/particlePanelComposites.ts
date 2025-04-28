@@ -92,16 +92,14 @@ class AddParticleMenuRenderer extends Renderer {
   }
   refresh(payload?: ParticleEventPayload): void {
     if (payload?.operation === 'add') {
-      console.log("adding a group")
       this.#group_selector.addOption(new OptionRenderer((payload.data as ParticleGroup).getGrouping().group_id));
     }
-    else if (payload?.operation === 'edit') {
-      console.log("editing a group")
-      // TODO
-    }
+    // currently group names cannot be edited after being created
+    // else if (payload?.operation === 'edit') {
+    //   console.log("editing a group") 
+    // }
     else if (payload?.operation === 'delete') {
-      console.log("deleting a group")
-      // TODO
+      this.#group_selector.removeOption(payload.data);
     }
     else if (payload?.operation === 'overwrite') {
       console.log("overwriting a group")
