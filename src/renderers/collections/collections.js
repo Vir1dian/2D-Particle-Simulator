@@ -534,6 +534,20 @@ class InputTableRenderer extends TableRenderer {
                     override_input.getElement().removeEventListener('change', callback); // Saves the remove function for easy removal later
                 }]);
     }
+    syncDisabled(keys) {
+        const key_set = new Set(keys);
+        for (const [key, inputs] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {
+            const should_disable = key_set.has(key);
+            for (const input of inputs) {
+                if (!should_disable && input.isDisabled()) {
+                    input.toggleDisabled();
+                }
+                else if (should_disable && !input.isDisabled()) {
+                    input.toggleDisabled();
+                }
+            }
+        }
+    }
     prepareChanges() {
         const changes = {};
         for (const [key, inputs] of __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f")) {

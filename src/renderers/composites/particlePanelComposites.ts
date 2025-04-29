@@ -55,9 +55,19 @@ class AddParticleMenuRenderer extends Renderer {
         ([group_id, group]) => new OptionRenderer(group_id)
       )
     );
+    const callback = () => {
+      this.disableFields(
+        this.#particles_handler
+        .getGroups()
+        .get(selector.getElement().value)!
+        .getGrouping()
+      );
+    }
+    selector.getElement().addEventListener('change', callback);
     selector.setSelected(0);
     return selector;
   }
+  // Actively disable fields depending on the selected group
   private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
     const input_table = new InputTableRenderer('addParticle', properties, true, 'random');
@@ -84,11 +94,24 @@ class AddParticleMenuRenderer extends Renderer {
   private setupSubmitButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(
       () => {
+        console.log(this.#group_selector.getElement().value);
         console.log(this.#input_table.prepareChanges());
+        console.log(this.#amount_input.getNumberValue())
       }
     );
     button.setLabel('Submit');
     return button;
+  }
+  private disableFields(grouping: ParticleGrouping): void {
+    const disable_keys: string[] = [];
+    (Object.keys(grouping) as (keyof ParticleGrouping)[]).forEach(
+      property => {
+        const grouping_value = grouping[property];
+        if (grouping_value !== undefined && grouping_value !== 'random')
+          disable_keys.push(property);  // disable edits to particle properties already specified by the group
+      }
+    );
+    this.#input_table.syncDisabled(disable_keys);
   }
   refresh(payload?: ParticleEventPayload): void {
     if (payload?.operation === 'add') {

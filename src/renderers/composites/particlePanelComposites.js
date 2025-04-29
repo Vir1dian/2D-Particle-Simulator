@@ -67,9 +67,17 @@ class AddParticleMenuRenderer extends Renderer {
     }
     setupGroupSelector() {
         const selector = new SelectRenderer('menu_group_selector_add_particle', Array.from(__classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups(), ([group_id, group]) => new OptionRenderer(group_id)));
+        const callback = () => {
+            this.disableFields(__classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f")
+                .getGroups()
+                .get(selector.getElement().value)
+                .getGrouping());
+        };
+        selector.getElement().addEventListener('change', callback);
         selector.setSelected(0);
         return selector;
     }
+    // Actively disable fields depending on the selected group
     setupInputTable(container) {
         const properties = ((_a) => {
             var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
@@ -95,10 +103,21 @@ class AddParticleMenuRenderer extends Renderer {
     }
     setupSubmitButton() {
         const button = new ButtonRenderer(() => {
+            console.log(__classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value);
             console.log(__classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges());
+            console.log(__classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").getNumberValue());
         });
         button.setLabel('Submit');
         return button;
+    }
+    disableFields(grouping) {
+        const disable_keys = [];
+        Object.keys(grouping).forEach(property => {
+            const grouping_value = grouping[property];
+            if (grouping_value !== undefined && grouping_value !== 'random')
+                disable_keys.push(property); // disable edits to particle properties already specified by the group
+        });
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").syncDisabled(disable_keys);
     }
     refresh(payload) {
         if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'add') {

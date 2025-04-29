@@ -524,6 +524,19 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
       override_input.getElement().removeEventListener('change', callback);  // Saves the remove function for easy removal later
     }]);
   }
+  syncDisabled(keys: string[]): void {
+    const key_set = new Set(keys);
+    for (const [key, inputs] of this.#inputs) {
+      const should_disable = key_set.has(key);
+      for (const input of inputs) {
+        if (!should_disable && input.isDisabled()) {
+          input.toggleDisabled();
+        } else if (should_disable && !input.isDisabled()) {
+          input.toggleDisabled();
+        }
+      }
+    }
+  }
   prepareChanges(): Record<string, T> {
     const changes: Record<string, T> = {};
     for (const [key, inputs] of this.#inputs) {
