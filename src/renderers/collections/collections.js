@@ -330,6 +330,9 @@ class SelectRenderer extends Renderer {
     getOptionIndex(value) {
         return __classPrivateFieldGet(this, _SelectRenderer_options, "f").findIndex(option => option.getValue() === value);
     }
+    getOnchangeCallback() {
+        return __classPrivateFieldGet(this, _SelectRenderer_callback, "f");
+    }
     // setters
     setChild(child) {
         // Prevents setChild from being used for an SelectRenderer

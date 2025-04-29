@@ -72,8 +72,8 @@ class AddParticleMenuRenderer extends Renderer {
             if (group)
                 this.disableFields(group.getGrouping());
         };
-        selector.getElement().addEventListener('change', callback);
         selector.setOnchangeCallback(callback);
+        selector.getElement().addEventListener('change', selector.getOnchangeCallback());
         selector.setSelected(0);
         return selector;
     }
@@ -138,7 +138,21 @@ class AddParticleMenuRenderer extends Renderer {
         }
     }
     submit() {
-        // TODO
+        const group = __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups().get(__classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value);
+        if (!group)
+            throw new Error("Group id not found in ParticleHandler.");
+        for (let i = 0; i < __classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").getNumberValue(); i++) {
+            const new_particle = new Particle(Object.assign({ group_id: __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value }, __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges()));
+            __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").addParticle(new_particle, group);
+        }
+    }
+    remove() {
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().removeEventListener('change', __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getOnchangeCallback());
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").remove();
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").remove();
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").remove();
+        __classPrivateFieldGet(this, _AddParticleMenuRenderer_submit_button, "f").remove();
+        super.remove();
     }
 }
 _AddParticleMenuRenderer_particles_handler = new WeakMap(), _AddParticleMenuRenderer_group_selector = new WeakMap(), _AddParticleMenuRenderer_input_table = new WeakMap(), _AddParticleMenuRenderer_amount_input = new WeakMap(), _AddParticleMenuRenderer_submit_button = new WeakMap();
@@ -196,6 +210,11 @@ class CreateGroupMenuRenderer extends Renderer {
         console.log(__classPrivateFieldGet(this, _CreateGroupMenuRenderer_input_table, "f").prepareChanges());
         const changes = structuredCloneCustom(__classPrivateFieldGet(this, _CreateGroupMenuRenderer_input_table, "f").prepareChanges());
         __classPrivateFieldGet(this, _CreateGroupMenuRenderer_particles_handler, "f").addGroup(changes);
+    }
+    remove() {
+        __classPrivateFieldGet(this, _CreateGroupMenuRenderer_input_table, "f").remove();
+        __classPrivateFieldGet(this, _CreateGroupMenuRenderer_submit_button, "f").remove();
+        super.remove();
     }
 }
 _CreateGroupMenuRenderer_particles_handler = new WeakMap(), _CreateGroupMenuRenderer_input_table = new WeakMap(), _CreateGroupMenuRenderer_submit_button = new WeakMap();
@@ -264,7 +283,7 @@ class EditGroupMenuRenderer extends Renderer {
     }
     refresh() {
         console.log(__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping());
-        // figure this out
+        __classPrivateFieldGet(this, _EditGroupMenuRenderer_input_table, "f").setProperties(Object.assign({}, __classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping()));
     }
     submit() {
         const group_id_pair = { group_id: __classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping().group_id }; // group_id cannot be changed at this point
@@ -383,6 +402,10 @@ class ParticleUnitGroupRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...group.getParticles().map(particle => {
             return new ParticleUnitRenderer(particle, container);
         })), "f");
+        particles_handler.add_observer(ParticleEvent.Update_Particle, (payload) => {
+            if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'add' && payload.data2 === group)
+                this.addParticleUnit(payload.data, container);
+        });
         // DOM Content
         const header = document.createElement('header');
         header.appendChild(this.createTitleWrapper(group.getGrouping().group_id));
@@ -463,6 +486,14 @@ class ParticleUnitGroupRenderer extends Renderer {
                 change_params.push('color');
             unit.refresh(...change_params);
         });
+    }
+    addParticleUnit(particle, container) {
+        console.log(container);
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").push(new ParticleUnitRenderer(particle, container));
+    }
+    editParticleUnit() {
+    }
+    deleteParticleUnit() {
     }
     remove() {
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").remove();

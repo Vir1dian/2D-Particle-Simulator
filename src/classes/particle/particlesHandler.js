@@ -74,8 +74,9 @@ class ParticlesHandler {
         }
         this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "overwrite" } });
     }
-    addParticle(particle) {
-        // TODO
+    addParticle(particle, group) {
+        group.addParticle(particle);
+        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle, payload: { operation: "add", data: particle, data2: group } });
     }
     editParticle(particle) {
         // TODO

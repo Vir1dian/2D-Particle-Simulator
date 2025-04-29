@@ -59,8 +59,8 @@ class AddParticleMenuRenderer extends Renderer {
       const group = this.#particles_handler.getGroups().get(selector.getElement().value);
       if (group) this.disableFields(group.getGrouping());
     }
-    selector.getElement().addEventListener('change', callback);
     selector.setOnchangeCallback(callback);
+    selector.getElement().addEventListener('change', selector.getOnchangeCallback());
     selector.setSelected(0);
     return selector;
   }
@@ -127,7 +127,22 @@ class AddParticleMenuRenderer extends Renderer {
     }
   }
   submit(): void {
-    // TODO
+    const group = this.#particles_handler.getGroups().get(this.#group_selector.getElement().value);
+    if (!group) throw new Error("Group id not found in ParticleHandler.");
+    for (let i = 0; i < this.#amount_input.getNumberValue(); i++) {
+      const new_particle = new Particle(
+        { group_id: this.#group_selector.getElement().value, ...this.#input_table.prepareChanges() }
+      );
+      this.#particles_handler.addParticle(new_particle, group);
+    }
+  }
+  remove(): void {
+    this.#group_selector.getElement().removeEventListener('change', this.#group_selector.getOnchangeCallback());
+    this.#group_selector.remove();
+    this.#input_table.remove();
+    this.#amount_input.remove();
+    this.#submit_button.remove();
+    super.remove();
   }
 }
 
@@ -189,6 +204,11 @@ class CreateGroupMenuRenderer extends Renderer {
     console.log(this.#input_table.prepareChanges());
     const changes: ParticleGrouping = structuredCloneCustom(this.#input_table.prepareChanges() as unknown as ParticleGrouping);
     this.#particles_handler.addGroup(changes);
+  }
+  remove(): void {
+    this.#input_table.remove();
+    this.#submit_button.remove();
+    super.remove();
   }
 }
 
@@ -257,7 +277,7 @@ class EditGroupMenuRenderer extends Renderer {
   }
   refresh(): void {
     console.log(this.#group.getGrouping())
-    // figure this out
+    this.#input_table.setProperties({...this.#group.getGrouping()});
   }
   submit(): void {
     const group_id_pair = { group_id: this.#group.getGrouping().group_id };  // group_id cannot be changed at this point
@@ -387,6 +407,9 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...group.getParticles().map(particle => {
       return new ParticleUnitRenderer(particle, container);
     }));
+    particles_handler.add_observer(ParticleEvent.Update_Particle, (payload?) => {
+      if (payload?.operation === 'add' && payload.data2 === group) this.addParticleUnit(payload.data as Particle, container);
+    });
 
     // DOM Content
     const header: HTMLElement = document.createElement('header');
@@ -463,6 +486,16 @@ class ParticleUnitGroupRenderer extends Renderer {
       if (changes_log.color) change_params.push('color');
       unit.refresh(...change_params);
     });
+  }
+  addParticleUnit(particle: Particle, container: BoxSpace): void {
+    console.log(container);
+    this.#unit_list.push(new ParticleUnitRenderer(particle, container));
+  }
+  editParticleUnit(): void {
+
+  }
+  deleteParticleUnit(): void {
+
   }
   remove(): void {
     this.#icon.remove();

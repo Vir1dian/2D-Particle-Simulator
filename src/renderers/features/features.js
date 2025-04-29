@@ -133,6 +133,8 @@ class ParticlePanelRenderer extends Renderer {
                 group
                     .getGrouping()
                     .group_id);
+        // uses a changes_log to only refresh changed properties without affecting resetting unchanged 
+        // physical properties of Particle units in the Simulation container such as radius, color, and position
         group_renderer.refresh(changes_log);
     }
     deleteGroup(group_id) {

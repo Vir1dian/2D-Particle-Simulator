@@ -323,6 +323,9 @@ class SelectRenderer extends Renderer {
   getOptionIndex(value: string): number {
     return this.#options.findIndex(option => option.getValue() === value);
   }
+  getOnchangeCallback(): () => void {
+    return this.#callback;
+  }
 
   // setters
   setChild(child: HTMLElement | Renderer): void {

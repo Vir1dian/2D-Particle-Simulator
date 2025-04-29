@@ -5,7 +5,7 @@ enum ParticleEvent {
 };
 
 type ParticleEventPayload =
-  | { operation: "add"; data: Particle | ParticleGroup }
+  | { operation: "add"; data: Particle | ParticleGroup; data2?: ParticleGroup }
   | { operation: "edit"; data: Particle | ParticleGroup; data2?: { [K in keyof ParticleGrouping]: boolean } }
   | { operation: "delete"; data: string }
   | { operation: "overwrite"; data?: undefined };
@@ -79,8 +79,12 @@ class ParticlesHandler {
       { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "overwrite" }}
     );
   }
-  addParticle(particle: Particle): void {
-    // TODO
+  addParticle(particle: Particle, group: ParticleGroup): void {
+    group.addParticle(particle);
+    this.notify_observers(
+      { type: ParticleEvent.Update }, 
+      { type: ParticleEvent.Update_Particle, payload: { operation: "add", data: particle, data2: group }}
+    );
   }
   editParticle(particle: Particle): void {
     // TODO
