@@ -73,7 +73,7 @@ class ParticleGroup {
             const current_value = __classPrivateFieldGet(this, _ParticleGroup_grouping, "f")[property];
             if (isVectorLike(new_value) && isVectorLike(current_value)) {
                 if (new_value.x !== current_value.x || new_value.y !== current_value.y) {
-                    __classPrivateFieldGet(this, _ParticleGroup_grouping, "f")[property] = new Vector2D(new_value.x, new_value.y);
+                    __classPrivateFieldGet(this, _ParticleGroup_grouping, "f")[property] = new_value.clone();
                     changes[property] = true;
                 }
             }
@@ -89,7 +89,7 @@ class ParticleGroup {
                 const current_value = particle[property];
                 if (new_value !== 'random' && new_value !== undefined && new_value !== current_value) {
                     if (isVectorLike(new_value) && (new_value.x !== current_value.x || new_value.y !== current_value.y))
-                        particle[property] = new Vector2D(new_value.x, new_value.y);
+                        particle[property] = new_value.clone();
                     else
                         particle[property] = new_value;
                 }

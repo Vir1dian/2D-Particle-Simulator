@@ -89,13 +89,7 @@ class AddParticleMenuRenderer extends Renderer {
     return input;
   }
   private setupSubmitButton(): ButtonRenderer {
-    const button: ButtonRenderer = new ButtonRenderer(
-      () => {
-        console.log(this.#group_selector.getElement().value);
-        console.log(this.#input_table.prepareChanges());
-        console.log(this.#amount_input.getNumberValue())
-      }
-    );
+    const button: ButtonRenderer = new ButtonRenderer(this.submit.bind(this));
     button.setLabel('Submit');
     return button;
   }
@@ -318,7 +312,7 @@ class EditParticleMenuRenderer extends Renderer {
   private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#particle);
     // allow only some fields to be editable depending on what is unspecified or randomized by the group
-    const input_table = new InputTableRenderer('editParticle', properties);
+    const input_table = new InputTableRenderer(`editParticleId${this.#particle.getID()}`, properties);
     input_table.setNumberInputBounds(
       ...DEFAULT_BOUNDS, 
       { 

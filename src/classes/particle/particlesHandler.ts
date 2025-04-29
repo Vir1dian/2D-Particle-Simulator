@@ -85,8 +85,8 @@ class ParticlesHandler {
   editParticle(particle: Particle): void {
     // TODO
   }
-  deleteParticle(particle: Particle): void {
-    // TODO
+  deleteParticle(id: string): void {
+    // TODO, remove from group
   }
   getGroups(): Map<string, ParticleGroup> {
     return this.#groups;

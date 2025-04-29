@@ -342,7 +342,7 @@ class Vector2DInputRenderer extends Renderer {
     this.#label_element = label_xy;
   }
   getValue(): Vector2D {  // Must be disabled if implementing a renderer input type="image"
-    return new Vector2D(this.#value.x, this.#value.y);
+    return this.#value.clone();
   }
   getInputX(): NumberInputRenderer {
     return this.#input_x;

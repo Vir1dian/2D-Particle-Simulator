@@ -78,7 +78,7 @@ class ParticleGroup {
       const current_value = this.#grouping[property];
       if (isVectorLike(new_value) && isVectorLike(current_value)) {
         if (new_value.x !== current_value.x || new_value.y !== current_value.y) {
-          (this.#grouping[property] as Vector2D) = new Vector2D(new_value.x, new_value.y);
+          (this.#grouping[property] as Vector2D) = new_value.clone();
           changes[property] = true;
         }
       }
@@ -95,7 +95,7 @@ class ParticleGroup {
         const current_value = (particle as any)[property];
         if (new_value !== 'random' && new_value !== undefined && new_value !== current_value) {
           if (isVectorLike(new_value) && (new_value.x !== current_value.x || new_value.y !== current_value.y))
-            (particle as any)[property] = new Vector2D(new_value.x, new_value.y);
+            (particle as any)[property] = new_value.clone();
           else (particle as any)[property] = new_value;
         }
       });

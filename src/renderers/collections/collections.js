@@ -655,7 +655,7 @@ class InputTableRenderer extends TableRenderer {
                     throw new Error("setProperties: key with value of 'random' but 'random' override not enabled.");
             }
             else if (new_value instanceof Vector2D && __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] instanceof Vector2D)
-                __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = new Vector2D(new_value.x, new_value.y);
+                __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = new_value.clone();
             else if (typeof new_value === typeof __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key])
                 __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = new_value;
             else

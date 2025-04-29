@@ -31,9 +31,9 @@ class Particle {
     return value;
   }
   private resolveVector(vector: Vector2D | 'random' | undefined, default_vector: Vector2D, rand_range = 100): Vector2D {
-    if (!vector) return default_vector;
+    if (!vector) return default_vector.clone();
     if (vector === 'random') return Vector2D.randomize_int(rand_range);
-    return vector;
+    return vector.clone();
   }
   private resolveColor(color: string | 'random' | undefined): string {
     if (!color) return DEFAULT_GROUPING.color as string;

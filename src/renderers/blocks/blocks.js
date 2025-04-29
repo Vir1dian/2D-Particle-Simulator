@@ -353,7 +353,7 @@ class Vector2DInputRenderer extends Renderer {
         __classPrivateFieldSet(this, _Vector2DInputRenderer_label_element, label_xy, "f");
     }
     getValue() {
-        return new Vector2D(__classPrivateFieldGet(this, _Vector2DInputRenderer_value, "f").x, __classPrivateFieldGet(this, _Vector2DInputRenderer_value, "f").y);
+        return __classPrivateFieldGet(this, _Vector2DInputRenderer_value, "f").clone();
     }
     getInputX() {
         return __classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f");

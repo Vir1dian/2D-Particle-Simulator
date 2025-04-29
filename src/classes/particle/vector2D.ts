@@ -36,6 +36,10 @@ class Vector2D {
     return this.scalarMultiply(coefficient);
   }
 
+  clone(): Vector2D {
+    return new Vector2D(this.x, this.y);
+  }
+
   static randomize_int(max: number = 1, min?: number): Vector2D {
     if (min === undefined) {
       min = -max;

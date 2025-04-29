@@ -643,7 +643,7 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
         else throw new Error("setProperties: key with value of 'random' but 'random' override not enabled.");
       }
       else if (new_value instanceof Vector2D && this.#properties[key] instanceof Vector2D ) 
-        this.#properties[key] = new Vector2D(new_value.x, new_value.y) as T; 
+        this.#properties[key] = new_value.clone() as T; 
       else if (typeof new_value === typeof this.#properties[key]) 
         this.#properties[key] = new_value;
       else 

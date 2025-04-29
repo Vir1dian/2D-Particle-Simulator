@@ -80,8 +80,8 @@ class ParticlesHandler {
     editParticle(particle) {
         // TODO
     }
-    deleteParticle(particle) {
-        // TODO
+    deleteParticle(id) {
+        // TODO, remove from group
     }
     getGroups() {
         return __classPrivateFieldGet(this, _ParticlesHandler_groups, "f");

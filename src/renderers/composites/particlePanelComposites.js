@@ -102,11 +102,7 @@ class AddParticleMenuRenderer extends Renderer {
         return input;
     }
     setupSubmitButton() {
-        const button = new ButtonRenderer(() => {
-            console.log(__classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value);
-            console.log(__classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges());
-            console.log(__classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").getNumberValue());
-        });
+        const button = new ButtonRenderer(this.submit.bind(this));
         button.setLabel('Submit');
         return button;
     }
@@ -323,7 +319,7 @@ class EditParticleMenuRenderer extends Renderer {
             return exposed_properties;
         })(__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f"));
         // allow only some fields to be editable depending on what is unspecified or randomized by the group
-        const input_table = new InputTableRenderer('editParticle', properties);
+        const input_table = new InputTableRenderer(`editParticleId${__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").getID()}`, properties);
         input_table.setNumberInputBounds(...DEFAULT_BOUNDS, {
             key: "position",
             min: {

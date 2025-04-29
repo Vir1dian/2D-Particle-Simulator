@@ -37,10 +37,10 @@ class Particle {
     }
     resolveVector(vector, default_vector, rand_range = 100) {
         if (!vector)
-            return default_vector;
+            return default_vector.clone();
         if (vector === 'random')
             return Vector2D.randomize_int(rand_range);
-        return vector;
+        return vector.clone();
     }
     resolveColor(color) {
         if (!color)
