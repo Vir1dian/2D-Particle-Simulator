@@ -276,6 +276,7 @@ class SelectRenderer extends Renderer {
   #selected: OptionRenderer;
   #name: string;
   #label_element: HTMLLabelElement;  // appended manually within the DOM, but not required
+  #callback: () => void;
   constructor(id: string, options: OptionRenderer[], selected_value: string = "", name: string = "") {
     const select: HTMLSelectElement = document.createElement('select');
     select.name = name;
@@ -295,6 +296,8 @@ class SelectRenderer extends Renderer {
     const label: HTMLLabelElement = document.createElement('label');
     label.htmlFor = id;
     this.#label_element = label;
+
+    this.#callback = () => {};
   }
   private resolveSelectedValue(selected_value: string): OptionRenderer {
     // Returns the first available option or undefined if the selected_value does not exist among options
@@ -330,6 +333,7 @@ class SelectRenderer extends Renderer {
     if (index < 0 || index >= this.#options.length) throw new Error("Index out of bounds.");
     this.#selected = this.#options[index];
     this.getElement().value = this.#selected.getValue();
+    this.#callback();
   }
   setName(name: string): void {
     this.#name = name;
@@ -338,6 +342,9 @@ class SelectRenderer extends Renderer {
   setID(id: string): void {
     super.setID(id);
     this.#label_element.htmlFor = id;
+  }
+  setOnchangeCallback(callback: () => void): void {
+    this.#callback = callback;
   }
   addOption(option: OptionRenderer): void {
     if (this.getOptionIndex(option.getValue()) !== -1) throw new Error("Value already exists in select.");
@@ -362,12 +369,12 @@ class SelectRenderer extends Renderer {
     }
 
     if (this.#selected === option) {
-      this.#selected = this.#options[0];
-      this.getElement().value = this.#selected.getValue();
+      this.setSelected(0);
     }
   }
   refresh(): void {
     this.#selected = this.#options[this.getOptionIndex(this.getElement().value)];
+    this.#callback();
   }
   empty(completely: boolean = false): void {
     this.#options.forEach(option => option.remove());

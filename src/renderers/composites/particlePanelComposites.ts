@@ -15,8 +15,8 @@ class AddParticleMenuRenderer extends Renderer {
       this.refresh(payload);
     });
     this.#particles_handler = particles_handler;
-    this.#group_selector = this.setupGroupSelector();
     this.#input_table = this.setupInputTable(container);
+    this.#group_selector = this.setupGroupSelector();  // must be setup after input_table due to the disableFields callback
     this.#amount_input = this.setupAmountInput();
     this.#submit_button = this.setupSubmitButton();
 
@@ -56,14 +56,11 @@ class AddParticleMenuRenderer extends Renderer {
       )
     );
     const callback = () => {
-      this.disableFields(
-        this.#particles_handler
-        .getGroups()
-        .get(selector.getElement().value)!
-        .getGrouping()
-      );
+      const group = this.#particles_handler.getGroups().get(selector.getElement().value);
+      if (group) this.disableFields(group.getGrouping());
     }
     selector.getElement().addEventListener('change', callback);
+    selector.setOnchangeCallback(callback);
     selector.setSelected(0);
     return selector;
   }
@@ -130,9 +127,13 @@ class AddParticleMenuRenderer extends Renderer {
       for (const key of this.#particles_handler.getGroups().keys()) 
         this.#group_selector.addOption(new OptionRenderer(key));
     }
+    const current_group = this.#particles_handler.getGroups().get(this.#group_selector.getElement().value);
+    if (current_group) {
+      this.disableFields(current_group.getGrouping());
+    }
   }
   submit(): void {
-
+    // TODO
   }
 }
 

@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_properties, _InputTableRenderer_overrides, _InputTableRenderer_inputs, _InputTableRenderer_override_callbacks;
+var _TableCellRenderer_row, _TableCellRenderer_col, _TableCellRenderer_content, _TableRenderer_rows, _TableRenderer_cols, _TableRenderer_cells, _ListRenderer_items, _OptionRenderer_value, _OptionRenderer_label, _SelectRenderer_options, _SelectRenderer_selected, _SelectRenderer_name, _SelectRenderer_label_element, _SelectRenderer_callback, _DatalistInputRenderer_data, _DatalistInputRenderer_datalist_element, _InputTableRenderer_properties, _InputTableRenderer_overrides, _InputTableRenderer_inputs, _InputTableRenderer_override_callbacks;
 /**
  *
  */
@@ -291,6 +291,7 @@ class SelectRenderer extends Renderer {
         _SelectRenderer_selected.set(this, void 0);
         _SelectRenderer_name.set(this, void 0);
         _SelectRenderer_label_element.set(this, void 0); // appended manually within the DOM, but not required
+        _SelectRenderer_callback.set(this, void 0);
         __classPrivateFieldSet(this, _SelectRenderer_options, options, "f");
         if (options.length <= 0)
             __classPrivateFieldSet(this, _SelectRenderer_options, [new OptionRenderer("", "")], "f");
@@ -303,6 +304,7 @@ class SelectRenderer extends Renderer {
         const label = document.createElement('label');
         label.htmlFor = id;
         __classPrivateFieldSet(this, _SelectRenderer_label_element, label, "f");
+        __classPrivateFieldSet(this, _SelectRenderer_callback, () => { }, "f");
     }
     resolveSelectedValue(selected_value) {
         var _a;
@@ -338,6 +340,7 @@ class SelectRenderer extends Renderer {
             throw new Error("Index out of bounds.");
         __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[index], "f");
         this.getElement().value = __classPrivateFieldGet(this, _SelectRenderer_selected, "f").getValue();
+        __classPrivateFieldGet(this, _SelectRenderer_callback, "f").call(this);
     }
     setName(name) {
         __classPrivateFieldSet(this, _SelectRenderer_name, name, "f");
@@ -346,6 +349,9 @@ class SelectRenderer extends Renderer {
     setID(id) {
         super.setID(id);
         __classPrivateFieldGet(this, _SelectRenderer_label_element, "f").htmlFor = id;
+    }
+    setOnchangeCallback(callback) {
+        __classPrivateFieldSet(this, _SelectRenderer_callback, callback, "f");
     }
     addOption(option) {
         if (this.getOptionIndex(option.getValue()) !== -1)
@@ -368,12 +374,12 @@ class SelectRenderer extends Renderer {
             this.addOption(new OptionRenderer("", ""));
         }
         if (__classPrivateFieldGet(this, _SelectRenderer_selected, "f") === option) {
-            __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[0], "f");
-            this.getElement().value = __classPrivateFieldGet(this, _SelectRenderer_selected, "f").getValue();
+            this.setSelected(0);
         }
     }
     refresh() {
         __classPrivateFieldSet(this, _SelectRenderer_selected, __classPrivateFieldGet(this, _SelectRenderer_options, "f")[this.getOptionIndex(this.getElement().value)], "f");
+        __classPrivateFieldGet(this, _SelectRenderer_callback, "f").call(this);
     }
     empty(completely = false) {
         __classPrivateFieldGet(this, _SelectRenderer_options, "f").forEach(option => option.remove());
@@ -387,7 +393,7 @@ class SelectRenderer extends Renderer {
         super.remove();
     }
 }
-_SelectRenderer_options = new WeakMap(), _SelectRenderer_selected = new WeakMap(), _SelectRenderer_name = new WeakMap(), _SelectRenderer_label_element = new WeakMap();
+_SelectRenderer_options = new WeakMap(), _SelectRenderer_selected = new WeakMap(), _SelectRenderer_name = new WeakMap(), _SelectRenderer_label_element = new WeakMap(), _SelectRenderer_callback = new WeakMap();
 class DatalistInputRenderer extends InputRenderer {
     constructor(id, data, data_id) {
         super(id);
