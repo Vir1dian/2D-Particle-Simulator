@@ -76,13 +76,16 @@ class ParticlesHandler {
     }
     addParticle(particle, group) {
         group.addParticle(particle);
-        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle, payload: { operation: "add", data: particle, data2: group } });
+        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle, payload: { operation: 'add', data: particle, data2: group } });
     }
-    editParticle(particle) {
+    editParticle(id, changes) {
         // TODO
     }
-    deleteParticle(id) {
+    deleteParticle(particle) {
         // TODO, remove from group
+        const group = __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").get(particle.getGroupID());
+        group === null || group === void 0 ? void 0 : group.removeParticle(particle);
+        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle, payload: { operation: 'delete', data: particle.getID() } });
     }
     getGroups() {
         return __classPrivateFieldGet(this, _ParticlesHandler_groups, "f");

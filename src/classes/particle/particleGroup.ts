@@ -62,10 +62,12 @@ class ParticleGroup {
     else throw new Error("Particle does not fit grouping.");
   }
 
-  removeParticle(index: number): void {
-    if (index >= 0 && index < this.#particles.length) {
+  removeParticle(particle: Particle): void {
+    const index = this.#particles.findIndex(p => p === particle);
+    if (index >= 0 && index < this.#particles.length) 
       this.#particles.splice(index, 1);
-    }
+    else 
+      throw new Error("Invalid particle.");
   }
 
   clone(): ParticleGroup {

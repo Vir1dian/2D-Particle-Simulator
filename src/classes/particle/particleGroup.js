@@ -72,10 +72,12 @@ class ParticleGroup {
         else
             throw new Error("Particle does not fit grouping.");
     }
-    removeParticle(index) {
-        if (index >= 0 && index < __classPrivateFieldGet(this, _ParticleGroup_particles, "f").length) {
+    removeParticle(particle) {
+        const index = __classPrivateFieldGet(this, _ParticleGroup_particles, "f").findIndex(p => p === particle);
+        if (index >= 0 && index < __classPrivateFieldGet(this, _ParticleGroup_particles, "f").length)
             __classPrivateFieldGet(this, _ParticleGroup_particles, "f").splice(index, 1);
-        }
+        else
+            throw new Error("Invalid particle.");
     }
     clone() {
         return new ParticleGroup(structuredCloneCustom(__classPrivateFieldGet(this, _ParticleGroup_grouping, "f")), __classPrivateFieldGet(this, _ParticleGroup_particles, "f").length);

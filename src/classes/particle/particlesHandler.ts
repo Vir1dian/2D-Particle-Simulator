@@ -6,8 +6,8 @@ enum ParticleEvent {
 
 type ParticleEventPayload =
   | { operation: "add"; data: Particle | ParticleGroup; data2?: ParticleGroup }
-  | { operation: "edit"; data: Particle | ParticleGroup; data2?: { [K in keyof ParticleGrouping]: boolean } }
-  | { operation: "delete"; data: string }
+  | { operation: "edit"; data: Particle | ParticleGroup; data2?: { [K in keyof ParticleGrouping]: boolean } | { [K in keyof Particle]: boolean } }
+  | { operation: "delete"; data: number | string }
   | { operation: "overwrite"; data?: undefined };
 
 class ParticlesHandler {
@@ -83,14 +83,21 @@ class ParticlesHandler {
     group.addParticle(particle);
     this.notify_observers(
       { type: ParticleEvent.Update }, 
-      { type: ParticleEvent.Update_Particle, payload: { operation: "add", data: particle, data2: group }}
+      { type: ParticleEvent.Update_Particle, payload: { operation: 'add', data: particle, data2: group }}
     );
   }
-  editParticle(particle: Particle): void {
+  editParticle(id: string, changes: Record<string, keyof Particle>): void {
     // TODO
+    
   }
-  deleteParticle(id: string): void {
+  deleteParticle(particle: Particle): void {
     // TODO, remove from group
+    const group = this.#groups.get(particle.getGroupID());
+    group?.removeParticle(particle);
+    this.notify_observers(
+      { type: ParticleEvent.Update }, 
+      { type: ParticleEvent.Update_Particle, payload: { operation: 'delete', data: particle.getID() }}
+    );
   }
   getGroups(): Map<string, ParticleGroup> {
     return this.#groups;
