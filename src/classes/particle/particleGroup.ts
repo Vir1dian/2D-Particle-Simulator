@@ -39,7 +39,7 @@ class ParticleGroup {
   }
 
   isValidFor(particle: Particle): boolean {
-    const grouping = this.#grouping;
+    const grouping = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#grouping);
     if (grouping === DEFAULT_GROUPING) return true;
     return (Object.keys(grouping) as (keyof ParticleGrouping)[]).every(property => {
       const grouping_value = this.#grouping[property];
