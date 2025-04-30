@@ -349,8 +349,6 @@ class EditParticleMenuRenderer extends Renderer {
         })(__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f"));
         // allow only some fields to be editable depending on what is unspecified or randomized by the group
         const input_table = new InputTableRenderer(`editParticleId${__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").getID()}`, properties);
-        console.log(`editParticleId${__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").getID()}`);
-        console.log(properties);
         input_table.setNumberInputBounds(...DEFAULT_BOUNDS, {
             key: "position",
             min: {
@@ -379,7 +377,11 @@ class EditParticleMenuRenderer extends Renderer {
         return button;
     }
     refresh() {
-        console.log('EditParticleMenuRenderer refresh called');
+        const properties = ((_a) => {
+            var { enable_path_tracing } = _a, exposed_properties = __rest(_a, ["enable_path_tracing"]);
+            return exposed_properties;
+        })(__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f"));
+        __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").setProperties(properties, properties);
     }
     submit() {
     }
@@ -593,6 +595,8 @@ class ParticleUnitRenderer extends Renderer {
         return __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f");
     }
     refresh(...keys) {
+        if (keys.includes('color'))
+            __classPrivateFieldGet(this, _ParticleUnitRenderer_icon, "f").getElement().style.backgroundColor = __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle().color;
         __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").getBody().refresh();
         __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").update(...keys);
     }

@@ -338,8 +338,6 @@ class EditParticleMenuRenderer extends Renderer {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#particle);
     // allow only some fields to be editable depending on what is unspecified or randomized by the group
     const input_table = new InputTableRenderer(`editParticleId${this.#particle.getID()}`, properties);
-    console.log(`editParticleId${this.#particle.getID()}`)
-    console.log(properties)
     input_table.setNumberInputBounds(
       ...DEFAULT_BOUNDS, 
       { 
@@ -376,7 +374,8 @@ class EditParticleMenuRenderer extends Renderer {
     return button;
   }
   refresh(): void {
-    console.log('EditParticleMenuRenderer refresh called')
+    const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#particle);
+    this.#input_table.setProperties(properties, properties);
   }
   submit(): void {
 
@@ -597,6 +596,8 @@ class ParticleUnitRenderer extends Renderer {
     return this.#details_dialog;
   }
   refresh(...keys: ('radius' | 'position' | 'color')[]): void {
+    if (keys.includes('color')) 
+      this.#icon.getElement().style.backgroundColor = this.#particle_renderer.getParticle().color;
     this.#details_dialog.getBody().refresh();
     this.#particle_renderer.update(...keys);
   }
