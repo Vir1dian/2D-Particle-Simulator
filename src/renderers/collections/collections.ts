@@ -634,23 +634,23 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
       else throw new Error ("setNumberInputBounds: Invalid input type.");
     });
   }
-  setProperties(properties: Record<string, T>): void {
-    Object.keys(this.#properties).forEach(key => {
+  setProperties(properties: Record<string, T>, reference: Record<string, T>): void {
+    Object.keys(reference).forEach(key => {
       const new_value = properties[key];
       if (new_value === undefined) {
         if (this.#overrides.includes('unspecified')) delete this.#properties[key];
-        else throw new Error("setProperties: undefined key but 'unspecified' override not enabled.");
+        // else throw new Error("setProperties: undefined key but 'unspecified' override not enabled.");
       }
       else if (new_value === 'random') {
         if (this.#overrides.includes('random')) (this.#properties as any)[key] = 'random';
         else throw new Error("setProperties: key with value of 'random' but 'random' override not enabled.");
-      }
-      else if (new_value instanceof Vector2D && this.#properties[key] instanceof Vector2D ) 
+      } 
+      else if (new_value instanceof Vector2D) 
         this.#properties[key] = new_value.clone() as T; 
-      else if (typeof new_value === typeof this.#properties[key]) 
-        this.#properties[key] = new_value;
       else 
-        throw new Error("setProperties: type mismatch.");
+        this.#properties[key] = new_value;
+      // else 
+      //   throw new Error("setProperties: type mismatch.");
     });
     this.refresh();
   }

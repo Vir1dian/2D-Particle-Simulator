@@ -57,7 +57,12 @@ class AddParticleMenuRenderer extends Renderer {
     );
     const callback = () => {
       const group = this.#particles_handler.getGroups().get(selector.getElement().value);
-      if (group) this.disableFields(group.getGrouping());
+      if (group) {
+        const grouping = group.getGrouping();
+        const all_properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
+        this.#input_table.setProperties({...grouping}, all_properties);
+        this.disableFields(group.getGrouping());
+      }
     }
     selector.setOnchangeCallback(callback);
     selector.getElement().addEventListener('change', selector.getOnchangeCallback());
@@ -66,8 +71,8 @@ class AddParticleMenuRenderer extends Renderer {
   }
   // Actively disable fields depending on the selected group
   private setupInputTable(container: BoxSpace): InputTableRenderer<string | boolean | number | Vector2D> {
-    const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
-    const input_table = new InputTableRenderer('addParticle', properties, true, 'random');
+    const all_properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
+    const input_table = new InputTableRenderer('addParticle', all_properties, true, 'random');
     input_table.setNumberInputBounds(
       ...DEFAULT_BOUNDS, 
       { 
@@ -107,6 +112,7 @@ class AddParticleMenuRenderer extends Renderer {
   refresh(payload?: ParticleEventPayload): void {
     if (payload?.operation === 'add') {
       this.#group_selector.addOption(new OptionRenderer((payload.data as ParticleGroup).getGrouping().group_id));
+      // something happens here when you add an option and messes up the selector callbacks, FIX IT!
     }
     // currently group names cannot be edited after being created
     // else if (payload?.operation === 'edit') {
@@ -128,11 +134,13 @@ class AddParticleMenuRenderer extends Renderer {
   }
   submit(): void {
     const group = this.#particles_handler.getGroups().get(this.#group_selector.getElement().value);
+    console.log(group?.getGrouping())
     if (!group) throw new Error("Group id not found in ParticleHandler.");
     for (let i = 0; i < this.#amount_input.getNumberValue(); i++) {
       const new_particle = new Particle(
         { group_id: this.#group_selector.getElement().value, ...this.#input_table.prepareChanges() }
       );
+      console.log(new_particle)
       this.#particles_handler.addParticle(new_particle, group);
     }
   }
@@ -261,7 +269,7 @@ class EditGroupMenuRenderer extends Renderer {
       }
     );
     const properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#group.getGrouping());
-    input_table.setProperties(properties);
+    input_table.setProperties(properties, all_properties);
     return input_table;
   }
   private setupSubmitButton(): ButtonRenderer {
@@ -277,7 +285,8 @@ class EditGroupMenuRenderer extends Renderer {
   }
   refresh(): void {
     console.log(this.#group.getGrouping())
-    this.#input_table.setProperties({...this.#group.getGrouping()});
+    const all_properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);  
+    this.#input_table.setProperties({...this.#group.getGrouping()}, all_properties);
   }
   submit(): void {
     const group_id_pair = { group_id: this.#group.getGrouping().group_id };  // group_id cannot be changed at this point

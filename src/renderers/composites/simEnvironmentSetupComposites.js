@@ -38,6 +38,7 @@ class EnvironmentSetupRenderer extends Renderer {
         environment_setup_wrapper.appendChild(buttons_wrapper);
     }
     submitChanges() {
+        var _a;
         const changes = {
             environment: {
                 statics: __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").prepareChanges(),
@@ -45,7 +46,7 @@ class EnvironmentSetupRenderer extends Renderer {
             }
         };
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").setPreset(changes);
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setProperties(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics);
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setProperties(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics, Object.assign({}, (_a = DEFAULT_PRESET.environment) === null || _a === void 0 ? void 0 : _a.statics));
     }
     getTable() {
         return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f");

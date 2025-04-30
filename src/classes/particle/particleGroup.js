@@ -38,12 +38,18 @@ class ParticleGroup {
         }
     }
     isValidFor(particle) {
-        if (__classPrivateFieldGet(this, _ParticleGroup_grouping, "f") === DEFAULT_GROUPING)
+        const grouping = __classPrivateFieldGet(this, _ParticleGroup_grouping, "f");
+        if (grouping === DEFAULT_GROUPING)
             return true;
-        return Object.keys(__classPrivateFieldGet(this, _ParticleGroup_grouping, "f")).every(property => {
+        return Object.keys(grouping).every(property => {
             const grouping_value = __classPrivateFieldGet(this, _ParticleGroup_grouping, "f")[property];
             const particle_value = particle[property];
-            return grouping_value === 'random' || grouping_value === undefined || grouping_value === particle_value;
+            return (grouping_value === 'random'
+                || grouping_value === undefined
+                || grouping_value === particle_value
+                || (isVectorLike(grouping_value)
+                    && isVectorLike(particle_value)
+                    && grouping_value.equals(particle_value)));
         });
     }
     addParticle(particle) {

@@ -39,12 +39,21 @@ class ParticleGroup {
   }
 
   isValidFor(particle: Particle): boolean {
-    if (this.#grouping === DEFAULT_GROUPING) return true;
-    return (Object.keys(this.#grouping) as (keyof ParticleGrouping)[]).every(property => {
+    const grouping = this.#grouping;
+    if (grouping === DEFAULT_GROUPING) return true;
+    return (Object.keys(grouping) as (keyof ParticleGrouping)[]).every(property => {
       const grouping_value = this.#grouping[property];
       const particle_value = (particle as any)[property];
   
-      return grouping_value === 'random' || grouping_value === undefined || grouping_value === particle_value;
+      return (grouping_value === 'random' 
+        || grouping_value === undefined 
+        || grouping_value === particle_value
+        || (
+          isVectorLike(grouping_value) 
+          && isVectorLike(particle_value) 
+          && grouping_value.equals(particle_value)
+        )
+      );
     });
   }
 

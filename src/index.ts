@@ -91,7 +91,7 @@ function loadAll() {
   loadContainerElement(container);
   simulationSettingsElementFunctionsOld.loadPreset('empty');
 
-  const sim: Simulation = new Simulation(TEMPORARY_PRESETS["rybg"]);
+  const sim: Simulation = new Simulation(TEMPORARY_PRESETS["sandbox"]);
   const environment_panel: EnvironmentPanelRenderer = new EnvironmentPanelRenderer(sim);
   const particle_panel: ParticlePanelRenderer = new ParticlePanelRenderer(sim.getParticlesHandler(), sim.getContainer());
   const control_panel_element: HTMLElement = document.querySelector(".control_items_wrapper") as HTMLElement;

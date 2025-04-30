@@ -7,20 +7,20 @@ class Vector2D {
     this.y = y;
   }
   
-  add(otherVector: Vector2D): Vector2D {
-    return new Vector2D(this.x + otherVector.x, this.y + otherVector.y);
+  add(other_vector: Vector2D): Vector2D {
+    return new Vector2D(this.x + other_vector.x, this.y + other_vector.y);
   }
 
-  subtract(otherVector: Vector2D): Vector2D {
-    return new Vector2D(this.x - otherVector.x, this.y - otherVector.y);
+  subtract(other_vector: Vector2D): Vector2D {
+    return new Vector2D(this.x - other_vector.x, this.y - other_vector.y);
   }
 
   scalarMultiply(scalar: number): Vector2D {
     return new Vector2D(this.x * scalar, this.y * scalar);
   }
 
-  dotProduct(otherVector: Vector2D): number {
-    return (this.x * otherVector.x) + (this.y * otherVector.y);
+  dotProduct(other_vector: Vector2D): number {
+    return (this.x * other_vector.x) + (this.y * other_vector.y);
   }
 
   magnitude(): number {
@@ -38,6 +38,10 @@ class Vector2D {
 
   clone(): Vector2D {
     return new Vector2D(this.x, this.y);
+  }
+
+  equals(other_vector: Vector2D | { x: number, y: number }): boolean {
+    return this.x === other_vector.x && this.y === other_vector.y;
   }
 
   static randomize_int(max: number = 1, min?: number): Vector2D {

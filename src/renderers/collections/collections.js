@@ -642,14 +642,13 @@ class InputTableRenderer extends TableRenderer {
                 throw new Error("setNumberInputBounds: Invalid input type.");
         });
     }
-    setProperties(properties) {
-        Object.keys(__classPrivateFieldGet(this, _InputTableRenderer_properties, "f")).forEach(key => {
+    setProperties(properties, reference) {
+        Object.keys(reference).forEach(key => {
             const new_value = properties[key];
             if (new_value === undefined) {
                 if (__classPrivateFieldGet(this, _InputTableRenderer_overrides, "f").includes('unspecified'))
                     delete __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key];
-                else
-                    throw new Error("setProperties: undefined key but 'unspecified' override not enabled.");
+                // else throw new Error("setProperties: undefined key but 'unspecified' override not enabled.");
             }
             else if (new_value === 'random') {
                 if (__classPrivateFieldGet(this, _InputTableRenderer_overrides, "f").includes('random'))
@@ -657,12 +656,12 @@ class InputTableRenderer extends TableRenderer {
                 else
                     throw new Error("setProperties: key with value of 'random' but 'random' override not enabled.");
             }
-            else if (new_value instanceof Vector2D && __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] instanceof Vector2D)
+            else if (new_value instanceof Vector2D)
                 __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = new_value.clone();
-            else if (typeof new_value === typeof __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key])
-                __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = new_value;
             else
-                throw new Error("setProperties: type mismatch.");
+                __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = new_value;
+            // else 
+            //   throw new Error("setProperties: type mismatch.");
         });
         this.refresh();
     }

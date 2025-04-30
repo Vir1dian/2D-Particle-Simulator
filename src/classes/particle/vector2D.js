@@ -4,17 +4,17 @@ class Vector2D {
         this.x = x;
         this.y = y;
     }
-    add(otherVector) {
-        return new Vector2D(this.x + otherVector.x, this.y + otherVector.y);
+    add(other_vector) {
+        return new Vector2D(this.x + other_vector.x, this.y + other_vector.y);
     }
-    subtract(otherVector) {
-        return new Vector2D(this.x - otherVector.x, this.y - otherVector.y);
+    subtract(other_vector) {
+        return new Vector2D(this.x - other_vector.x, this.y - other_vector.y);
     }
     scalarMultiply(scalar) {
         return new Vector2D(this.x * scalar, this.y * scalar);
     }
-    dotProduct(otherVector) {
-        return (this.x * otherVector.x) + (this.y * otherVector.y);
+    dotProduct(other_vector) {
+        return (this.x * other_vector.x) + (this.y * other_vector.y);
     }
     magnitude() {
         return Math.sqrt(this.dotProduct(this));
@@ -29,6 +29,9 @@ class Vector2D {
     }
     clone() {
         return new Vector2D(this.x, this.y);
+    }
+    equals(other_vector) {
+        return this.x === other_vector.x && this.y === other_vector.y;
     }
     static randomize_int(max = 1, min) {
         if (min === undefined) {

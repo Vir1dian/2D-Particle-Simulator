@@ -161,6 +161,15 @@ const TEMPORARY_PRESETS = {
                         color: 'random',
                     },
                     size: 40
+                }],
+            ["Red", {
+                    grouping: {
+                        group_id: "Red",
+                        radius: 15,
+                        mass: 4,
+                        color: 'red',
+                    },
+                    size: 1
                 }]
         ])
     },

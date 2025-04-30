@@ -35,7 +35,7 @@ class EnvironmentSetupRenderer extends Renderer {
       } 
     };
     this.#simulation.setPreset(changes);
-    this.#input_table.setProperties(this.#simulation.getEnvironment().statics!);
+    this.#input_table.setProperties(this.#simulation.getEnvironment().statics!, {...DEFAULT_PRESET.environment?.statics});
   }
 
   getTable(): TableRenderer {

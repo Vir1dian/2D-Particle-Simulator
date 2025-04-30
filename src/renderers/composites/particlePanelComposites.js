@@ -69,8 +69,15 @@ class AddParticleMenuRenderer extends Renderer {
         const selector = new SelectRenderer('menu_group_selector_add_particle', Array.from(__classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups(), ([group_id, group]) => new OptionRenderer(group_id)));
         const callback = () => {
             const group = __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups().get(selector.getElement().value);
-            if (group)
+            if (group) {
+                const grouping = group.getGrouping();
+                const all_properties = ((_a) => {
+                    var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
+                    return exposed_properties;
+                })(DEFAULT_GROUPING);
+                __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").setProperties(Object.assign({}, grouping), all_properties);
                 this.disableFields(group.getGrouping());
+            }
         };
         selector.setOnchangeCallback(callback);
         selector.getElement().addEventListener('change', selector.getOnchangeCallback());
@@ -79,11 +86,11 @@ class AddParticleMenuRenderer extends Renderer {
     }
     // Actively disable fields depending on the selected group
     setupInputTable(container) {
-        const properties = ((_a) => {
+        const all_properties = ((_a) => {
             var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
             return exposed_properties;
         })(DEFAULT_GROUPING);
-        const input_table = new InputTableRenderer('addParticle', properties, true, 'random');
+        const input_table = new InputTableRenderer('addParticle', all_properties, true, 'random');
         input_table.setNumberInputBounds(...DEFAULT_BOUNDS, {
             key: "position",
             min: {
@@ -118,6 +125,7 @@ class AddParticleMenuRenderer extends Renderer {
     refresh(payload) {
         if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'add') {
             __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").addOption(new OptionRenderer(payload.data.getGrouping().group_id));
+            // something happens here when you add an option and messes up the selector callbacks, FIX IT!
         }
         // currently group names cannot be edited after being created
         // else if (payload?.operation === 'edit') {
@@ -139,10 +147,12 @@ class AddParticleMenuRenderer extends Renderer {
     }
     submit() {
         const group = __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups().get(__classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value);
+        console.log(group === null || group === void 0 ? void 0 : group.getGrouping());
         if (!group)
             throw new Error("Group id not found in ParticleHandler.");
         for (let i = 0; i < __classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").getNumberValue(); i++) {
             const new_particle = new Particle(Object.assign({ group_id: __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value }, __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges()));
+            console.log(new_particle);
             __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").addParticle(new_particle, group);
         }
     }
@@ -267,7 +277,7 @@ class EditGroupMenuRenderer extends Renderer {
             var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
             return exposed_properties;
         })(__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping());
-        input_table.setProperties(properties);
+        input_table.setProperties(properties, all_properties);
         return input_table;
     }
     setupSubmitButton() {
@@ -283,7 +293,11 @@ class EditGroupMenuRenderer extends Renderer {
     }
     refresh() {
         console.log(__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping());
-        __classPrivateFieldGet(this, _EditGroupMenuRenderer_input_table, "f").setProperties(Object.assign({}, __classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping()));
+        const all_properties = ((_a) => {
+            var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
+            return exposed_properties;
+        })(DEFAULT_GROUPING);
+        __classPrivateFieldGet(this, _EditGroupMenuRenderer_input_table, "f").setProperties(Object.assign({}, __classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping()), all_properties);
     }
     submit() {
         const group_id_pair = { group_id: __classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping().group_id }; // group_id cannot be changed at this point
