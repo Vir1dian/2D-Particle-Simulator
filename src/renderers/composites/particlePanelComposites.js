@@ -147,12 +147,10 @@ class AddParticleMenuRenderer extends Renderer {
     }
     submit() {
         const group = __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups().get(__classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value);
-        console.log(group === null || group === void 0 ? void 0 : group.getGrouping());
         if (!group)
             throw new Error("Group id not found in ParticleHandler.");
         for (let i = 0; i < __classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").getNumberValue(); i++) {
             const new_particle = new Particle(Object.assign({ group_id: __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value }, __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges()));
-            console.log(new_particle);
             __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").addParticle(new_particle, group);
         }
     }
@@ -217,7 +215,6 @@ class CreateGroupMenuRenderer extends Renderer {
     submit() {
         // make sure to validate group_id if it already exists or not
         // make group_id snake case
-        console.log(__classPrivateFieldGet(this, _CreateGroupMenuRenderer_input_table, "f").prepareChanges());
         const changes = structuredCloneCustom(__classPrivateFieldGet(this, _CreateGroupMenuRenderer_input_table, "f").prepareChanges());
         __classPrivateFieldGet(this, _CreateGroupMenuRenderer_particles_handler, "f").addGroup(changes);
     }
@@ -292,7 +289,6 @@ class EditGroupMenuRenderer extends Renderer {
         return button;
     }
     refresh() {
-        console.log(__classPrivateFieldGet(this, _EditGroupMenuRenderer_group, "f").getGrouping());
         const all_properties = ((_a) => {
             var { group_id, enable_path_tracing } = _a, exposed_properties = __rest(_a, ["group_id", "enable_path_tracing"]);
             return exposed_properties;
@@ -353,6 +349,8 @@ class EditParticleMenuRenderer extends Renderer {
         })(__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f"));
         // allow only some fields to be editable depending on what is unspecified or randomized by the group
         const input_table = new InputTableRenderer(`editParticleId${__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").getID()}`, properties);
+        console.log(`editParticleId${__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").getID()}`);
+        console.log(properties);
         input_table.setNumberInputBounds(...DEFAULT_BOUNDS, {
             key: "position",
             min: {
@@ -502,7 +500,6 @@ class ParticleUnitGroupRenderer extends Renderer {
         });
     }
     addParticleUnit(particle, container) {
-        console.log(container);
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").push(new ParticleUnitRenderer(particle, container));
     }
     editParticleUnit() {

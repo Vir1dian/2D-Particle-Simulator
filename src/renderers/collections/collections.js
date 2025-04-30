@@ -633,10 +633,12 @@ class InputTableRenderer extends TableRenderer {
             }
             else if (input instanceof NumberInputRenderer && 'min' in definition && typeof definition.min !== 'object') {
                 input.setBounds(definition.min, definition.max);
+                input.setValue(input.getValue());
             }
             else if (input instanceof Vector2DInputRenderer && 'min' in definition && typeof definition.min === 'object') {
                 input.getInputX().setBounds(definition.min.x, definition.max.x);
                 input.getInputY().setBounds(definition.min.y, definition.max.y);
+                input.setValue(input.getValue());
             }
             else
                 throw new Error("setNumberInputBounds: Invalid input type.");

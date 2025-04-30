@@ -134,13 +134,11 @@ class AddParticleMenuRenderer extends Renderer {
   }
   submit(): void {
     const group = this.#particles_handler.getGroups().get(this.#group_selector.getElement().value);
-    console.log(group?.getGrouping())
     if (!group) throw new Error("Group id not found in ParticleHandler.");
     for (let i = 0; i < this.#amount_input.getNumberValue(); i++) {
       const new_particle = new Particle(
         { group_id: this.#group_selector.getElement().value, ...this.#input_table.prepareChanges() }
       );
-      console.log(new_particle)
       this.#particles_handler.addParticle(new_particle, group);
     }
   }
@@ -209,7 +207,6 @@ class CreateGroupMenuRenderer extends Renderer {
   submit(): void {
     // make sure to validate group_id if it already exists or not
     // make group_id snake case
-    console.log(this.#input_table.prepareChanges());
     const changes: ParticleGrouping = structuredCloneCustom(this.#input_table.prepareChanges() as unknown as ParticleGrouping);
     this.#particles_handler.addGroup(changes);
   }
@@ -284,7 +281,6 @@ class EditGroupMenuRenderer extends Renderer {
     return button;
   }
   refresh(): void {
-    console.log(this.#group.getGrouping())
     const all_properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);  
     this.#input_table.setProperties({...this.#group.getGrouping()}, all_properties);
   }
@@ -342,6 +338,8 @@ class EditParticleMenuRenderer extends Renderer {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#particle);
     // allow only some fields to be editable depending on what is unspecified or randomized by the group
     const input_table = new InputTableRenderer(`editParticleId${this.#particle.getID()}`, properties);
+    console.log(`editParticleId${this.#particle.getID()}`)
+    console.log(properties)
     input_table.setNumberInputBounds(
       ...DEFAULT_BOUNDS, 
       { 
@@ -497,7 +495,6 @@ class ParticleUnitGroupRenderer extends Renderer {
     });
   }
   addParticleUnit(particle: Particle, container: BoxSpace): void {
-    console.log(container);
     this.#unit_list.push(new ParticleUnitRenderer(particle, container));
   }
   editParticleUnit(): void {
