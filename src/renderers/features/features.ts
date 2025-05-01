@@ -61,6 +61,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     super(particle_panel, 'control_item', 'control_parsetup');
 
     // Saved Data
+      // REWRITE AFTER OBSERVER REFACTOR
     particles_handler.add_observer(ParticleEvent.Update_Particle_Groups, (payload?) => {
       if (payload?.operation === "add") this.addGroup(payload.data as ParticleGroup);
       else if (payload?.operation === "edit") this.editGroup(payload.data as ParticleGroup, payload.data2 as { [K in keyof ParticleGrouping]: boolean });

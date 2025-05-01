@@ -418,6 +418,7 @@ class ParticleUnitGroupRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...group.getParticles().map(particle => {
             return new ParticleUnitRenderer(particle, particles_handler, container);
         })), "f");
+        // REWRITE AFTER OBSERVER REFACTOR
         particles_handler.add_observer(ParticleEvent.Update_Particle, (payload) => {
             if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'add' && payload.data2 === group)
                 this.addParticleUnit(payload.data, particles_handler, container);

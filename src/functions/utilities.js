@@ -125,20 +125,4 @@ function createBooleanKeyStates(example) {
         return acc;
     }, {});
 }
-/**
- * Maps a number type enum into a Record pairing each enum value
- * with an empty set to store observer callbacks.
- * @param enum_object number type enum.
- * @returns a record object as described above.
- */
-function createObserverMap(enum_object) {
-    const observers = {};
-    Object.keys(enum_object).forEach(key => {
-        const value = enum_object[key];
-        if (typeof value === "number") {
-            observers[value] = new Set();
-        }
-    });
-    return observers;
-}
 const INPUT_PREFIX = 'input_id_';

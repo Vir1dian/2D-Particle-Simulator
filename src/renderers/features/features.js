@@ -68,6 +68,7 @@ class ParticlePanelRenderer extends Renderer {
         _ParticlePanelRenderer_create_group_dialog.set(this, void 0);
         _ParticlePanelRenderer_group_list.set(this, void 0);
         // Saved Data
+        // REWRITE AFTER OBSERVER REFACTOR
         particles_handler.add_observer(ParticleEvent.Update_Particle_Groups, (payload) => {
             if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "add")
                 this.addGroup(payload.data);

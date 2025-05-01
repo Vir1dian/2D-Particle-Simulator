@@ -409,6 +409,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...group.getParticles().map(particle => {
       return new ParticleUnitRenderer(particle, particles_handler, container);
     }));
+      // REWRITE AFTER OBSERVER REFACTOR
     particles_handler.add_observer(ParticleEvent.Update_Particle, (payload?) => {
       if (payload?.operation === 'add' && payload.data2 === group) this.addParticleUnit(payload.data as Particle, particles_handler, container);
       if (payload?.operation === 'edit') this.editParticleUnit(payload.data as Particle, payload.data2 as { [K in keyof Particle]: boolean });

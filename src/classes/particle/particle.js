@@ -61,17 +61,6 @@ class Particle {
             return "black";
         return color;
     }
-    add_observer(event, callback) {
-        __classPrivateFieldGet(this, _Particle_observers, "f").get(event).add(callback);
-    }
-    remove_observer(event, callback) {
-        __classPrivateFieldGet(this, _Particle_observers, "f").get(event).delete(callback);
-    }
-    notify_observers(...events) {
-        events.forEach(({ type, payload }) => {
-            __classPrivateFieldGet(this, _Particle_observers, "f").get(type).forEach(callback => callback(payload));
-        });
-    }
     getID() {
         return __classPrivateFieldGet(this, _Particle_id, "f");
     }

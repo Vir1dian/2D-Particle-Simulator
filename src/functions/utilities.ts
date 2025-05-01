@@ -134,21 +134,4 @@ function createBooleanKeyStates<T extends object>(example: T): { [K in keyof T]:
   }, {} as { [K in keyof T]: boolean });
 }
 
-/**
- * Maps a number type enum into a Record pairing each enum value 
- * with an empty set to store observer callbacks.
- * @param enum_object number type enum.
- * @returns a record object as described above.
- */
-function createObserverMap<E extends { [key: string]: string | number }>(enum_object: E): { [K in E[keyof E]]?: Set<any> } {
-  const observers = {} as { [K in E[keyof E]]?: Set<any> };
-  Object.keys(enum_object).forEach(key => {
-    const value = enum_object[key] as E[keyof E];
-    if (typeof value === "number") {
-      observers[value] = new Set();
-    }
-  });
-  return observers;
-}
-
 const INPUT_PREFIX = 'input_id_';

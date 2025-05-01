@@ -7,12 +7,16 @@ enum ParticleEvent {
   Move
 };
 
-type ParticleEventPayload<T extends ParticleEvent> = {
+type ParticleEventPayloadMap = {
   [ParticleEvent.Update]: void | undefined;
   [ParticleEvent.Edit]: { changes_log: { [K in keyof Particle]: boolean } };
   [ParticleEvent.Delete]: void | undefined;
   [ParticleEvent.Move]: void | undefined;
-}[T];
+};
+
+type ParticleEventPayload<E extends ParticleEvent> = EventPayload<E> & [E];
+
+
 
 class Particle {
   static #instance_count = 0;
@@ -61,18 +65,6 @@ class Particle {
     if (color === 'random') return PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
     if (!PARTICLE_COLORS.includes(color)) return "black";
     return color;
-  }
-
-  add_observer(event: ParticleEvent, callback: (payload?: ParticleEventPayload) => void): void {
-    this.#observers.get(event)!.add(callback);
-  }
-  remove_observer(event: ParticleEvent, callback: (payload?: ParticleEventPayload) => void): void {
-    this.#observers.get(event)!.delete(callback);
-  }
-  private notify_observers(...events: { type: ParticleEvent; payload?: ParticleEventPayload }[]): void {
-    events.forEach(({ type, payload }) => {
-      this.#observers.get(type)!.forEach(callback => callback(payload));
-    });
   }
 
   getID(): number {
