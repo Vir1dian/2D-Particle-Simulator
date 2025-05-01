@@ -18,7 +18,9 @@ type ParticleHandlerEventPayload<T extends ParticleHandlerEvent> = {
 
 class ParticlesHandler {
   #groups: Map<string, ParticleGroup>;
-  #observers: Map<ParticleEvent, Set<(payload?: ParticleEventPayload) => void>>;
+  #observers: {
+    [E in ParticleHandlerEvent]?: Set<(payload: ParticleHandlerEventPayload<E>) => void>
+  };
 
   constructor(preset_groups?: Map<string, { grouping: ParticleGrouping, size: number }>) {
     this.#groups = new Map();
@@ -27,10 +29,7 @@ class ParticlesHandler {
         this.#groups.set(id, new ParticleGroup(group.grouping, group.size));
       }
     }
-    this.#observers = new Map();
-    Object.keys(ParticleEvent).forEach((_, event) => {
-      this.#observers.set(event, new Set());
-    });
+    this.#observers = createObserverMap(ParticleHandlerEvent);
   }
 
   add_observer(event: ParticleEvent, callback: (payload?: ParticleEventPayload) => void): void {

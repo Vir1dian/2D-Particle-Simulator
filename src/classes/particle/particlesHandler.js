@@ -31,10 +31,7 @@ class ParticlesHandler {
                 __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").set(id, new ParticleGroup(group.grouping, group.size));
             }
         }
-        __classPrivateFieldSet(this, _ParticlesHandler_observers, new Map(), "f");
-        Object.keys(ParticleEvent).forEach((_, event) => {
-            __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").set(event, new Set());
-        });
+        __classPrivateFieldSet(this, _ParticlesHandler_observers, createObserverMap(ParticleHandlerEvent), "f");
     }
     add_observer(event, callback) {
         __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").get(event).add(callback);

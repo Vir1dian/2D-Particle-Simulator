@@ -1,16 +1,16 @@
 "use strict";
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _a, _Particle_instance_count, _Particle_id, _Particle_group_id;
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var _a, _Particle_instance_count, _Particle_observers, _Particle_id, _Particle_group_id;
 const PARTICLE_COLORS = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
 var ParticleEvent;
 (function (ParticleEvent) {
@@ -24,8 +24,10 @@ class Particle {
     constructor(grouping = DEFAULT_GROUPING) {
         var _b;
         var _c, _d;
+        _Particle_observers.set(this, void 0); // This particle's corresponding renderers will be subscribed to any changes to this particle
         _Particle_id.set(this, void 0);
         _Particle_group_id.set(this, void 0);
+        __classPrivateFieldSet(this, _Particle_observers, createObserverMap(ParticleEvent), "f");
         __classPrivateFieldSet(this, _Particle_id, __classPrivateFieldSet(_c = _a, _a, (_d = __classPrivateFieldGet(_c, _a, "f", _Particle_instance_count), ++_d), "f", _Particle_instance_count), "f");
         __classPrivateFieldSet(this, _Particle_group_id, grouping.group_id, "f");
         this.radius = this.resolveValue(grouping.radius, DEFAULT_GROUPING.radius, () => Math.floor(Math.random() * (20 - 5 + 1) + 5));
@@ -58,6 +60,17 @@ class Particle {
         if (!PARTICLE_COLORS.includes(color))
             return "black";
         return color;
+    }
+    add_observer(event, callback) {
+        __classPrivateFieldGet(this, _Particle_observers, "f").get(event).add(callback);
+    }
+    remove_observer(event, callback) {
+        __classPrivateFieldGet(this, _Particle_observers, "f").get(event).delete(callback);
+    }
+    notify_observers(...events) {
+        events.forEach(({ type, payload }) => {
+            __classPrivateFieldGet(this, _Particle_observers, "f").get(type).forEach(callback => callback(payload));
+        });
     }
     getID() {
         return __classPrivateFieldGet(this, _Particle_id, "f");
@@ -194,5 +207,5 @@ class Particle {
         }
     }
 }
-_a = Particle, _Particle_id = new WeakMap(), _Particle_group_id = new WeakMap();
+_a = Particle, _Particle_observers = new WeakMap(), _Particle_id = new WeakMap(), _Particle_group_id = new WeakMap();
 _Particle_instance_count = { value: 0 };

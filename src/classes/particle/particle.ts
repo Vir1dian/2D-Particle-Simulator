@@ -17,6 +17,10 @@ type ParticleEventPayload<T extends ParticleEvent> = {
 class Particle {
   static #instance_count = 0;
 
+  #observers: {
+    [E in ParticleEvent]?: Set<(payload: ParticleEventPayload<E>) => void>
+  };  // This particle's corresponding renderers will be subscribed to any changes to this particle
+
   readonly #id: number;
   #group_id: string;
   radius: number;
@@ -28,6 +32,9 @@ class Particle {
   enable_path_tracing: boolean;  // will be strictly limited to certain simulation presets only, the user should not ever be able access this property
 
   constructor(grouping: ParticleGrouping = DEFAULT_GROUPING) {
+
+    this.#observers = createObserverMap(ParticleEvent);
+
     this.#id = ++Particle.#instance_count;
     this.#group_id = grouping.group_id;
     this.radius = this.resolveValue(grouping.radius, DEFAULT_GROUPING.radius as number, () => Math.floor(Math.random() * (20 - 5 + 1) + 5));
@@ -54,6 +61,18 @@ class Particle {
     if (color === 'random') return PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
     if (!PARTICLE_COLORS.includes(color)) return "black";
     return color;
+  }
+
+  add_observer(event: ParticleEvent, callback: (payload?: ParticleEventPayload) => void): void {
+    this.#observers.get(event)!.add(callback);
+  }
+  remove_observer(event: ParticleEvent, callback: (payload?: ParticleEventPayload) => void): void {
+    this.#observers.get(event)!.delete(callback);
+  }
+  private notify_observers(...events: { type: ParticleEvent; payload?: ParticleEventPayload }[]): void {
+    events.forEach(({ type, payload }) => {
+      this.#observers.get(type)!.forEach(callback => callback(payload));
+    });
   }
 
   getID(): number {

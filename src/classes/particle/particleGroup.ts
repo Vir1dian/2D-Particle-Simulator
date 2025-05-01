@@ -45,7 +45,10 @@ type ParticleGroupEventPayload<T extends ParticleGroupEvent> = {
  */
 class ParticleGroup {
   #grouping: ParticleGrouping;
-  #particles: Particle[];
+  #particles: Map<string, Particle>;
+  #observers: {
+    [E in ParticleGroupEvent]?: Set<(payload: ParticleGroupEventPayload<E>) => void>
+  };
 
   constructor(grouping: ParticleGrouping = DEFAULT_GROUPING, size: number = 0) {
     this.#grouping = structuredCloneCustom(grouping);
@@ -54,6 +57,7 @@ class ParticleGroup {
       const p: Particle = new Particle(grouping);
       this.#particles.push(p);
     }
+    this.#observers = createObserverMap(ParticleGroupEvent);
   }
 
   isValidFor(particle: Particle): boolean {

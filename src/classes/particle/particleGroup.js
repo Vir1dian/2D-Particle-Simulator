@@ -21,7 +21,7 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var _ParticleGroup_grouping, _ParticleGroup_particles;
+var _ParticleGroup_grouping, _ParticleGroup_particles, _ParticleGroup_observers;
 const DEFAULT_GROUPING = {
     group_id: "Ungrouped",
     radius: 5,
@@ -51,12 +51,14 @@ class ParticleGroup {
     constructor(grouping = DEFAULT_GROUPING, size = 0) {
         _ParticleGroup_grouping.set(this, void 0);
         _ParticleGroup_particles.set(this, void 0);
+        _ParticleGroup_observers.set(this, void 0);
         __classPrivateFieldSet(this, _ParticleGroup_grouping, structuredCloneCustom(grouping), "f");
         __classPrivateFieldSet(this, _ParticleGroup_particles, [], "f");
         for (let i = 0; i < size; i++) {
             const p = new Particle(grouping);
             __classPrivateFieldGet(this, _ParticleGroup_particles, "f").push(p);
         }
+        __classPrivateFieldSet(this, _ParticleGroup_observers, createObserverMap(ParticleGroupEvent), "f");
     }
     isValidFor(particle) {
         const grouping = ((_a) => {
@@ -130,4 +132,4 @@ class ParticleGroup {
         return changes;
     }
 }
-_ParticleGroup_grouping = new WeakMap(), _ParticleGroup_particles = new WeakMap();
+_ParticleGroup_grouping = new WeakMap(), _ParticleGroup_particles = new WeakMap(), _ParticleGroup_observers = new WeakMap();
