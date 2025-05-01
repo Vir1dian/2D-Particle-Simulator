@@ -165,10 +165,15 @@ class ListRenderer<T extends Renderer> extends Renderer {
   filter(callback: (item: T, index: number) => boolean): T[] {
     return this.#items.filter(callback);
   }
-  find(callback: (item: T, index: number) => boolean): T {
+  find(callback: (item: T, index: number) => boolean): T | undefined {
     const item = this.#items.find(callback);
-    if (item === undefined) throw new Error("ListRenderer: item not found.");
+    // if (item === undefined) throw new Error("ListRenderer: item not found.");
     return item;
+  }
+  findIndex(callback: (item: T, index: number) => boolean): number {
+    const index = this.#items.findIndex(callback);
+    // if (index === -1) throw new Error("ListRenderer: item not found.");
+    return index;
   }
   swap(index1: number, index2: number): void {
     if (index1 === index2) return;
@@ -208,7 +213,7 @@ class ListRenderer<T extends Renderer> extends Renderer {
       li.remove();
     }
   }
-  removeAtIndex(index: number, range: number): void {
+  removeAtIndex(index: number, range: number = 1): void {
     if (index < 0 || range < 0 || index + range > this.#items.length) {
       throw new Error("Invalid range.");
     }

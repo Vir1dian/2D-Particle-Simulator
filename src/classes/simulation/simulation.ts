@@ -154,11 +154,11 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         }, 
         size: 40
       }],
-      ["Red", { 
+      ["Bob", { 
         grouping: {
-          group_id: "Red",
+          group_id: "Bob",
           radius: 15,
-          mass: 4,
+          mass: 10000,
           color: 'red',
         }, 
         size: 1 

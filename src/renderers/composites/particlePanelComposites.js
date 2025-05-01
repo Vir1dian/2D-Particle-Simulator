@@ -364,9 +364,7 @@ class EditParticleMenuRenderer extends Renderer {
         return input_table;
     }
     setupSubmitButton() {
-        const button = new ButtonRenderer(() => {
-            console.log(__classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").prepareChanges());
-        });
+        const button = new ButtonRenderer(this.submit.bind(this));
         button.setLabel('Submit');
         return button;
     }
@@ -384,6 +382,7 @@ class EditParticleMenuRenderer extends Renderer {
         __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").setProperties(properties, properties);
     }
     submit() {
+        __classPrivateFieldGet(this, _EditParticleMenuRenderer_particles_handler, "f").editParticle(__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").getID(), __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").prepareChanges());
     }
     submitDelete() {
         __classPrivateFieldGet(this, _EditParticleMenuRenderer_particles_handler, "f").deleteParticle(__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f"));
@@ -422,6 +421,10 @@ class ParticleUnitGroupRenderer extends Renderer {
         particles_handler.add_observer(ParticleEvent.Update_Particle, (payload) => {
             if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'add' && payload.data2 === group)
                 this.addParticleUnit(payload.data, particles_handler, container);
+            if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'edit')
+                this.editParticleUnit(payload.data, payload.data2);
+            if ((payload === null || payload === void 0 ? void 0 : payload.operation) === 'delete')
+                this.deleteParticleUnit(payload.data);
         });
         // DOM Content
         const header = document.createElement('header');
@@ -500,9 +503,19 @@ class ParticleUnitGroupRenderer extends Renderer {
     addParticleUnit(particle, particles_handler, container) {
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").push(new ParticleUnitRenderer(particle, particles_handler, container));
     }
-    editParticleUnit() {
+    editParticleUnit(particle, changes_log) {
+        const unit = __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").find(r => r.getParticlePoint().getParticle() === particle);
+        if (!unit)
+            return; // if particle not in this group
+        unit.refresh(changes_log);
+        console.log(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f").getParticles());
     }
-    deleteParticleUnit() {
+    deleteParticleUnit(id) {
+        const unit_index = __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").findIndex(r => r.getParticlePoint().getParticle().getID() === id);
+        if (unit_index === -1)
+            return; // if particle not in this group
+        __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").removeAtIndex(unit_index);
+        console.log(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_particle_group, "f").getParticles());
     }
     remove() {
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").remove();
@@ -532,12 +545,6 @@ class ParticleUnitRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticleUnitRenderer_icon, this.createIcon(particle.color), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.getID(), particles_handler, container), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_drag_button, this.setupDragButton(), "f");
-        particles_handler.add_observer(ParticleEvent.Update_Particle, (payload) => {
-            if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "edit" && payload.data === __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle())
-                this.refresh(payload.data2);
-            if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "delete" && payload.data === __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle().getID())
-                this.remove();
-        });
         // DOM Content
         particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));
         particle_control_element.appendChild(this.createButtonsWrapper());

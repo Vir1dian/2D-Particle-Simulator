@@ -132,6 +132,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
       .group_id
     );
     // uses a changes_log to only refresh changed properties without affecting resetting unchanged 
+    if (!group_renderer) throw new Error("Group not found.");
     // physical properties of Particle units in the Simulation container such as radius, color, and position
     group_renderer.refresh(changes_log);
   }
@@ -145,6 +146,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
       === 
       group_id
     );
+    if (!group_renderer) throw new Error("Group not found.");
     this.#group_list.removeItem(group_renderer);
   }
   overwriteGroupList(): void {

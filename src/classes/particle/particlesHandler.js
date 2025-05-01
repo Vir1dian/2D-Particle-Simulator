@@ -80,6 +80,8 @@ class ParticlesHandler {
     }
     editParticle(id, changes) {
         // TODO
+        console.log(id);
+        console.log(changes);
     }
     deleteParticle(particle) {
         // TODO, remove from group

@@ -356,11 +356,7 @@ class EditParticleMenuRenderer extends Renderer {
     return input_table;
   }
   private setupSubmitButton(): ButtonRenderer {
-    const button: ButtonRenderer = new ButtonRenderer(
-      () => {
-        console.log(this.#input_table.prepareChanges());
-      }
-    );
+    const button: ButtonRenderer = new ButtonRenderer(this.submit.bind(this));
     button.setLabel('Submit');
     return button;
   }
@@ -375,7 +371,7 @@ class EditParticleMenuRenderer extends Renderer {
     this.#input_table.setProperties(properties, properties);
   }
   submit(): void {
-
+    this.#particles_handler.editParticle(this.#particle.getID(), this.#input_table.prepareChanges() as Record<string, keyof Particle>);
   }
   submitDelete(): void {
     this.#particles_handler.deleteParticle(this.#particle);
@@ -415,6 +411,8 @@ class ParticleUnitGroupRenderer extends Renderer {
     }));
     particles_handler.add_observer(ParticleEvent.Update_Particle, (payload?) => {
       if (payload?.operation === 'add' && payload.data2 === group) this.addParticleUnit(payload.data as Particle, particles_handler, container);
+      if (payload?.operation === 'edit') this.editParticleUnit(payload.data as Particle, payload.data2 as { [K in keyof Particle]: boolean });
+      if (payload?.operation === 'delete') this.deleteParticleUnit(payload.data as number);
     });
 
     // DOM Content
@@ -492,11 +490,19 @@ class ParticleUnitGroupRenderer extends Renderer {
   addParticleUnit(particle: Particle, particles_handler: ParticlesHandler, container: BoxSpace): void {
     this.#unit_list.push(new ParticleUnitRenderer(particle, particles_handler, container));
   }
-  editParticleUnit(): void {
-
+  editParticleUnit(particle: Particle, changes_log: { [K in keyof Particle]: boolean }): void {
+    const unit = this.#unit_list.find(r => r.getParticlePoint().getParticle() === particle);
+    if (!unit) return;  // if particle not in this group
+    unit.refresh(changes_log);
+    console.log(this.#particle_group.getParticles());
   }
-  deleteParticleUnit(): void {
-
+  deleteParticleUnit(id: number): void {
+    const unit_index = this.#unit_list.findIndex(
+      r => r.getParticlePoint().getParticle().getID() === id
+    );
+    if (unit_index === -1) return;  // if particle not in this group
+    this.#unit_list.removeAtIndex(unit_index);
+    console.log(this.#particle_group.getParticles());
   }
   remove(): void {
     this.#icon.remove();
@@ -528,12 +534,6 @@ class ParticleUnitRenderer extends Renderer {
     this.#icon = this.createIcon(particle.color);
     this.#details_dialog = this.setupDetailsDialog(particle.getID(), particles_handler, container);
     this.#drag_button = this.setupDragButton(); 
-    particles_handler.add_observer(ParticleEvent.Update_Particle, (payload?) => {
-      if (payload?.operation === "edit" && payload.data === this.#particle_renderer.getParticle()) 
-        this.refresh(payload.data2 as { [K in keyof Particle]: boolean });
-      if (payload?.operation === "delete" && payload.data === this.#particle_renderer.getParticle().getID()) 
-        this.remove();
-    });
 
     // DOM Content
     particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));

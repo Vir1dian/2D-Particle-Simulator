@@ -182,9 +182,13 @@ class ListRenderer extends Renderer {
     }
     find(callback) {
         const item = __classPrivateFieldGet(this, _ListRenderer_items, "f").find(callback);
-        if (item === undefined)
-            throw new Error("ListRenderer: item not found.");
+        // if (item === undefined) throw new Error("ListRenderer: item not found.");
         return item;
+    }
+    findIndex(callback) {
+        const index = __classPrivateFieldGet(this, _ListRenderer_items, "f").findIndex(callback);
+        // if (index === -1) throw new Error("ListRenderer: item not found.");
+        return index;
     }
     swap(index1, index2) {
         if (index1 === index2)
@@ -226,7 +230,7 @@ class ListRenderer extends Renderer {
             li.remove();
         }
     }
-    removeAtIndex(index, range) {
+    removeAtIndex(index, range = 1) {
         if (index < 0 || range < 0 || index + range > __classPrivateFieldGet(this, _ListRenderer_items, "f").length) {
             throw new Error("Invalid range.");
         }

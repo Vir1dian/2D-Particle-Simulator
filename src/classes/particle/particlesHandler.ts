@@ -86,9 +86,10 @@ class ParticlesHandler {
       { type: ParticleEvent.Update_Particle, payload: { operation: 'add', data: particle, data2: group }}
     );
   }
-  editParticle(id: string, changes: Record<string, keyof Particle>): void {
+  editParticle(id: number, changes: Record<string, keyof Particle>): void {
     // TODO
-    
+    console.log(id)
+    console.log(changes)
   }
   deleteParticle(particle: Particle): void {
     // TODO, remove from group
