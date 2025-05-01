@@ -1,14 +1,20 @@
-enum ParticleEvent {
+enum ParticleHandlerEvent {
   Update,
-  Update_Particle_Groups,
-  Update_Particle
+  Add_Group,
+  Delete_Group,
+  Overwrite_Groups,
+  Add_Particle,
+  Delete_Particle
 };
 
-type ParticleEventPayload =
-  | { operation: "add"; data: Particle | ParticleGroup; data2?: ParticleGroup }
-  | { operation: "edit"; data: Particle | ParticleGroup; data2?: { [K in keyof ParticleGrouping]: boolean } | { [K in keyof Particle]: boolean } }
-  | { operation: "delete"; data: number | string }
-  | { operation: "overwrite"; data?: undefined };
+type ParticleHandlerEventPayload<T extends ParticleHandlerEvent> = {
+  [ParticleHandlerEvent.Update]: void | undefined;
+  [ParticleHandlerEvent.Add_Group]: { group: ParticleGroup };
+  [ParticleHandlerEvent.Delete_Group]: { group_id: string };
+  [ParticleHandlerEvent.Overwrite_Groups]: void | undefined;
+  [ParticleHandlerEvent.Add_Particle]: { particle: Particle; group: ParticleGroup };
+  [ParticleHandlerEvent.Delete_Particle]: { id: number };
+}[T];
 
 class ParticlesHandler {
   #groups: Map<string, ParticleGroup>;
@@ -88,11 +94,9 @@ class ParticlesHandler {
   }
   editParticle(id: number, changes: Record<string, keyof Particle>): void {
     // TODO
-    console.log(id)
-    console.log(changes)
+    
   }
   deleteParticle(particle: Particle): void {
-    // TODO, remove from group
     const group = this.#groups.get(particle.getGroupID());
     group?.removeParticle(particle);
     this.notify_observers(

@@ -11,12 +11,15 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _ParticlesHandler_groups, _ParticlesHandler_observers;
-var ParticleEvent;
-(function (ParticleEvent) {
-    ParticleEvent[ParticleEvent["Update"] = 0] = "Update";
-    ParticleEvent[ParticleEvent["Update_Particle_Groups"] = 1] = "Update_Particle_Groups";
-    ParticleEvent[ParticleEvent["Update_Particle"] = 2] = "Update_Particle";
-})(ParticleEvent || (ParticleEvent = {}));
+var ParticleHandlerEvent;
+(function (ParticleHandlerEvent) {
+    ParticleHandlerEvent[ParticleHandlerEvent["Update"] = 0] = "Update";
+    ParticleHandlerEvent[ParticleHandlerEvent["Add_Group"] = 1] = "Add_Group";
+    ParticleHandlerEvent[ParticleHandlerEvent["Delete_Group"] = 2] = "Delete_Group";
+    ParticleHandlerEvent[ParticleHandlerEvent["Overwrite_Groups"] = 3] = "Overwrite_Groups";
+    ParticleHandlerEvent[ParticleHandlerEvent["Add_Particle"] = 4] = "Add_Particle";
+    ParticleHandlerEvent[ParticleHandlerEvent["Delete_Particle"] = 5] = "Delete_Particle";
+})(ParticleHandlerEvent || (ParticleHandlerEvent = {}));
 ;
 class ParticlesHandler {
     constructor(preset_groups) {
@@ -80,11 +83,8 @@ class ParticlesHandler {
     }
     editParticle(id, changes) {
         // TODO
-        console.log(id);
-        console.log(changes);
     }
     deleteParticle(particle) {
-        // TODO, remove from group
         const group = __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").get(particle.getGroupID());
         group === null || group === void 0 ? void 0 : group.removeParticle(particle);
         this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle, payload: { operation: 'delete', data: particle.getID() } });

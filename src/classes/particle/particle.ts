@@ -1,5 +1,19 @@
 const PARTICLE_COLORS: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
 
+enum ParticleEvent {
+  Update,
+  Edit,
+  Delete,
+  Move
+};
+
+type ParticleEventPayload<T extends ParticleEvent> = {
+  [ParticleEvent.Update]: void | undefined;
+  [ParticleEvent.Edit]: { changes_log: { [K in keyof Particle]: boolean } };
+  [ParticleEvent.Delete]: void | undefined;
+  [ParticleEvent.Move]: void | undefined;
+}[T];
+
 class Particle {
   static #instance_count = 0;
 

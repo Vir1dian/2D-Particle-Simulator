@@ -20,6 +20,24 @@ const DEFAULT_GROUPING: ParticleGrouping = {
   enable_path_tracing: false
 }
 
+enum ParticleGroupEvent {
+  Update,
+  Edit,
+  Delete,
+  Add_Particle,
+  Delete_Particle,
+  Overwrite_Particles
+};
+
+type ParticleGroupEventPayload<T extends ParticleGroupEvent> = {
+  [ParticleGroupEvent.Update]: void | undefined;
+  [ParticleGroupEvent.Edit]: { changes_log: { [K in keyof ParticleGrouping]: boolean } };
+  [ParticleGroupEvent.Delete]: void | undefined;
+  [ParticleGroupEvent.Add_Particle]: { data: Particle };
+  [ParticleGroupEvent.Delete_Particle]: { id: number };
+  [ParticleGroupEvent.Overwrite_Particles]: void | undefined;
+}[T];
+
 /**
  * Handles a group of Particles with
  * enforced common properties described

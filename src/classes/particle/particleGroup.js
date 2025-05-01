@@ -32,6 +32,16 @@ const DEFAULT_GROUPING = {
     color: "black",
     enable_path_tracing: false
 };
+var ParticleGroupEvent;
+(function (ParticleGroupEvent) {
+    ParticleGroupEvent[ParticleGroupEvent["Update"] = 0] = "Update";
+    ParticleGroupEvent[ParticleGroupEvent["Edit"] = 1] = "Edit";
+    ParticleGroupEvent[ParticleGroupEvent["Delete"] = 2] = "Delete";
+    ParticleGroupEvent[ParticleGroupEvent["Add_Particle"] = 3] = "Add_Particle";
+    ParticleGroupEvent[ParticleGroupEvent["Delete_Particle"] = 4] = "Delete_Particle";
+    ParticleGroupEvent[ParticleGroupEvent["Overwrite_Particles"] = 5] = "Overwrite_Particles";
+})(ParticleGroupEvent || (ParticleGroupEvent = {}));
+;
 /**
  * Handles a group of Particles with
  * enforced common properties described

@@ -12,6 +12,14 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
 };
 var _a, _Particle_instance_count, _Particle_id, _Particle_group_id;
 const PARTICLE_COLORS = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
+var ParticleEvent;
+(function (ParticleEvent) {
+    ParticleEvent[ParticleEvent["Update"] = 0] = "Update";
+    ParticleEvent[ParticleEvent["Edit"] = 1] = "Edit";
+    ParticleEvent[ParticleEvent["Delete"] = 2] = "Delete";
+    ParticleEvent[ParticleEvent["Move"] = 3] = "Move";
+})(ParticleEvent || (ParticleEvent = {}));
+;
 class Particle {
     constructor(grouping = DEFAULT_GROUPING) {
         var _b;

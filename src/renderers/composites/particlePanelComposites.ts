@@ -494,7 +494,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     const unit = this.#unit_list.find(r => r.getParticlePoint().getParticle() === particle);
     if (!unit) return;  // if particle not in this group
     unit.refresh(changes_log);
-    console.log(this.#particle_group.getParticles());
+    console.log(this.#particle_group.getParticles());  
   }
   deleteParticleUnit(id: number): void {
     const unit_index = this.#unit_list.findIndex(
@@ -502,7 +502,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     );
     if (unit_index === -1) return;  // if particle not in this group
     this.#unit_list.removeAtIndex(unit_index);
-    console.log(this.#particle_group.getParticles());
+    console.log(this.#particle_group.getParticles());  
   }
   remove(): void {
     this.#icon.remove();
