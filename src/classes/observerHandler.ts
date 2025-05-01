@@ -29,12 +29,12 @@ class ObserverHandler<E extends EnumLike, M extends EventPayloadMap<E>> {
     });
   }
 
-  add_observer<K extends EnumNumerical<E>>(event: K, callback: (payload: EventPayload<E, M, K>) => void): void {
+  add<K extends EnumNumerical<E>>(event: K, callback: (payload: EventPayload<E, M, K>) => void): void {
     if (!this.#observers[event]) throw new Error(`Event ${event} not found.`);
     this.#observers[event].add(callback as any);
   }
 
-  remove_observer<K extends EnumNumerical<E>>(event: K, callback: (payload: EventPayload<E, M, K>) => void): void {
+  remove<K extends EnumNumerical<E>>(event: K, callback: (payload: EventPayload<E, M, K>) => void): void {
     if (!this.#observers[event]) throw new Error(`Event ${event} not found.`);
     this.#observers[event].delete(callback as any);
   }

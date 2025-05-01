@@ -23,20 +23,18 @@ const DEFAULT_GROUPING: ParticleGrouping = {
 enum ParticleGroupEvent {
   Update,
   Edit,
-  Delete,
   Add_Particle,
   Delete_Particle,
   Overwrite_Particles
 };
 
-type ParticleGroupEventPayload<T extends ParticleGroupEvent> = {
+type ParticleGroupEventPayloadMap = {
   [ParticleGroupEvent.Update]: void | undefined;
-  [ParticleGroupEvent.Edit]: { changes_log: { [K in keyof ParticleGrouping]: boolean } };
-  [ParticleGroupEvent.Delete]: void | undefined;
-  [ParticleGroupEvent.Add_Particle]: { data: Particle };
-  [ParticleGroupEvent.Delete_Particle]: { id: number };
+  [ParticleGroupEvent.Edit]: { change_flags: { [K in keyof ParticleGrouping]: boolean } };
+  [ParticleGroupEvent.Add_Particle]: { target: Particle };
+  [ParticleGroupEvent.Delete_Particle]: { target: Particle };
   [ParticleGroupEvent.Overwrite_Particles]: void | undefined;
-}[T];
+};
 
 /**
  * Handles a group of Particles with
@@ -45,19 +43,17 @@ type ParticleGroupEventPayload<T extends ParticleGroupEvent> = {
  */
 class ParticleGroup {
   #grouping: ParticleGrouping;
-  #particles: Map<string, Particle>;
-  #observers: {
-    [E in ParticleGroupEvent]?: Set<(payload: ParticleGroupEventPayload<E>) => void>
-  };
+  #particles: Map<number, Particle>;
+  #observers: ObserverHandler<typeof ParticleGroupEvent, ParticleGroupEventPayloadMap>;
 
   constructor(grouping: ParticleGrouping = DEFAULT_GROUPING, size: number = 0) {
     this.#grouping = structuredCloneCustom(grouping);
-    this.#particles = [];
+    this.#particles = new Map();
     for (let i = 0; i < size; i++) {
       const p: Particle = new Particle(grouping);
-      this.#particles.push(p);
+      this.#particles.set(p.getID(), p);
     }
-    this.#observers = createObserverMap(ParticleGroupEvent);
+    this.#observers = new ObserverHandler(ParticleGroupEvent);
   }
 
   isValidFor(particle: Particle): boolean {
@@ -79,61 +75,78 @@ class ParticleGroup {
     });
   }
 
-  addParticle(particle: Particle): void {
-    if (this.isValidFor(particle)) this.#particles.push(particle);
-    else throw new Error("Particle does not fit grouping.");
-  }
-
-  removeParticle(particle: Particle): void {
-    const index = this.#particles.findIndex(p => p === particle);
-    if (index >= 0 && index < this.#particles.length) 
-      this.#particles.splice(index, 1);
-    else 
-      throw new Error("Invalid particle.");
-  }
-
   clone(): ParticleGroup {
-    return new ParticleGroup(structuredCloneCustom(this.#grouping), this.#particles.length);
+    return new ParticleGroup(structuredCloneCustom(this.#grouping), this.#particles.size);
   }
 
   getGrouping(): ParticleGrouping {
     return this.#grouping;
   }
 
-  getParticles(): Particle[] {
+  getParticles(): Map<number, Particle> {
     return this.#particles;
   }
 
-  setGrouping(grouping: ParticleGrouping): { [K in keyof ParticleGrouping]: boolean } {
-    const changes = createBooleanKeyStates(DEFAULT_GROUPING);
-    (Object.keys(changes) as (keyof ParticleGrouping)[]).forEach(property => {
+  getObservers(): ObserverHandler<typeof ParticleGroupEvent, ParticleGroupEventPayloadMap> {
+    return this.#observers;
+  }
+
+  addParticle(particle: Particle): void {
+    if (this.isValidFor(particle)) this.#particles.set(particle.getID(), particle);
+    else throw new Error("Particle does not fit grouping.");
+    this.#observers.notify(ParticleGroupEvent.Update, undefined);
+    this.#observers.notify(ParticleGroupEvent.Add_Particle, { target: particle });
+  }
+
+  removeParticle(particle: Particle): void {
+    if (!this.#particles.delete(particle.getID()))
+      throw new Error("Particle not found");
+    this.#observers.notify(ParticleGroupEvent.Update, undefined);
+    this.#observers.notify(ParticleGroupEvent.Delete_Particle, { target: particle });
+  }
+
+  // overwrite(grouping: ParticleGrouping, size: number): void {}
+
+  edit(grouping: ParticleGrouping): void {
+    const change_flags = createKeyFlags(DEFAULT_GROUPING);
+    (Object.keys(change_flags) as (keyof ParticleGrouping)[]).forEach(property => {
       const new_value = grouping[property];
       const current_value = this.#grouping[property];
       if (isVectorLike(new_value) && isVectorLike(current_value)) {
         if (new_value.x !== current_value.x || new_value.y !== current_value.y) {
           (this.#grouping[property] as Vector2D) = new_value.clone();
-          changes[property] = true;
+          change_flags[property] = true;
         }
       }
       else if (new_value !== current_value) {
         (this.#grouping[property] as string | number | boolean | Vector2D | undefined) = new_value;
-        changes[property] = true;
+        change_flags[property] = true;
       }
     });
 
     // may have to improve this
     this.#particles.forEach(particle => {
+      const change_flags = createKeyFlags(particle);
       (Object.keys(grouping) as (keyof ParticleGrouping)[]).forEach(property => {
         const new_value = grouping[property];
         const current_value = (particle as any)[property];
         if (new_value !== 'random' && new_value !== undefined && new_value !== current_value) {
-          if (isVectorLike(new_value) && (new_value.x !== current_value.x || new_value.y !== current_value.y))
+          if (isVectorLike(new_value) && (new_value.x !== current_value.x || new_value.y !== current_value.y)) 
             (particle as any)[property] = new_value.clone();
           else (particle as any)[property] = new_value;
+          change_flags[property as keyof Particle] = true;
         }
       });
+      particle.getObservers().notify(ParticleEvent.Edit, { change_flags: change_flags });
     });
+    this.#observers.notify(ParticleGroupEvent.Update, undefined);
+    this.#observers.notify(ParticleGroupEvent.Edit, { change_flags: change_flags });
+  }
 
-    return changes;
+  clear(): void {
+    for (const [id, particle] of this.#particles)
+      particle.clear();
+    this.#particles.clear();
+    this.#observers.clearAll();
   }
 }

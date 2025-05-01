@@ -3,27 +3,19 @@ const PARTICLE_COLORS: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'gree
 enum ParticleEvent {
   Update,
   Edit,
-  Delete,
   Move
 };
 
 type ParticleEventPayloadMap = {
   [ParticleEvent.Update]: void | undefined;
-  [ParticleEvent.Edit]: { changes_log: { [K in keyof Particle]: boolean } };
-  [ParticleEvent.Delete]: void | undefined;
+  [ParticleEvent.Edit]: { change_flags: { [K in keyof Particle]: boolean } };
   [ParticleEvent.Move]: void | undefined;
 };
-
-type ParticleEventPayload<E extends ParticleEvent> = EventPayload<E> & [E];
-
-
 
 class Particle {
   static #instance_count = 0;
 
-  #observers: {
-    [E in ParticleEvent]?: Set<(payload: ParticleEventPayload<E>) => void>
-  };  // This particle's corresponding renderers will be subscribed to any changes to this particle
+  #observers: ObserverHandler<typeof ParticleEvent, ParticleEventPayloadMap>;
 
   readonly #id: number;
   #group_id: string;
@@ -37,7 +29,7 @@ class Particle {
 
   constructor(grouping: ParticleGrouping = DEFAULT_GROUPING) {
 
-    this.#observers = createObserverMap(ParticleEvent);
+    this.#observers = new ObserverHandler(ParticleEvent);
 
     this.#id = ++Particle.#instance_count;
     this.#group_id = grouping.group_id;
@@ -67,11 +59,38 @@ class Particle {
     return color;
   }
 
+  getObservers(): ObserverHandler<typeof ParticleEvent, ParticleEventPayloadMap> {
+    return this.#observers;
+  }
   getID(): number {
     return this.#id;
   }
   getGroupID(): string {
     return this.#group_id;
+  }
+
+  edit(changes: Record<keyof Particle, string | boolean | number | Vector2D>): void {
+    const change_flags = createKeyFlags(this);
+    (Object.keys(change_flags) as (keyof Particle)[]).forEach(property => {
+      const new_value = changes[property];
+      const current_value = this[property];
+      if (isVectorLike(new_value) && isVectorLike(current_value)) {
+        if (new_value.x !== current_value.x || new_value.y !== current_value.y) {
+          (this[property] as Vector2D) = new_value.clone();
+          change_flags[property] = true;
+        }
+      }
+      else if (new_value !== current_value) {
+        (this[property] as string | number | boolean | Vector2D | undefined) = new_value;
+        change_flags[property] = true;
+      }
+    });
+    this.#observers.notify(ParticleEvent.Update, undefined);
+    this.#observers.notify(ParticleEvent.Edit, { change_flags: change_flags });
+  }
+
+  clear(): void {
+    this.#observers.clearAll();
   }
 
   // Behavior (Called repeatedly by animation.js)
@@ -186,6 +205,8 @@ class Particle {
           .scalarMultiply(dt / 6)
       );
     }
+    this.#observers.notify(ParticleEvent.Update, undefined);
+    this.#observers.notify(ParticleEvent.Move, undefined);
   }
 
   /**

@@ -17,8 +17,6 @@ var ParticleHandlerEvent;
     ParticleHandlerEvent[ParticleHandlerEvent["Add_Group"] = 1] = "Add_Group";
     ParticleHandlerEvent[ParticleHandlerEvent["Delete_Group"] = 2] = "Delete_Group";
     ParticleHandlerEvent[ParticleHandlerEvent["Overwrite_Groups"] = 3] = "Overwrite_Groups";
-    ParticleHandlerEvent[ParticleHandlerEvent["Add_Particle"] = 4] = "Add_Particle";
-    ParticleHandlerEvent[ParticleHandlerEvent["Delete_Particle"] = 5] = "Delete_Particle";
 })(ParticleHandlerEvent || (ParticleHandlerEvent = {}));
 ;
 class ParticlesHandler {
@@ -31,18 +29,7 @@ class ParticlesHandler {
                 __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").set(id, new ParticleGroup(group.grouping, group.size));
             }
         }
-        __classPrivateFieldSet(this, _ParticlesHandler_observers, createObserverMap(ParticleHandlerEvent), "f");
-    }
-    add_observer(event, callback) {
-        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").get(event).add(callback);
-    }
-    remove_observer(event, callback) {
-        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").get(event).delete(callback);
-    }
-    notify_observers(...events) {
-        events.forEach(({ type, payload }) => {
-            __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").get(type).forEach(callback => callback(payload));
-        });
+        __classPrivateFieldSet(this, _ParticlesHandler_observers, new ObserverHandler(ParticleHandlerEvent), "f");
     }
     addGroup(grouping) {
         // Assumes that string group_id has valid formatting: i.e. no spaces, alphanumeric.
@@ -51,40 +38,27 @@ class ParticlesHandler {
         }
         const group = new ParticleGroup(grouping, 0);
         __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").set(grouping.group_id, group);
-        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "add", data: group } });
+        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Update, undefined);
+        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Add_Group, { target: group });
     }
-    editGroup(group_id, grouping) {
-        const group = __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").get(group_id);
-        if (!group)
-            throw new Error(`Group name: ${group_id} not found`);
-        const changes_log = group.setGrouping(grouping);
-        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "edit", data: group, data2: changes_log } });
-    }
-    deleteGroup(group_id) {
-        const group = __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").get(group_id);
-        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "delete", data: group_id } });
-        __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").delete(group_id);
-        if (group)
-            group.getParticles().length = 0;
+    deleteGroup(group) {
+        if (!__classPrivateFieldGet(this, _ParticlesHandler_groups, "f").delete(group.getGrouping().group_id))
+            throw new Error("Group not found");
+        group.clear();
+        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Update, undefined);
+        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Delete_Group, { target: group });
     }
     overwriteGroups(preset_groups) {
+        for (const [id, group] of __classPrivateFieldGet(this, _ParticlesHandler_groups, "f"))
+            group.clear();
         __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").clear();
-        for (const [id, group] of preset_groups) {
+        for (const [id, group] of preset_groups)
             __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").set(id, new ParticleGroup(group.grouping, group.size));
-        }
-        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "overwrite" } });
+        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Update, undefined);
+        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Overwrite_Groups, undefined);
     }
     addParticle(particle, group) {
-        group.addParticle(particle);
-        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle, payload: { operation: 'add', data: particle, data2: group } });
-    }
-    editParticle(id, changes) {
-        // TODO
-    }
-    deleteParticle(particle) {
-        const group = __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").get(particle.getGroupID());
-        group === null || group === void 0 ? void 0 : group.removeParticle(particle);
-        this.notify_observers({ type: ParticleEvent.Update }, { type: ParticleEvent.Update_Particle, payload: { operation: 'delete', data: particle.getID() } });
+        group.addParticle(particle); // Observers in the called group are notified
     }
     getGroups() {
         return __classPrivateFieldGet(this, _ParticlesHandler_groups, "f");
@@ -92,9 +66,12 @@ class ParticlesHandler {
     getAllParticles() {
         const particles = [];
         __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").forEach(group => {
-            particles.push(...group.getParticles());
+            particles.push(...Array.from(group.getParticles().values()));
         });
         return particles;
+    }
+    getObservers() {
+        return __classPrivateFieldGet(this, _ParticlesHandler_observers, "f");
     }
 }
 _ParticlesHandler_groups = new WeakMap(), _ParticlesHandler_observers = new WeakMap();

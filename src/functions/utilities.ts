@@ -126,10 +126,14 @@ function isVectorLike(value: any): value is Vector2D | { x: number, y: number } 
  * Default/constant object recommended.
  * @returns a record object as described above.
  */
-function createBooleanKeyStates<T extends object>(example: T): { [K in keyof T]: boolean } {
+function createKeyFlags<T extends object>(example: T): { [K in keyof T]: boolean } {
   const keys = Object.keys(example) as (keyof T)[];
   return keys.reduce((acc, key) => {
-    acc[key] = false;
+    if (typeof example[key] !== 'function') {  
+      // WARNING! Intended to exclude methods when creating flags for class properties,
+      // Will also skip properties that store functions!
+      acc[key] = false;
+    }
     return acc;
   }, {} as { [K in keyof T]: boolean });
 }

@@ -2,25 +2,19 @@ enum ParticleHandlerEvent {
   Update,
   Add_Group,
   Delete_Group,
-  Overwrite_Groups,
-  Add_Particle,
-  Delete_Particle
+  Overwrite_Groups
 };
 
-type ParticleHandlerEventPayload<T extends ParticleHandlerEvent> = {
+type ParticleHandlerEventPayloadMap = {
   [ParticleHandlerEvent.Update]: void | undefined;
-  [ParticleHandlerEvent.Add_Group]: { group: ParticleGroup };
-  [ParticleHandlerEvent.Delete_Group]: { group_id: string };
+  [ParticleHandlerEvent.Add_Group]: { target: ParticleGroup };
+  [ParticleHandlerEvent.Delete_Group]: { target: ParticleGroup };
   [ParticleHandlerEvent.Overwrite_Groups]: void | undefined;
-  [ParticleHandlerEvent.Add_Particle]: { particle: Particle; group: ParticleGroup };
-  [ParticleHandlerEvent.Delete_Particle]: { id: number };
-}[T];
+};
 
 class ParticlesHandler {
   #groups: Map<string, ParticleGroup>;
-  #observers: {
-    [E in ParticleHandlerEvent]?: Set<(payload: ParticleHandlerEventPayload<E>) => void>
-  };
+  #observers: ObserverHandler<typeof ParticleHandlerEvent, ParticleHandlerEventPayloadMap>;
 
   constructor(preset_groups?: Map<string, { grouping: ParticleGrouping, size: number }>) {
     this.#groups = new Map();
@@ -29,19 +23,7 @@ class ParticlesHandler {
         this.#groups.set(id, new ParticleGroup(group.grouping, group.size));
       }
     }
-    this.#observers = createObserverMap(ParticleHandlerEvent);
-  }
-
-  add_observer(event: ParticleEvent, callback: (payload?: ParticleEventPayload) => void): void {
-    this.#observers.get(event)!.add(callback);
-  }
-  remove_observer(event: ParticleEvent, callback: (payload?: ParticleEventPayload) => void): void {
-    this.#observers.get(event)!.delete(callback);
-  }
-  private notify_observers(...events: { type: ParticleEvent; payload?: ParticleEventPayload }[]): void {
-    events.forEach(({ type, payload }) => {
-      this.#observers.get(type)!.forEach(callback => callback(payload));
-    });
+    this.#observers = new ObserverHandler(ParticleHandlerEvent);
   }
 
   addGroup(grouping: ParticleGrouping): void {  
@@ -51,66 +33,45 @@ class ParticlesHandler {
     }
     const group = new ParticleGroup(grouping, 0);
     this.#groups.set(grouping.group_id, group);
-    this.notify_observers(
-      { type: ParticleEvent.Update }, 
-      { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "add", data: group }}
-    );
+    this.#observers.notify(ParticleHandlerEvent.Update, undefined);
+    this.#observers.notify(ParticleHandlerEvent.Add_Group, { target: group });
   }
-  editGroup(group_id: string, grouping: ParticleGrouping): void {
-    const group = this.#groups.get(group_id);
-    if (!group) throw new Error(`Group name: ${group_id} not found`);
-    const changes_log = group.setGrouping(grouping);
-    this.notify_observers(
-      { type: ParticleEvent.Update }, 
-      { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "edit", data: group, data2: changes_log }}
-    );
+
+  deleteGroup(group: ParticleGroup): void {
+    if (!this.#groups.delete(group.getGrouping().group_id)) 
+      throw new Error("Group not found");
+    group.clear();
+    this.#observers.notify(ParticleHandlerEvent.Update, undefined);
+    this.#observers.notify(ParticleHandlerEvent.Delete_Group, { target: group });
   }
-  deleteGroup(group_id: string): void {
-    const group = this.#groups.get(group_id);
-    this.notify_observers(
-      { type: ParticleEvent.Update }, 
-      { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "delete", data: group_id }}
-    );
-    this.#groups.delete(group_id);
-    if (group) group.getParticles().length = 0;
-  }
+
   overwriteGroups(preset_groups: Map<string, { grouping: ParticleGrouping, size: number }>): void {
+    for (const [id, group] of this.#groups)
+      group.clear();
     this.#groups.clear();
-    for (const [id, group] of preset_groups) {
+    for (const [id, group] of preset_groups)
       this.#groups.set(id, new ParticleGroup(group.grouping, group.size));
-    }
-    this.notify_observers(
-      { type: ParticleEvent.Update }, 
-      { type: ParticleEvent.Update_Particle_Groups, payload: { operation: "overwrite" }}
-    );
+    this.#observers.notify(ParticleHandlerEvent.Update, undefined);
+    this.#observers.notify(ParticleHandlerEvent.Overwrite_Groups, undefined);
   }
+
   addParticle(particle: Particle, group: ParticleGroup): void {
-    group.addParticle(particle);
-    this.notify_observers(
-      { type: ParticleEvent.Update }, 
-      { type: ParticleEvent.Update_Particle, payload: { operation: 'add', data: particle, data2: group }}
-    );
+    group.addParticle(particle);  // Observers in the called group are notified
   }
-  editParticle(id: number, changes: Record<string, keyof Particle>): void {
-    // TODO
-    
-  }
-  deleteParticle(particle: Particle): void {
-    const group = this.#groups.get(particle.getGroupID());
-    group?.removeParticle(particle);
-    this.notify_observers(
-      { type: ParticleEvent.Update }, 
-      { type: ParticleEvent.Update_Particle, payload: { operation: 'delete', data: particle.getID() }}
-    );
-  }
+
   getGroups(): Map<string, ParticleGroup> {
     return this.#groups;
   }
+
   getAllParticles(): Particle[] { 
     const particles: Particle[] = [];
     this.#groups.forEach(group => {
-      particles.push(...group.getParticles());
+      particles.push(...Array.from(group.getParticles().values()));
     });
     return particles;
+  }
+  
+  getObservers(): ObserverHandler<typeof ParticleHandlerEvent, ParticleHandlerEventPayloadMap> {
+    return this.#observers;
   }
 }

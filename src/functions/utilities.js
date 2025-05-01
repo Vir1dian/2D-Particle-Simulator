@@ -118,10 +118,14 @@ function isVectorLike(value) {
  * Default/constant object recommended.
  * @returns a record object as described above.
  */
-function createBooleanKeyStates(example) {
+function createKeyFlags(example) {
     const keys = Object.keys(example);
     return keys.reduce((acc, key) => {
-        acc[key] = false;
+        if (typeof example[key] !== 'function') {
+            // WARNING! Intended to exclude methods when creating flags for class properties,
+            // Will also skip properties that store functions!
+            acc[key] = false;
+        }
         return acc;
     }, {});
 }

@@ -16,18 +16,17 @@ var ParticleEvent;
 (function (ParticleEvent) {
     ParticleEvent[ParticleEvent["Update"] = 0] = "Update";
     ParticleEvent[ParticleEvent["Edit"] = 1] = "Edit";
-    ParticleEvent[ParticleEvent["Delete"] = 2] = "Delete";
-    ParticleEvent[ParticleEvent["Move"] = 3] = "Move";
+    ParticleEvent[ParticleEvent["Move"] = 2] = "Move";
 })(ParticleEvent || (ParticleEvent = {}));
 ;
 class Particle {
     constructor(grouping = DEFAULT_GROUPING) {
         var _b;
         var _c, _d;
-        _Particle_observers.set(this, void 0); // This particle's corresponding renderers will be subscribed to any changes to this particle
+        _Particle_observers.set(this, void 0);
         _Particle_id.set(this, void 0);
         _Particle_group_id.set(this, void 0);
-        __classPrivateFieldSet(this, _Particle_observers, createObserverMap(ParticleEvent), "f");
+        __classPrivateFieldSet(this, _Particle_observers, new ObserverHandler(ParticleEvent), "f");
         __classPrivateFieldSet(this, _Particle_id, __classPrivateFieldSet(_c = _a, _a, (_d = __classPrivateFieldGet(_c, _a, "f", _Particle_instance_count), ++_d), "f", _Particle_instance_count), "f");
         __classPrivateFieldSet(this, _Particle_group_id, grouping.group_id, "f");
         this.radius = this.resolveValue(grouping.radius, DEFAULT_GROUPING.radius, () => Math.floor(Math.random() * (20 - 5 + 1) + 5));
@@ -61,11 +60,36 @@ class Particle {
             return "black";
         return color;
     }
+    getObservers() {
+        return __classPrivateFieldGet(this, _Particle_observers, "f");
+    }
     getID() {
         return __classPrivateFieldGet(this, _Particle_id, "f");
     }
     getGroupID() {
         return __classPrivateFieldGet(this, _Particle_group_id, "f");
+    }
+    edit(changes) {
+        const change_flags = createKeyFlags(this);
+        Object.keys(change_flags).forEach(property => {
+            const new_value = changes[property];
+            const current_value = this[property];
+            if (isVectorLike(new_value) && isVectorLike(current_value)) {
+                if (new_value.x !== current_value.x || new_value.y !== current_value.y) {
+                    this[property] = new_value.clone();
+                    change_flags[property] = true;
+                }
+            }
+            else if (new_value !== current_value) {
+                this[property] = new_value;
+                change_flags[property] = true;
+            }
+        });
+        __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Update, undefined);
+        __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Edit, { change_flags: change_flags });
+    }
+    clear() {
+        __classPrivateFieldGet(this, _Particle_observers, "f").clearAll();
     }
     // Behavior (Called repeatedly by animation.js)
     collideContainer(container) {
@@ -162,6 +186,8 @@ class Particle {
                 .add(k4_velocity)
                 .scalarMultiply(dt / 6));
         }
+        __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Update, undefined);
+        __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Move, undefined);
     }
     /**
      * Sets a new position in a 2D space for a particle

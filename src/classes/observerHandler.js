@@ -26,12 +26,12 @@ class ObserverHandler {
             }
         });
     }
-    add_observer(event, callback) {
+    add(event, callback) {
         if (!__classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event])
             throw new Error(`Event ${event} not found.`);
         __classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event].add(callback);
     }
-    remove_observer(event, callback) {
+    remove(event, callback) {
         if (!__classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event])
             throw new Error(`Event ${event} not found.`);
         __classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event].delete(callback);
