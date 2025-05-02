@@ -85,6 +85,9 @@ class Particle {
                 change_flags[property] = true;
             }
         });
+        // hard coded to disable path tracing unless specified in the preset
+        this['enable_path_tracing'] = false;
+        change_flags['enable_path_tracing'] = false;
         __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Update, undefined);
         __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Edit, { change_flags: change_flags });
     }

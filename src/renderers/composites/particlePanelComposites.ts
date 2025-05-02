@@ -59,6 +59,7 @@ class AddParticleMenuRenderer extends Renderer {
         ([group_id, group]) => new OptionRenderer(group_id)
       )
     );
+    // still needs fixing
     const callback = () => {
       const group = this.#particles_handler.getGroups().get(selector.getElement().value);
       if (group) {
@@ -368,6 +369,7 @@ class EditParticleMenuRenderer extends Renderer {
     this.#input_table.setProperties(properties, properties);
   }
   submit(): void {
+    console.log(this.#input_table.prepareChanges() as Record<string, keyof Particle>)
     this.#particle.edit(this.#input_table.prepareChanges() as Record<string, keyof Particle>);
   }
   submitDelete(): void {
@@ -528,6 +530,7 @@ class ParticleUnitRenderer extends Renderer {
     super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.getID()}`);
 
     // Stored Data
+    this.setupObservers(particle);
     this.#particle_renderer = new ParticlePointRenderer(particle, container);
     this.#icon = this.createIcon(particle.color);
     this.#details_dialog = this.setupDetailsDialog(particle.getID(), group, container);
@@ -537,6 +540,10 @@ class ParticleUnitRenderer extends Renderer {
     particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));
     particle_control_element.appendChild(this.createButtonsWrapper());
     this.#details_dialog.setParent(particle_control_element);
+  }
+  private setupObservers(particle: Particle): void {
+    const obs = particle.getObservers();
+    obs.add(ParticleEvent.Edit, (payload) => { this.refresh(payload.change_flags) });
   }
   private createIcon(color: string): Renderer {
     const icon = new Renderer(document.createElement("span"));
@@ -626,7 +633,9 @@ class ParticlePointRenderer extends Renderer {
   constructor(particle: Particle, container: BoxSpace) {
     const particle_element : HTMLDivElement = document.createElement('div');
     super(particle_element, 'particle_element', `particle_element_id${particle.getID()}`);
+
     this.#particle = particle;
+    this.setupObservers();
     this.#container = container;
 
     const container_element : HTMLDivElement = document.querySelector('.container_element') as HTMLDivElement;
@@ -642,6 +651,11 @@ class ParticlePointRenderer extends Renderer {
     // color
     particle_element.style.backgroundColor = particle.color;
   }
+  private setupObservers(): void {
+    const obs = this.#particle.getObservers();
+    obs.add(ParticleEvent.Move, () => {this.update('position')});
+  }
+
   getElement(): HTMLDivElement {
     return super.getElement() as HTMLDivElement;
   }

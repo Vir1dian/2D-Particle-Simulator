@@ -71,6 +71,7 @@ class AddParticleMenuRenderer extends Renderer {
     }
     setupGroupSelector() {
         const selector = new SelectRenderer('menu_group_selector_add_particle', Array.from(__classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups(), ([group_id, group]) => new OptionRenderer(group_id)));
+        // still needs fixing
         const callback = () => {
             const group = __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups().get(selector.getElement().value);
             if (group) {
@@ -379,6 +380,7 @@ class EditParticleMenuRenderer extends Renderer {
         __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").setProperties(properties, properties);
     }
     submit() {
+        console.log(__classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").prepareChanges());
         __classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").edit(__classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").prepareChanges());
     }
     submitDelete() {
@@ -535,6 +537,7 @@ class ParticleUnitRenderer extends Renderer {
         _ParticleUnitRenderer_details_dialog.set(this, void 0); // maybe make this non-modal to edit outside of the popup?
         _ParticleUnitRenderer_drag_button.set(this, void 0);
         // Stored Data
+        this.setupObservers(particle);
         __classPrivateFieldSet(this, _ParticleUnitRenderer_particle_renderer, new ParticlePointRenderer(particle, container), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_icon, this.createIcon(particle.color), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.getID(), group, container), "f");
@@ -543,6 +546,10 @@ class ParticleUnitRenderer extends Renderer {
         particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));
         particle_control_element.appendChild(this.createButtonsWrapper());
         __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").setParent(particle_control_element);
+    }
+    setupObservers(particle) {
+        const obs = particle.getObservers();
+        obs.add(ParticleEvent.Edit, (payload) => { this.refresh(payload.change_flags); });
     }
     createIcon(color) {
         const icon = new Renderer(document.createElement("span"));
@@ -632,6 +639,7 @@ class ParticlePointRenderer extends Renderer {
         _ParticlePointRenderer_particle.set(this, void 0);
         _ParticlePointRenderer_container.set(this, void 0);
         __classPrivateFieldSet(this, _ParticlePointRenderer_particle, particle, "f");
+        this.setupObservers();
         __classPrivateFieldSet(this, _ParticlePointRenderer_container, container, "f");
         const container_element = document.querySelector('.container_element');
         container_element.appendChild(particle_element);
@@ -644,6 +652,10 @@ class ParticlePointRenderer extends Renderer {
         particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
         // color
         particle_element.style.backgroundColor = particle.color;
+    }
+    setupObservers() {
+        const obs = __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").getObservers();
+        obs.add(ParticleEvent.Move, () => { this.update('position'); });
     }
     getElement() {
         return super.getElement();
