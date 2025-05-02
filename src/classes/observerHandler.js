@@ -37,14 +37,16 @@ class ObserverHandler {
         __classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event].delete(callback);
     }
     notify(event, payload) {
+        var _a;
         if (!__classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event])
             throw new Error(`Event ${event} not found.`);
-        __classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event].forEach(callback => callback(payload));
+        (_a = __classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event]) === null || _a === void 0 ? void 0 : _a.forEach(callback => callback(payload));
     }
     clear(event) {
+        var _a;
         if (!__classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event])
             throw new Error(`Event ${event} not found.`);
-        __classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event].clear();
+        (_a = __classPrivateFieldGet(this, _ObserverHandler_observers, "f")[event]) === null || _a === void 0 ? void 0 : _a.clear();
     }
     clearAll() {
         var _a;

@@ -69,14 +69,14 @@ class Particle {
     return this.#group_id;
   }
 
-  edit(changes: Record<keyof Particle, string | boolean | number | Vector2D>): void {
+  edit(changes: Record<string, keyof Particle>): void {
     const change_flags = createKeyFlags(this);
     (Object.keys(change_flags) as (keyof Particle)[]).forEach(property => {
       const new_value = changes[property];
       const current_value = this[property];
       if (isVectorLike(new_value) && isVectorLike(current_value)) {
         if (new_value.x !== current_value.x || new_value.y !== current_value.y) {
-          (this[property] as Vector2D) = new_value.clone();
+          (this[property] as Vector2D) = new Vector2D(new_value.x, new_value.y);
           change_flags[property] = true;
         }
       }

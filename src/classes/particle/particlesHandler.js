@@ -39,14 +39,14 @@ class ParticlesHandler {
         const group = new ParticleGroup(grouping, 0);
         __classPrivateFieldGet(this, _ParticlesHandler_groups, "f").set(grouping.group_id, group);
         __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Update, undefined);
-        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Add_Group, { target: group });
+        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Add_Group, { group: group });
     }
     deleteGroup(group) {
         if (!__classPrivateFieldGet(this, _ParticlesHandler_groups, "f").delete(group.getGrouping().group_id))
             throw new Error("Group not found");
         group.clear();
         __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Update, undefined);
-        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Delete_Group, { target: group });
+        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Delete_Group, { group: group });
     }
     overwriteGroups(preset_groups) {
         for (const [id, group] of __classPrivateFieldGet(this, _ParticlesHandler_groups, "f"))

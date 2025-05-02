@@ -7,8 +7,8 @@ enum ParticleHandlerEvent {
 
 type ParticleHandlerEventPayloadMap = {
   [ParticleHandlerEvent.Update]: void | undefined;
-  [ParticleHandlerEvent.Add_Group]: { target: ParticleGroup };
-  [ParticleHandlerEvent.Delete_Group]: { target: ParticleGroup };
+  [ParticleHandlerEvent.Add_Group]: { group: ParticleGroup };
+  [ParticleHandlerEvent.Delete_Group]: { group: ParticleGroup };
   [ParticleHandlerEvent.Overwrite_Groups]: void | undefined;
 };
 
@@ -34,7 +34,7 @@ class ParticlesHandler {
     const group = new ParticleGroup(grouping, 0);
     this.#groups.set(grouping.group_id, group);
     this.#observers.notify(ParticleHandlerEvent.Update, undefined);
-    this.#observers.notify(ParticleHandlerEvent.Add_Group, { target: group });
+    this.#observers.notify(ParticleHandlerEvent.Add_Group, { group: group });
   }
 
   deleteGroup(group: ParticleGroup): void {
@@ -42,7 +42,7 @@ class ParticlesHandler {
       throw new Error("Group not found");
     group.clear();
     this.#observers.notify(ParticleHandlerEvent.Update, undefined);
-    this.#observers.notify(ParticleHandlerEvent.Delete_Group, { target: group });
+    this.#observers.notify(ParticleHandlerEvent.Delete_Group, { group: group });
   }
 
   overwriteGroups(preset_groups: Map<string, { grouping: ParticleGrouping, size: number }>): void {

@@ -76,7 +76,7 @@ class Particle {
             const current_value = this[property];
             if (isVectorLike(new_value) && isVectorLike(current_value)) {
                 if (new_value.x !== current_value.x || new_value.y !== current_value.y) {
-                    this[property] = new_value.clone();
+                    this[property] = new Vector2D(new_value.x, new_value.y);
                     change_flags[property] = true;
                 }
             }

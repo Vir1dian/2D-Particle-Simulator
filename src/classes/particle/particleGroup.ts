@@ -31,8 +31,8 @@ enum ParticleGroupEvent {
 type ParticleGroupEventPayloadMap = {
   [ParticleGroupEvent.Update]: void | undefined;
   [ParticleGroupEvent.Edit]: { change_flags: { [K in keyof ParticleGrouping]: boolean } };
-  [ParticleGroupEvent.Add_Particle]: { target: Particle };
-  [ParticleGroupEvent.Delete_Particle]: { target: Particle };
+  [ParticleGroupEvent.Add_Particle]: { particle: Particle };
+  [ParticleGroupEvent.Delete_Particle]: { particle: Particle };
   [ParticleGroupEvent.Overwrite_Particles]: void | undefined;
 };
 
@@ -95,14 +95,14 @@ class ParticleGroup {
     if (this.isValidFor(particle)) this.#particles.set(particle.getID(), particle);
     else throw new Error("Particle does not fit grouping.");
     this.#observers.notify(ParticleGroupEvent.Update, undefined);
-    this.#observers.notify(ParticleGroupEvent.Add_Particle, { target: particle });
+    this.#observers.notify(ParticleGroupEvent.Add_Particle, { particle: particle });
   }
 
   removeParticle(particle: Particle): void {
     if (!this.#particles.delete(particle.getID()))
       throw new Error("Particle not found");
     this.#observers.notify(ParticleGroupEvent.Update, undefined);
-    this.#observers.notify(ParticleGroupEvent.Delete_Particle, { target: particle });
+    this.#observers.notify(ParticleGroupEvent.Delete_Particle, { particle: particle });
   }
 
   // overwrite(grouping: ParticleGrouping, size: number): void {}

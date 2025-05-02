@@ -95,13 +95,13 @@ class ParticleGroup {
         else
             throw new Error("Particle does not fit grouping.");
         __classPrivateFieldGet(this, _ParticleGroup_observers, "f").notify(ParticleGroupEvent.Update, undefined);
-        __classPrivateFieldGet(this, _ParticleGroup_observers, "f").notify(ParticleGroupEvent.Add_Particle, { target: particle });
+        __classPrivateFieldGet(this, _ParticleGroup_observers, "f").notify(ParticleGroupEvent.Add_Particle, { particle: particle });
     }
     removeParticle(particle) {
         if (!__classPrivateFieldGet(this, _ParticleGroup_particles, "f").delete(particle.getID()))
             throw new Error("Particle not found");
         __classPrivateFieldGet(this, _ParticleGroup_observers, "f").notify(ParticleGroupEvent.Update, undefined);
-        __classPrivateFieldGet(this, _ParticleGroup_observers, "f").notify(ParticleGroupEvent.Delete_Particle, { target: particle });
+        __classPrivateFieldGet(this, _ParticleGroup_observers, "f").notify(ParticleGroupEvent.Delete_Particle, { particle: particle });
     }
     // overwrite(grouping: ParticleGrouping, size: number): void {}
     edit(grouping) {

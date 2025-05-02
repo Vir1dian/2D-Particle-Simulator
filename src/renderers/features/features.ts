@@ -61,14 +61,8 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     super(particle_panel, 'control_item', 'control_parsetup');
 
     // Saved Data
-      // REWRITE AFTER OBSERVER REFACTOR
-    particles_handler.add_observer(ParticleEvent.Update_Particle_Groups, (payload?) => {
-      if (payload?.operation === "add") this.addGroup(payload.data as ParticleGroup);
-      else if (payload?.operation === "edit") this.editGroup(payload.data as ParticleGroup, payload.data2 as { [K in keyof ParticleGrouping]: boolean });
-      else if (payload?.operation === "delete") this.deleteGroup(payload.data as string);
-      else if (payload?.operation === "overwrite") this.overwriteGroupList();
-    });
     this.#particles_handler = particles_handler;
+    this.setupObservers();
     this.#container = container;
     this.#add_particles_dialog = this.setupAddParticlesDialog();
     this.#create_group_dialog = this.setupCreateGroupDialog();
@@ -90,6 +84,12 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     list_wrapper.id = "parsetup_groups_wrapper";
     this.#group_list.setParent(list_wrapper);
     particle_panel.appendChild(list_wrapper);
+  }
+  private setupObservers(): void {
+    const obs = this.#particles_handler.getObservers();
+    obs.add(ParticleHandlerEvent.Add_Group, (payload) => { this.addGroup(payload.group) });
+    obs.add(ParticleHandlerEvent.Delete_Group, (payload) => { this.deleteGroup(payload.group) });
+    obs.add(ParticleHandlerEvent.Overwrite_Groups, () => { this.overwriteGroupList() });
   }
   private setupAddParticlesDialog(): StandardDialogRenderer<AddParticleMenuRenderer> {
     const body = new AddParticleMenuRenderer(this.#particles_handler, this.#container);
@@ -137,15 +137,10 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     // physical properties of Particle units in the Simulation container such as radius, color, and position
     group_renderer.refresh(changes_log);
   }
-  deleteGroup(group_id: string): void {
+  deleteGroup(group: ParticleGroup): void {
     console.log("deleting a group")
     const group_renderer = this.#group_list.find(item => 
-      item
-      .getParticleGroup()
-      .getGrouping()
-      .group_id 
-      === 
-      group_id
+      item.getParticleGroup() === group
     );
     if (!group_renderer) throw new Error("Group not found.");
     this.#group_list.removeItem(group_renderer);

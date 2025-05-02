@@ -68,18 +68,8 @@ class ParticlePanelRenderer extends Renderer {
         _ParticlePanelRenderer_create_group_dialog.set(this, void 0);
         _ParticlePanelRenderer_group_list.set(this, void 0);
         // Saved Data
-        // REWRITE AFTER OBSERVER REFACTOR
-        particles_handler.add_observer(ParticleEvent.Update_Particle_Groups, (payload) => {
-            if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "add")
-                this.addGroup(payload.data);
-            else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "edit")
-                this.editGroup(payload.data, payload.data2);
-            else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "delete")
-                this.deleteGroup(payload.data);
-            else if ((payload === null || payload === void 0 ? void 0 : payload.operation) === "overwrite")
-                this.overwriteGroupList();
-        });
         __classPrivateFieldSet(this, _ParticlePanelRenderer_particles_handler, particles_handler, "f");
+        this.setupObservers();
         __classPrivateFieldSet(this, _ParticlePanelRenderer_container, container, "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_add_particles_dialog, this.setupAddParticlesDialog(), "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_create_group_dialog, this.setupCreateGroupDialog(), "f");
@@ -95,6 +85,12 @@ class ParticlePanelRenderer extends Renderer {
         list_wrapper.id = "parsetup_groups_wrapper";
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").setParent(list_wrapper);
         particle_panel.appendChild(list_wrapper);
+    }
+    setupObservers() {
+        const obs = __classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f").getObservers();
+        obs.add(ParticleHandlerEvent.Add_Group, (payload) => { this.addGroup(payload.group); });
+        obs.add(ParticleHandlerEvent.Delete_Group, (payload) => { this.deleteGroup(payload.group); });
+        obs.add(ParticleHandlerEvent.Overwrite_Groups, () => { this.overwriteGroupList(); });
     }
     setupAddParticlesDialog() {
         const body = new AddParticleMenuRenderer(__classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f"), __classPrivateFieldGet(this, _ParticlePanelRenderer_container, "f"));
@@ -140,14 +136,9 @@ class ParticlePanelRenderer extends Renderer {
         // physical properties of Particle units in the Simulation container such as radius, color, and position
         group_renderer.refresh(changes_log);
     }
-    deleteGroup(group_id) {
+    deleteGroup(group) {
         console.log("deleting a group");
-        const group_renderer = __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item
-            .getParticleGroup()
-            .getGrouping()
-            .group_id
-            ===
-                group_id);
+        const group_renderer = __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item.getParticleGroup() === group);
         if (!group_renderer)
             throw new Error("Group not found.");
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").removeItem(group_renderer);

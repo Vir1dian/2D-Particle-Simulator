@@ -11,10 +11,8 @@ class AddParticleMenuRenderer extends Renderer {
     super(menu_wrapper, 'dialog_menu', 'dialog_menu_add_particle');
 
     // Stored Data
-    particles_handler.add_observer(ParticleEvent.Update_Particle_Groups, (payload?) => {
-      this.refresh(payload);
-    });
     this.#particles_handler = particles_handler;
+    this.setupObservers();
     this.#input_table = this.setupInputTable(container);
     this.#group_selector = this.setupGroupSelector();  // must be setup after input_table due to the disableFields callback
     this.#amount_input = this.setupAmountInput();
@@ -46,6 +44,12 @@ class AddParticleMenuRenderer extends Renderer {
     submit_wrapper.style.marginTop = '8px';
     this.#submit_button.setParent(submit_wrapper);
     menu_wrapper.appendChild(submit_wrapper);
+  }
+  private setupObservers(): void {
+    const obs = this.#particles_handler.getObservers();
+    obs.add(ParticleHandlerEvent.Add_Group, (payload) => { this.refresh(ParticleHandlerEvent.Add_Group, payload.group) });
+    obs.add(ParticleHandlerEvent.Delete_Group, (payload) => { this.refresh(ParticleHandlerEvent.Delete_Group, payload.group) });
+    obs.add(ParticleHandlerEvent.Overwrite_Groups, () => { this.refresh(ParticleHandlerEvent.Overwrite_Groups) });
   }
   private setupGroupSelector(): SelectRenderer {
     const selector = new SelectRenderer(
@@ -109,20 +113,13 @@ class AddParticleMenuRenderer extends Renderer {
     );
     this.#input_table.syncDisabled(disable_keys);
   }
-  refresh(payload?: ParticleEventPayload): void {
-    if (payload?.operation === 'add') {
-      this.#group_selector.addOption(new OptionRenderer((payload.data as ParticleGroup).getGrouping().group_id));
+  refresh(event: ParticleHandlerEvent, group?: ParticleGroup): void {
+    if (event === ParticleHandlerEvent.Add_Group)
+      this.#group_selector.addOption(new OptionRenderer((group as ParticleGroup).getGrouping().group_id));
       // something happens here when you add an option and messes up the selector callbacks, FIX IT!
-    }
-    // currently group names cannot be edited after being created
-    // else if (payload?.operation === 'edit') {
-    //   console.log("editing a group") 
-    // }
-    else if (payload?.operation === 'delete') {
-      this.#group_selector.removeOption(payload.data as string);
-    }
-    else if (payload?.operation === 'overwrite') {
-      console.log("overwriting a group")
+    else if (event === ParticleHandlerEvent.Delete_Group)
+      this.#group_selector.removeOption(group?.getGrouping().group_id as string);
+    else if (event === ParticleHandlerEvent.Overwrite_Groups) {
       this.#group_selector.empty();
       for (const key of this.#particles_handler.getGroups().keys()) 
         this.#group_selector.addOption(new OptionRenderer(key));
@@ -287,10 +284,10 @@ class EditGroupMenuRenderer extends Renderer {
   submit(): void {
     const group_id_pair = { group_id: this.#group.getGrouping().group_id };  // group_id cannot be changed at this point
     const changes: ParticleGrouping = structuredCloneCustom({...group_id_pair, ...this.#input_table.prepareChanges()} as unknown as ParticleGrouping);
-    this.#particles_handler.editGroup(group_id_pair.group_id, changes);
+    this.#group.edit(changes);
   }
   submitDelete(): void {
-    this.#particles_handler.deleteGroup(this.#group.getGrouping().group_id);
+    this.#particles_handler.deleteGroup(this.#group);
   }
   remove(): void {
     this.#input_table.remove()
@@ -306,17 +303,17 @@ class EditParticleMenuRenderer extends Renderer {
   // option to delete the Particle
   // "Focus" on the corresponding particle in the container when this window is open
   #particle: Particle;
-  #particles_handler: ParticlesHandler;
+  #group: ParticleGroup;
   #input_table: InputTableRenderer<string | boolean | number | Vector2D>;  
   #submit_button: ButtonRenderer;
   #delete_button: ButtonRenderer;
-  constructor(particle: Particle, particles_handler: ParticlesHandler, container: BoxSpace) {
+  constructor(particle: Particle, group: ParticleGroup, container: BoxSpace) {
     const menu_wrapper: HTMLDivElement = document.createElement('div');
     super(menu_wrapper, 'dialog_menu', `dialog_menu_edit_particle_id_${0}`);
 
     // Stored Data
     this.#particle = particle;
-    this.#particles_handler = particles_handler;
+    this.#group = group;
     this.#input_table = this.setupInputTable(container);
     this.#submit_button = this.setupSubmitButton();
     this.#delete_button = this.setupDeleteButton();
@@ -371,10 +368,10 @@ class EditParticleMenuRenderer extends Renderer {
     this.#input_table.setProperties(properties, properties);
   }
   submit(): void {
-    this.#particles_handler.editParticle(this.#particle.getID(), this.#input_table.prepareChanges() as Record<string, keyof Particle>);
+    this.#particle.edit(this.#input_table.prepareChanges() as Record<string, keyof Particle>);
   }
   submitDelete(): void {
-    this.#particles_handler.deleteParticle(this.#particle);
+    this.#group.removeParticle(this.#particle);
   }
   remove(): void {
     this.#input_table.remove();
@@ -391,7 +388,7 @@ class EditParticleMenuRenderer extends Renderer {
  * Handles ParticleUnitRenderers.
  */
 class ParticleUnitGroupRenderer extends Renderer {
-  #particle_group: ParticleGroup;
+  #group: ParticleGroup;
   #icon: Renderer;
   #details_dialog: StandardDialogRenderer<EditGroupMenuRenderer>;  // maybe make this non-modal to edit outside of the popup?
   #drag_button: ButtonRenderer;
@@ -402,20 +399,14 @@ class ParticleUnitGroupRenderer extends Renderer {
     super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
 
     // Stored Data
-    this.#particle_group = group;
+    this.#group = group;
+    this.setupObservers(container);
     this.#icon = this.createIcon(group.getGrouping().color as string);
     this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container);
     this.#drag_button = this.setupDragButton();
-    this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...group.getParticles().map(particle => {
-      return new ParticleUnitRenderer(particle, particles_handler, container);
-    }));
-      // REWRITE AFTER OBSERVER REFACTOR
-    particles_handler.add_observer(ParticleEvent.Update_Particle, (payload?) => {
-      if (payload?.operation === 'add' && payload.data2 === group) this.addParticleUnit(payload.data as Particle, particles_handler, container);
-      if (payload?.operation === 'edit') this.editParticleUnit(payload.data as Particle, payload.data2 as { [K in keyof Particle]: boolean });
-      if (payload?.operation === 'delete') this.deleteParticleUnit(payload.data as number);
-    });
-
+    this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...Array.from(
+      group.getParticles(), ([id, particle]) => new ParticleUnitRenderer(particle, group, container)
+    ));
     // DOM Content
     const header: HTMLElement = document.createElement('header');
     header.appendChild(this.createTitleWrapper(group.getGrouping().group_id));
@@ -424,16 +415,23 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#details_dialog.setParent(particle_group_element);
     this.#unit_list.setParent(particle_group_element);
   }
+  private setupObservers(container: BoxSpace): void {
+    const obs = this.#group.getObservers();
+    obs.add(ParticleGroupEvent.Add_Particle, (payload) => { this.addParticleUnit(payload.particle, this.#group, container) });
+    obs.add(ParticleGroupEvent.Delete_Particle, (payload) => { this.deleteParticleUnit(payload.particle) });
+    obs.add(ParticleGroupEvent.Edit, (payload) => { this.refresh(payload.change_flags) });
+    obs.add(ParticleGroupEvent.Overwrite_Particles, () => {});
+  }
   private createIcon(color: string): Renderer {
     const icon = new Renderer(document.createElement("span"));
     icon.setClassName("parsetup_group_icon");
-    if (this.#particle_group.getGrouping().group_id === DEFAULT_GROUPING.group_id)
+    if (this.#group.getGrouping().group_id === DEFAULT_GROUPING.group_id)
       icon.getElement().style.display = 'none';
     else icon.getElement().style.backgroundColor = color;
     return icon;
   };
   private setupDetailsDialog(group_id: string, particles_handler: ParticlesHandler, container: BoxSpace): StandardDialogRenderer<EditGroupMenuRenderer> {
-    const body = new EditGroupMenuRenderer(this.#particle_group, particles_handler, container);
+    const body = new EditGroupMenuRenderer(this.#group, particles_handler, container);
     const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, `Group: ${group_id}`, true);
     details_dialog.getOpenButton().setLabel("expand_content", true);
     details_dialog.getCloseButton().setLabel("close", true);
@@ -471,7 +469,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     return buttons_wrapper;
   };
   getParticleGroup(): ParticleGroup {
-    return this.#particle_group;
+    return this.#group;
   }
   getDetailsDialog(): StandardDialogRenderer<EditGroupMenuRenderer> {
     return this.#details_dialog;
@@ -479,31 +477,30 @@ class ParticleUnitGroupRenderer extends Renderer {
   getUnitList(): ListRenderer<ParticleUnitRenderer> {
     return this.#unit_list;
   }
-  refresh(changes_log: { [K in keyof ParticleGrouping]: boolean }): void {
-    const color = this.#particle_group.getGrouping().color;
+  refresh(change_flags: { [K in keyof ParticleGrouping]: boolean }): void {
+    const color = this.#group.getGrouping().color;
     this.#icon.getElement().style.backgroundColor = color === undefined || color === 'random' ? 'black' : color;
     this.#details_dialog.getBody().refresh();
     this.#unit_list.forEach(unit => {
       unit.getDetailsDialog().getBody().refresh();
-      unit.refresh(changes_log);
+      unit.refresh(change_flags);
     });
   }
-  addParticleUnit(particle: Particle, particles_handler: ParticlesHandler, container: BoxSpace): void {
-    this.#unit_list.push(new ParticleUnitRenderer(particle, particles_handler, container));
+  addParticleUnit(particle: Particle, group: ParticleGroup, container: BoxSpace): void {
+    this.#unit_list.push(new ParticleUnitRenderer(particle, group, container));
   }
-  editParticleUnit(particle: Particle, changes_log: { [K in keyof Particle]: boolean }): void {
+  editParticleUnit(particle: Particle, change_flags: { [K in keyof Particle]: boolean }): void {
     const unit = this.#unit_list.find(r => r.getParticlePoint().getParticle() === particle);
     if (!unit) return;  // if particle not in this group
-    unit.refresh(changes_log);
-    console.log(this.#particle_group.getParticles());  
+    unit.refresh(change_flags);
+    console.log(this.#group.getParticles());  
   }
-  deleteParticleUnit(id: number): void {
-    const unit_index = this.#unit_list.findIndex(
-      r => r.getParticlePoint().getParticle().getID() === id
+  deleteParticleUnit(particle: Particle): void {
+    const unit_renderer = this.#unit_list.find(
+      r => r.getParticlePoint().getParticle() === particle
     );
-    if (unit_index === -1) return;  // if particle not in this group
-    this.#unit_list.removeAtIndex(unit_index);
-    console.log(this.#particle_group.getParticles());  
+    if (!unit_renderer) throw new Error("Particle not found.");
+    this.#unit_list.removeItem(unit_renderer);
   }
   remove(): void {
     this.#icon.remove();
@@ -526,14 +523,14 @@ class ParticleUnitRenderer extends Renderer {
   #icon: Renderer;
   #details_dialog: StandardDialogRenderer<EditParticleMenuRenderer>;  // maybe make this non-modal to edit outside of the popup?
   #drag_button: ButtonRenderer;
-  constructor(particle: Particle, particles_handler: ParticlesHandler, container: BoxSpace) {
+  constructor(particle: Particle, group: ParticleGroup, container: BoxSpace) {
     const particle_control_element : HTMLDivElement = document.createElement('div');
     super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.getID()}`);
 
     // Stored Data
     this.#particle_renderer = new ParticlePointRenderer(particle, container);
     this.#icon = this.createIcon(particle.color);
-    this.#details_dialog = this.setupDetailsDialog(particle.getID(), particles_handler, container);
+    this.#details_dialog = this.setupDetailsDialog(particle.getID(), group, container);
     this.#drag_button = this.setupDragButton(); 
 
     // DOM Content
@@ -547,8 +544,8 @@ class ParticleUnitRenderer extends Renderer {
     icon.getElement().style.backgroundColor = color;
     return icon;
   }
-  private setupDetailsDialog(id: number, particles_handler: ParticlesHandler, container: BoxSpace): StandardDialogRenderer<EditParticleMenuRenderer> {
-    const body = new EditParticleMenuRenderer(this.#particle_renderer.getParticle(), particles_handler, container);
+  private setupDetailsDialog(id: number, group: ParticleGroup, container: BoxSpace): StandardDialogRenderer<EditParticleMenuRenderer> {
+    const body = new EditParticleMenuRenderer(this.#particle_renderer.getParticle(), group, container);
     const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle: ${id}`, true);
     details_dialog.getOpenButton().setLabel("expand_content", true);
     details_dialog.getCloseButton().setLabel("close", true);
@@ -598,11 +595,11 @@ class ParticleUnitRenderer extends Renderer {
   getDetailsDialog(): StandardDialogRenderer<EditParticleMenuRenderer> {
     return this.#details_dialog;
   }
-  refresh(changes_log: { [K in keyof (Particle | ParticleGrouping)]: boolean }): void {
+  refresh(change_flags: { [K in keyof (Particle | ParticleGrouping)]: boolean }): void {
     const change_params: ('radius' | 'position' | 'color')[] = [];
-    if (changes_log.radius) change_params.push('radius');
-    if (changes_log.position) change_params.push('position');
-    if (changes_log.color) change_params.push('color');
+    if (change_flags.radius) change_params.push('radius');
+    if (change_flags.position) change_params.push('position');
+    if (change_flags.color) change_params.push('color');
     if (change_params.includes('color')) 
       this.#icon.getElement().style.backgroundColor = this.#particle_renderer.getParticle().color;
     this.#details_dialog.getBody().refresh();
@@ -657,18 +654,18 @@ class ParticlePointRenderer extends Renderer {
     const container_element : HTMLDivElement = document.querySelector('.container_element') as HTMLDivElement;
     container_element.appendChild(this.getElement());
   }
-  update(...keys: ('radius' | 'position' | 'color')[]): void {
+  update(...properties: ('radius' | 'position' | 'color')[]): void {
     const particle_element : HTMLDivElement = this.getElement() as HTMLDivElement;
-    if (keys.includes('radius')) {
+    if (properties.includes('radius')) {
       particle_element.style.borderRadius = `${this.#particle.radius}px`;
       particle_element.style.width = `${2*this.#particle.radius}px`;
       particle_element.style.height = `${2*this.#particle.radius}px`;
     }
-    if (keys.includes('position')) {
+    if (properties.includes('position')) {
       particle_element.style.left = `${(this.#particle.position.x - this.#particle.radius) - this.#container.x_min}px`;
       particle_element.style.top = `${this.#container.y_max - (this.#particle.position.y + this.#particle.radius)}px`;
     }
-    if (keys.includes('color')) {
+    if (properties.includes('color')) {
       particle_element.style.backgroundColor = this.#particle.color;
     }
   }
