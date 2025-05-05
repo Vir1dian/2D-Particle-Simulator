@@ -237,6 +237,14 @@ class InputRenderer extends Renderer {
         else
             __classPrivateFieldGet(this, _InputRenderer_label_element, "f").classList.remove("disabled_input_label");
     }
+    disable(value = true) {
+        __classPrivateFieldSet(this, _InputRenderer_is_disabled, value, "f");
+        this.getElement().disabled = value;
+        if (value)
+            __classPrivateFieldGet(this, _InputRenderer_label_element, "f").classList.add("disabled_input_label");
+        else
+            __classPrivateFieldGet(this, _InputRenderer_label_element, "f").classList.remove("disabled_input_label");
+    }
     setID(id) {
         super.setID(id);
         __classPrivateFieldGet(this, _InputRenderer_label_element, "f").htmlFor = id;
@@ -331,8 +339,8 @@ class Vector2DInputRenderer extends Renderer {
         input_x.getLabelElement().innerText = "x:";
         input_y.getLabelElement().innerText = "y:";
         if (is_disabled) {
-            input_x.toggleDisabled();
-            input_y.toggleDisabled();
+            input_x.disable();
+            input_y.disable();
         }
         input_wrapper.appendChild(input_x.getLabelElement());
         input_x.setParent(input_wrapper);
@@ -387,6 +395,15 @@ class Vector2DInputRenderer extends Renderer {
         __classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f").toggleDisabled();
         __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").toggleDisabled();
         if (__classPrivateFieldGet(this, _Vector2DInputRenderer_is_disabled, "f"))
+            __classPrivateFieldGet(this, _Vector2DInputRenderer_label_element, "f").classList.add("disabled_input_label");
+        else
+            __classPrivateFieldGet(this, _Vector2DInputRenderer_label_element, "f").classList.remove("disabled_input_label");
+    }
+    disable(value = true) {
+        __classPrivateFieldSet(this, _Vector2DInputRenderer_is_disabled, value, "f");
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_x, "f").disable(value);
+        __classPrivateFieldGet(this, _Vector2DInputRenderer_input_y, "f").disable(value);
+        if (value)
             __classPrivateFieldGet(this, _Vector2DInputRenderer_label_element, "f").classList.add("disabled_input_label");
         else
             __classPrivateFieldGet(this, _Vector2DInputRenderer_label_element, "f").classList.remove("disabled_input_label");

@@ -20,6 +20,7 @@ var SimEvent;
     SimEvent[SimEvent["Update_Particle_Groups"] = 4] = "Update_Particle_Groups";
 })(SimEvent || (SimEvent = {}));
 ;
+// Update SimEvent and #observers here to use the ObserverHandler class
 /**
  * Oversees most processes in the program.
  * Only one instance of Simulation should

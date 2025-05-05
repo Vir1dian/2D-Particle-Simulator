@@ -517,19 +517,17 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
     const is_checked = override_input.getBooleanValue();
     left_inputs.forEach(input => {
       if (input instanceof InputRenderer) {
-        if (is_checked && !input.isDisabled()) input.toggleDisabled();
-        else if (!is_checked && input.isDisabled()) input.toggleDisabled();
+        input.disable(is_checked);
       }
       else if (input instanceof Vector2DInputRenderer) {
-        if (is_checked && !input.isDisabled()) input.toggleDisabled();
-        else if (!is_checked && input.isDisabled()) input.toggleDisabled();
+        input.disable(is_checked);
       }
     });
   }
   private setOverrideCallback(key: string, override_input: CheckboxInputRenderer, left_inputs: (InputRenderer | Vector2DInputRenderer)[]): void {
     const callback = () => this.applyOverride(override_input, left_inputs);
     override_input.getElement().addEventListener('change', callback);
-    const existing_overrides = this.#override_callbacks.get(key);  // Overrides for a key may be 'random', 'unspecified', and potentially more
+    const existing_overrides = this.#override_callbacks.get(key);  // Overrides for a key may be 'random', 'unspecified'
     if (existing_overrides) existing_overrides.push(
       () => {
         override_input.getElement().removeEventListener('change', callback);
@@ -544,11 +542,7 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
     for (const [key, inputs] of this.#inputs) {
       const should_disable = key_set.has(key);
       for (const input of inputs) {
-        if (!should_disable && input.isDisabled()) {
-          input.toggleDisabled();
-        } else if (should_disable && !input.isDisabled()) {
-          input.toggleDisabled();
-        }
+        input.disable(should_disable);
       }
     }
   }
@@ -589,20 +583,28 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
         if (input.getElement().id.includes('_unspecified_override')) {
           if (this.#properties[key] === undefined) {
             (input as CheckboxInputRenderer).setValue("true");
-            this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
+            queueMicrotask(() => {
+              this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
+            });
             break;
           }
-          this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
           (input as CheckboxInputRenderer).setValue("false");
+          queueMicrotask(() => {
+            this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
+          });
         }
         else if (input.getElement().id.includes('_random_override')) {
           if (this.#properties[key] === 'random') {
             (input as CheckboxInputRenderer).setValue("true");
-            this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
+            queueMicrotask(() => {
+              this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
+            });
             break;
           }
-          this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
           (input as CheckboxInputRenderer).setValue("false");
+          queueMicrotask(() => {
+            this.applyOverride((input as CheckboxInputRenderer), inputs.slice(0, i));
+          });
         }
         else if (input instanceof NumberInputRenderer) 
           input.setValue(this.#properties[key]!.toString());

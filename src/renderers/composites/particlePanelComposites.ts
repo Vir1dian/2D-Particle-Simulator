@@ -59,7 +59,6 @@ class AddParticleMenuRenderer extends Renderer {
         ([group_id, group]) => new OptionRenderer(group_id)
       )
     );
-    // still needs fixing
     const callback = () => {
       const group = this.#particles_handler.getGroups().get(selector.getElement().value);
       if (group) {

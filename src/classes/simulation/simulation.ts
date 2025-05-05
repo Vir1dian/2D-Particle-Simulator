@@ -6,6 +6,8 @@ enum SimEvent {
   Update_Particle_Groups
 };
 
+// Update SimEvent and #observers here to use the ObserverHandler class
+
 /**
  * Oversees most processes in the program.
  * Only one instance of Simulation should

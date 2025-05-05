@@ -71,7 +71,6 @@ class AddParticleMenuRenderer extends Renderer {
     }
     setupGroupSelector() {
         const selector = new SelectRenderer('menu_group_selector_add_particle', Array.from(__classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups(), ([group_id, group]) => new OptionRenderer(group_id)));
-        // still needs fixing
         const callback = () => {
             const group = __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups().get(selector.getElement().value);
             if (group) {

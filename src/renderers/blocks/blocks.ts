@@ -228,6 +228,12 @@ class InputRenderer extends Renderer {
     if (this.#is_disabled) this.#label_element.classList.add("disabled_input_label");
     else this.#label_element.classList.remove("disabled_input_label");
   }
+  disable(value: boolean = true) {
+    this.#is_disabled = value;
+    this.getElement().disabled = value;
+    if (value) this.#label_element.classList.add("disabled_input_label");
+    else this.#label_element.classList.remove("disabled_input_label");
+  }
   setID(id: string): void {
     super.setID(id);
     this.#label_element.htmlFor = id;
@@ -322,8 +328,8 @@ class Vector2DInputRenderer extends Renderer {
     input_x.getLabelElement().innerText = "x:";
     input_y.getLabelElement().innerText = "y:";
     if (is_disabled) {
-      input_x.toggleDisabled();
-      input_y.toggleDisabled();
+      input_x.disable();
+      input_y.disable();
     }
 
     input_wrapper.appendChild(input_x.getLabelElement());
@@ -380,6 +386,13 @@ class Vector2DInputRenderer extends Renderer {
     this.#input_x.toggleDisabled();
     this.#input_y.toggleDisabled();
     if (this.#is_disabled) this.#label_element.classList.add("disabled_input_label");
+    else this.#label_element.classList.remove("disabled_input_label");
+  }
+  disable(value: boolean = true) {
+    this.#is_disabled = value;
+    this.#input_x.disable(value);
+    this.#input_y.disable(value);
+    if (value) this.#label_element.classList.add("disabled_input_label");
     else this.#label_element.classList.remove("disabled_input_label");
   }
   setID(id: string): void {
