@@ -318,6 +318,8 @@ class EditParticleMenuRenderer extends Renderer {
     this.#submit_button = this.setupSubmitButton();
     this.#delete_button = this.setupDeleteButton();
 
+    this.disableFields(group.getGrouping());
+
     // DOM Content
     const table_wrapper: HTMLDivElement = document.createElement('div');
     table_wrapper.className = 'menu_item';
@@ -362,6 +364,17 @@ class EditParticleMenuRenderer extends Renderer {
     button.setLabel('Delete');
     button.setClassName('delete_button');
     return button;
+  }
+  disableFields(grouping: ParticleGrouping): void {
+    const disable_keys: string[] = [];
+    (Object.keys(grouping) as (keyof ParticleGrouping)[]).forEach(
+      property => {
+        const grouping_value = grouping[property];
+        if (grouping_value !== undefined && grouping_value !== 'random')
+          disable_keys.push(property);  // disable edits to particle properties already specified by the group
+      }
+    );
+    this.#input_table.syncDisabled(disable_keys);
   }
   refresh(): void {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#particle);
@@ -483,7 +496,9 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#icon.getElement().style.backgroundColor = color === undefined || color === 'random' ? 'black' : color;
     this.#details_dialog.getBody().refresh();
     this.#unit_list.forEach(unit => {
-      unit.getDetailsDialog().getBody().refresh();
+      const unit_menu = unit.getDetailsDialog().getBody();
+      unit_menu.refresh();
+      unit_menu.disableFields(this.#group.getGrouping());
       unit.refresh(change_flags);
     });
   }

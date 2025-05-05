@@ -327,6 +327,7 @@ class EditParticleMenuRenderer extends Renderer {
         __classPrivateFieldSet(this, _EditParticleMenuRenderer_input_table, this.setupInputTable(container), "f");
         __classPrivateFieldSet(this, _EditParticleMenuRenderer_submit_button, this.setupSubmitButton(), "f");
         __classPrivateFieldSet(this, _EditParticleMenuRenderer_delete_button, this.setupDeleteButton(), "f");
+        this.disableFields(group.getGrouping());
         // DOM Content
         const table_wrapper = document.createElement('div');
         table_wrapper.className = 'menu_item';
@@ -370,6 +371,15 @@ class EditParticleMenuRenderer extends Renderer {
         button.setLabel('Delete');
         button.setClassName('delete_button');
         return button;
+    }
+    disableFields(grouping) {
+        const disable_keys = [];
+        Object.keys(grouping).forEach(property => {
+            const grouping_value = grouping[property];
+            if (grouping_value !== undefined && grouping_value !== 'random')
+                disable_keys.push(property); // disable edits to particle properties already specified by the group
+        });
+        __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").syncDisabled(disable_keys);
     }
     refresh() {
         const properties = ((_a) => {
@@ -492,7 +502,9 @@ class ParticleUnitGroupRenderer extends Renderer {
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").getElement().style.backgroundColor = color === undefined || color === 'random' ? 'black' : color;
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_details_dialog, "f").getBody().refresh();
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").forEach(unit => {
-            unit.getDetailsDialog().getBody().refresh();
+            const unit_menu = unit.getDetailsDialog().getBody();
+            unit_menu.refresh();
+            unit_menu.disableFields(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f").getGrouping());
             unit.refresh(change_flags);
         });
     }
