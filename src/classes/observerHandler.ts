@@ -16,7 +16,7 @@ type EventPayload<E extends EnumLike, M extends EventPayloadMap<E>, K extends En
  * Maps a number type enum into a Record pairing each enum value 
  * with an empty set to store observer callbacks.
  */
-class ObserverHandler<E extends EnumLike, M extends EventPayloadMap<E>> {
+class ObserverHandler<E extends EnumLike, M extends EventPayloadMap<E>> {  // E - enum, M - payload map, K - key in enum
   #observers: { [K in EnumNumerical<E>]?: Set<(payload: EventPayload<E, M, K>) => void> };
 
   constructor(enum_object: E) {

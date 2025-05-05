@@ -91,10 +91,16 @@ function loadAll() {
   loadContainerElement(container);
   simulationSettingsElementFunctionsOld.loadPreset('empty');
 
-  const sim: Simulation = new Simulation(TEMPORARY_PRESETS["sandbox"]);
-  const environment_panel: EnvironmentPanelRenderer = new EnvironmentPanelRenderer(sim);
-  const particle_panel: ParticlePanelRenderer = new ParticlePanelRenderer(sim.getParticlesHandler(), sim.getContainer());
-  const control_panel_element: HTMLElement = document.querySelector(".control_items_wrapper") as HTMLElement;
+  const sim = new Simulation(TEMPORARY_PRESETS["sandbox"]);
+  const anim = new AnimationController(sim);
+  const anim_element = new AnimationControllerRenderer(anim);
+  const environment_panel = new EnvironmentPanelRenderer(sim);
+  const particle_panel = new ParticlePanelRenderer(sim.getParticlesHandler(), sim.getContainer());
+
+  const control_bar_item = document.getElementById("setting_timer") as HTMLElement;
+  anim_element.setParent(control_bar_item);
+
+  const control_panel_element = document.querySelector(".control_items_wrapper") as HTMLElement;
   environment_panel.setParent(control_panel_element);
   particle_panel.setParent(control_panel_element);
 

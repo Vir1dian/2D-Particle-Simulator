@@ -1,5 +1,114 @@
 "use strict";
-// TODO: Rewrite this into a class/es
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var _AnimationControllerRenderer_controller, _AnimationControllerRenderer_timer_element, _AnimationControllerRenderer_run_button, _AnimationControllerRenderer_pause_button, _AnimationControllerRenderer_stop_button, _AnimationController_simulation, _AnimationController_state, _AnimationController_time_elapsed;
+class AnimationControllerRenderer extends Renderer {
+    // #observers: ObserverHandler<>;
+    constructor(controller) {
+        const wrapper = document.createElement('div');
+        super(wrapper, '', "control_timer");
+        _AnimationControllerRenderer_controller.set(this, void 0);
+        _AnimationControllerRenderer_timer_element.set(this, void 0);
+        _AnimationControllerRenderer_run_button.set(this, void 0);
+        _AnimationControllerRenderer_pause_button.set(this, void 0);
+        _AnimationControllerRenderer_stop_button.set(this, void 0);
+        // Saved Data
+        __classPrivateFieldSet(this, _AnimationControllerRenderer_controller, controller, "f");
+        __classPrivateFieldSet(this, _AnimationControllerRenderer_timer_element, this.SetupTimerElement(controller.getTimeElapsed()), "f");
+        __classPrivateFieldSet(this, _AnimationControllerRenderer_run_button, this.SetupRunButton(controller), "f");
+        __classPrivateFieldSet(this, _AnimationControllerRenderer_pause_button, this.SetupPauseButton(controller), "f");
+        __classPrivateFieldSet(this, _AnimationControllerRenderer_stop_button, this.SetupStopButton(controller), "f");
+        // DOM Content
+        const wrapper_table = document.createElement('table');
+        const timer_wrapper_row = document.createElement('tr');
+        const cell0 = document.createElement('td');
+        cell0.colSpan = 3;
+        cell0.appendChild(__classPrivateFieldGet(this, _AnimationControllerRenderer_timer_element, "f"));
+        timer_wrapper_row.appendChild(cell0);
+        const buttons_wrapper_row = document.createElement('tr');
+        const cell1 = document.createElement('td');
+        const cell2 = document.createElement('td');
+        const cell3 = document.createElement('td');
+        __classPrivateFieldGet(this, _AnimationControllerRenderer_run_button, "f").setParent(cell1);
+        __classPrivateFieldGet(this, _AnimationControllerRenderer_pause_button, "f").setParent(cell2);
+        __classPrivateFieldGet(this, _AnimationControllerRenderer_stop_button, "f").setParent(cell3);
+        buttons_wrapper_row.appendChild(cell1);
+        buttons_wrapper_row.appendChild(cell2);
+        buttons_wrapper_row.appendChild(cell3);
+        wrapper_table.appendChild(timer_wrapper_row);
+        wrapper_table.appendChild(buttons_wrapper_row);
+        wrapper.appendChild(wrapper_table);
+    }
+    SetupTimerElement(time_elapsed) {
+        const timer_element = document.createElement('div');
+        timer_element.id = "animation_timer";
+        timer_element.innerHTML = this.FormatTime(time_elapsed);
+        return timer_element;
+    }
+    SetupRunButton(controller) {
+        const button = new ButtonRenderer(() => {
+        });
+        button.setLabel("play_arrow", true);
+        button.setID("control_button_run");
+        return button;
+    }
+    SetupPauseButton(controller) {
+        const button = new ButtonRenderer(() => {
+        });
+        button.setLabel("pause", true);
+        button.setID("control_button_pause");
+        return button;
+    }
+    SetupStopButton(controller) {
+        const button = new ButtonRenderer(() => {
+        });
+        button.setLabel("stop", true);
+        button.setID("control_button_stop");
+        return button;
+    }
+    FormatTime(time) {
+        let hours = Math.floor(time / 3600);
+        let minutes = Math.floor(time / 60) % 60;
+        let seconds = Math.round(time) % 60;
+        console.log(hours);
+        console.log(minutes);
+        console.log(seconds);
+        return `${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+}
+_AnimationControllerRenderer_controller = new WeakMap(), _AnimationControllerRenderer_timer_element = new WeakMap(), _AnimationControllerRenderer_run_button = new WeakMap(), _AnimationControllerRenderer_pause_button = new WeakMap(), _AnimationControllerRenderer_stop_button = new WeakMap();
+var AnimationState;
+(function (AnimationState) {
+    AnimationState[AnimationState["Stopped"] = 0] = "Stopped";
+    AnimationState[AnimationState["Running"] = 1] = "Running";
+    AnimationState[AnimationState["Paused"] = 2] = "Paused";
+})(AnimationState || (AnimationState = {}));
+class AnimationController {
+    constructor(simulation) {
+        _AnimationController_simulation.set(this, void 0);
+        _AnimationController_state.set(this, void 0);
+        _AnimationController_time_elapsed.set(this, void 0); // in total number of seconds
+        __classPrivateFieldSet(this, _AnimationController_simulation, simulation, "f");
+        __classPrivateFieldSet(this, _AnimationController_state, AnimationState.Stopped, "f");
+        __classPrivateFieldSet(this, _AnimationController_time_elapsed, 0, "f");
+    }
+    getState() {
+        return __classPrivateFieldGet(this, _AnimationController_state, "f");
+    }
+    getTimeElapsed() {
+        return __classPrivateFieldGet(this, _AnimationController_time_elapsed, "f");
+    }
+}
+_AnimationController_simulation = new WeakMap(), _AnimationController_state = new WeakMap(), _AnimationController_time_elapsed = new WeakMap();
 /**
  * Updates an element representing a moving particle in the HTML body, used for frame-by-frame animation
  *
@@ -31,12 +140,6 @@ function updateParticleElement(selected_particle, ui_courseness = 1) {
     vx_input.value = newVX.toString();
     vy_input.value = newVY.toString();
 }
-var SimulationState;
-(function (SimulationState) {
-    SimulationState[SimulationState["Stopped"] = 0] = "Stopped";
-    SimulationState[SimulationState["Running"] = 1] = "Running";
-    SimulationState[SimulationState["Paused"] = 2] = "Paused";
-})(SimulationState || (SimulationState = {}));
 let start;
 let particle_movement;
 let time_previous = 0, time_elapsed = 0, time_paused = 0;
