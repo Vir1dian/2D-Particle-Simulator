@@ -668,6 +668,19 @@ class InputTableRenderer extends TableRenderer {
         });
         this.refresh();
     }
+    /**
+     * To be used to update Particle position and velocity menu inputs, currently has no override implementation.
+     * @param key property to update
+     */
+    updateVectorInput(key, value) {
+        const current_value = __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key];
+        if (current_value instanceof Vector2D)
+            __classPrivateFieldGet(this, _InputTableRenderer_properties, "f")[key] = value.clone();
+        else
+            throw new Error("Cannot update property due to type mismatch.");
+        const input = __classPrivateFieldGet(this, _InputTableRenderer_inputs, "f").get(key)[0];
+        input.setValue(value);
+    }
     remove() {
         for (const removers of __classPrivateFieldGet(this, _InputTableRenderer_override_callbacks, "f").values()) {
             removers.forEach(remove_callback => remove_callback());

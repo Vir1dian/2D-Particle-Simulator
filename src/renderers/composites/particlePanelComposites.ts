@@ -380,6 +380,10 @@ class EditParticleMenuRenderer extends Renderer {
     const properties = (({enable_path_tracing, ...exposed_properties}) => exposed_properties)(this.#particle);
     this.#input_table.setProperties(properties, properties);
   }
+  moveUpdate(): void {
+    this.#input_table.updateVectorInput('position', this.#particle.position);
+    this.#input_table.updateVectorInput('velocity', this.#particle.velocity);
+  }
   submit(): void {
     console.log(this.#input_table.prepareChanges() as Record<string, keyof Particle>)
     this.#particle.edit(this.#input_table.prepareChanges() as Record<string, keyof Particle>);
@@ -558,6 +562,7 @@ class ParticleUnitRenderer extends Renderer {
   private setupObservers(particle: Particle): void {
     const obs = particle.getObservers();
     obs.add(ParticleEvent.Edit, (payload) => { this.refresh(payload.change_flags) });
+    obs.add(ParticleEvent.Move, () => { this.moveUpdate() });
   }
   private createIcon(color: string): Renderer {
     const icon = new Renderer(document.createElement("span"));
@@ -625,6 +630,10 @@ class ParticleUnitRenderer extends Renderer {
       this.#icon.getElement().style.backgroundColor = this.#particle_renderer.getParticle().color;
     this.#details_dialog.getBody().refresh();
     this.#particle_renderer.update(...change_params);
+  }
+  moveUpdate(): void {
+    this.#details_dialog.getBody().moveUpdate();
+    this.#particle_renderer.update('position');
   }
   remove(): void {
     this.#particle_renderer.remove();

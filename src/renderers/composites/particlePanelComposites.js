@@ -388,6 +388,10 @@ class EditParticleMenuRenderer extends Renderer {
         })(__classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f"));
         __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").setProperties(properties, properties);
     }
+    moveUpdate() {
+        __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").updateVectorInput('position', __classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").position);
+        __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").updateVectorInput('velocity', __classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").velocity);
+    }
     submit() {
         console.log(__classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").prepareChanges());
         __classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").edit(__classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").prepareChanges());
@@ -561,6 +565,7 @@ class ParticleUnitRenderer extends Renderer {
     setupObservers(particle) {
         const obs = particle.getObservers();
         obs.add(ParticleEvent.Edit, (payload) => { this.refresh(payload.change_flags); });
+        obs.add(ParticleEvent.Move, () => { this.moveUpdate(); });
     }
     createIcon(color) {
         const icon = new Renderer(document.createElement("span"));
@@ -627,6 +632,10 @@ class ParticleUnitRenderer extends Renderer {
             __classPrivateFieldGet(this, _ParticleUnitRenderer_icon, "f").getElement().style.backgroundColor = __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle().color;
         __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").getBody().refresh();
         __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").update(...change_params);
+    }
+    moveUpdate() {
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_details_dialog, "f").getBody().moveUpdate();
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").update('position');
     }
     remove() {
         __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").remove();

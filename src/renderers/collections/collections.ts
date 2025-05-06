@@ -663,6 +663,19 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
     });
     this.refresh();
   }
+  /**
+   * To be used to update Particle position and velocity menu inputs, currently has no override implementation.
+   * @param key property to update
+   */
+  updateVectorInput(key: string, value: Vector2D): void {
+    const current_value = this.#properties[key];
+    if (current_value instanceof Vector2D)
+      (this.#properties[key] as Vector2D) = value.clone();
+    else 
+      throw new Error("Cannot update property due to type mismatch.");
+    const input = this.#inputs.get(key)![0] as Vector2DInputRenderer;
+    input.setValue(value);
+  }
   remove(): void {
     for (const removers of this.#override_callbacks.values()) {
       removers.forEach(remove_callback => remove_callback());

@@ -122,6 +122,9 @@ class Particle {
       this.position.y = container.y_min + this.radius;
       hasCollided = true;
     }
+
+    this.#observers.notify(ParticleEvent.Move, undefined);
+
     return hasCollided;
   }
 
