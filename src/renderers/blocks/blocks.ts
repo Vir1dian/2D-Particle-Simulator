@@ -6,18 +6,33 @@
 class ButtonRenderer extends Renderer {
   #callback: (...args: any) => void;
   #event: string;
+  #is_disabled: boolean;
   constructor (callback: (...args: any) => void, event: string = 'click') {
     const button: HTMLButtonElement = document.createElement('button');
     button.addEventListener(event, callback);
     super(button);
     this.#callback = callback;
     this.#event = event;
+    this.#is_disabled = false;
   }
   getElement(): HTMLButtonElement {
     return super.getElement() as HTMLButtonElement;
   }
+  getCallback(): (...args: any) => void {
+    return this.#callback;
+  }
+  getEvent(): string {
+    return this.#event;
+  }
+  isDisabled(): boolean {
+    return this.#is_disabled;
+  }
   deafen(): void {
     this.getElement().removeEventListener(this.#event,this.#callback);
+  }
+  disable(value: boolean = true) {
+    this.#is_disabled = value;
+    this.getElement().disabled = value;
   }
   setCallback(callback: (...args: any) => void): void {
     if (this.#callback === callback) return;

@@ -12,9 +12,9 @@ class AnimationControllerRenderer extends Renderer {
     // Saved Data
     this.#controller = controller;
     this.#timer_element = this.SetupTimerElement(controller.getTimeElapsed());
-    this.#run_button = this.SetupRunButton(controller);
-    this.#pause_button = this.SetupPauseButton(controller);
-    this.#stop_button = this.SetupStopButton(controller);
+    this.#run_button = this.SetupRunButton();
+    this.#pause_button = this.SetupPauseButton();
+    this.#stop_button = this.SetupStopButton();
     this.setupObservers(controller);
 
     // DOM Content
@@ -51,32 +51,20 @@ class AnimationControllerRenderer extends Renderer {
     timer_element.innerHTML = this.FormatTime(time_elapsed);
     return timer_element;
   }
-  private SetupRunButton(controller: AnimationController): ButtonRenderer {
-    const button = new ButtonRenderer(
-      ()=>{
-        // run simulation, enable other control buttons, and disable this control button
-      }
-    )
+  private SetupRunButton(): ButtonRenderer {
+    const button = new ButtonRenderer(this.run.bind(this))
     button.setLabel("play_arrow", true);
     button.setID("control_button_run");
     return button;
   }
-  private SetupPauseButton(controller: AnimationController): ButtonRenderer {
-    const button = new ButtonRenderer(
-      ()=>{
-        // pause simulation, enable other control buttons, and disable this control button
-      }
-    )
+  private SetupPauseButton(): ButtonRenderer {
+    const button = new ButtonRenderer(this.pause.bind(this))
     button.setLabel("pause", true);
     button.setID("control_button_pause");
     return button;
   }
-  private SetupStopButton(controller: AnimationController): ButtonRenderer {
-    const button = new ButtonRenderer(
-      ()=>{
-        // stop simulation, enable other control buttons, and disable this control button
-      }
-    )
+  private SetupStopButton(): ButtonRenderer {
+    const button = new ButtonRenderer(this.stop.bind(this))
     button.setLabel("stop", true);
     button.setID("control_button_stop");
     return button;
@@ -89,6 +77,24 @@ class AnimationControllerRenderer extends Renderer {
   }
   refresh(): void {
     this.#timer_element.innerHTML = this.FormatTime(this.#controller.getTimeElapsed());
+  }
+  run(): void {
+    this.#controller.run();
+    this.#run_button.disable();
+    this.#pause_button.disable(false);
+    this.#stop_button.disable(false);
+  }
+  pause(): void {
+    this.#controller.pause();
+    this.#run_button.disable(false);
+    this.#pause_button.disable();
+    this.#stop_button.disable(false);
+  }
+  stop(): void {
+    this.#controller.stop();
+    this.#run_button.disable(false);
+    this.#pause_button.disable(false);
+    this.#stop_button.disable();
   }
   remove(): void {
     this.#run_button.remove();
@@ -110,6 +116,8 @@ enum AnimationControllerEvent {
 }
 
 class AnimationController {
+  #simulation: Simulation;
+
   #container: BoxSpace;
   #environment: SimEnvironment;
   #particles: Particle[];
@@ -124,6 +132,8 @@ class AnimationController {
   #observers: ObserverHandler<typeof AnimationControllerEvent, {[AnimationControllerEvent.Update]: void | undefined}>;  // for the timer renderer
 
   constructor(simulation: Simulation) {
+
+    this.#simulation = simulation;
     this.#container = simulation.getContainer();
     this.#environment = simulation.getEnvironment();
     this.#particles = simulation.getParticlesHandler().getAllParticles();
@@ -175,6 +185,7 @@ class AnimationController {
   private endLoop(): void {
     cancelAnimationFrame(this.#frame_id);
   }
+
   run(): void {
     // ignore if simulation has no particles
     if (!this.#particles.length || this.#state === AnimationControllerState.Running) return;
@@ -208,6 +219,9 @@ class AnimationController {
 
     // TODO: reset simulation to the preset at the beginning
   }
+
+  
+
   getState(): AnimationControllerState {
     return this.#state;
   }

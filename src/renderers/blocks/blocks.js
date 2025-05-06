@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ButtonRenderer_callback, _ButtonRenderer_event, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _StandardDialogRenderer_body, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _NumberInputRenderer_min, _NumberInputRenderer_max, _NumberInputRenderer_clamp, _Vector2DInputRenderer_value, _Vector2DInputRenderer_input_x, _Vector2DInputRenderer_input_y, _Vector2DInputRenderer_is_disabled, _Vector2DInputRenderer_label_element;
+var _ButtonRenderer_callback, _ButtonRenderer_event, _ButtonRenderer_is_disabled, _DialogRenderer_open_button, _DialogRenderer_close_button, _DialogRenderer_content_wrapper, _StandardDialogRenderer_body, _InputRenderer_value, _InputRenderer_name, _InputRenderer_is_disabled, _InputRenderer_label_element, _NumberInputRenderer_min, _NumberInputRenderer_max, _NumberInputRenderer_clamp, _Vector2DInputRenderer_value, _Vector2DInputRenderer_input_x, _Vector2DInputRenderer_input_y, _Vector2DInputRenderer_is_disabled, _Vector2DInputRenderer_label_element;
 /**
  * Stores an HTMLButtonElement, maintains a callback
  * and an event. Uses only one eventlistener at a
@@ -23,14 +23,29 @@ class ButtonRenderer extends Renderer {
         super(button);
         _ButtonRenderer_callback.set(this, void 0);
         _ButtonRenderer_event.set(this, void 0);
+        _ButtonRenderer_is_disabled.set(this, void 0);
         __classPrivateFieldSet(this, _ButtonRenderer_callback, callback, "f");
         __classPrivateFieldSet(this, _ButtonRenderer_event, event, "f");
+        __classPrivateFieldSet(this, _ButtonRenderer_is_disabled, false, "f");
     }
     getElement() {
         return super.getElement();
     }
+    getCallback() {
+        return __classPrivateFieldGet(this, _ButtonRenderer_callback, "f");
+    }
+    getEvent() {
+        return __classPrivateFieldGet(this, _ButtonRenderer_event, "f");
+    }
+    isDisabled() {
+        return __classPrivateFieldGet(this, _ButtonRenderer_is_disabled, "f");
+    }
     deafen() {
         this.getElement().removeEventListener(__classPrivateFieldGet(this, _ButtonRenderer_event, "f"), __classPrivateFieldGet(this, _ButtonRenderer_callback, "f"));
+    }
+    disable(value = true) {
+        __classPrivateFieldSet(this, _ButtonRenderer_is_disabled, value, "f");
+        this.getElement().disabled = value;
     }
     setCallback(callback) {
         if (__classPrivateFieldGet(this, _ButtonRenderer_callback, "f") === callback)
@@ -57,7 +72,7 @@ class ButtonRenderer extends Renderer {
         super.remove();
     }
 }
-_ButtonRenderer_callback = new WeakMap(), _ButtonRenderer_event = new WeakMap();
+_ButtonRenderer_callback = new WeakMap(), _ButtonRenderer_event = new WeakMap(), _ButtonRenderer_is_disabled = new WeakMap();
 /**
  * Stores an empty HTMLDialogElement, an empty
  * div Renderer for wrapping the content, and two
