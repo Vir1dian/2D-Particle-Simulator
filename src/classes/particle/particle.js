@@ -117,7 +117,6 @@ class Particle {
             this.position.y = container.y_min + this.radius;
             hasCollided = true;
         }
-        __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Move, undefined);
         return hasCollided;
     }
     collideParticle(otherParticle, elasticity = 1) {

@@ -17,7 +17,6 @@ var SimEvent;
     SimEvent[SimEvent["Update_Container"] = 1] = "Update_Container";
     SimEvent[SimEvent["Update_Environment"] = 2] = "Update_Environment";
     SimEvent[SimEvent["Update_Config"] = 3] = "Update_Config";
-    SimEvent[SimEvent["Update_Particle_Groups"] = 4] = "Update_Particle_Groups";
 })(SimEvent || (SimEvent = {}));
 ;
 // Update SimEvent and #observers here to use the ObserverHandler class
@@ -32,7 +31,7 @@ class Simulation {
         _Simulation_environment.set(this, void 0);
         _Simulation_config.set(this, void 0);
         _Simulation_particles_handler.set(this, void 0);
-        _Simulation_observers.set(this, void 0); // using a map with a set to avoid duplicate callbacks for an event type
+        _Simulation_observers.set(this, void 0);
         const preset_clone = structuredCloneCustom(preset);
         const default_clone = structuredCloneCustom(DEFAULT_PRESET);
         const final_preset = deepmergeCustom(default_clone, preset_clone);
@@ -40,22 +39,11 @@ class Simulation {
         __classPrivateFieldSet(this, _Simulation_environment, final_preset.environment, "f");
         __classPrivateFieldSet(this, _Simulation_config, final_preset.config, "f");
         __classPrivateFieldSet(this, _Simulation_particles_handler, new ParticlesHandler(final_preset.particle_groups), "f");
-        __classPrivateFieldSet(this, _Simulation_observers, new Map(), "f");
-        Object.keys(SimEvent).forEach((_, event) => {
-            __classPrivateFieldGet(this, _Simulation_observers, "f").set(event, new Set());
-        });
+        __classPrivateFieldSet(this, _Simulation_observers, new ObserverHandler(SimEvent), "f");
+        this.setupParticleHandlerObservers(__classPrivateFieldGet(this, _Simulation_particles_handler, "f"));
     }
-    // Setters & Getters
-    add_observer(event, callback) {
-        __classPrivateFieldGet(this, _Simulation_observers, "f").get(event).add(callback);
-    }
-    remove_observer(event, callback) {
-        __classPrivateFieldGet(this, _Simulation_observers, "f").get(event).delete(callback);
-    }
-    notify_observers(...events) {
-        events.forEach(event => {
-            __classPrivateFieldGet(this, _Simulation_observers, "f").get(event).forEach(callback => callback());
-        });
+    setupParticleHandlerObservers(particles_handler) {
+        const obs = particles_handler.getObservers();
     }
     setPreset(preset) {
         const current_properties = {
@@ -67,25 +55,24 @@ class Simulation {
         if (preset.container) {
             console.log('update_container');
             __classPrivateFieldSet(this, _Simulation_container, deepmergeCustom(current_properties.container, preset_clone.container), "f");
-            this.notify_observers(SimEvent.Update_Container);
+            __classPrivateFieldGet(this, _Simulation_observers, "f").notify(SimEvent.Update_Container, undefined);
         }
         if (preset.environment) {
             console.log('update_environment');
             __classPrivateFieldSet(this, _Simulation_environment, deepmergeCustom(current_properties.environment, preset_clone.environment), "f");
-            this.notify_observers(SimEvent.Update_Environment);
+            __classPrivateFieldGet(this, _Simulation_observers, "f").notify(SimEvent.Update_Environment, undefined);
         }
         if (preset.config) {
             console.log('update_config');
             __classPrivateFieldSet(this, _Simulation_config, deepmergeCustom(current_properties.config, preset_clone.config), "f");
-            this.notify_observers(SimEvent.Update_Config);
+            __classPrivateFieldGet(this, _Simulation_observers, "f").notify(SimEvent.Update_Config, undefined);
         }
         if (preset.particle_groups) {
             console.log('update_particle_groups (SimEvent)');
             __classPrivateFieldGet(this, _Simulation_particles_handler, "f").overwriteGroups(preset.particle_groups);
-            this.notify_observers(SimEvent.Update_Particle_Groups);
         }
         if (preset)
-            this.notify_observers(SimEvent.Update);
+            __classPrivateFieldGet(this, _Simulation_observers, "f").notify(SimEvent.Update, undefined);
         console.log('update');
     }
     getContainer() {
@@ -99,6 +86,9 @@ class Simulation {
     }
     getParticlesHandler() {
         return __classPrivateFieldGet(this, _Simulation_particles_handler, "f");
+    }
+    getObservers() {
+        return __classPrivateFieldGet(this, _Simulation_observers, "f");
     }
 }
 _Simulation_container = new WeakMap(), _Simulation_environment = new WeakMap(), _Simulation_config = new WeakMap(), _Simulation_particles_handler = new WeakMap(), _Simulation_observers = new WeakMap();

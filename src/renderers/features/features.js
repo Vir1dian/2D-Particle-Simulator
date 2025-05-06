@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _UIControlRenderer_simulation, _EnvironmentPanelRenderer_simulation, _EnvironmentPanelRenderer_preset_handler, _EnvironmentPanelRenderer_environment_handler, _ParticlePanelRenderer_particles_handler, _ParticlePanelRenderer_container, _ParticlePanelRenderer_add_particles_dialog, _ParticlePanelRenderer_create_group_dialog, _ParticlePanelRenderer_group_list;
+var _UIControlRenderer_simulation, _EnvironmentPanelRenderer_preset_handler, _EnvironmentPanelRenderer_environment_handler, _ParticlePanelRenderer_particles_handler, _ParticlePanelRenderer_container, _ParticlePanelRenderer_add_particles_dialog, _ParticlePanelRenderer_create_group_dialog, _ParticlePanelRenderer_group_list;
 // UI Config Renderers -- May implement a separate UIHandler class from Simulation
 class UIControlRenderer extends Renderer {
     // may create a UIConfig class soon
@@ -30,11 +30,9 @@ class EnvironmentPanelRenderer extends Renderer {
     constructor(simulation) {
         const environment_panel = document.createElement('article');
         super(environment_panel, 'control_item', 'control_simsetup');
-        _EnvironmentPanelRenderer_simulation.set(this, void 0);
         _EnvironmentPanelRenderer_preset_handler.set(this, void 0);
         _EnvironmentPanelRenderer_environment_handler.set(this, void 0);
         // Stored Data
-        __classPrivateFieldSet(this, _EnvironmentPanelRenderer_simulation, simulation, "f");
         __classPrivateFieldSet(this, _EnvironmentPanelRenderer_preset_handler, new PresetInputRenderer(simulation), "f");
         __classPrivateFieldSet(this, _EnvironmentPanelRenderer_environment_handler, new EnvironmentSetupRenderer(simulation), "f");
         // HTML Content
@@ -50,7 +48,7 @@ class EnvironmentPanelRenderer extends Renderer {
         super.remove();
     }
 }
-_EnvironmentPanelRenderer_simulation = new WeakMap(), _EnvironmentPanelRenderer_preset_handler = new WeakMap(), _EnvironmentPanelRenderer_environment_handler = new WeakMap();
+_EnvironmentPanelRenderer_preset_handler = new WeakMap(), _EnvironmentPanelRenderer_environment_handler = new WeakMap();
 // Particle Interface Renderers
 /**
  * Helper class for SimulationRenderer

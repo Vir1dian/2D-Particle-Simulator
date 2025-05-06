@@ -123,8 +123,6 @@ class Particle {
       hasCollided = true;
     }
 
-    this.#observers.notify(ParticleEvent.Move, undefined);
-
     return hasCollided;
   }
 

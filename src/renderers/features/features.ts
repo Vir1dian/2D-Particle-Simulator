@@ -15,7 +15,6 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
 }
 
 class EnvironmentPanelRenderer extends Renderer {
-  #simulation: Simulation;
   #preset_handler: PresetInputRenderer;
   #environment_handler: EnvironmentSetupRenderer;
   constructor(simulation: Simulation) {
@@ -23,7 +22,6 @@ class EnvironmentPanelRenderer extends Renderer {
     super(environment_panel, 'control_item', 'control_simsetup');
 
     // Stored Data
-    this.#simulation = simulation;
     this.#preset_handler = new PresetInputRenderer(simulation);
     this.#environment_handler = new EnvironmentSetupRenderer(simulation);
 

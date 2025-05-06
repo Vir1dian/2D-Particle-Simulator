@@ -2,8 +2,14 @@ enum SimEvent {
   Update,
   Update_Container,
   Update_Environment,
-  Update_Config,
-  Update_Particle_Groups
+  Update_Config
+};
+
+type SimEventPayloadMap = {
+  [SimEvent.Update]: void | undefined;
+  [SimEvent.Update_Container]: void | undefined;
+  [SimEvent.Update_Environment]: void | undefined;
+  [SimEvent.Update_Config]: void | undefined;
 };
 
 // Update SimEvent and #observers here to use the ObserverHandler class
@@ -18,7 +24,7 @@ class Simulation {
   #environment: SimEnvironment;
   #config: SimConfig;
   #particles_handler: ParticlesHandler;
-  #observers: Map<SimEvent, Set<() => void>>;  // using a map with a set to avoid duplicate callbacks for an event type
+  #observers: ObserverHandler<typeof SimEvent, SimEventPayloadMap>
 
   constructor(preset: SimPreset = {}) {
     const preset_clone: SimPreset = structuredCloneCustom(preset);  
@@ -28,23 +34,14 @@ class Simulation {
     this.#environment = final_preset.environment as SimEnvironment;
     this.#config = final_preset.config as SimConfig;
     this.#particles_handler = new ParticlesHandler(final_preset.particle_groups);
-    this.#observers = new Map();
-    Object.keys(SimEvent).forEach((_, event) => {
-      this.#observers.set(event, new Set());
-    });
+    this.#observers = new ObserverHandler(SimEvent);
+
+    this.setupParticleHandlerObservers(this.#particles_handler);
   }
-  // Setters & Getters
-  add_observer(event: SimEvent, callback: () => void): void {
-    this.#observers.get(event)!.add(callback);
+  private setupParticleHandlerObservers(particles_handler: ParticlesHandler): void {
+    const obs = particles_handler.getObservers();
   }
-  remove_observer(event: SimEvent, callback: () => void): void {
-    this.#observers.get(event)!.delete(callback);
-  }
-  private notify_observers(...events: SimEvent[]): void {
-    events.forEach(event => {
-      this.#observers.get(event)!.forEach(callback => callback());
-    });
-  }
+
   setPreset(preset: SimPreset): void {  
     const current_properties: SimPreset = {
       container: this.#container,
@@ -57,26 +54,25 @@ class Simulation {
     if (preset.container) {
       console.log('update_container');
       this.#container = deepmergeCustom(current_properties.container!, preset_clone.container!)
-      this.notify_observers(SimEvent.Update_Container);
+      this.#observers.notify(SimEvent.Update_Container, undefined);
     }
     if (preset.environment) {
       console.log('update_environment');
       this.#environment = deepmergeCustom(current_properties.environment!, preset_clone.environment!)
-      this.notify_observers(SimEvent.Update_Environment);
+      this.#observers.notify(SimEvent.Update_Environment, undefined);
     }
     if (preset.config) {
       console.log('update_config');
       this.#config = deepmergeCustom(current_properties.config!, preset_clone.config!)
-      this.notify_observers(SimEvent.Update_Config);
+      this.#observers.notify(SimEvent.Update_Config, undefined);
     }
     
     if (preset.particle_groups) {
       console.log('update_particle_groups (SimEvent)')
       this.#particles_handler.overwriteGroups(preset.particle_groups);
-      this.notify_observers(SimEvent.Update_Particle_Groups);
     }
 
-    if (preset) this.notify_observers(SimEvent.Update);
+    if (preset) this.#observers.notify(SimEvent.Update, undefined);
     console.log('update');
   }
 
@@ -91,6 +87,9 @@ class Simulation {
   }
   getParticlesHandler(): ParticlesHandler {
     return this.#particles_handler;
+  }
+  getObservers(): ObserverHandler<typeof SimEvent, SimEventPayloadMap> {
+    return this.#observers;
   }
 }
 

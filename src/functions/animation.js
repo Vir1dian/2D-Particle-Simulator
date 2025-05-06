@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _AnimationControllerRenderer_controller, _AnimationControllerRenderer_timer_element, _AnimationControllerRenderer_run_button, _AnimationControllerRenderer_pause_button, _AnimationControllerRenderer_stop_button, _AnimationController_simulation, _AnimationController_container, _AnimationController_environment, _AnimationController_particles, _AnimationController_state, _AnimationController_time_elapsed, _AnimationController_frame_id, _AnimationController_time_previous, _AnimationController_time_paused, _AnimationController_observers;
+var _AnimationControllerRenderer_controller, _AnimationControllerRenderer_timer_element, _AnimationControllerRenderer_run_button, _AnimationControllerRenderer_pause_button, _AnimationControllerRenderer_stop_button, _AnimationController_container, _AnimationController_environment, _AnimationController_config, _AnimationController_particle_list, _AnimationController_state, _AnimationController_time_elapsed, _AnimationController_frame_id, _AnimationController_time_previous, _AnimationController_time_paused, _AnimationController_observers;
 class AnimationControllerRenderer extends Renderer {
     constructor(controller) {
         const wrapper = document.createElement('div');
@@ -121,27 +121,83 @@ var AnimationControllerState;
 var AnimationControllerEvent;
 (function (AnimationControllerEvent) {
     AnimationControllerEvent[AnimationControllerEvent["Update"] = 0] = "Update";
+    AnimationControllerEvent[AnimationControllerEvent["Add_Particle"] = 1] = "Add_Particle";
+    AnimationControllerEvent[AnimationControllerEvent["Delete_Particle"] = 2] = "Delete_Particle";
+    AnimationControllerEvent[AnimationControllerEvent["Overwrite_Groups"] = 3] = "Overwrite_Groups";
 })(AnimationControllerEvent || (AnimationControllerEvent = {}));
 class AnimationController {
     constructor(simulation) {
-        _AnimationController_simulation.set(this, void 0);
         _AnimationController_container.set(this, void 0);
         _AnimationController_environment.set(this, void 0);
-        _AnimationController_particles.set(this, void 0);
+        _AnimationController_config.set(this, void 0);
+        _AnimationController_particle_list.set(this, void 0);
         _AnimationController_state.set(this, void 0);
         _AnimationController_time_elapsed.set(this, 0); // in total number of seconds
         _AnimationController_frame_id.set(this, void 0);
         _AnimationController_time_previous.set(this, 0);
         _AnimationController_time_paused.set(this, 0);
         _AnimationController_observers.set(this, void 0); // for the timer renderer
-        __classPrivateFieldSet(this, _AnimationController_simulation, simulation, "f");
-        __classPrivateFieldSet(this, _AnimationController_container, simulation.getContainer(), "f");
-        __classPrivateFieldSet(this, _AnimationController_environment, simulation.getEnvironment(), "f");
-        __classPrivateFieldSet(this, _AnimationController_particles, simulation.getParticlesHandler().getAllParticles(), "f");
+        __classPrivateFieldSet(this, _AnimationController_container, structuredCloneCustom(simulation.getContainer()), "f");
+        __classPrivateFieldSet(this, _AnimationController_environment, structuredCloneCustom(simulation.getEnvironment()), "f");
+        __classPrivateFieldSet(this, _AnimationController_config, structuredCloneCustom(simulation.getConfig()), "f");
+        __classPrivateFieldSet(this, _AnimationController_particle_list, simulation.getParticlesHandler().getAllParticles(), "f");
         __classPrivateFieldSet(this, _AnimationController_state, AnimationControllerState.Stopped, "f");
         __classPrivateFieldSet(this, _AnimationController_frame_id, performance.now(), "f");
         this.step = this.step.bind(this);
         __classPrivateFieldSet(this, _AnimationController_observers, new ObserverHandler(AnimationControllerEvent), "f");
+        this.setupSimObservers(simulation);
+        this.setupParticleHandlerObservers(simulation.getParticlesHandler());
+    }
+    setupSimObservers(simulation) {
+        const sim_obs = simulation.getObservers();
+        sim_obs.add(SimEvent.Update_Container, () => {
+            __classPrivateFieldSet(this, _AnimationController_container, structuredCloneCustom(simulation.getContainer()), "f");
+        });
+        sim_obs.add(SimEvent.Update_Environment, () => {
+            __classPrivateFieldSet(this, _AnimationController_environment, structuredCloneCustom(simulation.getEnvironment()), "f");
+        });
+        sim_obs.add(SimEvent.Update_Config, () => {
+            __classPrivateFieldSet(this, _AnimationController_config, structuredCloneCustom(simulation.getConfig()), "f");
+        });
+    }
+    setupParticleHandlerObservers(particles_handler) {
+        particles_handler.getObservers().add(ParticleHandlerEvent.Overwrite_Groups, () => {
+            this.overwriteParticles(particles_handler);
+        });
+        particles_handler.getGroups().forEach((group) => {
+            this.setupGroupObservers(group);
+        });
+    }
+    setupGroupObservers(group) {
+        // AnimationController should only care about events where particles are created or 
+        // deleted to include in its animation loop, which are all in ParticleGroup
+        const group_obs = group.getObservers();
+        const this_obs = __classPrivateFieldGet(this, _AnimationController_observers, "f");
+        group_obs.add(ParticleGroupEvent.Add_Particle, (payload) => {
+            this.addToParticlesList(payload.particle);
+            this_obs.notify(AnimationControllerEvent.Add_Particle, payload);
+        });
+        group_obs.add(ParticleGroupEvent.Delete_Particle, (payload) => {
+            this.removeFromParticlesList(payload.particle);
+            this_obs.notify(AnimationControllerEvent.Delete_Particle, payload);
+        });
+    }
+    overwriteParticles(particles_handler) {
+        // Assume that the previous groups have already been wiped from particles_handler
+        particles_handler.getGroups().forEach((group) => {
+            this.setupGroupObservers(group);
+        });
+        __classPrivateFieldGet(this, _AnimationController_particle_list, "f").length = 0;
+        __classPrivateFieldSet(this, _AnimationController_particle_list, particles_handler.getAllParticles(), "f");
+    }
+    addToParticlesList(particle) {
+        __classPrivateFieldGet(this, _AnimationController_particle_list, "f").push(particle);
+    }
+    removeFromParticlesList(particle) {
+        const index = __classPrivateFieldGet(this, _AnimationController_particle_list, "f").findIndex(p => p === particle);
+        if (index === -1)
+            throw new Error("Particle not found in AnimationController's particle list.");
+        __classPrivateFieldGet(this, _AnimationController_particle_list, "f").splice(index, 1);
     }
     step(timestamp) {
         if (__classPrivateFieldGet(this, _AnimationController_time_previous, "f") === 0)
@@ -151,13 +207,13 @@ class AnimationController {
         __classPrivateFieldSet(this, _AnimationController_time_elapsed, __classPrivateFieldGet(this, _AnimationController_time_elapsed, "f") + dt, "f");
         __classPrivateFieldGet(this, _AnimationController_observers, "f").notify(AnimationControllerEvent.Update, undefined);
         // Collision
-        __classPrivateFieldGet(this, _AnimationController_particles, "f").forEach((particle) => {
+        __classPrivateFieldGet(this, _AnimationController_particle_list, "f").forEach((particle) => {
             particle.move(dt, __classPrivateFieldGet(this, _AnimationController_time_elapsed, "f"));
             if (particle.collideContainer(__classPrivateFieldGet(this, _AnimationController_container, "f")) && particle.enable_path_tracing) {
                 // TODO, path tracing not as urgent right now
             }
             ;
-            __classPrivateFieldGet(this, _AnimationController_particles, "f").forEach((other_particle) => {
+            __classPrivateFieldGet(this, _AnimationController_particle_list, "f").forEach((other_particle) => {
                 if (other_particle !== particle) {
                     if (particle.collideParticle(other_particle, __classPrivateFieldGet(this, _AnimationController_environment, "f").statics.elasticity)) {
                         if (particle.enable_path_tracing) {
@@ -183,7 +239,7 @@ class AnimationController {
     }
     run() {
         // ignore if simulation has no particles
-        if (!__classPrivateFieldGet(this, _AnimationController_particles, "f").length || __classPrivateFieldGet(this, _AnimationController_state, "f") === AnimationControllerState.Running)
+        if (!__classPrivateFieldGet(this, _AnimationController_particle_list, "f").length || __classPrivateFieldGet(this, _AnimationController_state, "f") === AnimationControllerState.Running)
             return;
         if (__classPrivateFieldGet(this, _AnimationController_time_paused, "f")) {
             const pause_duration = (performance.now() - __classPrivateFieldGet(this, _AnimationController_time_paused, "f")) / 1000;
@@ -224,4 +280,4 @@ class AnimationController {
         return __classPrivateFieldGet(this, _AnimationController_observers, "f");
     }
 }
-_AnimationController_simulation = new WeakMap(), _AnimationController_container = new WeakMap(), _AnimationController_environment = new WeakMap(), _AnimationController_particles = new WeakMap(), _AnimationController_state = new WeakMap(), _AnimationController_time_elapsed = new WeakMap(), _AnimationController_frame_id = new WeakMap(), _AnimationController_time_previous = new WeakMap(), _AnimationController_time_paused = new WeakMap(), _AnimationController_observers = new WeakMap();
+_AnimationController_container = new WeakMap(), _AnimationController_environment = new WeakMap(), _AnimationController_config = new WeakMap(), _AnimationController_particle_list = new WeakMap(), _AnimationController_state = new WeakMap(), _AnimationController_time_elapsed = new WeakMap(), _AnimationController_frame_id = new WeakMap(), _AnimationController_time_previous = new WeakMap(), _AnimationController_time_paused = new WeakMap(), _AnimationController_observers = new WeakMap();

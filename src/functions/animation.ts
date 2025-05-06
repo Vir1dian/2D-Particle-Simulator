@@ -112,15 +112,24 @@ enum AnimationControllerState {
 }
 
 enum AnimationControllerEvent {
-  Update
+  Update,
+  Add_Particle,
+  Delete_Particle,
+  Overwrite_Groups
+}
+
+type AnimationControllerEventPayloadMap = {
+  [AnimationControllerEvent.Update]: void | undefined;
+  [AnimationControllerEvent.Add_Particle]: { particle: Particle };
+  [AnimationControllerEvent.Delete_Particle]: { particle: Particle };
+  [AnimationControllerEvent.Overwrite_Groups]: void | undefined;
 }
 
 class AnimationController {
-  #simulation: Simulation;
-
   #container: BoxSpace;
   #environment: SimEnvironment;
-  #particles: Particle[];
+  #config: SimConfig;
+  #particle_list: Particle[];
   #state: AnimationControllerState;
   #time_elapsed: number = 0;  // in total number of seconds
 
@@ -129,14 +138,13 @@ class AnimationController {
   #time_previous: number = 0;
   #time_paused: number = 0;
 
-  #observers: ObserverHandler<typeof AnimationControllerEvent, {[AnimationControllerEvent.Update]: void | undefined}>;  // for the timer renderer
+  #observers: ObserverHandler<typeof AnimationControllerEvent, AnimationControllerEventPayloadMap>;  // for the timer renderer
 
   constructor(simulation: Simulation) {
-
-    this.#simulation = simulation;
-    this.#container = simulation.getContainer();
-    this.#environment = simulation.getEnvironment();
-    this.#particles = simulation.getParticlesHandler().getAllParticles();
+    this.#container = structuredCloneCustom(simulation.getContainer());
+    this.#environment = structuredCloneCustom(simulation.getEnvironment());
+    this.#config = structuredCloneCustom(simulation.getConfig());
+    this.#particle_list = simulation.getParticlesHandler().getAllParticles();
     this.#state = AnimationControllerState.Stopped;
 
     this.#frame_id = performance.now();
@@ -144,7 +152,70 @@ class AnimationController {
     this.step = this.step.bind(this);
 
     this.#observers = new ObserverHandler(AnimationControllerEvent);
+
+    this.setupSimObservers(simulation);
+    this.setupParticleHandlerObservers(simulation.getParticlesHandler());
   }
+  private setupSimObservers(simulation: Simulation): void {
+    const sim_obs = simulation.getObservers();
+    sim_obs.add(SimEvent.Update_Container, () => {
+      this.#container = structuredCloneCustom(simulation.getContainer());
+    });
+    sim_obs.add(SimEvent.Update_Environment, () => {
+      this.#environment = structuredCloneCustom(simulation.getEnvironment());
+    });
+    sim_obs.add(SimEvent.Update_Config, () => {
+      this.#config = structuredCloneCustom(simulation.getConfig());
+    });
+  }
+  private setupParticleHandlerObservers(particles_handler: ParticlesHandler): void {
+    particles_handler.getObservers().add(
+      ParticleHandlerEvent.Overwrite_Groups, 
+      () => {
+        this.overwriteParticles(particles_handler)
+      }
+    );
+    particles_handler.getGroups().forEach((group) => {
+      this.setupGroupObservers(group);
+    })
+  }
+  private setupGroupObservers(group: ParticleGroup): void {  
+    // AnimationController should only care about events where particles are created or 
+    // deleted to include in its animation loop, which are all in ParticleGroup
+    const group_obs = group.getObservers();
+    const this_obs = this.#observers;
+    group_obs.add(
+      ParticleGroupEvent.Add_Particle, 
+      (payload) => {
+        this.addToParticlesList(payload.particle);
+        this_obs.notify(AnimationControllerEvent.Add_Particle, payload);
+      }
+    );
+    group_obs.add(
+      ParticleGroupEvent.Delete_Particle, 
+      (payload) => {
+        this.removeFromParticlesList(payload.particle);
+        this_obs.notify(AnimationControllerEvent.Delete_Particle, payload);
+      }
+    );
+  }
+  private overwriteParticles(particles_handler: ParticlesHandler): void {
+    // Assume that the previous groups have already been wiped from particles_handler
+    particles_handler.getGroups().forEach((group) => {
+      this.setupGroupObservers(group);
+    })
+    this.#particle_list.length = 0;
+    this.#particle_list = particles_handler.getAllParticles();
+  }
+  private addToParticlesList(particle: Particle): void {
+    this.#particle_list.push(particle);
+  }
+  private removeFromParticlesList(particle: Particle): void {
+    const index = this.#particle_list.findIndex(p => p === particle);
+    if (index === -1) throw new Error("Particle not found in AnimationController's particle list.");
+    this.#particle_list.splice(index, 1);
+  }
+
   private step(timestamp: DOMHighResTimeStamp): void {
     if (this.#time_previous === 0) this.#time_previous = timestamp;
     const dt = Math.min((timestamp - this.#time_previous) / 1000, 1 / 60);
@@ -154,13 +225,13 @@ class AnimationController {
     this.#observers.notify(AnimationControllerEvent.Update, undefined);
   
     // Collision
-    this.#particles.forEach((particle) => {  
+    this.#particle_list.forEach((particle) => {  
       particle.move(dt, this.#time_elapsed);
       if (particle.collideContainer(this.#container) && particle.enable_path_tracing) {
         // TODO, path tracing not as urgent right now
       };
   
-      this.#particles.forEach((other_particle) => {
+      this.#particle_list.forEach((other_particle) => {
         if (other_particle !== particle) {
           if (particle.collideParticle(other_particle, this.#environment.statics!.elasticity)) {
             if (particle.enable_path_tracing) {
@@ -188,7 +259,7 @@ class AnimationController {
 
   run(): void {
     // ignore if simulation has no particles
-    if (!this.#particles.length || this.#state === AnimationControllerState.Running) return;
+    if (!this.#particle_list.length || this.#state === AnimationControllerState.Running) return;
     if (this.#time_paused) {
       const pause_duration = (performance.now() - this.#time_paused) / 1000; 
       this.#time_previous += pause_duration * 1000; 
@@ -220,15 +291,13 @@ class AnimationController {
     // TODO: reset simulation to the preset at the beginning
   }
 
-  
-
   getState(): AnimationControllerState {
     return this.#state;
   }
   getTimeElapsed(): number {
     return this.#time_elapsed;
   }
-  getObservers(): ObserverHandler<typeof AnimationControllerEvent, {[AnimationControllerEvent.Update]: void | undefined}> {
+  getObservers(): ObserverHandler<typeof AnimationControllerEvent, AnimationControllerEventPayloadMap> {
     return this.#observers;
   }
 }
