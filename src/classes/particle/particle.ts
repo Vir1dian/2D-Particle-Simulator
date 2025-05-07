@@ -173,10 +173,10 @@ class Particle {
    * @param {number} t The total time elapsed, used for oscillation only (WIP)
    * @param {'euler' | 'rungekutta'} method The calculation used, euler by default
    */
-  move(dt: number, t: number, method: 'euler' | 'rungekutta' = 'euler') {
+  move(environment: SimEnvironment, dt: number, t: number, method: 'euler' | 'rungekutta' = 'euler') {
     // dv/dt = g - (b/m)*v
-    const gravity = simulation_settings.environment.acceleration;  // Currently a global constant, will replace with inputs soon
-    const dragOverMass = simulation_settings.environment.drag / this.mass;
+    const gravity = environment.statics!.gravity!; 
+    const dragOverMass = environment.statics!.drag! / this.mass;
     if (method === 'euler') {
       const drag_force = this.velocity.scalarMultiply(-dragOverMass)
       const new_acceleration = gravity.add(drag_force);

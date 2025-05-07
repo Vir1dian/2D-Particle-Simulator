@@ -242,7 +242,7 @@ class AnimationController {
   
     // Collision
     this.#particle_list.forEach((particle) => {  
-      particle.move(dt, this.#time_elapsed);
+      particle.move(this.#environment,dt, this.#time_elapsed);
       if (particle.collideContainer(this.#container) && particle.enable_path_tracing) {
         // TODO, path tracing not as urgent right now
       };

@@ -218,7 +218,7 @@ class AnimationController {
         __classPrivateFieldGet(this, _AnimationController_observers, "f").notify(AnimationControllerEvent.Update, undefined);
         // Collision
         __classPrivateFieldGet(this, _AnimationController_particle_list, "f").forEach((particle) => {
-            particle.move(dt, __classPrivateFieldGet(this, _AnimationController_time_elapsed, "f"));
+            particle.move(__classPrivateFieldGet(this, _AnimationController_environment, "f"), dt, __classPrivateFieldGet(this, _AnimationController_time_elapsed, "f"));
             if (particle.collideContainer(__classPrivateFieldGet(this, _AnimationController_container, "f")) && particle.enable_path_tracing) {
                 // TODO, path tracing not as urgent right now
             }
