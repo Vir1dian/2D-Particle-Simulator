@@ -169,15 +169,28 @@ class AnimationController {
     });
   }
   private setupParticleHandlerObservers(particles_handler: ParticlesHandler): void {
-    particles_handler.getObservers().add(
+    const handler_obs = particles_handler.getObservers();
+    handler_obs.add(
       ParticleHandlerEvent.Overwrite_Groups, 
       () => {
         this.overwriteParticles(particles_handler)
       }
     );
+    handler_obs.add(
+      ParticleHandlerEvent.Add_Group,
+      (payload) => {
+        this.setupGroupObservers(payload.group);
+      }
+    );
+    handler_obs.add(
+      ParticleHandlerEvent.Delete_Group,
+      (payload) => {
+        payload.group.clear();
+      }
+    );
     particles_handler.getGroups().forEach((group) => {
       this.setupGroupObservers(group);
-    })
+    });
   }
   private setupGroupObservers(group: ParticleGroup): void {  
     // AnimationController should only care about events where particles are created or 
@@ -206,14 +219,17 @@ class AnimationController {
     })
     this.#particle_list.length = 0;
     this.#particle_list = particles_handler.getAllParticles();
+    this.step = this.step.bind(this);
   }
   private addToParticlesList(particle: Particle): void {
     this.#particle_list.push(particle);
+    this.step = this.step.bind(this);
   }
   private removeFromParticlesList(particle: Particle): void {
     const index = this.#particle_list.findIndex(p => p === particle);
     if (index === -1) throw new Error("Particle not found in AnimationController's particle list.");
     this.#particle_list.splice(index, 1);
+    this.step = this.step.bind(this);
   }
 
   private step(timestamp: DOMHighResTimeStamp): void {

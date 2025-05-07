@@ -161,8 +161,15 @@ class AnimationController {
         });
     }
     setupParticleHandlerObservers(particles_handler) {
-        particles_handler.getObservers().add(ParticleHandlerEvent.Overwrite_Groups, () => {
+        const handler_obs = particles_handler.getObservers();
+        handler_obs.add(ParticleHandlerEvent.Overwrite_Groups, () => {
             this.overwriteParticles(particles_handler);
+        });
+        handler_obs.add(ParticleHandlerEvent.Add_Group, (payload) => {
+            this.setupGroupObservers(payload.group);
+        });
+        handler_obs.add(ParticleHandlerEvent.Delete_Group, (payload) => {
+            payload.group.clear();
         });
         particles_handler.getGroups().forEach((group) => {
             this.setupGroupObservers(group);
@@ -189,15 +196,18 @@ class AnimationController {
         });
         __classPrivateFieldGet(this, _AnimationController_particle_list, "f").length = 0;
         __classPrivateFieldSet(this, _AnimationController_particle_list, particles_handler.getAllParticles(), "f");
+        this.step = this.step.bind(this);
     }
     addToParticlesList(particle) {
         __classPrivateFieldGet(this, _AnimationController_particle_list, "f").push(particle);
+        this.step = this.step.bind(this);
     }
     removeFromParticlesList(particle) {
         const index = __classPrivateFieldGet(this, _AnimationController_particle_list, "f").findIndex(p => p === particle);
         if (index === -1)
             throw new Error("Particle not found in AnimationController's particle list.");
         __classPrivateFieldGet(this, _AnimationController_particle_list, "f").splice(index, 1);
+        this.step = this.step.bind(this);
     }
     step(timestamp) {
         if (__classPrivateFieldGet(this, _AnimationController_time_previous, "f") === 0)
