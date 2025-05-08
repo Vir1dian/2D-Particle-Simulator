@@ -56,21 +56,20 @@ function openControlItem(item) {
 const setupElementRenderers = {
     ui: {},
     simulation: {
-        loadAvailablePresets() {
-            const preset_datalist_element = document.getElementById("simsetup_presets");
-            Object.keys(presets).forEach((preset_name) => {
-                const option_element = document.createElement('option');
-                option_element.value = preset_name;
-                preset_datalist_element.appendChild(option_element);
-            });
-        },
+        loadContainerElement(container) {
+            const wrapper = document.querySelector('.simulation_wrapper');
+            const container_element = document.createElement('div');
+            container_element.classList.add('container_element');
+            container_element.style.width = `${container.x_max - container.x_min}px`;
+            container_element.style.height = `${container.y_max - container.y_min}px`;
+            wrapper === null || wrapper === void 0 ? void 0 : wrapper.appendChild(container_element);
+        }
     },
     particle: {}
 };
 // Sets the initial state of all elements
 function loadAll() {
-    loadContainerElement(container);
-    simulationSettingsElementFunctionsOld.loadPreset('empty');
+    setupElementRenderers.simulation.loadContainerElement(container);
     const sim = new Simulation(TEMPORARY_PRESETS["sandbox"]);
     const anim = new AnimationController(sim);
     const anim_element = new AnimationControllerRenderer(anim);

@@ -71,15 +71,15 @@ const setupElementRenderers = {
 
   },
   simulation : {
-    loadAvailablePresets() {  // Old
-      const preset_datalist_element : HTMLDataListElement = document.getElementById("simsetup_presets") as HTMLDataListElement;
-      Object.keys(presets).forEach((preset_name: string) => {
-        const option_element : HTMLOptionElement = document.createElement('option');
-        option_element.value = preset_name;
-        preset_datalist_element.appendChild(option_element);
-      });
-    },
-
+    loadContainerElement(container: BoxSpace) {
+      const wrapper : HTMLElement | null = document.querySelector('.simulation_wrapper');
+    
+      const container_element : HTMLElement = document.createElement('div');
+      container_element.classList.add('container_element');
+      container_element.style.width = `${container.x_max - container.x_min}px`;
+      container_element.style.height = `${container.y_max - container.y_min}px`;
+      wrapper?.appendChild(container_element);
+    }
   },
   particle : {
     
@@ -88,8 +88,7 @@ const setupElementRenderers = {
 
 // Sets the initial state of all elements
 function loadAll() {
-  loadContainerElement(container);
-  simulationSettingsElementFunctionsOld.loadPreset('empty');
+  setupElementRenderers.simulation.loadContainerElement(container);
 
   const sim = new Simulation(TEMPORARY_PRESETS["sandbox"]);
   const anim = new AnimationController(sim);
