@@ -44,9 +44,9 @@ class ParticlesHandler {
     deleteGroup(group) {
         if (!__classPrivateFieldGet(this, _ParticlesHandler_groups, "f").delete(group.getGrouping().group_id))
             throw new Error("Group not found");
-        group.clear();
         __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Update, undefined);
-        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Delete_Group, { group: group });
+        __classPrivateFieldGet(this, _ParticlesHandler_observers, "f").notify(ParticleHandlerEvent.Delete_Group, { group: group }); // call delete related observers first
+        group.clear(); // then remove all observers
     }
     overwriteGroups(preset_groups) {
         for (const [id, group] of __classPrivateFieldGet(this, _ParticlesHandler_groups, "f"))

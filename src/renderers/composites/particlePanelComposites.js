@@ -34,7 +34,7 @@ class AddParticleMenuRenderer extends Renderer {
         _AddParticleMenuRenderer_submit_button.set(this, void 0);
         // Stored Data
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_particles_handler, particles_handler, "f");
-        this.setupObservers();
+        this.setupParticleHandlerObservers();
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_input_table, this.setupInputTable(container), "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_group_selector, this.setupGroupSelector(), "f"); // must be setup after input_table due to the disableFields callback
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_amount_input, this.setupAmountInput(), "f");
@@ -63,11 +63,17 @@ class AddParticleMenuRenderer extends Renderer {
         __classPrivateFieldGet(this, _AddParticleMenuRenderer_submit_button, "f").setParent(submit_wrapper);
         menu_wrapper.appendChild(submit_wrapper);
     }
-    setupObservers() {
-        const obs = __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getObservers();
-        obs.add(ParticleHandlerEvent.Add_Group, (payload) => { this.refresh(ParticleHandlerEvent.Add_Group, payload.group); });
-        obs.add(ParticleHandlerEvent.Delete_Group, (payload) => { this.refresh(ParticleHandlerEvent.Delete_Group, payload.group); });
-        obs.add(ParticleHandlerEvent.Overwrite_Groups, () => { this.refresh(ParticleHandlerEvent.Overwrite_Groups); });
+    setupParticleHandlerObservers() {
+        const handler_obs = __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getObservers();
+        handler_obs.add(ParticleHandlerEvent.Add_Group, (payload) => {
+            this.refresh(ParticleHandlerEvent.Add_Group, payload.group);
+        });
+        handler_obs.add(ParticleHandlerEvent.Delete_Group, (payload) => {
+            this.refresh(ParticleHandlerEvent.Delete_Group, payload.group);
+        });
+        handler_obs.add(ParticleHandlerEvent.Overwrite_Groups, () => {
+            this.refresh(ParticleHandlerEvent.Overwrite_Groups);
+        });
     }
     setupGroupSelector() {
         const selector = new SelectRenderer('menu_group_selector_add_particle', Array.from(__classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups(), ([group_id, group]) => new OptionRenderer(group_id)));
@@ -80,7 +86,7 @@ class AddParticleMenuRenderer extends Renderer {
                     return exposed_properties;
                 })(DEFAULT_GROUPING);
                 __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").setProperties(Object.assign({}, grouping), all_properties);
-                this.disableFields(group.getGrouping());
+                this.disableFields(grouping);
             }
         };
         selector.setOnchangeCallback(callback);

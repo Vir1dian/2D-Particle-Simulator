@@ -347,7 +347,7 @@ class CheckboxInputRenderer extends InputRenderer {
     }
     setValue(value) {
         this.getElement().checked = value === "true";
-        super.setValue(value);
+        // super.setValue(value);
     }
 }
 class Vector2DInputRenderer extends Renderer {

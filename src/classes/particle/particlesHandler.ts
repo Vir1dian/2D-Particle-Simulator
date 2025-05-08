@@ -40,9 +40,9 @@ class ParticlesHandler {
   deleteGroup(group: ParticleGroup): void {
     if (!this.#groups.delete(group.getGrouping().group_id)) 
       throw new Error("Group not found");
-    group.clear();
     this.#observers.notify(ParticleHandlerEvent.Update, undefined);
-    this.#observers.notify(ParticleHandlerEvent.Delete_Group, { group: group });
+    this.#observers.notify(ParticleHandlerEvent.Delete_Group, { group: group });  // call delete related observers first
+    group.clear();  // then remove all observers
   }
 
   overwriteGroups(preset_groups: Map<string, { grouping: ParticleGrouping, size: number }>): void {

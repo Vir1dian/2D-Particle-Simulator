@@ -327,7 +327,7 @@ class CheckboxInputRenderer extends InputRenderer {
   }
   setValue(value: "true" | "false"): void {
     this.getElement().checked = value === "true";
-    super.setValue(value);
+    // super.setValue(value);
   }
 }
 

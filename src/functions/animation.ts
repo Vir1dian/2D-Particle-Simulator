@@ -187,12 +187,6 @@ class AnimationController {
         this.setupGroupObservers(payload.group);
       }
     );
-    handler_obs.add(
-      ParticleHandlerEvent.Delete_Group,
-      (payload) => {
-        payload.group.clear();
-      }
-    );
     particles_handler.getGroups().forEach((group) => {
       this.setupGroupObservers(group);
     });

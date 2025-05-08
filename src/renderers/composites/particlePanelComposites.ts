@@ -12,7 +12,7 @@ class AddParticleMenuRenderer extends Renderer {
 
     // Stored Data
     this.#particles_handler = particles_handler;
-    this.setupObservers();
+    this.setupParticleHandlerObservers();
     this.#input_table = this.setupInputTable(container);
     this.#group_selector = this.setupGroupSelector();  // must be setup after input_table due to the disableFields callback
     this.#amount_input = this.setupAmountInput();
@@ -45,11 +45,26 @@ class AddParticleMenuRenderer extends Renderer {
     this.#submit_button.setParent(submit_wrapper);
     menu_wrapper.appendChild(submit_wrapper);
   }
-  private setupObservers(): void {
-    const obs = this.#particles_handler.getObservers();
-    obs.add(ParticleHandlerEvent.Add_Group, (payload) => { this.refresh(ParticleHandlerEvent.Add_Group, payload.group) });
-    obs.add(ParticleHandlerEvent.Delete_Group, (payload) => { this.refresh(ParticleHandlerEvent.Delete_Group, payload.group) });
-    obs.add(ParticleHandlerEvent.Overwrite_Groups, () => { this.refresh(ParticleHandlerEvent.Overwrite_Groups) });
+  private setupParticleHandlerObservers(): void {
+    const handler_obs = this.#particles_handler.getObservers();
+    handler_obs.add(
+      ParticleHandlerEvent.Add_Group, 
+      (payload) => { 
+        this.refresh(ParticleHandlerEvent.Add_Group, payload.group) 
+      }
+    );
+    handler_obs.add(
+      ParticleHandlerEvent.Delete_Group, 
+      (payload) => { 
+        this.refresh(ParticleHandlerEvent.Delete_Group, payload.group) 
+      }
+    );
+    handler_obs.add(
+      ParticleHandlerEvent.Overwrite_Groups, 
+      () => { 
+        this.refresh(ParticleHandlerEvent.Overwrite_Groups) 
+      }
+    );
   }
   private setupGroupSelector(): SelectRenderer {
     const selector = new SelectRenderer(
@@ -65,7 +80,7 @@ class AddParticleMenuRenderer extends Renderer {
         const grouping = group.getGrouping();
         const all_properties = (({group_id, enable_path_tracing, ...exposed_properties}) => exposed_properties)(DEFAULT_GROUPING);
         this.#input_table.setProperties({...grouping}, all_properties);
-        this.disableFields(group.getGrouping());
+        this.disableFields(grouping);
       }
     }
     selector.setOnchangeCallback(callback);
