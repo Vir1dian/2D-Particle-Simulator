@@ -88,9 +88,8 @@ const setupElementRenderers = {
 
 // Sets the initial state of all elements
 function loadAll() {
-  setupElementRenderers.simulation.loadContainerElement(container);
-
   const sim = new Simulation(TEMPORARY_PRESETS["sandbox"]);
+  setupElementRenderers.simulation.loadContainerElement(sim.getContainer());
   const anim = new AnimationController(sim);
   const anim_element = new AnimationControllerRenderer(anim);
   const environment_panel = new EnvironmentPanelRenderer(sim);

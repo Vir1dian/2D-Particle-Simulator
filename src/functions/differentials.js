@@ -116,26 +116,27 @@ const Dynamics = {
     planetary: {},
     rocketry: {}
 };
+// TODO: Refactor into classes
 const PredictParticle = {
-    noDrag(particle, t0, t) {
-        const a = simulation_settings.environment.acceleration.add(particle.acceleration);
+    noDrag(particle, environment, t0, t) {
+        const a = environment.statics.gravity;
         const new_position = new Vector2D(Kinematics.position(particle.position.x, particle.velocity.x, a.x, t, t0), Kinematics.position(particle.position.y, particle.velocity.y, a.y, t, t0));
         const new_velocity = new Vector2D(Kinematics.velocity(particle.velocity.x, a.x, t, t0), Kinematics.velocity(particle.velocity.y, a.y, t, t0));
         return { position: new_position, velocity: new_velocity };
     },
-    constantDrag(particle, t0, t) {
-        const b = simulation_settings.environment.drag;
+    constantDrag(particle, environment, t0, t) {
+        const b = environment.statics.drag;
         if (!b) {
-            return this.noDrag(particle, t0, t);
+            return this.noDrag(particle, environment, t0, t);
         }
         else if (b < 0) {
             throw new Error(`Invalid drag coefficient. b=${b}`);
         }
         const m = particle.mass;
         if (m <= 0) {
-            throw new Error(`Invalid particle mass. m=${m} particle_id=${particle.id}`);
+            throw new Error(`Invalid particle mass. m=${m} particle_id=${particle.getID()}`);
         }
-        const a = simulation_settings.environment.acceleration.add(particle.acceleration);
+        const a = environment.statics.gravity;
         const new_position = new Vector2D(Dynamics.drag.position(particle.position.x, particle.velocity.x, a.x, m, b, t, t0), Dynamics.drag.position(particle.position.y, particle.velocity.y, a.y, m, b, t, t0));
         const new_velocity = new Vector2D(Dynamics.drag.velocity(particle.velocity.x, a.x, m, b, t, t0), Dynamics.drag.velocity(particle.velocity.y, a.y, m, b, t, t0));
         return { position: new_position, velocity: new_velocity };
@@ -145,37 +146,37 @@ const PredictParticle = {
  * Returns the time of collision with a static object (i.e. container walls)
  */
 const PredictCollision = {
-    noDrag(particle, t0, cont = container) {
-        const a = simulation_settings.environment.acceleration.add(particle.acceleration);
-        const collision_left = Kinematics.time(particle.position.x, cont.x_min, particle.velocity.x, a.x, t0);
-        const collision_right = Kinematics.time(particle.position.x, cont.x_max, particle.velocity.x, a.x, t0);
-        const collision_bottom = Kinematics.time(particle.position.y, cont.y_min, particle.velocity.y, a.y, t0);
-        const collision_top = Kinematics.time(particle.position.y, cont.y_max, particle.velocity.y, a.y, t0);
+    noDrag(particle, environment, t0, container) {
+        const a = environment.statics.gravity;
+        const collision_left = Kinematics.time(particle.position.x, container.x_min, particle.velocity.x, a.x, t0);
+        const collision_right = Kinematics.time(particle.position.x, container.x_max, particle.velocity.x, a.x, t0);
+        const collision_bottom = Kinematics.time(particle.position.y, container.y_min, particle.velocity.y, a.y, t0);
+        const collision_top = Kinematics.time(particle.position.y, container.y_max, particle.velocity.y, a.y, t0);
         const collision_times = [collision_left, collision_right, collision_bottom, collision_top];
         const valid_collision_time = collision_times.filter(time => time > t0 && isFinite(time));
         if (valid_collision_time.length === 0) {
-            console.error(`No valid collision time. particle_id=${particle.id}, t0=${t0}`);
+            console.error(`No valid collision time. particle_id=${particle.getID()}, t0=${t0}`);
             return Infinity;
         }
         return Math.min(...valid_collision_time);
     },
-    constantDrag(particle, t0, cont = container) {
-        const b = simulation_settings.environment.drag;
+    constantDrag(particle, environment, t0, container) {
+        const b = environment.statics.drag;
         if (!b) {
-            return this.noDrag(particle, t0, cont);
+            return this.noDrag(particle, environment, t0, container);
         }
         else if (b < 0) {
             throw new Error(`Invalid drag coefficient. b=${b}`);
         }
         const m = particle.mass;
         if (m <= 0) {
-            throw new Error(`Invalid particle mass. m=${m} particle_id=${particle.id}`);
+            throw new Error(`Invalid particle mass. m=${m} particle_id=${particle.getID()}`);
         }
-        const a = simulation_settings.environment.acceleration.add(particle.acceleration);
-        const collision_left = Dynamics.drag.time(particle.position.x, cont.x_min, particle.velocity.x, a.x, m, b, t0);
-        const collision_right = Dynamics.drag.time(particle.position.x, cont.x_max, particle.velocity.x, a.x, m, b, t0);
-        const collision_bottom = Dynamics.drag.time(particle.position.y, cont.y_min, particle.velocity.y, a.y, m, b, t0);
-        const collision_top = Dynamics.drag.time(particle.position.y, cont.y_max, particle.velocity.y, a.y, m, b, t0);
+        const a = environment.statics.gravity;
+        const collision_left = Dynamics.drag.time(particle.position.x, container.x_min, particle.velocity.x, a.x, m, b, t0);
+        const collision_right = Dynamics.drag.time(particle.position.x, container.x_max, particle.velocity.x, a.x, m, b, t0);
+        const collision_bottom = Dynamics.drag.time(particle.position.y, container.y_min, particle.velocity.y, a.y, m, b, t0);
+        const collision_top = Dynamics.drag.time(particle.position.y, container.y_max, particle.velocity.y, a.y, m, b, t0);
         // Filter out non-valid collision times (non-positive or infinite)
         const tolerance = 0;
         const collision_times = [collision_left, collision_right, collision_bottom, collision_top];
@@ -187,7 +188,7 @@ const PredictCollision = {
         console.log(valid_collision_time);
         // If no valid collisions, return Infinity to indicate no collision
         if (valid_collision_time.length === 0) {
-            console.error(`No valid collision time. particle_id=${particle.id}, t0=${t0}`);
+            console.error(`No valid collision time. particle_id=${particle.getID()}, t0=${t0}`);
             return Infinity;
         }
         return Math.min(...valid_collision_time) + tolerance;
