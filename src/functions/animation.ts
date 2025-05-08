@@ -61,12 +61,14 @@ class AnimationControllerRenderer extends Renderer {
     const button = new ButtonRenderer(this.pause.bind(this))
     button.setLabel("pause", true);
     button.setID("control_button_pause");
+    button.disable();
     return button;
   }
   private SetupStopButton(): ButtonRenderer {
     const button = new ButtonRenderer(this.stop.bind(this))
     button.setLabel("stop", true);
     button.setID("control_button_stop");
+    button.disable();
     return button;
   }
   private FormatTime(time: number): string {
@@ -93,8 +95,9 @@ class AnimationControllerRenderer extends Renderer {
   stop(): void {
     this.#controller.stop();
     this.#run_button.disable(false);
-    this.#pause_button.disable(false);
+    this.#pause_button.disable();
     this.#stop_button.disable();
+    this.refresh();
   }
   remove(): void {
     this.#run_button.remove();
@@ -126,10 +129,11 @@ type AnimationControllerEventPayloadMap = {
 }
 
 class AnimationController {
-  #container: BoxSpace;
-  #environment: SimEnvironment;
-  #config: SimConfig;
-  #particle_list: Particle[];
+  #simulation: Simulation;
+  #container: BoxSpace;           // saved directly because of frame-by-frame calls
+  #environment: SimEnvironment;   // saved directly because of frame-by-frame calls
+  #config: SimConfig;             // saved directly because of frame-by-frame calls
+  #particle_list: Particle[];     // saved directly because of frame-by-frame calls
   #state: AnimationControllerState;
   #time_elapsed: number = 0;  // in total number of seconds
 
@@ -141,6 +145,7 @@ class AnimationController {
   #observers: ObserverHandler<typeof AnimationControllerEvent, AnimationControllerEventPayloadMap>;  // for the timer renderer
 
   constructor(simulation: Simulation) {
+    this.#simulation = simulation;
     this.#container = structuredCloneCustom(simulation.getContainer());
     this.#environment = structuredCloneCustom(simulation.getEnvironment());
     this.#config = structuredCloneCustom(simulation.getConfig());
@@ -304,7 +309,7 @@ class AnimationController {
     this.#state = AnimationControllerState.Stopped;
     this.endLoop();
 
-    // TODO: reset simulation to the preset at the beginning
+    this.#simulation.setPreset(DEFAULT_PRESET);
   }
 
   getState(): AnimationControllerState {

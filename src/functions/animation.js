@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _AnimationControllerRenderer_controller, _AnimationControllerRenderer_timer_element, _AnimationControllerRenderer_run_button, _AnimationControllerRenderer_pause_button, _AnimationControllerRenderer_stop_button, _AnimationController_container, _AnimationController_environment, _AnimationController_config, _AnimationController_particle_list, _AnimationController_state, _AnimationController_time_elapsed, _AnimationController_frame_id, _AnimationController_time_previous, _AnimationController_time_paused, _AnimationController_observers;
+var _AnimationControllerRenderer_controller, _AnimationControllerRenderer_timer_element, _AnimationControllerRenderer_run_button, _AnimationControllerRenderer_pause_button, _AnimationControllerRenderer_stop_button, _AnimationController_simulation, _AnimationController_container, _AnimationController_environment, _AnimationController_config, _AnimationController_particle_list, _AnimationController_state, _AnimationController_time_elapsed, _AnimationController_frame_id, _AnimationController_time_previous, _AnimationController_time_paused, _AnimationController_observers;
 class AnimationControllerRenderer extends Renderer {
     constructor(controller) {
         const wrapper = document.createElement('div');
@@ -68,12 +68,14 @@ class AnimationControllerRenderer extends Renderer {
         const button = new ButtonRenderer(this.pause.bind(this));
         button.setLabel("pause", true);
         button.setID("control_button_pause");
+        button.disable();
         return button;
     }
     SetupStopButton() {
         const button = new ButtonRenderer(this.stop.bind(this));
         button.setLabel("stop", true);
         button.setID("control_button_stop");
+        button.disable();
         return button;
     }
     FormatTime(time) {
@@ -100,8 +102,9 @@ class AnimationControllerRenderer extends Renderer {
     stop() {
         __classPrivateFieldGet(this, _AnimationControllerRenderer_controller, "f").stop();
         __classPrivateFieldGet(this, _AnimationControllerRenderer_run_button, "f").disable(false);
-        __classPrivateFieldGet(this, _AnimationControllerRenderer_pause_button, "f").disable(false);
+        __classPrivateFieldGet(this, _AnimationControllerRenderer_pause_button, "f").disable();
         __classPrivateFieldGet(this, _AnimationControllerRenderer_stop_button, "f").disable();
+        this.refresh();
     }
     remove() {
         __classPrivateFieldGet(this, _AnimationControllerRenderer_run_button, "f").remove();
@@ -127,16 +130,18 @@ var AnimationControllerEvent;
 })(AnimationControllerEvent || (AnimationControllerEvent = {}));
 class AnimationController {
     constructor(simulation) {
-        _AnimationController_container.set(this, void 0);
-        _AnimationController_environment.set(this, void 0);
-        _AnimationController_config.set(this, void 0);
-        _AnimationController_particle_list.set(this, void 0);
+        _AnimationController_simulation.set(this, void 0);
+        _AnimationController_container.set(this, void 0); // saved directly because of frame-by-frame calls
+        _AnimationController_environment.set(this, void 0); // saved directly because of frame-by-frame calls
+        _AnimationController_config.set(this, void 0); // saved directly because of frame-by-frame calls
+        _AnimationController_particle_list.set(this, void 0); // saved directly because of frame-by-frame calls
         _AnimationController_state.set(this, void 0);
         _AnimationController_time_elapsed.set(this, 0); // in total number of seconds
         _AnimationController_frame_id.set(this, void 0);
         _AnimationController_time_previous.set(this, 0);
         _AnimationController_time_paused.set(this, 0);
         _AnimationController_observers.set(this, void 0); // for the timer renderer
+        __classPrivateFieldSet(this, _AnimationController_simulation, simulation, "f");
         __classPrivateFieldSet(this, _AnimationController_container, structuredCloneCustom(simulation.getContainer()), "f");
         __classPrivateFieldSet(this, _AnimationController_environment, structuredCloneCustom(simulation.getEnvironment()), "f");
         __classPrivateFieldSet(this, _AnimationController_config, structuredCloneCustom(simulation.getConfig()), "f");
@@ -278,7 +283,7 @@ class AnimationController {
         __classPrivateFieldSet(this, _AnimationController_time_paused, 0, "f");
         __classPrivateFieldSet(this, _AnimationController_state, AnimationControllerState.Stopped, "f");
         this.endLoop();
-        // TODO: reset simulation to the preset at the beginning
+        __classPrivateFieldGet(this, _AnimationController_simulation, "f").setPreset(DEFAULT_PRESET);
     }
     getState() {
         return __classPrivateFieldGet(this, _AnimationController_state, "f");
@@ -290,4 +295,4 @@ class AnimationController {
         return __classPrivateFieldGet(this, _AnimationController_observers, "f");
     }
 }
-_AnimationController_container = new WeakMap(), _AnimationController_environment = new WeakMap(), _AnimationController_config = new WeakMap(), _AnimationController_particle_list = new WeakMap(), _AnimationController_state = new WeakMap(), _AnimationController_time_elapsed = new WeakMap(), _AnimationController_frame_id = new WeakMap(), _AnimationController_time_previous = new WeakMap(), _AnimationController_time_paused = new WeakMap(), _AnimationController_observers = new WeakMap();
+_AnimationController_simulation = new WeakMap(), _AnimationController_container = new WeakMap(), _AnimationController_environment = new WeakMap(), _AnimationController_config = new WeakMap(), _AnimationController_particle_list = new WeakMap(), _AnimationController_state = new WeakMap(), _AnimationController_time_elapsed = new WeakMap(), _AnimationController_frame_id = new WeakMap(), _AnimationController_time_previous = new WeakMap(), _AnimationController_time_paused = new WeakMap(), _AnimationController_observers = new WeakMap();

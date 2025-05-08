@@ -46,6 +46,10 @@ class ButtonRenderer extends Renderer {
     disable(value = true) {
         __classPrivateFieldSet(this, _ButtonRenderer_is_disabled, value, "f");
         this.getElement().disabled = value;
+        if (value)
+            this.getElement().style.cursor = 'not-allowed';
+        else
+            this.getElement().style.cursor = 'pointer';
     }
     setCallback(callback) {
         if (__classPrivateFieldGet(this, _ButtonRenderer_callback, "f") === callback)

@@ -33,6 +33,8 @@ class ButtonRenderer extends Renderer {
   disable(value: boolean = true) {
     this.#is_disabled = value;
     this.getElement().disabled = value;
+    if (value) this.getElement().style.cursor = 'not-allowed';
+    else this.getElement().style.cursor = 'pointer';
   }
   setCallback(callback: (...args: any) => void): void {
     if (this.#callback === callback) return;
