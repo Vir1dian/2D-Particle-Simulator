@@ -22,10 +22,10 @@ class AnimationControllerRenderer extends Renderer {
         _AnimationControllerRenderer_stop_button.set(this, void 0);
         // Saved Data
         __classPrivateFieldSet(this, _AnimationControllerRenderer_controller, controller, "f");
-        __classPrivateFieldSet(this, _AnimationControllerRenderer_timer_element, this.SetupTimerElement(controller.getTimeElapsed()), "f");
-        __classPrivateFieldSet(this, _AnimationControllerRenderer_run_button, this.SetupRunButton(), "f");
-        __classPrivateFieldSet(this, _AnimationControllerRenderer_pause_button, this.SetupPauseButton(), "f");
-        __classPrivateFieldSet(this, _AnimationControllerRenderer_stop_button, this.SetupStopButton(), "f");
+        __classPrivateFieldSet(this, _AnimationControllerRenderer_timer_element, this.setupTimerElement(controller.getTimeElapsed()), "f");
+        __classPrivateFieldSet(this, _AnimationControllerRenderer_run_button, this.setupRunButton(), "f");
+        __classPrivateFieldSet(this, _AnimationControllerRenderer_pause_button, this.setupPauseButton(), "f");
+        __classPrivateFieldSet(this, _AnimationControllerRenderer_stop_button, this.setupStopButton(), "f");
         this.setupObservers(controller);
         // DOM Content
         const wrapper_table = document.createElement('table');
@@ -52,40 +52,40 @@ class AnimationControllerRenderer extends Renderer {
         const obs = controller.getObservers();
         obs.add(AnimationControllerEvent.Update, () => { this.refresh(); });
     }
-    SetupTimerElement(time_elapsed) {
+    setupTimerElement(time_elapsed) {
         const timer_element = document.createElement('div');
         timer_element.id = "animation_timer";
-        timer_element.innerHTML = this.FormatTime(time_elapsed);
+        timer_element.innerHTML = this.formatTime(time_elapsed);
         return timer_element;
     }
-    SetupRunButton() {
+    setupRunButton() {
         const button = new ButtonRenderer(this.run.bind(this));
         button.setLabel("play_arrow", true);
         button.setID("control_button_run");
         return button;
     }
-    SetupPauseButton() {
+    setupPauseButton() {
         const button = new ButtonRenderer(this.pause.bind(this));
         button.setLabel("pause", true);
         button.setID("control_button_pause");
         button.disable();
         return button;
     }
-    SetupStopButton() {
+    setupStopButton() {
         const button = new ButtonRenderer(this.stop.bind(this));
         button.setLabel("stop", true);
         button.setID("control_button_stop");
         button.disable();
         return button;
     }
-    FormatTime(time) {
+    formatTime(time) {
         let hours = Math.floor(time / 3600);
         let minutes = Math.floor(time / 60) % 60;
         let seconds = Math.round(time) % 60;
         return `${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
     refresh() {
-        __classPrivateFieldGet(this, _AnimationControllerRenderer_timer_element, "f").innerHTML = this.FormatTime(__classPrivateFieldGet(this, _AnimationControllerRenderer_controller, "f").getTimeElapsed());
+        __classPrivateFieldGet(this, _AnimationControllerRenderer_timer_element, "f").innerHTML = this.formatTime(__classPrivateFieldGet(this, _AnimationControllerRenderer_controller, "f").getTimeElapsed());
     }
     run() {
         __classPrivateFieldGet(this, _AnimationControllerRenderer_controller, "f").run();

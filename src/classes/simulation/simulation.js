@@ -122,10 +122,10 @@ const DEFAULT_PRESET = {
 const TEMPORARY_PRESETS = {
     sandbox: {
         container: {
-            x_min: -100,
-            x_max: 100,
-            y_min: -100,
-            y_max: 100
+            x_min: -180,
+            x_max: 180,
+            y_min: -180,
+            y_max: 180
         },
         environment: {
             statics: {
@@ -229,6 +229,62 @@ const TEMPORARY_PRESETS = {
                         color: 'green',
                     },
                     size: 10
+                }]
+        ])
+    },
+    lavalamp: {
+        container: {
+            x_min: -100,
+            x_max: 100,
+            y_min: -300,
+            y_max: 300
+        },
+        environment: {
+            statics: {
+                elasticity: 0.95,
+                drag: 0,
+                gravity: new Vector2D(),
+                electric_field: new Vector2D(),
+                magnetic_field: new Vector2D()
+            },
+            dynamics: {}
+        },
+        config: {
+            path_trace_step: 0.5,
+            is_draggable: false,
+            focus_color: "yellow"
+        },
+        particle_groups: new Map([
+            [DEFAULT_GROUPING.group_id, {
+                    grouping: {
+                        group_id: DEFAULT_GROUPING.group_id,
+                        position: 'random',
+                        velocity: 'random',
+                        color: 'random',
+                    },
+                    size: 0
+                }],
+            ["Lava", {
+                    grouping: {
+                        group_id: "Lava",
+                        radius: 10,
+                        position: 'random',
+                        velocity: 'random',
+                        mass: 5,
+                        color: 'orange',
+                    },
+                    size: 60
+                }],
+            ["Rocks", {
+                    grouping: {
+                        group_id: "Rocks",
+                        radius: 15,
+                        position: 'random',
+                        velocity: new Vector2D(0, -250),
+                        mass: 10,
+                        color: 'black',
+                    },
+                    size: 15
                 }]
         ])
     }

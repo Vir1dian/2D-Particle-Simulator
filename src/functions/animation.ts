@@ -11,10 +11,10 @@ class AnimationControllerRenderer extends Renderer {
     
     // Saved Data
     this.#controller = controller;
-    this.#timer_element = this.SetupTimerElement(controller.getTimeElapsed());
-    this.#run_button = this.SetupRunButton();
-    this.#pause_button = this.SetupPauseButton();
-    this.#stop_button = this.SetupStopButton();
+    this.#timer_element = this.setupTimerElement(controller.getTimeElapsed());
+    this.#run_button = this.setupRunButton();
+    this.#pause_button = this.setupPauseButton();
+    this.#stop_button = this.setupStopButton();
     this.setupObservers(controller);
 
     // DOM Content
@@ -45,40 +45,40 @@ class AnimationControllerRenderer extends Renderer {
     const obs = controller.getObservers();
     obs.add(AnimationControllerEvent.Update, () => { this.refresh() });
   }
-  private SetupTimerElement(time_elapsed: number): HTMLDivElement {
+  private setupTimerElement(time_elapsed: number): HTMLDivElement {
     const timer_element: HTMLDivElement = document.createElement('div');
     timer_element.id = "animation_timer";
-    timer_element.innerHTML = this.FormatTime(time_elapsed);
+    timer_element.innerHTML = this.formatTime(time_elapsed);
     return timer_element;
   }
-  private SetupRunButton(): ButtonRenderer {
+  private setupRunButton(): ButtonRenderer {
     const button = new ButtonRenderer(this.run.bind(this))
     button.setLabel("play_arrow", true);
     button.setID("control_button_run");
     return button;
   }
-  private SetupPauseButton(): ButtonRenderer {
+  private setupPauseButton(): ButtonRenderer {
     const button = new ButtonRenderer(this.pause.bind(this))
     button.setLabel("pause", true);
     button.setID("control_button_pause");
     button.disable();
     return button;
   }
-  private SetupStopButton(): ButtonRenderer {
+  private setupStopButton(): ButtonRenderer {
     const button = new ButtonRenderer(this.stop.bind(this))
     button.setLabel("stop", true);
     button.setID("control_button_stop");
     button.disable();
     return button;
   }
-  private FormatTime(time: number): string {
+  private formatTime(time: number): string {
     let hours: number = Math.floor(time/3600);
     let minutes: number = Math.floor(time/60) % 60;
     let seconds: number = Math.round(time) % 60;
     return `${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
   refresh(): void {
-    this.#timer_element.innerHTML = this.FormatTime(this.#controller.getTimeElapsed());
+    this.#timer_element.innerHTML = this.formatTime(this.#controller.getTimeElapsed());
   }
   run(): void {
     this.#controller.run();
