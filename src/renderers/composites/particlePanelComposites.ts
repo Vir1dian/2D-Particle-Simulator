@@ -427,7 +427,7 @@ class ParticleUnitGroupRenderer extends Renderer {
   #drag_button: ButtonRenderer;
   #unit_list: ListRenderer<ParticleUnitRenderer>;
   
-  constructor(group: ParticleGroup, particles_handler: ParticlesHandler, container: BoxSpace) {
+  constructor(group: ParticleGroup, particles_handler: ParticlesHandler, container: ContainerRenderer) {
     const particle_group_element: HTMLElement = document.createElement('article');
     super(particle_group_element, 'parsetup_group', `parsetup_group_id${group.getGrouping().group_id}`);
 
@@ -435,7 +435,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#group = group;
     this.setupObservers(container);
     this.#icon = this.createIcon(group.getGrouping().color as string);
-    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container);
+    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container.getContainer());
     this.#drag_button = this.setupDragButton();
     this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...Array.from(
       group.getParticles(), ([id, particle]) => new ParticleUnitRenderer(particle, group, container)
@@ -448,7 +448,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#details_dialog.setParent(particle_group_element);
     this.#unit_list.setParent(particle_group_element);
   }
-  private setupObservers(container: BoxSpace): void {
+  private setupObservers(container: ContainerRenderer): void {
     const obs = this.#group.getObservers();
     obs.add(ParticleGroupEvent.Add_Particle, (payload) => { this.addParticleUnit(payload.particle, this.#group, container) });
     obs.add(ParticleGroupEvent.Delete_Particle, (payload) => { this.deleteParticleUnit(payload.particle) });
@@ -521,7 +521,7 @@ class ParticleUnitGroupRenderer extends Renderer {
       unit.refresh(change_flags);
     });
   }
-  addParticleUnit(particle: Particle, group: ParticleGroup, container: BoxSpace): void {
+  addParticleUnit(particle: Particle, group: ParticleGroup, container: ContainerRenderer): void {
     this.#unit_list.push(new ParticleUnitRenderer(particle, group, container));
   }
   editParticleUnit(particle: Particle, change_flags: { [K in keyof Particle]: boolean }): void {
@@ -558,7 +558,7 @@ class ParticleUnitRenderer extends Renderer {
   #icon: Renderer;
   #details_dialog: StandardDialogRenderer<EditParticleMenuRenderer>;  // maybe make this non-modal to edit outside of the popup?
   #drag_button: ButtonRenderer;
-  constructor(particle: Particle, group: ParticleGroup, container: BoxSpace) {
+  constructor(particle: Particle, group: ParticleGroup, container: ContainerRenderer) {
     const particle_control_element : HTMLDivElement = document.createElement('div');
     super(particle_control_element, 'parsetup_par', `parsetup_par_id${particle.getID()}`);
 
@@ -566,7 +566,7 @@ class ParticleUnitRenderer extends Renderer {
     this.setupObservers(particle);
     this.#particle_renderer = new ParticlePointRenderer(particle, container);
     this.#icon = this.createIcon(particle.color);
-    this.#details_dialog = this.setupDetailsDialog(particle.getID(), group, container);
+    this.#details_dialog = this.setupDetailsDialog(particle.getID(), group, container.getContainer());
     this.#drag_button = this.setupDragButton(); 
 
     // DOM Content
@@ -668,24 +668,23 @@ class ParticleUnitRenderer extends Renderer {
 class ParticlePointRenderer extends Renderer { 
   #particle: Particle;
   #container: BoxSpace;
-  constructor(particle: Particle, container: BoxSpace) {
+  constructor(particle: Particle, container: ContainerRenderer) {
     const particle_element : HTMLDivElement = document.createElement('div');
     super(particle_element, 'particle_element', `particle_element_id${particle.getID()}`);
 
     this.#particle = particle;
     this.setupObservers();
-    this.#container = container;
+    this.#container = container.getContainer();
 
-    const container_element : HTMLDivElement = document.querySelector('.container_element') as HTMLDivElement;
-    container_element.appendChild(particle_element);
+    this.setParent(container);
 
     // shape
     particle_element.style.borderRadius = `${particle.radius}px`;
     particle_element.style.width = `${2*particle.radius}px`;
     particle_element.style.height = `${2*particle.radius}px`;
     // positioning
-    particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
-    particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
+    particle_element.style.left = `${(particle.position.x - particle.radius) - container.getContainer().x_min}px`;
+    particle_element.style.top = `${container.getContainer().y_max - (particle.position.y + particle.radius)}px`;
     // color
     particle_element.style.backgroundColor = particle.color;
   }

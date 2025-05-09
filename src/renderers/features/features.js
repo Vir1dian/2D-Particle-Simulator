@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _UIControlRenderer_simulation, _EnvironmentPanelRenderer_preset_handler, _EnvironmentPanelRenderer_environment_handler, _ParticlePanelRenderer_particles_handler, _ParticlePanelRenderer_container, _ParticlePanelRenderer_add_particles_dialog, _ParticlePanelRenderer_create_group_dialog, _ParticlePanelRenderer_group_list;
+var _UIControlRenderer_simulation, _ContainerRenderer_container, _EnvironmentPanelRenderer_preset_handler, _EnvironmentPanelRenderer_environment_handler, _ParticlePanelRenderer_particles_handler, _ParticlePanelRenderer_container, _ParticlePanelRenderer_add_particles_dialog, _ParticlePanelRenderer_create_group_dialog, _ParticlePanelRenderer_group_list;
 // UI Config Renderers -- May implement a separate UIHandler class from Simulation
 class UIControlRenderer extends Renderer {
     // may create a UIConfig class soon
@@ -26,6 +26,28 @@ class UIControlRenderer extends Renderer {
     }
 }
 _UIControlRenderer_simulation = new WeakMap();
+class ContainerRenderer extends Renderer {
+    constructor(simulation) {
+        const container_element = document.createElement('div');
+        super(container_element, "container_element");
+        _ContainerRenderer_container.set(this, void 0);
+        // Stored Data
+        __classPrivateFieldSet(this, _ContainerRenderer_container, simulation.getContainer(), "f");
+        simulation.getObservers().add(SimEvent.Update_Container, () => { this.resize(__classPrivateFieldGet(this, _ContainerRenderer_container, "f")); });
+        // Content
+        container_element.style.width = `${__classPrivateFieldGet(this, _ContainerRenderer_container, "f").x_max - __classPrivateFieldGet(this, _ContainerRenderer_container, "f").x_min}px`;
+        container_element.style.height = `${__classPrivateFieldGet(this, _ContainerRenderer_container, "f").y_max - __classPrivateFieldGet(this, _ContainerRenderer_container, "f").y_min}px`;
+    }
+    resize(container) {
+        console.log(container);
+        this.getElement().style.width = `${container.x_max - container.x_min}px`;
+        this.getElement().style.height = `${container.y_max - container.y_min}px`;
+    }
+    getContainer() {
+        return __classPrivateFieldGet(this, _ContainerRenderer_container, "f");
+    }
+}
+_ContainerRenderer_container = new WeakMap();
 class EnvironmentPanelRenderer extends Renderer {
     constructor(simulation) {
         const environment_panel = document.createElement('article');
@@ -35,7 +57,7 @@ class EnvironmentPanelRenderer extends Renderer {
         // Stored Data
         __classPrivateFieldSet(this, _EnvironmentPanelRenderer_preset_handler, new PresetInputRenderer(simulation), "f");
         __classPrivateFieldSet(this, _EnvironmentPanelRenderer_environment_handler, new EnvironmentSetupRenderer(simulation), "f");
-        // HTML Content
+        // Content
         const header = document.createElement('header');
         header.innerHTML = "Environment Setup";
         environment_panel.appendChild(header);
@@ -91,14 +113,14 @@ class ParticlePanelRenderer extends Renderer {
         obs.add(ParticleHandlerEvent.Overwrite_Groups, () => { this.overwriteGroupList(); });
     }
     setupAddParticlesDialog() {
-        const body = new AddParticleMenuRenderer(__classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f"), __classPrivateFieldGet(this, _ParticlePanelRenderer_container, "f"));
+        const body = new AddParticleMenuRenderer(__classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f"), __classPrivateFieldGet(this, _ParticlePanelRenderer_container, "f").getContainer());
         const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles', true);
         dialog.getOpenButton().setLabel("Add Particles");
         dialog.getCloseButton().setLabel("close", true);
         return dialog;
     }
     setupCreateGroupDialog() {
-        const body = new CreateGroupMenuRenderer(__classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f"), __classPrivateFieldGet(this, _ParticlePanelRenderer_container, "f"));
+        const body = new CreateGroupMenuRenderer(__classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f"), __classPrivateFieldGet(this, _ParticlePanelRenderer_container, "f").getContainer());
         const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group', true);
         dialog.getOpenButton().setLabel("Create Group");
         dialog.getCloseButton().setLabel("close", true);

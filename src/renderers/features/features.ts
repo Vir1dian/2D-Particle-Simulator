@@ -14,6 +14,33 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
   }
 }
 
+class ContainerRenderer extends Renderer {
+  #container: BoxSpace;
+  constructor(simulation: Simulation) {
+    const container_element : HTMLElement = document.createElement('div');
+    super(container_element, "container_element");
+
+    // Stored Data
+    this.#container = simulation.getContainer();
+    simulation.getObservers().add(
+      SimEvent.Update_Container, 
+      () => {this.resize(this.#container)}
+    );
+
+    // Content
+    container_element.style.width = `${this.#container.x_max - this.#container.x_min}px`;
+    container_element.style.height = `${this.#container.y_max - this.#container.y_min}px`;
+  }
+  resize(container: BoxSpace): void {
+    console.log(container);
+    this.getElement().style.width = `${container.x_max - container.x_min}px`;
+    this.getElement().style.height = `${container.y_max - container.y_min}px`;
+  }
+  getContainer(): BoxSpace {
+    return this.#container;
+  }
+}
+
 class EnvironmentPanelRenderer extends Renderer {
   #preset_handler: PresetInputRenderer;
   #environment_handler: EnvironmentSetupRenderer;
@@ -25,7 +52,7 @@ class EnvironmentPanelRenderer extends Renderer {
     this.#preset_handler = new PresetInputRenderer(simulation);
     this.#environment_handler = new EnvironmentSetupRenderer(simulation);
 
-    // HTML Content
+    // Content
     const header: HTMLElement = document.createElement('header');
     header.innerHTML = "Environment Setup";
     environment_panel.appendChild(header);
@@ -49,12 +76,12 @@ class EnvironmentPanelRenderer extends Renderer {
  */
 class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, dialogs
   #particles_handler: ParticlesHandler;
-  #container: BoxSpace
+  #container: ContainerRenderer;
   #add_particles_dialog: StandardDialogRenderer<AddParticleMenuRenderer>;
   #create_group_dialog: StandardDialogRenderer<CreateGroupMenuRenderer>;
   #group_list: ListRenderer<ParticleUnitGroupRenderer>;
 
-  constructor(particles_handler: ParticlesHandler, container: BoxSpace) {
+  constructor(particles_handler: ParticlesHandler, container: ContainerRenderer) {
     const particle_panel: HTMLElement = document.createElement('article');
     super(particle_panel, 'control_item', 'control_parsetup');
 
@@ -90,14 +117,14 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     obs.add(ParticleHandlerEvent.Overwrite_Groups, () => { this.overwriteGroupList() });
   }
   private setupAddParticlesDialog(): StandardDialogRenderer<AddParticleMenuRenderer> {
-    const body = new AddParticleMenuRenderer(this.#particles_handler, this.#container);
+    const body = new AddParticleMenuRenderer(this.#particles_handler, this.#container.getContainer());
     const dialog = new StandardDialogRenderer(body, 'parsetup_add_particle_dialog', 'Add Particles', true);
     dialog.getOpenButton().setLabel("Add Particles");
     dialog.getCloseButton().setLabel("close", true);
     return dialog;
   }
   private setupCreateGroupDialog(): StandardDialogRenderer<CreateGroupMenuRenderer> {
-    const body = new CreateGroupMenuRenderer(this.#particles_handler, this.#container);
+    const body = new CreateGroupMenuRenderer(this.#particles_handler, this.#container.getContainer());
     const dialog = new StandardDialogRenderer(body, 'parsetup_add_group_dialog', 'Create Group', true);
     dialog.getOpenButton().setLabel("Create Group");
     dialog.getCloseButton().setLabel("close", true);

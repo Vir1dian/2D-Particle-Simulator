@@ -432,7 +432,7 @@ class ParticleUnitGroupRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_group, group, "f");
         this.setupObservers(container);
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_icon, this.createIcon(group.getGrouping().color), "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container.getContainer()), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_drag_button, this.setupDragButton(), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...Array.from(group.getParticles(), ([id, particle]) => new ParticleUnitRenderer(particle, group, container))), "f");
         // DOM Content
@@ -561,7 +561,7 @@ class ParticleUnitRenderer extends Renderer {
         this.setupObservers(particle);
         __classPrivateFieldSet(this, _ParticleUnitRenderer_particle_renderer, new ParticlePointRenderer(particle, container), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_icon, this.createIcon(particle.color), "f");
-        __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.getID(), group, container), "f");
+        __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.getID(), group, container.getContainer()), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_drag_button, this.setupDragButton(), "f");
         // DOM Content
         particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));
@@ -666,16 +666,15 @@ class ParticlePointRenderer extends Renderer {
         _ParticlePointRenderer_container.set(this, void 0);
         __classPrivateFieldSet(this, _ParticlePointRenderer_particle, particle, "f");
         this.setupObservers();
-        __classPrivateFieldSet(this, _ParticlePointRenderer_container, container, "f");
-        const container_element = document.querySelector('.container_element');
-        container_element.appendChild(particle_element);
+        __classPrivateFieldSet(this, _ParticlePointRenderer_container, container.getContainer(), "f");
+        this.setParent(container);
         // shape
         particle_element.style.borderRadius = `${particle.radius}px`;
         particle_element.style.width = `${2 * particle.radius}px`;
         particle_element.style.height = `${2 * particle.radius}px`;
         // positioning
-        particle_element.style.left = `${(particle.position.x - particle.radius) - container.x_min}px`;
-        particle_element.style.top = `${container.y_max - (particle.position.y + particle.radius)}px`;
+        particle_element.style.left = `${(particle.position.x - particle.radius) - container.getContainer().x_min}px`;
+        particle_element.style.top = `${container.getContainer().y_max - (particle.position.y + particle.radius)}px`;
         // color
         particle_element.style.backgroundColor = particle.color;
     }

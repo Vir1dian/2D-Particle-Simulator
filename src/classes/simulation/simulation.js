@@ -122,10 +122,10 @@ const DEFAULT_PRESET = {
 const TEMPORARY_PRESETS = {
     sandbox: {
         container: {
-            x_min: -250,
-            x_max: 250,
-            y_min: -250,
-            y_max: 250
+            x_min: -100,
+            x_max: 100,
+            y_min: -100,
+            y_max: 100
         },
         environment: {
             statics: {
@@ -165,6 +165,12 @@ const TEMPORARY_PRESETS = {
         ])
     },
     rybg: {
+        container: {
+            x_min: -250,
+            x_max: 250,
+            y_min: -250,
+            y_max: 250
+        },
         environment: {
             statics: {
                 elasticity: 0.7
