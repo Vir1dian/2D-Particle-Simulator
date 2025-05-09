@@ -102,6 +102,7 @@ class ParticleGroup {
             throw new Error("Particle not found");
         __classPrivateFieldGet(this, _ParticleGroup_observers, "f").notify(ParticleGroupEvent.Update, undefined);
         __classPrivateFieldGet(this, _ParticleGroup_observers, "f").notify(ParticleGroupEvent.Delete_Particle, { particle: particle });
+        particle.clear();
     }
     // overwrite(grouping: ParticleGrouping, size: number): void {}
     edit(grouping) {

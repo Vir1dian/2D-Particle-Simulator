@@ -103,6 +103,7 @@ class ParticleGroup {
       throw new Error("Particle not found");
     this.#observers.notify(ParticleGroupEvent.Update, undefined);
     this.#observers.notify(ParticleGroupEvent.Delete_Particle, { particle: particle });
+    particle.clear();
   }
 
   // overwrite(grouping: ParticleGrouping, size: number): void {}
