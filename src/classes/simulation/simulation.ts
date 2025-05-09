@@ -33,7 +33,7 @@ class Simulation {
     this.#container = final_preset.container as BoxSpace;
     this.#environment = final_preset.environment as SimEnvironment;
     this.#config = final_preset.config as SimConfig;
-    this.#particles_handler = new ParticlesHandler(final_preset.particle_groups);
+    this.#particles_handler = new ParticlesHandler(final_preset.particle_groups!, final_preset.container!);
     this.#observers = new ObserverHandler(SimEvent);
 
     this.setupParticleHandlerObservers(this.#particles_handler);
@@ -238,8 +238,8 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
     container: {
       x_min: -100,
       x_max: 100,
-      y_min: -300,
-      y_max: 300
+      y_min: -280,
+      y_max: 280
     },
     environment: {
       statics: {

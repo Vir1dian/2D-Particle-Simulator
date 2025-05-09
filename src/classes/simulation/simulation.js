@@ -38,7 +38,7 @@ class Simulation {
         __classPrivateFieldSet(this, _Simulation_container, final_preset.container, "f");
         __classPrivateFieldSet(this, _Simulation_environment, final_preset.environment, "f");
         __classPrivateFieldSet(this, _Simulation_config, final_preset.config, "f");
-        __classPrivateFieldSet(this, _Simulation_particles_handler, new ParticlesHandler(final_preset.particle_groups), "f");
+        __classPrivateFieldSet(this, _Simulation_particles_handler, new ParticlesHandler(final_preset.particle_groups, final_preset.container), "f");
         __classPrivateFieldSet(this, _Simulation_observers, new ObserverHandler(SimEvent), "f");
         this.setupParticleHandlerObservers(__classPrivateFieldGet(this, _Simulation_particles_handler, "f"));
     }
@@ -236,8 +236,8 @@ const TEMPORARY_PRESETS = {
         container: {
             x_min: -100,
             x_max: 100,
-            y_min: -300,
-            y_max: 300
+            y_min: -280,
+            y_max: 280
         },
         environment: {
             statics: {

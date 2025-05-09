@@ -14,14 +14,14 @@ type ParticleHandlerEventPayloadMap = {
 
 class ParticlesHandler {
   #groups: Map<string, ParticleGroup>;
+  #container: BoxSpace;
   #observers: ObserverHandler<typeof ParticleHandlerEvent, ParticleHandlerEventPayloadMap>;
 
-  constructor(preset_groups?: Map<string, { grouping: ParticleGrouping, size: number }>) {
+  constructor(preset_groups: Map<string, { grouping: ParticleGrouping, size: number }>, container: BoxSpace) {
     this.#groups = new Map();
-    if (preset_groups) {
-      for (const [id, group] of preset_groups) {
-        this.#groups.set(id, new ParticleGroup(group.grouping, group.size));
-      }
+    this.#container = container;
+    for (const [id, group] of preset_groups) {
+      this.#groups.set(id, new ParticleGroup(group.grouping, container, group.size));
     }
     this.#observers = new ObserverHandler(ParticleHandlerEvent);
   }
@@ -31,7 +31,7 @@ class ParticlesHandler {
     if (this.#groups.has(grouping.group_id)) {
       throw new Error(`Group name: ${grouping.group_id} already exists.`);
     }
-    const group = new ParticleGroup(grouping, 0);
+    const group = new ParticleGroup(grouping, this.#container, 0);
     this.#groups.set(grouping.group_id, group);
     this.#observers.notify(ParticleHandlerEvent.Update, undefined);
     this.#observers.notify(ParticleHandlerEvent.Add_Group, { group: group });
@@ -50,7 +50,7 @@ class ParticlesHandler {
       group.clear();
     this.#groups.clear();
     for (const [id, group] of preset_groups)
-      this.#groups.set(id, new ParticleGroup(group.grouping, group.size));
+      this.#groups.set(id, new ParticleGroup(group.grouping, this.#container, group.size));
     this.#observers.notify(ParticleHandlerEvent.Update, undefined);
     this.#observers.notify(ParticleHandlerEvent.Overwrite_Groups, undefined);
   }

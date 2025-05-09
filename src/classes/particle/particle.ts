@@ -27,14 +27,14 @@ class Particle {
   color: string;
   enable_path_tracing: boolean;  // will be strictly limited to certain simulation presets only, the user should not ever be able access this property
 
-  constructor(grouping: ParticleGrouping = DEFAULT_GROUPING) {
+  constructor(grouping: ParticleGrouping = DEFAULT_GROUPING, container: BoxSpace) {
 
     this.#observers = new ObserverHandler(ParticleEvent);
 
     this.#id = ++Particle.#instance_count;
     this.#group_id = grouping.group_id;
     this.radius = this.resolveValue(grouping.radius, DEFAULT_GROUPING.radius as number, () => Math.floor(Math.random() * (20 - 5 + 1) + 5));
-    this.position = this.resolveVector(grouping.position, DEFAULT_GROUPING.position as Vector2D, 250 - this.radius);
+    this.position = this.resolvePosition(grouping.position, DEFAULT_GROUPING.position as Vector2D, container);
     this.velocity = this.resolveVector(grouping.velocity, DEFAULT_GROUPING.velocity as Vector2D);
     this.mass = this.resolveValue(grouping.mass, DEFAULT_GROUPING.mass as number, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
     this.charge = this.resolveValue(grouping.charge, DEFAULT_GROUPING.charge as number, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
@@ -57,6 +57,16 @@ class Particle {
     if (color === 'random') return PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
     if (!PARTICLE_COLORS.includes(color)) return "black";
     return color;
+  }
+  private resolvePosition(vector: Vector2D | 'random' | undefined, default_vector: Vector2D, container: BoxSpace): Vector2D {
+    if (!vector) return default_vector.clone();
+    if (vector === 'random') {
+      return new Vector2D(
+        Math.floor(Math.random() * ((container.x_max - this.radius) - (container.x_min + this.radius) + 1) + (container.x_min + this.radius)),
+        Math.floor(Math.random() * ((container.y_max - this.radius) - (container.y_min + this.radius) + 1) + (container.y_min + this.radius))
+      )
+    }
+    return vector.clone();
   }
 
   getObservers(): ObserverHandler<typeof ParticleEvent, ParticleEventPayloadMap> {

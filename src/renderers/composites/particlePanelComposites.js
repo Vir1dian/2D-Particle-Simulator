@@ -38,7 +38,7 @@ class AddParticleMenuRenderer extends Renderer {
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_input_table, this.setupInputTable(container), "f");
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_group_selector, this.setupGroupSelector(), "f"); // must be setup after input_table due to the disableFields callback
         __classPrivateFieldSet(this, _AddParticleMenuRenderer_amount_input, this.setupAmountInput(), "f");
-        __classPrivateFieldSet(this, _AddParticleMenuRenderer_submit_button, this.setupSubmitButton(), "f");
+        __classPrivateFieldSet(this, _AddParticleMenuRenderer_submit_button, this.setupSubmitButton(container), "f");
         // DOM Content
         const select_wrapper = document.createElement('div');
         select_wrapper.className = 'menu_item';
@@ -118,8 +118,8 @@ class AddParticleMenuRenderer extends Renderer {
         const input = new NumberInputRenderer('create_particles_amount', 1, 1, 50);
         return input;
     }
-    setupSubmitButton() {
-        const button = new ButtonRenderer(this.submit.bind(this));
+    setupSubmitButton(container) {
+        const button = new ButtonRenderer(() => { this.submit(container); });
         button.setLabel('Submit');
         return button;
     }
@@ -148,12 +148,12 @@ class AddParticleMenuRenderer extends Renderer {
             this.disableFields(current_group.getGrouping());
         }
     }
-    submit() {
+    submit(container) {
         const group = __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").getGroups().get(__classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value);
         if (!group)
             throw new Error("Group id not found in ParticleHandler.");
         for (let i = 0; i < __classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").getNumberValue(); i++) {
-            const new_particle = new Particle(Object.assign({ group_id: __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value }, __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges()));
+            const new_particle = new Particle(Object.assign({ group_id: __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value }, __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges()), container);
             __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").addParticle(new_particle, group);
         }
     }

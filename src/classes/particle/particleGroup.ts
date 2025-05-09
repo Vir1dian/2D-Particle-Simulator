@@ -46,11 +46,11 @@ class ParticleGroup {
   #particles: Map<number, Particle>;
   #observers: ObserverHandler<typeof ParticleGroupEvent, ParticleGroupEventPayloadMap>;
 
-  constructor(grouping: ParticleGrouping = DEFAULT_GROUPING, size: number = 0) {
+  constructor(grouping: ParticleGrouping = DEFAULT_GROUPING, container: BoxSpace, size: number = 0) {
     this.#grouping = structuredCloneCustom(grouping);
     this.#particles = new Map();
     for (let i = 0; i < size; i++) {
-      const p: Particle = new Particle(grouping);
+      const p: Particle = new Particle(grouping, container);
       this.#particles.set(p.getID(), p);
     }
     this.#observers = new ObserverHandler(ParticleGroupEvent);
@@ -73,10 +73,6 @@ class ParticleGroup {
         )
       );
     });
-  }
-
-  clone(): ParticleGroup {
-    return new ParticleGroup(structuredCloneCustom(this.#grouping), this.#particles.size);
   }
 
   getGrouping(): ParticleGrouping {

@@ -47,14 +47,14 @@ var ParticleGroupEvent;
  * by a ParticleGrouping object
  */
 class ParticleGroup {
-    constructor(grouping = DEFAULT_GROUPING, size = 0) {
+    constructor(grouping = DEFAULT_GROUPING, container, size = 0) {
         _ParticleGroup_grouping.set(this, void 0);
         _ParticleGroup_particles.set(this, void 0);
         _ParticleGroup_observers.set(this, void 0);
         __classPrivateFieldSet(this, _ParticleGroup_grouping, structuredCloneCustom(grouping), "f");
         __classPrivateFieldSet(this, _ParticleGroup_particles, new Map(), "f");
         for (let i = 0; i < size; i++) {
-            const p = new Particle(grouping);
+            const p = new Particle(grouping, container);
             __classPrivateFieldGet(this, _ParticleGroup_particles, "f").set(p.getID(), p);
         }
         __classPrivateFieldSet(this, _ParticleGroup_observers, new ObserverHandler(ParticleGroupEvent), "f");
@@ -76,9 +76,6 @@ class ParticleGroup {
                     && isVectorLike(particle_value)
                     && grouping_value.equals(particle_value)));
         });
-    }
-    clone() {
-        return new ParticleGroup(structuredCloneCustom(__classPrivateFieldGet(this, _ParticleGroup_grouping, "f")), __classPrivateFieldGet(this, _ParticleGroup_particles, "f").size);
     }
     getGrouping() {
         return __classPrivateFieldGet(this, _ParticleGroup_grouping, "f");

@@ -16,7 +16,7 @@ class AddParticleMenuRenderer extends Renderer {
     this.#input_table = this.setupInputTable(container);
     this.#group_selector = this.setupGroupSelector();  // must be setup after input_table due to the disableFields callback
     this.#amount_input = this.setupAmountInput();
-    this.#submit_button = this.setupSubmitButton();
+    this.#submit_button = this.setupSubmitButton(container);
 
     // DOM Content
     const select_wrapper: HTMLDivElement = document.createElement('div');
@@ -112,8 +112,8 @@ class AddParticleMenuRenderer extends Renderer {
     const input = new NumberInputRenderer('create_particles_amount', 1, 1, 50);
     return input;
   }
-  private setupSubmitButton(): ButtonRenderer {
-    const button: ButtonRenderer = new ButtonRenderer(this.submit.bind(this));
+  private setupSubmitButton(container: BoxSpace): ButtonRenderer {
+    const button: ButtonRenderer = new ButtonRenderer(() => {this.submit(container)});
     button.setLabel('Submit');
     return button;
   }
@@ -144,12 +144,13 @@ class AddParticleMenuRenderer extends Renderer {
       this.disableFields(current_group.getGrouping());
     }
   }
-  submit(): void {
+  submit(container: BoxSpace): void {
     const group = this.#particles_handler.getGroups().get(this.#group_selector.getElement().value);
     if (!group) throw new Error("Group id not found in ParticleHandler.");
     for (let i = 0; i < this.#amount_input.getNumberValue(); i++) {
       const new_particle = new Particle(
-        { group_id: this.#group_selector.getElement().value, ...this.#input_table.prepareChanges() }
+        { group_id: this.#group_selector.getElement().value, ...this.#input_table.prepareChanges() },
+        container
       );
       this.#particles_handler.addParticle(new_particle, group);
     }
