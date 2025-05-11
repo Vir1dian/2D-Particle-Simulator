@@ -10,13 +10,14 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _a, _Particle_instance_count, _Particle_observers, _Particle_id, _Particle_group_id;
+var _a, _Particle_instance_count, _Particle_observers, _Particle_id, _Particle_group_id, _Particle_is_highlighted;
 const PARTICLE_COLORS = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
 var ParticleEvent;
 (function (ParticleEvent) {
     ParticleEvent[ParticleEvent["Update"] = 0] = "Update";
     ParticleEvent[ParticleEvent["Edit"] = 1] = "Edit";
     ParticleEvent[ParticleEvent["Move"] = 2] = "Move";
+    ParticleEvent[ParticleEvent["Highlight"] = 3] = "Highlight";
 })(ParticleEvent || (ParticleEvent = {}));
 ;
 class Particle {
@@ -26,6 +27,7 @@ class Particle {
         _Particle_observers.set(this, void 0);
         _Particle_id.set(this, void 0);
         _Particle_group_id.set(this, void 0);
+        _Particle_is_highlighted.set(this, void 0);
         __classPrivateFieldSet(this, _Particle_observers, new ObserverHandler(ParticleEvent), "f");
         __classPrivateFieldSet(this, _Particle_id, __classPrivateFieldSet(_c = _a, _a, (_d = __classPrivateFieldGet(_c, _a, "f", _Particle_instance_count), ++_d), "f", _Particle_instance_count), "f");
         __classPrivateFieldSet(this, _Particle_group_id, grouping.group_id, "f");
@@ -36,6 +38,7 @@ class Particle {
         this.charge = this.resolveValue(grouping.charge, DEFAULT_GROUPING.charge, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
         this.color = this.resolveColor(grouping.color);
         this.enable_path_tracing = (_b = grouping.enable_path_tracing) !== null && _b !== void 0 ? _b : DEFAULT_GROUPING.enable_path_tracing;
+        __classPrivateFieldSet(this, _Particle_is_highlighted, false, "f");
     }
     resolveValue(value, default_value, randomizer) {
         if (!value)
@@ -232,6 +235,14 @@ class Particle {
             this.velocity.y = b;
         }
     }
+    is_highlighted() {
+        return __classPrivateFieldGet(this, _Particle_is_highlighted, "f");
+    }
+    highlight(value = true) {
+        __classPrivateFieldSet(this, _Particle_is_highlighted, value, "f");
+        // this.#observers.notify(ParticleEvent.Update, undefined);
+        __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Highlight, undefined);
+    }
 }
-_a = Particle, _Particle_observers = new WeakMap(), _Particle_id = new WeakMap(), _Particle_group_id = new WeakMap();
+_a = Particle, _Particle_observers = new WeakMap(), _Particle_id = new WeakMap(), _Particle_group_id = new WeakMap(), _Particle_is_highlighted = new WeakMap();
 _Particle_instance_count = { value: 0 };

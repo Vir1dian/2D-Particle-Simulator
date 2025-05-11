@@ -463,9 +463,20 @@ class ParticleUnitGroupRenderer extends Renderer {
     setupDetailsDialog(group_id, particles_handler, container) {
         const body = new EditGroupMenuRenderer(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f"), particles_handler, container);
         const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, `Group: ${group_id}`, true);
-        details_dialog.getOpenButton().setLabel("expand_content", true);
-        details_dialog.getCloseButton().setLabel("close", true);
-        // Entire setup for dialog details
+        const open_button = details_dialog.getOpenButton();
+        const close_button = details_dialog.getCloseButton();
+        open_button.setLabel("expand_content", true);
+        const open_callback = open_button.getCallback();
+        open_button.setCallback(() => {
+            open_callback();
+            console.log('yeet');
+        });
+        close_button.setLabel("close", true);
+        const close_callback = close_button.getCallback();
+        close_button.setCallback(() => {
+            close_callback();
+            console.log('yote');
+        });
         return details_dialog;
     }
     ;
@@ -582,13 +593,20 @@ class ParticleUnitRenderer extends Renderer {
     setupDetailsDialog(id, group, container) {
         const body = new EditParticleMenuRenderer(__classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle(), group, container);
         const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle: ${id}`, true);
-        details_dialog.getOpenButton().setLabel("expand_content", true);
-        details_dialog.getCloseButton().setLabel("close", true);
-        // Entire setup for dialog details
-        // IDEA: on open, focus on the particles by overlaying a 
-        // translucent div the size of the container over the others
-        // only the selected particles are of z-index greater than
-        // this overlay
+        const open_button = details_dialog.getOpenButton();
+        const close_button = details_dialog.getCloseButton();
+        open_button.setLabel("expand_content", true);
+        const open_callback = open_button.getCallback();
+        open_button.setCallback(() => {
+            open_callback();
+            console.log('yeet');
+        });
+        close_button.setLabel("close", true);
+        const close_callback = close_button.getCallback();
+        close_button.setCallback(() => {
+            close_callback();
+            console.log('yote');
+        });
         return details_dialog;
     }
     setupDragButton() {

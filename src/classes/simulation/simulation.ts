@@ -106,7 +106,7 @@ const DEFAULT_PRESET: SimPreset = {
       drag: 0,
       gravity: new Vector2D(),
       electric_field: new Vector2D(),
-      magnetic_field: new Vector2D()
+      magnetic_field: 0
     },
     dynamics: {}
   },
@@ -135,7 +135,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         drag: 0,
         gravity: new Vector2D(),
         electric_field: new Vector2D(),
-        magnetic_field: new Vector2D()
+        magnetic_field: 0
       },
       dynamics: {}
     },
@@ -247,7 +247,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         drag: 0,
         gravity: new Vector2D(),
         electric_field: new Vector2D(),
-        magnetic_field: new Vector2D()
+        magnetic_field: 0
       },
       dynamics: {}
     },

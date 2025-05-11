@@ -160,7 +160,9 @@ class StandardDialogRenderer extends DialogRenderer {
         this.appendToContent(__classPrivateFieldGet(this, _StandardDialogRenderer_body, "f"));
         this.getElement().addEventListener('click', e => {
             if (e.target instanceof HTMLDialogElement) {
-                this.closeDialog();
+                // slightly slower than this.closeDialog();, but allows any existing
+                // modifications to the close button's callback to be invoked as well
+                this.getCloseButton().getCallback()();
             }
         });
         if (isDraggable)

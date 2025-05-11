@@ -467,10 +467,26 @@ class ParticleUnitGroupRenderer extends Renderer {
   private setupDetailsDialog(group_id: string, particles_handler: ParticlesHandler, container: BoxSpace): StandardDialogRenderer<EditGroupMenuRenderer> {
     const body = new EditGroupMenuRenderer(this.#group, particles_handler, container);
     const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, `Group: ${group_id}`, true);
-    details_dialog.getOpenButton().setLabel("expand_content", true);
-    details_dialog.getCloseButton().setLabel("close", true);
+    const open_button = details_dialog.getOpenButton();
+    const close_button = details_dialog.getCloseButton();
 
-    // Entire setup for dialog details
+    open_button.setLabel("expand_content", true);
+    const open_callback = open_button.getCallback();
+    open_button.setCallback(
+      () => {
+        open_callback();
+        console.log('yeet');
+      }
+    );
+
+    close_button.setLabel("close", true);
+    const close_callback = close_button.getCallback();
+    close_button.setCallback(
+      () => {
+        close_callback();
+        console.log('yote');
+      }
+    );
 
     return details_dialog;
   };
@@ -589,14 +605,26 @@ class ParticleUnitRenderer extends Renderer {
   private setupDetailsDialog(id: number, group: ParticleGroup, container: BoxSpace): StandardDialogRenderer<EditParticleMenuRenderer> {
     const body = new EditParticleMenuRenderer(this.#particle_renderer.getParticle(), group, container);
     const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle: ${id}`, true);
-    details_dialog.getOpenButton().setLabel("expand_content", true);
-    details_dialog.getCloseButton().setLabel("close", true);
+    const open_button = details_dialog.getOpenButton();
+    const close_button = details_dialog.getCloseButton();
 
-    // Entire setup for dialog details
-    // IDEA: on open, focus on the particles by overlaying a 
-    // translucent div the size of the container over the others
-    // only the selected particles are of z-index greater than
-    // this overlay
+    open_button.setLabel("expand_content", true);
+    const open_callback = open_button.getCallback();
+    open_button.setCallback(
+      () => {
+        open_callback();
+        console.log('yeet');
+      }
+    );
+
+    close_button.setLabel("close", true);
+    const close_callback = close_button.getCallback();
+    close_button.setCallback(
+      () => {
+        close_callback();
+        console.log('yote');
+      }
+    );
 
     return details_dialog;
   }

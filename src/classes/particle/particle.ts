@@ -3,13 +3,15 @@ const PARTICLE_COLORS: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'gree
 enum ParticleEvent {
   Update,
   Edit,
-  Move
+  Move,
+  Highlight
 };
 
 type ParticleEventPayloadMap = {
   [ParticleEvent.Update]: void | undefined;
   [ParticleEvent.Edit]: { change_flags: { [K in keyof Particle]: boolean } };
   [ParticleEvent.Move]: void | undefined;
+  [ParticleEvent.Highlight]: void | undefined;
 };
 
 class Particle {
@@ -26,6 +28,7 @@ class Particle {
   charge: number;
   color: string;
   enable_path_tracing: boolean;  // will be strictly limited to certain simulation presets only, the user should not ever be able access this property
+  #is_highlighted: boolean;
 
   constructor(grouping: ParticleGrouping = DEFAULT_GROUPING, container: BoxSpace) {
 
@@ -40,6 +43,7 @@ class Particle {
     this.charge = this.resolveValue(grouping.charge, DEFAULT_GROUPING.charge as number, () => Math.floor(Math.random() * (10 - 1 + 1) + 1));
     this.color = this.resolveColor(grouping.color);
     this.enable_path_tracing = grouping.enable_path_tracing ?? DEFAULT_GROUPING.enable_path_tracing as boolean;
+    this.#is_highlighted = false;
   }
 
   private resolveValue<T>(value: T | 'random' | undefined, default_value: T, randomizer: () => T): T {
@@ -257,6 +261,15 @@ class Particle {
       this.velocity.x = a;
       this.velocity.y = b;
     }
+  }
+
+  is_highlighted(): boolean {
+    return this.#is_highlighted;
+  }
+  highlight(value: boolean = true) {
+    this.#is_highlighted = value;
+    // this.#observers.notify(ParticleEvent.Update, undefined);
+    this.#observers.notify(ParticleEvent.Highlight, undefined);
   }
 }
 

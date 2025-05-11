@@ -145,7 +145,9 @@ class StandardDialogRenderer<T extends Renderer> extends DialogRenderer {
     this.appendToContent(this.#body);
     this.getElement().addEventListener('click', e => {
       if (e.target instanceof HTMLDialogElement) {
-        this.closeDialog();
+        // slightly slower than this.closeDialog();, but allows any existing
+        // modifications to the close button's callback to be invoked as well
+        this.getCloseButton().getCallback()();
       }
     });
 

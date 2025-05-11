@@ -263,6 +263,17 @@ dialog::backdrop {
   border: solid 1px #343536;
   z-index: 1;
 }
+.container_dark_overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* allows clicks to pass through */
+  background-color: rgba(0, 0, 0, 0.15);
+  z-index: 4;
+}
 .particle_element {
   position: absolute;
   border-radius: 10px;
@@ -271,7 +282,11 @@ dialog::backdrop {
   background-color: black;
   z-index: 3;
 }
+.highlighted_particle_element {
+  z-index: 5;
+}
 .point {
+  /* for drawing trajectories (currently unused) */
   position: absolute;
   border-radius: 5px;
   width: 10px;

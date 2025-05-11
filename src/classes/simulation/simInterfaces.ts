@@ -11,7 +11,7 @@ interface SimEnvironment {
     drag?: number,
     gravity?: Vector2D,
     electric_field?: Vector2D,
-    magnetic_field?: Vector2D
+    magnetic_field?: number
   }
   dynamics?: {
     // for the future

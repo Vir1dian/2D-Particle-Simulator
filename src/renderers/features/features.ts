@@ -16,6 +16,7 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
 
 class ContainerRenderer extends Renderer {
   #container: BoxSpace;
+  #dark_overlay: HTMLDivElement;
   constructor(simulation: Simulation) {
     const container_element : HTMLElement = document.createElement('div');
     super(container_element, "container_element");
@@ -26,18 +27,32 @@ class ContainerRenderer extends Renderer {
       SimEvent.Update_Container, 
       () => {this.resize(this.#container)}
     );
+    this.#dark_overlay = this.setupDarkOverlay();
 
     // Content
+    this.getElement().appendChild(this.#dark_overlay);
     container_element.style.width = `${this.#container.x_max - this.#container.x_min}px`;
     container_element.style.height = `${this.#container.y_max - this.#container.y_min}px`;
+  }
+  private setupDarkOverlay(): HTMLDivElement {
+    const overlay = document.createElement('div');
+    overlay.className = 'container_dark_overlay';
+    return overlay;
   }
   resize(container: BoxSpace): void {
     console.log(container);
     this.getElement().style.width = `${container.x_max - container.x_min}px`;
     this.getElement().style.height = `${container.y_max - container.y_min}px`;
   }
+  toggle_dark_overlay(value: boolean = true): void {
+    this.#dark_overlay.style.display = value ? '' : 'none';
+  }
   getContainer(): BoxSpace {
     return this.#container;
+  }
+  remove(): void {
+    this.#dark_overlay.remove();
+    super.remove();
   }
 }
 
