@@ -452,7 +452,7 @@ class ParticleUnitGroupRenderer extends Renderer {
   private setupObservers(container: ContainerRenderer): void {
     const obs = this.#group.getObservers();
     obs.add(ParticleGroupEvent.Add_Particle, (payload) => { this.addParticleUnit(payload.particle, this.#group, container) });
-    obs.add(ParticleGroupEvent.Delete_Particle, (payload) => { this.deleteParticleUnit(payload.particle) });
+    obs.add(ParticleGroupEvent.Delete_Particle, (payload) => { this.deleteParticleUnit(payload.particle, container) });
     obs.add(ParticleGroupEvent.Edit, (payload) => { this.refresh(payload.change_flags) });
     obs.add(ParticleGroupEvent.Overwrite_Particles, () => {});
   }
@@ -555,12 +555,13 @@ class ParticleUnitGroupRenderer extends Renderer {
     unit.refresh(change_flags);
     console.log(this.#group.getParticles());  
   }
-  deleteParticleUnit(particle: Particle): void {
+  deleteParticleUnit(particle: Particle, container: ContainerRenderer): void {
     const unit_renderer = this.#unit_list.find(
       r => r.getParticlePoint().getParticle() === particle
     );
     if (!unit_renderer) throw new Error("Particle not found.");
     this.#unit_list.removeItem(unit_renderer);
+    container.toggle_dark_overlay(false);
   }
   remove(): void {
     this.#icon.remove();

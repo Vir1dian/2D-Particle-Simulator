@@ -209,9 +209,8 @@ dialog::backdrop {
   position: absolute;
   justify-self: auto;
   align-self: auto;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 50vh;
+  left: 62vw;
 }
 .menu_item {
   display: flex;

@@ -104,7 +104,7 @@ class ParticlePanelRenderer extends Renderer {
         _ParticlePanelRenderer_group_list.set(this, void 0);
         // Saved Data
         __classPrivateFieldSet(this, _ParticlePanelRenderer_particles_handler, particles_handler, "f");
-        this.setupObservers();
+        this.setupObservers(container);
         __classPrivateFieldSet(this, _ParticlePanelRenderer_container, container, "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_add_particles_dialog, this.setupAddParticlesDialog(), "f");
         __classPrivateFieldSet(this, _ParticlePanelRenderer_create_group_dialog, this.setupCreateGroupDialog(), "f");
@@ -121,10 +121,10 @@ class ParticlePanelRenderer extends Renderer {
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").setParent(list_wrapper);
         particle_panel.appendChild(list_wrapper);
     }
-    setupObservers() {
+    setupObservers(container) {
         const obs = __classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f").getObservers();
         obs.add(ParticleHandlerEvent.Add_Group, (payload) => { this.addGroup(payload.group); });
-        obs.add(ParticleHandlerEvent.Delete_Group, (payload) => { this.deleteGroup(payload.group); });
+        obs.add(ParticleHandlerEvent.Delete_Group, (payload) => { this.deleteGroup(payload.group, container); });
         obs.add(ParticleHandlerEvent.Overwrite_Groups, () => { this.overwriteGroupList(); });
     }
     setupAddParticlesDialog() {
@@ -171,12 +171,13 @@ class ParticlePanelRenderer extends Renderer {
         // physical properties of Particle units in the Simulation container such as radius, color, and position
         group_renderer.refresh(changes_log);
     }
-    deleteGroup(group) {
+    deleteGroup(group, container) {
         console.log("deleting a group");
         const group_renderer = __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item.getParticleGroup() === group);
         if (!group_renderer)
             throw new Error("Group not found.");
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").removeItem(group_renderer);
+        container.toggle_dark_overlay(false);
     }
     overwriteGroupList() {
         console.log("overwriting a group");

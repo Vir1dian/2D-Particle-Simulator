@@ -102,7 +102,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
 
     // Saved Data
     this.#particles_handler = particles_handler;
-    this.setupObservers();
+    this.setupObservers(container);
     this.#container = container;
     this.#add_particles_dialog = this.setupAddParticlesDialog();
     this.#create_group_dialog = this.setupCreateGroupDialog();
@@ -125,10 +125,10 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     this.#group_list.setParent(list_wrapper);
     particle_panel.appendChild(list_wrapper);
   }
-  private setupObservers(): void {
+  private setupObservers(container: ContainerRenderer): void {
     const obs = this.#particles_handler.getObservers();
     obs.add(ParticleHandlerEvent.Add_Group, (payload) => { this.addGroup(payload.group) });
-    obs.add(ParticleHandlerEvent.Delete_Group, (payload) => { this.deleteGroup(payload.group) });
+    obs.add(ParticleHandlerEvent.Delete_Group, (payload) => { this.deleteGroup(payload.group, container) });
     obs.add(ParticleHandlerEvent.Overwrite_Groups, () => { this.overwriteGroupList() });
   }
   private setupAddParticlesDialog(): StandardDialogRenderer<AddParticleMenuRenderer> {
@@ -177,13 +177,14 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     // physical properties of Particle units in the Simulation container such as radius, color, and position
     group_renderer.refresh(changes_log);
   }
-  deleteGroup(group: ParticleGroup): void {
+  deleteGroup(group: ParticleGroup, container: ContainerRenderer): void {
     console.log("deleting a group")
     const group_renderer = this.#group_list.find(item => 
       item.getParticleGroup() === group
     );
     if (!group_renderer) throw new Error("Group not found.");
     this.#group_list.removeItem(group_renderer);
+    container.toggle_dark_overlay(false);
   }
   overwriteGroupList(): void {
     console.log("overwriting a group")

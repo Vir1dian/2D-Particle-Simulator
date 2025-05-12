@@ -446,7 +446,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     setupObservers(container) {
         const obs = __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f").getObservers();
         obs.add(ParticleGroupEvent.Add_Particle, (payload) => { this.addParticleUnit(payload.particle, __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f"), container); });
-        obs.add(ParticleGroupEvent.Delete_Particle, (payload) => { this.deleteParticleUnit(payload.particle); });
+        obs.add(ParticleGroupEvent.Delete_Particle, (payload) => { this.deleteParticleUnit(payload.particle, container); });
         obs.add(ParticleGroupEvent.Edit, (payload) => { this.refresh(payload.change_flags); });
         obs.add(ParticleGroupEvent.Overwrite_Particles, () => { });
     }
@@ -543,11 +543,12 @@ class ParticleUnitGroupRenderer extends Renderer {
         unit.refresh(change_flags);
         console.log(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f").getParticles());
     }
-    deleteParticleUnit(particle) {
+    deleteParticleUnit(particle, container) {
         const unit_renderer = __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").find(r => r.getParticlePoint().getParticle() === particle);
         if (!unit_renderer)
             throw new Error("Particle not found.");
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").removeItem(unit_renderer);
+        container.toggle_dark_overlay(false);
     }
     remove() {
         __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_icon, "f").remove();
