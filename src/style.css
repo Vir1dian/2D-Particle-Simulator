@@ -260,6 +260,7 @@ dialog::backdrop {
     linear-gradient(to right, rgb(233, 233, 233) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(233, 233, 233) 1px, transparent 1px);
   border: solid 1px #343536;
+  overflow: hidden;
   z-index: 1;
 }
 .container_dark_overlay {
@@ -328,7 +329,7 @@ dialog::backdrop {
   transform: rotate(45deg);
 }
 .z_arrow_cross:after {
-  background: black;
+  background: inherit;
   content: "";
   height: 4px;
   left: -8px;

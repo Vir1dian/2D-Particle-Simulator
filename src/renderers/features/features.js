@@ -44,33 +44,34 @@ class ContainerRenderer extends Renderer {
         __classPrivateFieldSet(this, _ContainerRenderer_dark_overlay, this.setupDarkOverlay(), "f");
         // Content
         __classPrivateFieldGet(this, _ContainerRenderer_grav_field, "f").setArrowsParent(this);
-        // this.#elec_field.setArrowsParent(this);
-        // this.#mag_field.setArrowsParent(this);
+        __classPrivateFieldGet(this, _ContainerRenderer_elec_field, "f").setArrowsParent(this);
+        __classPrivateFieldGet(this, _ContainerRenderer_mag_field, "f").setArrowsParent(this);
         this.getElement().appendChild(__classPrivateFieldGet(this, _ContainerRenderer_dark_overlay, "f"));
         container_element.style.width = `${__classPrivateFieldGet(this, _ContainerRenderer_container, "f").x_max - __classPrivateFieldGet(this, _ContainerRenderer_container, "f").x_min}px`;
         container_element.style.height = `${__classPrivateFieldGet(this, _ContainerRenderer_container, "f").y_max - __classPrivateFieldGet(this, _ContainerRenderer_container, "f").y_min}px`;
     }
     setupGravField(simulation) {
-        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 150);
+        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 60, 20);
         const vector = simulation.getEnvironment().statics.gravity;
         field.setMagnitude(vector.magnitude());
         field.pointAt(vector);
-        // TODO: set color to black, add observers for resize + simulation environment events
+        field.setColor('thistle');
+        // TODO: set color to purple, add observers for resize + simulation environment events
         return field;
     }
     setupElecField(simulation) {
-        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 100);
+        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 60, 40);
         const vector = simulation.getEnvironment().statics.electric_field;
         field.setMagnitude(vector.magnitude());
         field.pointAt(vector);
-        // TODO: set color to black, add observers for resize + simulation environment events
+        field.setColor('lightsalmon');
+        // TODO: set color to red, add observers for resize + simulation environment events
         return field;
     }
     setupMagField(simulation) {
-        const field = new ZVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 130);
         const scalar = simulation.getEnvironment().statics.magnetic_field;
-        field.setMagnitude(scalar);
-        // TODO: set color to black, add observers for resize + simulation environment events
+        const field = new ZVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 60, 60, scalar, 'turquoise');
+        // TODO: set color to blue, add observers for resize + simulation environment events
         return field;
     }
     setupDarkOverlay() {

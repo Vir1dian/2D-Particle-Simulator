@@ -11,8 +11,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _ZVectorField_arrows, _ZVectorField_magnitude, _XYVectorField_arrows, _XYVectorField_angle, _XYVectorField_magnitude;
+const VECTOR_VISUAL_SCALE_FACTOR = 1 / 10000;
 class ZVectorField {
-    constructor(container, width_between, magnitude = 1) {
+    constructor(container, width_between, offset, magnitude = 1, color = 'black') {
         _ZVectorField_arrows.set(this, void 0);
         _ZVectorField_magnitude.set(this, void 0);
         if (width_between < 15)
@@ -20,18 +21,17 @@ class ZVectorField {
         __classPrivateFieldSet(this, _ZVectorField_arrows, [], "f");
         const is_pointing_up = magnitude >= 0;
         __classPrivateFieldSet(this, _ZVectorField_magnitude, magnitude, "f");
-        for (let j = container.y_min; j < container.y_max; j += width_between) {
+        for (let j = 1.5 * container.y_min + offset; j < 1.5 * container.y_max - offset; j += width_between) {
             const row = [];
-            for (let i = container.x_min; i < container.x_max; i += width_between) {
+            for (let i = 1.5 * container.x_min + offset; i < 1.5 * container.x_max - offset; i += width_between) {
                 const arrow = new ZArrowSprite(is_pointing_up);
-                requestAnimationFrame(() => {
-                    arrow
-                        .translateCenter({
-                        x: i - container.x_min,
-                        y: j - container.y_min
-                    })
-                        .slowScale(Math.abs(magnitude));
-                });
+                arrow
+                    .translate({
+                    x: i - container.x_min,
+                    y: j - container.y_min
+                })
+                    .slowScale(VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude));
+                arrow.setColor(color);
                 row.push(arrow);
             }
             __classPrivateFieldGet(this, _ZVectorField_arrows, "f").push(row);
@@ -45,8 +45,11 @@ class ZVectorField {
             return;
         __classPrivateFieldSet(this, _ZVectorField_magnitude, magnitude, "f");
         __classPrivateFieldGet(this, _ZVectorField_arrows, "f").forEach(row => row.forEach(arrow => {
-            arrow.slowScale(Math.abs(magnitude)).pointUp(magnitude >= 0);
+            arrow.slowScale(VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude)).pointUp(magnitude >= 0);
         }));
+    }
+    setColor(color) {
+        __classPrivateFieldGet(this, _ZVectorField_arrows, "f").forEach(row => row.forEach(arrow => arrow.setColor(color)));
     }
     getMagnitude() {
         return __classPrivateFieldGet(this, _ZVectorField_magnitude, "f");
@@ -61,7 +64,7 @@ class ZVectorField {
 }
 _ZVectorField_arrows = new WeakMap(), _ZVectorField_magnitude = new WeakMap();
 class XYVectorField {
-    constructor(container, width_between, angle = 0, magnitude = 1) {
+    constructor(container, width_between, offset, angle = 0, magnitude = 1, color = 'black') {
         _XYVectorField_arrows.set(this, void 0);
         _XYVectorField_angle.set(this, void 0);
         _XYVectorField_magnitude.set(this, void 0);
@@ -71,19 +74,18 @@ class XYVectorField {
         __classPrivateFieldSet(this, _XYVectorField_angle, angle, "f");
         __classPrivateFieldSet(this, _XYVectorField_magnitude, magnitude, "f");
         const negative_offset = magnitude < 0 ? 180 : 0;
-        for (let j = container.y_min; j < container.y_max; j += width_between) {
+        for (let j = 1.5 * container.y_min + offset; j < 1.5 * container.y_max - offset; j += width_between) {
             const row = [];
-            for (let i = container.x_min; i < container.x_max; i += width_between) {
+            for (let i = 1.5 * container.x_min + offset; i < 1.5 * container.x_max - offset; i += width_between) {
                 const arrow = new XYArrowSprite();
-                requestAnimationFrame(() => {
-                    arrow
-                        .translateCenter({
-                        x: i - container.x_min,
-                        y: j - container.y_min
-                    })
-                        .slowScale(Math.abs(magnitude))
-                        .rotate(__classPrivateFieldGet(this, _XYVectorField_angle, "f") + negative_offset);
-                });
+                arrow
+                    .translate({
+                    x: i - container.x_min,
+                    y: j - container.y_min
+                })
+                    .slowScale(VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude))
+                    .rotate(__classPrivateFieldGet(this, _XYVectorField_angle, "f") + negative_offset);
+                arrow.setColor(color);
                 row.push(arrow);
             }
             __classPrivateFieldGet(this, _XYVectorField_arrows, "f").push(row);
@@ -111,9 +113,12 @@ class XYVectorField {
         __classPrivateFieldSet(this, _XYVectorField_magnitude, magnitude, "f");
         __classPrivateFieldGet(this, _XYVectorField_arrows, "f").forEach(row => row.forEach(arrow => {
             arrow
-                .slowScale(Math.abs(magnitude))
+                .slowScale(VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude))
                 .rotate(__classPrivateFieldGet(this, _XYVectorField_angle, "f") + negative_offset);
         }));
+    }
+    setColor(color) {
+        __classPrivateFieldGet(this, _XYVectorField_arrows, "f").forEach(row => row.forEach(arrow => arrow.setColor(color)));
     }
     getAngle() {
         return __classPrivateFieldGet(this, _XYVectorField_angle, "f");

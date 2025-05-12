@@ -12,7 +12,7 @@ class Sprite extends Renderer {
   }
   protected applyTransform() {
     const translate = `translate(${this.#translation.x}px, ${this.#translation.y}px)`;
-    const rotate = `rotate(${this.#rotation}deg)`;
+    const rotate = `rotate(-${this.#rotation}deg)`;
     const scale = `scale(${this.#scale.x}, ${this.#scale.y})`;
     this.getElement().style.transform = `${translate} ${rotate} ${scale}`;
   }
@@ -49,8 +49,8 @@ class Sprite extends Renderer {
     });
   }
   slowScale(magnitude: number, base = Math.E): this {
-    const safeMagnitude = Math.max(0, magnitude); // Prevent negatives
-    const scale_factor = Math.log(safeMagnitude + 1) / Math.log(base);
+    const safe_magnitude = Math.max(0, magnitude); // Prevent negatives
+    const scale_factor = safe_magnitude ** 0.1;
     this.scale({
       x: scale_factor,
       y: scale_factor
@@ -111,6 +111,10 @@ class ZArrowSprite extends Sprite {
   isPointingUp(): boolean {
     return this.#is_pointing_up;
   }
+  setColor(color: string): void {
+    this.#dot.style.backgroundColor = color;
+    this.#cross.style.background = color;
+  }
   remove(): void {
     this.#dot.remove();
     this.#cross.remove();
@@ -136,6 +140,10 @@ class XYArrowSprite extends Sprite {
   pointAt(direction: {x: number, y: number} | Vector2D): void {
     const angle = Math.atan2(direction.y, direction.x) * (180 / Math.PI);
     this.rotate(angle);
+  }
+  setColor(color: string): void {
+    this.#head.style.borderLeftColor = color;
+    this.#body.style.background = color;
   }
   remove(): void {
     this.#head.remove();

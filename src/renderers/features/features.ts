@@ -37,38 +37,39 @@ class ContainerRenderer extends Renderer {
 
     // Content
     this.#grav_field.setArrowsParent(this);
-    // this.#elec_field.setArrowsParent(this);
-    // this.#mag_field.setArrowsParent(this);
+    this.#elec_field.setArrowsParent(this);
+    this.#mag_field.setArrowsParent(this);
     this.getElement().appendChild(this.#dark_overlay);
     container_element.style.width = `${this.#container.x_max - this.#container.x_min}px`;
     container_element.style.height = `${this.#container.y_max - this.#container.y_min}px`;
   }
   private setupGravField(simulation: Simulation): XYVectorField {
-    const field = new XYVectorField(this.#container, 150);
+    const field = new XYVectorField(this.#container, 60, 20);
     const vector = simulation.getEnvironment()!.statics!.gravity!;
     field.setMagnitude(vector.magnitude());
     field.pointAt(vector);
+    field.setColor('thistle');
 
-    // TODO: set color to black, add observers for resize + simulation environment events
+    // TODO: set color to purple, add observers for resize + simulation environment events
 
     return field;
   }
   private setupElecField(simulation: Simulation): XYVectorField {
-    const field = new XYVectorField(this.#container, 100);
+    const field = new XYVectorField(this.#container, 60, 40);
     const vector = simulation.getEnvironment()!.statics!.electric_field!;
     field.setMagnitude(vector.magnitude());
     field.pointAt(vector);
+    field.setColor('lightsalmon');
 
-    // TODO: set color to black, add observers for resize + simulation environment events
+    // TODO: set color to red, add observers for resize + simulation environment events
 
     return field;
   }
   private setupMagField(simulation: Simulation): ZVectorField {
-    const field = new ZVectorField(this.#container, 130);
     const scalar = simulation.getEnvironment()!.statics!.magnetic_field!;
-    field.setMagnitude(scalar);
+    const field = new ZVectorField(this.#container, 60, 60, scalar, 'turquoise');
 
-    // TODO: set color to black, add observers for resize + simulation environment events
+    // TODO: set color to blue, add observers for resize + simulation environment events
 
     return field;
   }

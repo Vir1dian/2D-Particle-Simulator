@@ -1,25 +1,26 @@
+const VECTOR_VISUAL_SCALE_FACTOR = 1 / 10000;
+
 class ZVectorField {
   #arrows: ZArrowSprite[][];
   #magnitude: number;
 
-  constructor(container: BoxSpace, width_between: number, magnitude: number = 1) {
+  constructor(container: BoxSpace, width_between: number, offset: number, magnitude: number = 1, color: string = 'black') {
     if (width_between < 15)
       throw new Error("Invalid width between arrows.");
     this.#arrows = [];
     const is_pointing_up = magnitude >= 0;
     this.#magnitude = magnitude;
-    for (let j = container.y_min; j < container.y_max; j += width_between) {
+    for (let j = 1.5*container.y_min + offset; j < 1.5*container.y_max - offset; j += width_between) {
       const row: ZArrowSprite[] = [];
-      for (let i = container.x_min; i < container.x_max; i += width_between) {
+      for (let i = 1.5*container.x_min + offset; i < 1.5*container.x_max - offset; i += width_between) {
         const arrow = new ZArrowSprite(is_pointing_up);
-        requestAnimationFrame(() => {
-          arrow
-            .translateCenter({
-              x: i - container.x_min, 
-              y: j - container.y_min
-            })
-            .slowScale(Math.abs(magnitude));
-        });
+        arrow
+          .translate({
+            x: i - container.x_min, 
+            y: j - container.y_min
+          })
+          .slowScale(VECTOR_VISUAL_SCALE_FACTOR*Math.abs(magnitude));
+        arrow.setColor(color);
         row.push(arrow)
       }
       this.#arrows.push(row);
@@ -32,8 +33,11 @@ class ZVectorField {
     if (this.#magnitude === magnitude) return;
     this.#magnitude = magnitude;
     this.#arrows.forEach(row => row.forEach(arrow => {
-      arrow.slowScale(Math.abs(magnitude)).pointUp(magnitude >= 0);
+      arrow.slowScale(VECTOR_VISUAL_SCALE_FACTOR*Math.abs(magnitude)).pointUp(magnitude >= 0);
     }));
+  }
+  setColor(color: string): void {
+    this.#arrows.forEach(row => row.forEach(arrow => arrow.setColor(color)));
   }
   getMagnitude(): number {
     return this.#magnitude;
@@ -52,26 +56,25 @@ class XYVectorField {
   #angle: number;
   #magnitude: number;
 
-  constructor(container: BoxSpace, width_between: number, angle: number = 0, magnitude: number = 1) {
+  constructor(container: BoxSpace, width_between: number, offset: number, angle: number = 0, magnitude: number = 1, color: string = 'black') {
     if (width_between < 15)
       throw new Error("Invalid width between arrows.");
     this.#arrows = [];
     this.#angle = angle;
     this.#magnitude = magnitude;
     const negative_offset = magnitude < 0 ? 180 : 0;
-    for (let j = container.y_min; j < container.y_max; j += width_between) {
+    for (let j = 1.5*container.y_min + offset; j < 1.5*container.y_max - offset; j += width_between) {
       const row: XYArrowSprite[] = [];
-      for (let i = container.x_min; i < container.x_max; i += width_between) {
+      for (let i = 1.5*container.x_min + offset; i < 1.5*container.x_max - offset; i += width_between) {
         const arrow = new XYArrowSprite();
-        requestAnimationFrame(() => {
-          arrow
-            .translateCenter({
-              x: i - container.x_min, 
-              y: j - container.y_min
-            })
-            .slowScale(Math.abs(magnitude))
-            .rotate(this.#angle + negative_offset);
-        });
+        arrow
+          .translate({
+            x: i - container.x_min, 
+            y: j - container.y_min
+          })
+          .slowScale(VECTOR_VISUAL_SCALE_FACTOR*Math.abs(magnitude))
+          .rotate(this.#angle + negative_offset);
+        arrow.setColor(color);
         row.push(arrow)
       }
       this.#arrows.push(row);
@@ -98,9 +101,12 @@ class XYVectorField {
     this.#magnitude = magnitude;
     this.#arrows.forEach(row => row.forEach(arrow => {
       arrow
-        .slowScale(Math.abs(magnitude))
+        .slowScale(VECTOR_VISUAL_SCALE_FACTOR*Math.abs(magnitude))
         .rotate(this.#angle + negative_offset);
     }));
+  }
+  setColor(color: string): void {
+    this.#arrows.forEach(row => row.forEach(arrow => arrow.setColor(color)));
   }
   getAngle(): number {
     return this.#angle;

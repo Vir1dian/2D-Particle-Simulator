@@ -101,13 +101,14 @@ function loadAll() {
 
   // const test_arrow = new XYArrowSprite();
   // requestAnimationFrame(() => {
-  //   test_arrow.translateCenter(new Vector2D(250, 250)).rotate(-90);
+  //   test_arrow.setColor('green');
+  //   test_arrow.rotate(90);
   // })
   // test_arrow.setParent(cont);
 
   // const test_z_arrow = new ZArrowSprite(false);
   // requestAnimationFrame(() => {
-  //   test_z_arrow.translateCenter(new Vector2D(250, 250));
+  //   test_z_arrow.translateCenter(new Vector2D(250, 250)).setColor('purple');
   // })
   // test_z_arrow.setParent(cont);
 

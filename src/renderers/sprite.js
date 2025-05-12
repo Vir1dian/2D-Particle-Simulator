@@ -25,7 +25,7 @@ class Sprite extends Renderer {
     }
     applyTransform() {
         const translate = `translate(${__classPrivateFieldGet(this, _Sprite_translation, "f").x}px, ${__classPrivateFieldGet(this, _Sprite_translation, "f").y}px)`;
-        const rotate = `rotate(${__classPrivateFieldGet(this, _Sprite_rotation, "f")}deg)`;
+        const rotate = `rotate(-${__classPrivateFieldGet(this, _Sprite_rotation, "f")}deg)`;
         const scale = `scale(${__classPrivateFieldGet(this, _Sprite_scale, "f").x}, ${__classPrivateFieldGet(this, _Sprite_scale, "f").y})`;
         this.getElement().style.transform = `${translate} ${rotate} ${scale}`;
     }
@@ -62,8 +62,8 @@ class Sprite extends Renderer {
         });
     }
     slowScale(magnitude, base = Math.E) {
-        const safeMagnitude = Math.max(0, magnitude); // Prevent negatives
-        const scale_factor = Math.log(safeMagnitude + 1) / Math.log(base);
+        const safe_magnitude = Math.max(0, magnitude); // Prevent negatives
+        const scale_factor = safe_magnitude ** 0.1;
         this.scale({
             x: scale_factor,
             y: scale_factor
@@ -121,6 +121,10 @@ class ZArrowSprite extends Sprite {
     isPointingUp() {
         return __classPrivateFieldGet(this, _ZArrowSprite_is_pointing_up, "f");
     }
+    setColor(color) {
+        __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").style.backgroundColor = color;
+        __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").style.background = color;
+    }
     remove() {
         __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").remove();
         __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").remove();
@@ -144,6 +148,10 @@ class XYArrowSprite extends Sprite {
     pointAt(direction) {
         const angle = Math.atan2(direction.y, direction.x) * (180 / Math.PI);
         this.rotate(angle);
+    }
+    setColor(color) {
+        __classPrivateFieldGet(this, _XYArrowSprite_head, "f").style.borderLeftColor = color;
+        __classPrivateFieldGet(this, _XYArrowSprite_body, "f").style.background = color;
     }
     remove() {
         __classPrivateFieldGet(this, _XYArrowSprite_head, "f").remove();
