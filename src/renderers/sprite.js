@@ -25,7 +25,7 @@ class Sprite extends Renderer {
     }
     applyTransform() {
         const translate = `translate(${__classPrivateFieldGet(this, _Sprite_translation, "f").x}px, ${__classPrivateFieldGet(this, _Sprite_translation, "f").y}px)`;
-        const rotate = `rotate(-${__classPrivateFieldGet(this, _Sprite_rotation, "f")}deg)`;
+        const rotate = `rotate(${__classPrivateFieldGet(this, _Sprite_rotation, "f") * -1}deg)`;
         const scale = `scale(${__classPrivateFieldGet(this, _Sprite_scale, "f").x}, ${__classPrivateFieldGet(this, _Sprite_scale, "f").y})`;
         this.getElement().style.transform = `${translate} ${rotate} ${scale}`;
     }

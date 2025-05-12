@@ -12,7 +12,7 @@ class Sprite extends Renderer {
   }
   protected applyTransform() {
     const translate = `translate(${this.#translation.x}px, ${this.#translation.y}px)`;
-    const rotate = `rotate(-${this.#rotation}deg)`;
+    const rotate = `rotate(${this.#rotation*-1}deg)`;
     const scale = `scale(${this.#scale.x}, ${this.#scale.y})`;
     this.getElement().style.transform = `${translate} ${rotate} ${scale}`;
   }
