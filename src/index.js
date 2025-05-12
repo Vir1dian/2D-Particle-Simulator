@@ -79,5 +79,15 @@ function loadAll() {
     // });
     // test_sprite.translate({x: 100,y: 300}).rotate(45).scale({x: 1,y: 1.5})
     // test_sprite.setParent(cont);
+    // const test_arrow = new XYArrowSprite();
+    // requestAnimationFrame(() => {
+    //   test_arrow.translateCenter(new Vector2D(250, 250)).rotate(-90);
+    // })
+    // test_arrow.setParent(cont);
+    // const test_z_arrow = new ZArrowSprite(false);
+    // requestAnimationFrame(() => {
+    //   test_z_arrow.translateCenter(new Vector2D(250, 250));
+    // })
+    // test_z_arrow.setParent(cont);
     // sim.setPreset({container: {x_min: 100, x_max: 100, y_min: 100, y_max: 100}});
 }

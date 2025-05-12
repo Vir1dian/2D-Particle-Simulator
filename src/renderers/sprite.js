@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Sprite_translation, _Sprite_rotation, _Sprite_scale;
+var _Sprite_translation, _Sprite_rotation, _Sprite_scale, _ZArrowSprite_is_pointing_up, _ZArrowSprite_dot, _ZArrowSprite_cross, _XYArrowSprite_head, _XYArrowSprite_body;
 class Sprite extends Renderer {
     constructor(classname = '', id = '') {
         const element = document.createElement('div');
@@ -47,6 +47,20 @@ class Sprite extends Renderer {
         this.applyTransform();
         return this;
     }
+    /**
+     * Warning: getBoundingClientRect() only works once
+     * element is rendered in the DOM. Use setTimout
+     * to delay translateCenter if to be used immediately.
+     */
+    translateCenter(translation) {
+        const bounds = this.getElement().getBoundingClientRect();
+        const offsetX = bounds.width / 2;
+        const offsetY = bounds.height / 2;
+        return this.translate({
+            x: translation.x - offsetX,
+            y: translation.y - offsetY,
+        });
+    }
     reset() {
         this.getElement().style.transform = 'none';
     }
@@ -62,6 +76,53 @@ class Sprite extends Renderer {
 }
 _Sprite_translation = new WeakMap(), _Sprite_rotation = new WeakMap(), _Sprite_scale = new WeakMap();
 class ZArrowSprite extends Sprite {
+    constructor(is_up = true) {
+        super('z_arrow_wrapper');
+        _ZArrowSprite_is_pointing_up.set(this, void 0);
+        _ZArrowSprite_dot.set(this, void 0);
+        _ZArrowSprite_cross.set(this, void 0);
+        const wrapper = this.getElement();
+        __classPrivateFieldSet(this, _ZArrowSprite_is_pointing_up, is_up, "f");
+        __classPrivateFieldSet(this, _ZArrowSprite_dot, document.createElement('div'), "f");
+        __classPrivateFieldSet(this, _ZArrowSprite_cross, document.createElement('div'), "f");
+        __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").className = 'z_arrow_dot';
+        __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").className = 'z_arrow_cross';
+        wrapper.appendChild(__classPrivateFieldGet(this, _ZArrowSprite_dot, "f"));
+        wrapper.appendChild(__classPrivateFieldGet(this, _ZArrowSprite_cross, "f"));
+        if (is_up) {
+            __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").style.display = '';
+            __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").style.display = 'none';
+        }
+        else {
+            __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").style.display = 'none';
+            __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").style.display = '';
+        }
+    }
+    setDirection(is_up = true) {
+        __classPrivateFieldSet(this, _ZArrowSprite_is_pointing_up, is_up, "f");
+        if (is_up) {
+            __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").style.display = '';
+            __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").style.display = 'none';
+        }
+        else {
+            __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").style.display = 'none';
+            __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").style.display = '';
+        }
+    }
 }
+_ZArrowSprite_is_pointing_up = new WeakMap(), _ZArrowSprite_dot = new WeakMap(), _ZArrowSprite_cross = new WeakMap();
 class XYArrowSprite extends Sprite {
+    constructor() {
+        super('xy_arrow_wrapper');
+        _XYArrowSprite_head.set(this, void 0);
+        _XYArrowSprite_body.set(this, void 0);
+        const wrapper = this.getElement();
+        __classPrivateFieldSet(this, _XYArrowSprite_head, document.createElement('div'), "f");
+        __classPrivateFieldSet(this, _XYArrowSprite_body, document.createElement('div'), "f");
+        __classPrivateFieldGet(this, _XYArrowSprite_head, "f").className = 'xy_arrow_head';
+        __classPrivateFieldGet(this, _XYArrowSprite_body, "f").className = 'xy_arrow_body';
+        wrapper.appendChild(__classPrivateFieldGet(this, _XYArrowSprite_body, "f"));
+        wrapper.appendChild(__classPrivateFieldGet(this, _XYArrowSprite_head, "f"));
+    }
 }
+_XYArrowSprite_head = new WeakMap(), _XYArrowSprite_body = new WeakMap();

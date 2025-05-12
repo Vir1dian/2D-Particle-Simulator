@@ -257,8 +257,8 @@ dialog::backdrop {
   position: relative;
   background-size: 19.5px 19.5px;  /* Make this dynamic in UI settings */
   background-image:
-    linear-gradient(to right, lightgray 1px, transparent 1px),
-    linear-gradient(to bottom, lightgray 1px, transparent 1px);
+    linear-gradient(to right, rgb(233, 233, 233) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(233, 233, 233) 1px, transparent 1px);
   border: solid 1px #343536;
   z-index: 1;
 }
@@ -293,6 +293,48 @@ dialog::backdrop {
   height: 10px;
   background-color: gray;
   z-index: 2;
+}
+
+.xy_arrow_wrapper {
+  /* position already set to absolute by constructor */
+  display: flex;
+  align-items: center;
+}
+.xy_arrow_head {
+  /* Point to right by default */
+  width: 0;
+	height: 0;
+  border-top: 8px solid transparent;
+	border-left: 16px solid black;
+	border-bottom: 8px solid transparent;
+  margin-left: -1px;
+}
+.xy_arrow_body {
+  width: 16px;
+  height: 8px;
+  background-color: black;
+}
+.z_arrow_dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: black;
+}
+.z_arrow_cross {
+  background: black;
+  height: 20px;
+  position: relative;
+  width: 4px;
+  transform: rotate(45deg);
+}
+.z_arrow_cross:after {
+  background: black;
+  content: "";
+  height: 4px;
+  left: -8px;
+  position: absolute;
+  top: 8px;
+  width: 20px;
 }
 
 .control_items_wrapper {
