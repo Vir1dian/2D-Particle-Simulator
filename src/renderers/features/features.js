@@ -26,6 +26,10 @@ class UIControlRenderer extends Renderer {
     }
 }
 _UIControlRenderer_simulation = new WeakMap();
+const FIELD_WIDTH = 60;
+const GRAV_OFFSET = 20;
+const ELEC_OFFSET = 40;
+const MAG_OFFSET = 60;
 class ContainerRenderer extends Renderer {
     constructor(simulation) {
         const container_element = document.createElement('div');
@@ -37,10 +41,10 @@ class ContainerRenderer extends Renderer {
         _ContainerRenderer_dark_overlay.set(this, void 0);
         // Stored Data
         __classPrivateFieldSet(this, _ContainerRenderer_container, simulation.getContainer(), "f");
-        simulation.getObservers().add(SimEvent.Update_Container, () => { this.resize(__classPrivateFieldGet(this, _ContainerRenderer_container, "f")); });
-        __classPrivateFieldSet(this, _ContainerRenderer_grav_field, this.setupGravField(simulation), "f");
-        __classPrivateFieldSet(this, _ContainerRenderer_elec_field, this.setupElecField(simulation), "f");
-        __classPrivateFieldSet(this, _ContainerRenderer_mag_field, this.setupMagField(simulation), "f");
+        this.setupSimObservers(simulation);
+        __classPrivateFieldSet(this, _ContainerRenderer_grav_field, this.setupGravField(simulation.getEnvironment()), "f");
+        __classPrivateFieldSet(this, _ContainerRenderer_elec_field, this.setupElecField(simulation.getEnvironment()), "f");
+        __classPrivateFieldSet(this, _ContainerRenderer_mag_field, this.setupMagField(simulation.getEnvironment()), "f");
         __classPrivateFieldSet(this, _ContainerRenderer_dark_overlay, this.setupDarkOverlay(), "f");
         // Content
         __classPrivateFieldGet(this, _ContainerRenderer_grav_field, "f").setArrowsParent(this);
@@ -50,28 +54,28 @@ class ContainerRenderer extends Renderer {
         container_element.style.width = `${__classPrivateFieldGet(this, _ContainerRenderer_container, "f").x_max - __classPrivateFieldGet(this, _ContainerRenderer_container, "f").x_min}px`;
         container_element.style.height = `${__classPrivateFieldGet(this, _ContainerRenderer_container, "f").y_max - __classPrivateFieldGet(this, _ContainerRenderer_container, "f").y_min}px`;
     }
-    setupGravField(simulation) {
-        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 60, 20);
-        const vector = simulation.getEnvironment().statics.gravity;
-        field.setMagnitude(vector.magnitude());
-        field.pointAt(vector);
-        field.setColor('thistle');
-        // TODO: set color to purple, add observers for resize + simulation environment events
+    setupSimObservers(simulation) {
+        const sim_obs = simulation.getObservers();
+        sim_obs.add(SimEvent.Update_Container, () => {
+            this.resize(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"));
+        });
+        sim_obs.add(SimEvent.Update_Environment, () => {
+            this.redrawVectorFields(simulation.getEnvironment());
+        });
+    }
+    setupGravField(env) {
+        const g = env.statics.gravity;
+        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), FIELD_WIDTH, GRAV_OFFSET, Math.atan2(g.y, g.x) * (180 / Math.PI), g.magnitude(), 'thistle');
         return field;
     }
-    setupElecField(simulation) {
-        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 60, 40);
-        const vector = simulation.getEnvironment().statics.electric_field;
-        field.setMagnitude(vector.magnitude());
-        field.pointAt(vector);
-        field.setColor('lightsalmon');
-        // TODO: set color to red, add observers for resize + simulation environment events
+    setupElecField(env) {
+        const e = env.statics.electric_field;
+        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), FIELD_WIDTH, ELEC_OFFSET, Math.atan2(e.y, e.x) * (180 / Math.PI), e.magnitude(), 'lightsalmon');
         return field;
     }
-    setupMagField(simulation) {
-        const scalar = simulation.getEnvironment().statics.magnetic_field;
-        const field = new ZVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 60, 60, scalar, 'turquoise');
-        // TODO: set color to blue, add observers for resize + simulation environment events
+    setupMagField(env) {
+        const b = env.statics.magnetic_field;
+        const field = new ZVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), FIELD_WIDTH, MAG_OFFSET, b, 'turquoise');
         return field;
     }
     setupDarkOverlay() {
@@ -80,9 +84,19 @@ class ContainerRenderer extends Renderer {
         return overlay;
     }
     resize(container) {
-        console.log(container);
         this.getElement().style.width = `${container.x_max - container.x_min}px`;
         this.getElement().style.height = `${container.y_max - container.y_min}px`;
+    }
+    redrawVectorFields(env) {
+        const g = env.statics.gravity;
+        const e = env.statics.electric_field;
+        const b = env.statics.magnetic_field;
+        __classPrivateFieldGet(this, _ContainerRenderer_grav_field, "f").redraw(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), FIELD_WIDTH, GRAV_OFFSET, Math.atan2(g.y, g.x) * (180 / Math.PI), g.magnitude(), 'thistle');
+        __classPrivateFieldGet(this, _ContainerRenderer_elec_field, "f").redraw(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), FIELD_WIDTH, ELEC_OFFSET, Math.atan2(e.y, e.x) * (180 / Math.PI), e.magnitude(), 'lightsalmon');
+        __classPrivateFieldGet(this, _ContainerRenderer_mag_field, "f").redraw(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), FIELD_WIDTH, MAG_OFFSET, b, 'turquoise');
+        __classPrivateFieldGet(this, _ContainerRenderer_grav_field, "f").setArrowsParent(this);
+        __classPrivateFieldGet(this, _ContainerRenderer_elec_field, "f").setArrowsParent(this);
+        __classPrivateFieldGet(this, _ContainerRenderer_mag_field, "f").setArrowsParent(this);
     }
     toggle_dark_overlay(value = true) {
         __classPrivateFieldGet(this, _ContainerRenderer_dark_overlay, "f").style.display = value ? 'block' : 'none';
@@ -185,11 +199,9 @@ class ParticlePanelRenderer extends Renderer {
         return __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f");
     }
     addGroup(group) {
-        console.log("adding a group");
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f"), __classPrivateFieldGet(this, _ParticlePanelRenderer_container, "f")));
     }
     editGroup(group, changes_log) {
-        console.log("editing a group");
         const group_renderer = __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item
             .getParticleGroup()
             .getGrouping()
@@ -205,7 +217,6 @@ class ParticlePanelRenderer extends Renderer {
         group_renderer.refresh(changes_log);
     }
     deleteGroup(group, container) {
-        console.log("deleting a group");
         const group_renderer = __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").find(item => item.getParticleGroup() === group);
         if (!group_renderer)
             throw new Error("Group not found.");
@@ -213,7 +224,6 @@ class ParticlePanelRenderer extends Renderer {
         container.toggle_dark_overlay(false);
     }
     overwriteGroupList() {
-        console.log("overwriting a group");
         __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").empty();
         Array.from(__classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f").getGroups(), ([group_id, group]) => new ParticleUnitGroupRenderer(group, __classPrivateFieldGet(this, _ParticlePanelRenderer_particles_handler, "f"), __classPrivateFieldGet(this, _ParticlePanelRenderer_container, "f"))).forEach(group_renderer => __classPrivateFieldGet(this, _ParticlePanelRenderer_group_list, "f").push(group_renderer));
     }

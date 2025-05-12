@@ -1,4 +1,5 @@
 const VECTOR_VISUAL_SCALE_FACTOR = 1 / 10000;
+const OVERFLOW_OFFSET = 1.3;
 
 class ZVectorField {
   #arrows: ZArrowSprite[][];
@@ -7,33 +8,44 @@ class ZVectorField {
   constructor(container: BoxSpace, width_between: number, offset: number, magnitude: number = 1, color: string = 'black') {
     if (width_between < 15)
       throw new Error("Invalid width between arrows.");
-    this.#arrows = [];
-    const is_pointing_up = magnitude >= 0;
+    this.#arrows = this.draw(container, width_between, offset, magnitude, color);
     this.#magnitude = magnitude;
-    for (let j = 1.5*container.y_min + offset; j < 1.5*container.y_max - offset; j += width_between) {
+  }
+  private draw(container: BoxSpace, width_between: number, offset: number, magnitude: number = 1, color: string = 'black'): ZArrowSprite[][] {
+    const arrows: ZArrowSprite[][] = [];
+    const is_pointing_up = magnitude >= 0;
+    const scale = VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude);
+    for (let j = OVERFLOW_OFFSET*container.y_min + offset; j < OVERFLOW_OFFSET*container.y_max - offset; j += width_between) {
       const row: ZArrowSprite[] = [];
-      for (let i = 1.5*container.x_min + offset; i < 1.5*container.x_max - offset; i += width_between) {
+      for (let i = OVERFLOW_OFFSET*container.x_min + offset; i < OVERFLOW_OFFSET*container.x_max - offset; i += width_between) {
         const arrow = new ZArrowSprite(is_pointing_up);
         arrow
           .translate({
             x: i - container.x_min, 
             y: j - container.y_min
           })
-          .slowScale(VECTOR_VISUAL_SCALE_FACTOR*Math.abs(magnitude));
+          .slowScale(scale);
         arrow.setColor(color);
         row.push(arrow)
       }
-      this.#arrows.push(row);
+      arrows.push(row);
     }
+    return arrows;
+  }
+  redraw(container: BoxSpace, width_between: number, offset: number, magnitude: number = 1, color: string = 'black'): void {
+    this.clear();
+    this.#arrows = this.draw(container, width_between, offset, magnitude, color);
+    this.#magnitude = magnitude;
   }
   setArrowsParent(parent: Renderer): void {
     this.#arrows.forEach(row => row.forEach(arrow => arrow.setParent(parent)));
   }
   setMagnitude(magnitude: number): void {
+    const scale = VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude);
     if (this.#magnitude === magnitude) return;
     this.#magnitude = magnitude;
     this.#arrows.forEach(row => row.forEach(arrow => {
-      arrow.slowScale(VECTOR_VISUAL_SCALE_FACTOR*Math.abs(magnitude)).pointUp(magnitude >= 0);
+      arrow.slowScale(scale).pointUp(magnitude >= 0);
     }));
   }
   setColor(color: string): void {
@@ -59,26 +71,37 @@ class XYVectorField {
   constructor(container: BoxSpace, width_between: number, offset: number, angle: number = 0, magnitude: number = 1, color: string = 'black') {
     if (width_between < 15)
       throw new Error("Invalid width between arrows.");
-    this.#arrows = [];
+    this.#arrows = this.draw(container, width_between, offset, angle, magnitude, color);
     this.#angle = angle;
     this.#magnitude = magnitude;
+  }
+  private draw(container: BoxSpace, width_between: number, offset: number, angle: number = 0, magnitude: number = 1, color: string = 'black'): XYArrowSprite[][] {
+    const arrows: XYArrowSprite[][] = [];
     const negative_offset = magnitude < 0 ? 180 : 0;
-    for (let j = 1.5*container.y_min + offset; j < 1.5*container.y_max - offset; j += width_between) {
+    const scale = VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude);
+    for (let j = OVERFLOW_OFFSET*container.y_min + offset; j < OVERFLOW_OFFSET*container.y_max - offset; j += width_between) {
       const row: XYArrowSprite[] = [];
-      for (let i = 1.5*container.x_min + offset; i < 1.5*container.x_max - offset; i += width_between) {
+      for (let i = OVERFLOW_OFFSET*container.x_min + offset; i < OVERFLOW_OFFSET*container.x_max - offset; i += width_between) {
         const arrow = new XYArrowSprite();
         arrow
           .translate({
             x: i - container.x_min, 
             y: j - container.y_min
           })
-          .slowScale(VECTOR_VISUAL_SCALE_FACTOR*Math.abs(magnitude))
-          .rotate(this.#angle + negative_offset);
+          .slowScale(scale)
+          .rotate(angle + negative_offset);
         arrow.setColor(color);
         row.push(arrow)
       }
-      this.#arrows.push(row);
+      arrows.push(row);
     }
+    return arrows;
+  }
+  redraw(container: BoxSpace, width_between: number, offset: number, angle: number = 0, magnitude: number = 1, color: string = 'black'): void {
+    this.clear();
+    this.#arrows = this.draw(container, width_between, offset, angle, magnitude, color);
+    this.#angle = angle;
+    this.#magnitude = magnitude;
   }
   setArrowsParent(parent: Renderer): void {
     this.#arrows.forEach(row => row.forEach(arrow => arrow.setParent(parent)));
@@ -97,11 +120,12 @@ class XYVectorField {
   }
   setMagnitude(magnitude: number): void {
     const negative_offset = magnitude < 0 ? 180 : 0;
+    const scale = VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude);
     if (this.#magnitude === magnitude) return;
     this.#magnitude = magnitude;
     this.#arrows.forEach(row => row.forEach(arrow => {
       arrow
-        .slowScale(VECTOR_VISUAL_SCALE_FACTOR*Math.abs(magnitude))
+        .slowScale(scale)
         .rotate(this.#angle + negative_offset);
     }));
   }

@@ -14,6 +14,11 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
   }
 }
 
+const FIELD_WIDTH = 60;
+const GRAV_OFFSET = 20;
+const ELEC_OFFSET = 40;
+const MAG_OFFSET = 60;
+
 class ContainerRenderer extends Renderer {
   #container: BoxSpace;
   #grav_field: XYVectorField;
@@ -26,13 +31,10 @@ class ContainerRenderer extends Renderer {
 
     // Stored Data
     this.#container = simulation.getContainer();
-    simulation.getObservers().add(
-      SimEvent.Update_Container, 
-      () => {this.resize(this.#container)}
-    );
-    this.#grav_field = this.setupGravField(simulation);
-    this.#elec_field = this.setupElecField(simulation);
-    this.#mag_field = this.setupMagField(simulation);
+    this.setupSimObservers(simulation);
+    this.#grav_field = this.setupGravField(simulation.getEnvironment()!);
+    this.#elec_field = this.setupElecField(simulation.getEnvironment()!);
+    this.#mag_field = this.setupMagField(simulation.getEnvironment()!);
     this.#dark_overlay = this.setupDarkOverlay();
 
     // Content
@@ -43,34 +45,48 @@ class ContainerRenderer extends Renderer {
     container_element.style.width = `${this.#container.x_max - this.#container.x_min}px`;
     container_element.style.height = `${this.#container.y_max - this.#container.y_min}px`;
   }
-  private setupGravField(simulation: Simulation): XYVectorField {
-    const field = new XYVectorField(this.#container, 60, 20);
-    const vector = simulation.getEnvironment()!.statics!.gravity!;
-    field.setMagnitude(vector.magnitude());
-    field.pointAt(vector);
-    field.setColor('thistle');
-
-    // TODO: set color to purple, add observers for resize + simulation environment events
-
+  private setupSimObservers(simulation: Simulation): void {
+    const sim_obs = simulation.getObservers();
+    sim_obs.add(SimEvent.Update_Container, () => {
+      this.resize(this.#container);
+    });
+    sim_obs.add(SimEvent.Update_Environment, () => {
+      this.redrawVectorFields(simulation.getEnvironment());
+    });
+  }
+  private setupGravField(env: SimEnvironment): XYVectorField {
+    const g = env.statics!.gravity!;
+    const field = new XYVectorField(
+      this.#container, 
+      FIELD_WIDTH, 
+      GRAV_OFFSET, 
+      Math.atan2(g.y, g.x) * (180 / Math.PI), 
+      g.magnitude(), 
+      'thistle'
+    );
     return field;
   }
-  private setupElecField(simulation: Simulation): XYVectorField {
-    const field = new XYVectorField(this.#container, 60, 40);
-    const vector = simulation.getEnvironment()!.statics!.electric_field!;
-    field.setMagnitude(vector.magnitude());
-    field.pointAt(vector);
-    field.setColor('lightsalmon');
-
-    // TODO: set color to red, add observers for resize + simulation environment events
-
+  private setupElecField(env: SimEnvironment): XYVectorField {
+    const e = env.statics!.electric_field!;
+    const field = new XYVectorField(
+      this.#container, 
+      FIELD_WIDTH, 
+      ELEC_OFFSET, 
+      Math.atan2(e.y, e.x) * (180 / Math.PI), 
+      e.magnitude(), 
+      'lightsalmon'
+    );
     return field;
   }
-  private setupMagField(simulation: Simulation): ZVectorField {
-    const scalar = simulation.getEnvironment()!.statics!.magnetic_field!;
-    const field = new ZVectorField(this.#container, 60, 60, scalar, 'turquoise');
-
-    // TODO: set color to blue, add observers for resize + simulation environment events
-
+  private setupMagField(env: SimEnvironment): ZVectorField {
+    const b = env.statics!.magnetic_field!;
+    const field = new ZVectorField(
+      this.#container, 
+      FIELD_WIDTH, 
+      MAG_OFFSET, 
+      b, 
+      'turquoise'
+    );
     return field;
   }
   private setupDarkOverlay(): HTMLDivElement {
@@ -79,9 +95,19 @@ class ContainerRenderer extends Renderer {
     return overlay;
   }
   resize(container: BoxSpace): void {
-    console.log(container);
     this.getElement().style.width = `${container.x_max - container.x_min}px`;
     this.getElement().style.height = `${container.y_max - container.y_min}px`;
+  }
+  redrawVectorFields(env: SimEnvironment): void {
+    const g = env.statics!.gravity!;
+    const e = env.statics!.electric_field!;
+    const b = env.statics!.magnetic_field!;
+    this.#grav_field.redraw(this.#container, FIELD_WIDTH, GRAV_OFFSET, Math.atan2(g.y, g.x) * (180 / Math.PI), g.magnitude(), 'thistle');
+    this.#elec_field.redraw(this.#container, FIELD_WIDTH, ELEC_OFFSET, Math.atan2(e.y, e.x) * (180 / Math.PI), e.magnitude(), 'lightsalmon');
+    this.#mag_field.redraw(this.#container, FIELD_WIDTH, MAG_OFFSET, b, 'turquoise');
+    this.#grav_field.setArrowsParent(this);
+    this.#elec_field.setArrowsParent(this);
+    this.#mag_field.setArrowsParent(this);
   }
   toggle_dark_overlay(value: boolean = true): void {
     this.#dark_overlay.style.display = value ? 'block' : 'none';
@@ -196,11 +222,9 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     return this.#group_list;
   }
   addGroup(group: ParticleGroup): void {
-    console.log("adding a group")
     this.#group_list.push(new ParticleUnitGroupRenderer(group, this.#particles_handler, this.#container));
   }
   editGroup(group: ParticleGroup, changes_log: { [K in keyof ParticleGrouping]: boolean }): void {
-    console.log("editing a group")
     const group_renderer = this.#group_list.find(item => 
       item
       .getParticleGroup()
@@ -217,7 +241,6 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     group_renderer.refresh(changes_log);
   }
   deleteGroup(group: ParticleGroup, container: ContainerRenderer): void {
-    console.log("deleting a group")
     const group_renderer = this.#group_list.find(item => 
       item.getParticleGroup() === group
     );
@@ -226,7 +249,6 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     container.toggle_dark_overlay(false);
   }
   overwriteGroupList(): void {
-    console.log("overwriting a group")
     this.#group_list.empty();
     Array.from(
       this.#particles_handler.getGroups() as Map<string, ParticleGroup>, 

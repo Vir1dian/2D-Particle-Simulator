@@ -401,7 +401,6 @@ class EditParticleMenuRenderer extends Renderer {
     this.#input_table.updateVectorInput('velocity', this.#particle.velocity);
   }
   submit(): void {
-    console.log(this.#input_table.prepareChanges() as Record<string, keyof Particle>)
     this.#particle.edit(this.#input_table.prepareChanges() as Record<string, keyof Particle>);
   }
   submitDelete(): void {
@@ -553,7 +552,6 @@ class ParticleUnitGroupRenderer extends Renderer {
     const unit = this.#unit_list.find(r => r.getParticlePoint().getParticle() === particle);
     if (!unit) return;  // if particle not in this group
     unit.refresh(change_flags);
-    console.log(this.#group.getParticles());  
   }
   deleteParticleUnit(particle: Particle, container: ContainerRenderer): void {
     const unit_renderer = this.#unit_list.find(

@@ -53,27 +53,22 @@ class Simulation {
         };
         const preset_clone = structuredCloneCustom(preset);
         if (preset.container) {
-            console.log('update_container');
             __classPrivateFieldSet(this, _Simulation_container, deepmergeCustom(current_properties.container, preset_clone.container), "f");
             __classPrivateFieldGet(this, _Simulation_observers, "f").notify(SimEvent.Update_Container, undefined);
         }
         if (preset.environment) {
-            console.log('update_environment');
             __classPrivateFieldSet(this, _Simulation_environment, deepmergeCustom(current_properties.environment, preset_clone.environment), "f");
             __classPrivateFieldGet(this, _Simulation_observers, "f").notify(SimEvent.Update_Environment, undefined);
         }
         if (preset.config) {
-            console.log('update_config');
             __classPrivateFieldSet(this, _Simulation_config, deepmergeCustom(current_properties.config, preset_clone.config), "f");
             __classPrivateFieldGet(this, _Simulation_observers, "f").notify(SimEvent.Update_Config, undefined);
         }
         if (preset.particle_groups) {
-            console.log('update_particle_groups (SimEvent)');
             __classPrivateFieldGet(this, _Simulation_particles_handler, "f").overwriteGroups(preset.particle_groups);
         }
         if (preset)
             __classPrivateFieldGet(this, _Simulation_observers, "f").notify(SimEvent.Update, undefined);
-        console.log('update');
     }
     getContainer() {
         return __classPrivateFieldGet(this, _Simulation_container, "f");

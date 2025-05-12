@@ -52,28 +52,23 @@ class Simulation {
     const preset_clone = structuredCloneCustom(preset);
 
     if (preset.container) {
-      console.log('update_container');
       this.#container = deepmergeCustom(current_properties.container!, preset_clone.container!)
       this.#observers.notify(SimEvent.Update_Container, undefined);
     }
     if (preset.environment) {
-      console.log('update_environment');
       this.#environment = deepmergeCustom(current_properties.environment!, preset_clone.environment!)
       this.#observers.notify(SimEvent.Update_Environment, undefined);
     }
     if (preset.config) {
-      console.log('update_config');
       this.#config = deepmergeCustom(current_properties.config!, preset_clone.config!)
       this.#observers.notify(SimEvent.Update_Config, undefined);
     }
     
     if (preset.particle_groups) {
-      console.log('update_particle_groups (SimEvent)')
       this.#particles_handler.overwriteGroups(preset.particle_groups);
     }
 
     if (preset) this.#observers.notify(SimEvent.Update, undefined);
-    console.log('update');
   }
 
   getContainer(): BoxSpace {

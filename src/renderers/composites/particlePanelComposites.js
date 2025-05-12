@@ -399,7 +399,6 @@ class EditParticleMenuRenderer extends Renderer {
         __classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").updateVectorInput('velocity', __classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").velocity);
     }
     submit() {
-        console.log(__classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").prepareChanges());
         __classPrivateFieldGet(this, _EditParticleMenuRenderer_particle, "f").edit(__classPrivateFieldGet(this, _EditParticleMenuRenderer_input_table, "f").prepareChanges());
     }
     submitDelete() {
@@ -541,7 +540,6 @@ class ParticleUnitGroupRenderer extends Renderer {
         if (!unit)
             return; // if particle not in this group
         unit.refresh(change_flags);
-        console.log(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f").getParticles());
     }
     deleteParticleUnit(particle, container) {
         const unit_renderer = __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_unit_list, "f").find(r => r.getParticlePoint().getParticle() === particle);

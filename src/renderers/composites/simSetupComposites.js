@@ -52,7 +52,8 @@ class EnvironmentSetupRenderer extends Renderer {
         return __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f");
     }
     refresh() {
-        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").refresh();
+        var _a;
+        __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").setProperties(__classPrivateFieldGet(this, _EnvironmentSetupRenderer_simulation, "f").getEnvironment().statics, Object.assign({}, (_a = DEFAULT_PRESET.environment) === null || _a === void 0 ? void 0 : _a.statics));
     }
     remove() {
         __classPrivateFieldGet(this, _EnvironmentSetupRenderer_input_table, "f").remove();

@@ -42,7 +42,7 @@ class EnvironmentSetupRenderer extends Renderer {
     return this.#input_table;
   }
   refresh(): void {
-    this.#input_table.refresh();
+    this.#input_table.setProperties(this.#simulation.getEnvironment().statics!, {...DEFAULT_PRESET.environment?.statics});
   }
   remove(): void {
     this.#input_table.remove();

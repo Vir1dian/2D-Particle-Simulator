@@ -12,40 +12,52 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _ZVectorField_arrows, _ZVectorField_magnitude, _XYVectorField_arrows, _XYVectorField_angle, _XYVectorField_magnitude;
 const VECTOR_VISUAL_SCALE_FACTOR = 1 / 10000;
+const OVERFLOW_OFFSET = 1.3;
 class ZVectorField {
     constructor(container, width_between, offset, magnitude = 1, color = 'black') {
         _ZVectorField_arrows.set(this, void 0);
         _ZVectorField_magnitude.set(this, void 0);
         if (width_between < 15)
             throw new Error("Invalid width between arrows.");
-        __classPrivateFieldSet(this, _ZVectorField_arrows, [], "f");
-        const is_pointing_up = magnitude >= 0;
+        __classPrivateFieldSet(this, _ZVectorField_arrows, this.draw(container, width_between, offset, magnitude, color), "f");
         __classPrivateFieldSet(this, _ZVectorField_magnitude, magnitude, "f");
-        for (let j = 1.5 * container.y_min + offset; j < 1.5 * container.y_max - offset; j += width_between) {
+    }
+    draw(container, width_between, offset, magnitude = 1, color = 'black') {
+        const arrows = [];
+        const is_pointing_up = magnitude >= 0;
+        const scale = VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude);
+        for (let j = OVERFLOW_OFFSET * container.y_min + offset; j < OVERFLOW_OFFSET * container.y_max - offset; j += width_between) {
             const row = [];
-            for (let i = 1.5 * container.x_min + offset; i < 1.5 * container.x_max - offset; i += width_between) {
+            for (let i = OVERFLOW_OFFSET * container.x_min + offset; i < OVERFLOW_OFFSET * container.x_max - offset; i += width_between) {
                 const arrow = new ZArrowSprite(is_pointing_up);
                 arrow
                     .translate({
                     x: i - container.x_min,
                     y: j - container.y_min
                 })
-                    .slowScale(VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude));
+                    .slowScale(scale);
                 arrow.setColor(color);
                 row.push(arrow);
             }
-            __classPrivateFieldGet(this, _ZVectorField_arrows, "f").push(row);
+            arrows.push(row);
         }
+        return arrows;
+    }
+    redraw(container, width_between, offset, magnitude = 1, color = 'black') {
+        this.clear();
+        __classPrivateFieldSet(this, _ZVectorField_arrows, this.draw(container, width_between, offset, magnitude, color), "f");
+        __classPrivateFieldSet(this, _ZVectorField_magnitude, magnitude, "f");
     }
     setArrowsParent(parent) {
         __classPrivateFieldGet(this, _ZVectorField_arrows, "f").forEach(row => row.forEach(arrow => arrow.setParent(parent)));
     }
     setMagnitude(magnitude) {
+        const scale = VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude);
         if (__classPrivateFieldGet(this, _ZVectorField_magnitude, "f") === magnitude)
             return;
         __classPrivateFieldSet(this, _ZVectorField_magnitude, magnitude, "f");
         __classPrivateFieldGet(this, _ZVectorField_arrows, "f").forEach(row => row.forEach(arrow => {
-            arrow.slowScale(VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude)).pointUp(magnitude >= 0);
+            arrow.slowScale(scale).pointUp(magnitude >= 0);
         }));
     }
     setColor(color) {
@@ -70,26 +82,37 @@ class XYVectorField {
         _XYVectorField_magnitude.set(this, void 0);
         if (width_between < 15)
             throw new Error("Invalid width between arrows.");
-        __classPrivateFieldSet(this, _XYVectorField_arrows, [], "f");
+        __classPrivateFieldSet(this, _XYVectorField_arrows, this.draw(container, width_between, offset, angle, magnitude, color), "f");
         __classPrivateFieldSet(this, _XYVectorField_angle, angle, "f");
         __classPrivateFieldSet(this, _XYVectorField_magnitude, magnitude, "f");
+    }
+    draw(container, width_between, offset, angle = 0, magnitude = 1, color = 'black') {
+        const arrows = [];
         const negative_offset = magnitude < 0 ? 180 : 0;
-        for (let j = 1.5 * container.y_min + offset; j < 1.5 * container.y_max - offset; j += width_between) {
+        const scale = VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude);
+        for (let j = OVERFLOW_OFFSET * container.y_min + offset; j < OVERFLOW_OFFSET * container.y_max - offset; j += width_between) {
             const row = [];
-            for (let i = 1.5 * container.x_min + offset; i < 1.5 * container.x_max - offset; i += width_between) {
+            for (let i = OVERFLOW_OFFSET * container.x_min + offset; i < OVERFLOW_OFFSET * container.x_max - offset; i += width_between) {
                 const arrow = new XYArrowSprite();
                 arrow
                     .translate({
                     x: i - container.x_min,
                     y: j - container.y_min
                 })
-                    .slowScale(VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude))
-                    .rotate(__classPrivateFieldGet(this, _XYVectorField_angle, "f") + negative_offset);
+                    .slowScale(scale)
+                    .rotate(angle + negative_offset);
                 arrow.setColor(color);
                 row.push(arrow);
             }
-            __classPrivateFieldGet(this, _XYVectorField_arrows, "f").push(row);
+            arrows.push(row);
         }
+        return arrows;
+    }
+    redraw(container, width_between, offset, angle = 0, magnitude = 1, color = 'black') {
+        this.clear();
+        __classPrivateFieldSet(this, _XYVectorField_arrows, this.draw(container, width_between, offset, angle, magnitude, color), "f");
+        __classPrivateFieldSet(this, _XYVectorField_angle, angle, "f");
+        __classPrivateFieldSet(this, _XYVectorField_magnitude, magnitude, "f");
     }
     setArrowsParent(parent) {
         __classPrivateFieldGet(this, _XYVectorField_arrows, "f").forEach(row => row.forEach(arrow => arrow.setParent(parent)));
@@ -108,12 +131,13 @@ class XYVectorField {
     }
     setMagnitude(magnitude) {
         const negative_offset = magnitude < 0 ? 180 : 0;
+        const scale = VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude);
         if (__classPrivateFieldGet(this, _XYVectorField_magnitude, "f") === magnitude)
             return;
         __classPrivateFieldSet(this, _XYVectorField_magnitude, magnitude, "f");
         __classPrivateFieldGet(this, _XYVectorField_arrows, "f").forEach(row => row.forEach(arrow => {
             arrow
-                .slowScale(VECTOR_VISUAL_SCALE_FACTOR * Math.abs(magnitude))
+                .slowScale(scale)
                 .rotate(__classPrivateFieldGet(this, _XYVectorField_angle, "f") + negative_offset);
         }));
     }
