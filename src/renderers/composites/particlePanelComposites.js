@@ -21,7 +21,7 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var _AddParticleMenuRenderer_particles_handler, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_amount_input, _AddParticleMenuRenderer_submit_button, _CreateGroupMenuRenderer_particles_handler, _CreateGroupMenuRenderer_input_table, _CreateGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_group, _EditGroupMenuRenderer_particles_handler, _EditGroupMenuRenderer_input_table, _EditGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_delete_button, _EditParticleMenuRenderer_particle, _EditParticleMenuRenderer_group, _EditParticleMenuRenderer_input_table, _EditParticleMenuRenderer_submit_button, _EditParticleMenuRenderer_delete_button, _ParticleUnitGroupRenderer_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container;
+var _AddParticleMenuRenderer_particles_handler, _AddParticleMenuRenderer_group_selector, _AddParticleMenuRenderer_input_table, _AddParticleMenuRenderer_amount_input, _AddParticleMenuRenderer_submit_button, _CreateGroupMenuRenderer_particles_handler, _CreateGroupMenuRenderer_input_table, _CreateGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_group, _EditGroupMenuRenderer_particles_handler, _EditGroupMenuRenderer_input_table, _EditGroupMenuRenderer_submit_button, _EditGroupMenuRenderer_delete_button, _EditParticleMenuRenderer_particle, _EditParticleMenuRenderer_group, _EditParticleMenuRenderer_input_table, _EditParticleMenuRenderer_submit_button, _EditParticleMenuRenderer_delete_button, _ParticleUnitGroupRenderer_group, _ParticleUnitGroupRenderer_icon, _ParticleUnitGroupRenderer_details_dialog, _ParticleUnitGroupRenderer_drag_button, _ParticleUnitGroupRenderer_unit_list, _ParticleUnitRenderer_particle_renderer, _ParticleUnitRenderer_icon, _ParticleUnitRenderer_details_dialog, _ParticleUnitRenderer_drag_button, _ParticlePointRenderer_particle, _ParticlePointRenderer_container, _ParticlePointRenderer_select_callback;
 class AddParticleMenuRenderer extends Renderer {
     constructor(particles_handler, container) {
         const menu_wrapper = document.createElement('div');
@@ -600,11 +600,14 @@ class ParticleUnitRenderer extends Renderer {
         const close_button = details_dialog.getCloseButton();
         open_button.setLabel("expand_content", true);
         const open_callback = open_button.getCallback();
-        open_button.setCallback(() => {
+        const new_open_callback = () => {
             open_callback();
             __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle().highlight(true);
             container.toggle_dark_overlay(true);
-        });
+        };
+        open_button.setCallback(new_open_callback);
+        // Also open dialog when the particle point in the container is clicked
+        __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").setSelectCallback(new_open_callback);
         close_button.setLabel("close", true);
         const close_callback = close_button.getCallback();
         close_button.setCallback(() => {
@@ -687,9 +690,11 @@ class ParticlePointRenderer extends Renderer {
         super(particle_element, 'particle_element', `particle_element_id${particle.getID()}`);
         _ParticlePointRenderer_particle.set(this, void 0);
         _ParticlePointRenderer_container.set(this, void 0);
+        _ParticlePointRenderer_select_callback.set(this, void 0);
         __classPrivateFieldSet(this, _ParticlePointRenderer_particle, particle, "f");
-        this.setupObservers();
+        this.setupParticleObservers();
         __classPrivateFieldSet(this, _ParticlePointRenderer_container, container.getContainer(), "f");
+        __classPrivateFieldSet(this, _ParticlePointRenderer_select_callback, (e) => { }, "f");
         this.setParent(container);
         // shape
         particle_element.style.borderRadius = `${particle.radius}px`;
@@ -701,16 +706,18 @@ class ParticlePointRenderer extends Renderer {
         // color
         particle_element.style.backgroundColor = particle.color;
     }
-    setupObservers() {
-        const obs = __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").getObservers();
-        obs.add(ParticleEvent.Move, () => { this.update('position'); });
-        obs.add(ParticleEvent.Highlight, () => { this.highlight(); });
+    setupParticleObservers() {
+        const par_obs = __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").getObservers();
+        par_obs.add(ParticleEvent.Move, () => { this.update('position'); });
+        par_obs.add(ParticleEvent.Highlight, () => { this.highlight(); });
     }
-    getElement() {
-        return super.getElement();
-    }
-    getParticle() {
-        return __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f");
+    setSelectCallback(callback) {
+        __classPrivateFieldSet(this, _ParticlePointRenderer_select_callback, (e) => {
+            if (e.target === this.getElement()) {
+                callback();
+            }
+        }, "f");
+        this.getElement().addEventListener('click', __classPrivateFieldGet(this, _ParticlePointRenderer_select_callback, "f"));
     }
     setContainer(container) {
         if (__classPrivateFieldGet(this, _ParticlePointRenderer_container, "f") === container)
@@ -745,5 +752,15 @@ class ParticlePointRenderer extends Renderer {
             // particle_element.style.backgroundColor = this.#particle.color;
         }
     }
+    getElement() {
+        return super.getElement();
+    }
+    getParticle() {
+        return __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f");
+    }
+    remove() {
+        this.getElement().removeEventListener('click', __classPrivateFieldGet(this, _ParticlePointRenderer_select_callback, "f"));
+        super.remove();
+    }
 }
-_ParticlePointRenderer_particle = new WeakMap(), _ParticlePointRenderer_container = new WeakMap();
+_ParticlePointRenderer_particle = new WeakMap(), _ParticlePointRenderer_container = new WeakMap(), _ParticlePointRenderer_select_callback = new WeakMap();

@@ -617,15 +617,14 @@ class ParticleUnitRenderer extends Renderer {
 
     open_button.setLabel("expand_content", true);
     const open_callback = open_button.getCallback();
-    open_button.setCallback(
-      () => {
-        open_callback();
-        
-        this.#particle_renderer.getParticle().highlight(true);
-        container.toggle_dark_overlay(true);
-
-      }
-    );
+    const new_open_callback = () => {
+      open_callback();
+      this.#particle_renderer.getParticle().highlight(true);
+      container.toggle_dark_overlay(true);
+    }
+    open_button.setCallback(new_open_callback);
+    // Also open dialog when the particle point in the container is clicked
+    this.#particle_renderer.setSelectCallback(new_open_callback);
 
     close_button.setLabel("close", true);
     const close_callback = close_button.getCallback();
@@ -710,13 +709,15 @@ class ParticleUnitRenderer extends Renderer {
 class ParticlePointRenderer extends Renderer { 
   #particle: Particle;
   #container: BoxSpace;
+  #select_callback: (e: MouseEvent) => void;
   constructor(particle: Particle, container: ContainerRenderer) {
     const particle_element : HTMLDivElement = document.createElement('div');
     super(particle_element, 'particle_element', `particle_element_id${particle.getID()}`);
 
     this.#particle = particle;
-    this.setupObservers();
+    this.setupParticleObservers();
     this.#container = container.getContainer();
+    this.#select_callback = (e: MouseEvent) => {};
 
     this.setParent(container);
 
@@ -730,17 +731,18 @@ class ParticlePointRenderer extends Renderer {
     // color
     particle_element.style.backgroundColor = particle.color;
   }
-  private setupObservers(): void {
-    const obs = this.#particle.getObservers();
-    obs.add(ParticleEvent.Move, () => {this.update('position')});
-    obs.add(ParticleEvent.Highlight, () => {this.highlight()})
+  private setupParticleObservers(): void {
+    const par_obs = this.#particle.getObservers();
+    par_obs.add(ParticleEvent.Move, () => {this.update('position')});
+    par_obs.add(ParticleEvent.Highlight, () => {this.highlight()})
   }
-
-  getElement(): HTMLDivElement {
-    return super.getElement() as HTMLDivElement;
-  }
-  getParticle(): Particle {
-    return this.#particle;
+  setSelectCallback(callback: () => void): void {
+    this.#select_callback = (e: MouseEvent) => {
+      if (e.target === this.getElement()) {
+        callback();
+      }
+    };
+    this.getElement().addEventListener('click', this.#select_callback);
   }
   setContainer(container: BoxSpace): void {
     if (this.#container === container) return;
@@ -773,5 +775,15 @@ class ParticlePointRenderer extends Renderer {
       particle_element.classList.remove("highlighted_particle_element");
       // particle_element.style.backgroundColor = this.#particle.color;
     }
+  }
+  getElement(): HTMLDivElement {
+    return super.getElement() as HTMLDivElement;
+  }
+  getParticle(): Particle {
+    return this.#particle;
+  }
+  remove(): void {
+    this.getElement().removeEventListener('click', this.#select_callback);
+    super.remove();
   }
 }
