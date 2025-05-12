@@ -487,7 +487,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         drag: 0,
         gravity: new Vector2D(),
         electric_field: new Vector2D(),
-        magnetic_field: 100
+        magnetic_field: 0.5
       }
     },
     config: structuredCloneCustom(DEFAULT_PRESET.config!),
@@ -503,24 +503,24 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           group_id: "Positive",
           radius: 10,
           position: 'random',
-          velocity: new Vector2D(10, 0),
+          velocity: new Vector2D(30, 0),
           mass: 1,
           charge: 10,
           color: 'blue',
         }, 
-        size: 15 
+        size: 5 
       }],
       ["Negative", { 
         grouping: {
           group_id: "Negative",
           radius: 10,
           position: 'random',
-          velocity: new Vector2D(10, 0),
+          velocity: new Vector2D(30, 0),
           mass: 1,
           charge: -10,
           color: 'red',
         }, 
-        size: 15 
+        size: 5 
       }]
     ])
   },
@@ -537,7 +537,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         drag: 0,
         gravity: new Vector2D(),
         electric_field: new Vector2D(10, 10),
-        magnetic_field: 100
+        magnetic_field: 0.5
       }
     },
     config: structuredCloneCustom(DEFAULT_PRESET.config!),
@@ -558,7 +558,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           charge: 10,
           color: 'blue',
         }, 
-        size: 15 
+        size: 5 
       }],
       ["Negative", { 
         grouping: {
@@ -570,7 +570,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           charge: -10,
           color: 'red',
         }, 
-        size: 15 
+        size: 5 
       }]
     ])
   },
@@ -585,9 +585,9 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
       statics: {
         elasticity: 1,
         drag: 0,
-        gravity: new Vector2D(-100, -100),
+        gravity: new Vector2D(-75, -75),
         electric_field: new Vector2D(10, 10),
-        magnetic_field: 100
+        magnetic_field: 0.75
       }
     },
     config: structuredCloneCustom(DEFAULT_PRESET.config!),

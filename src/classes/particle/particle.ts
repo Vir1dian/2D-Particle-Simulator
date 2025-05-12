@@ -216,8 +216,8 @@ class Particle {
     const f_b = this.velocity.crossProduct(b_field).scalarMultiply(this.charge);
     const new_acceleration = f_g.add(f_e).add(f_b).scalarMultiply(1 / this.mass);
 
-    this.position = this.position.add(this.velocity.scalarMultiply(dt));
     this.velocity = this.velocity.add(new_acceleration.scalarMultiply(dt));
+    this.position = this.position.add(this.velocity.scalarMultiply(dt));
 
     this.#observers.notify(ParticleEvent.Update, undefined);
     this.#observers.notify(ParticleEvent.Move, undefined);
@@ -253,18 +253,17 @@ class Particle {
   
     const k4_velocity = this.velocity.add(k3_acceleration.scalarMultiply(dt));
     const k4_acceleration = new_acceleration(k4_velocity);
-
-    this.position = this.position.add(
-      k1_velocity.add(k2_velocity.scalarMultiply(2))
-        .add(k3_velocity.scalarMultiply(2))
-        .add(k4_velocity)
-        .scalarMultiply(dt / 6)
-    );
   
     this.velocity = this.velocity.add(
       k1_acceleration.add(k2_acceleration.scalarMultiply(2))
         .add(k3_acceleration.scalarMultiply(2))
         .add(k4_acceleration)
+        .scalarMultiply(dt / 6)
+    );
+    this.position = this.position.add(
+      k1_velocity.add(k2_velocity.scalarMultiply(2))
+        .add(k3_velocity.scalarMultiply(2))
+        .add(k4_velocity)
         .scalarMultiply(dt / 6)
     );
 
