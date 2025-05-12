@@ -45,7 +45,7 @@ class ContainerRenderer extends Renderer {
     this.getElement().style.height = `${container.y_max - container.y_min}px`;
   }
   toggle_dark_overlay(value: boolean = true): void {
-    this.#dark_overlay.style.display = value ? '' : 'none';
+    this.#dark_overlay.style.display = value ? 'block' : 'none';
   }
   getContainer(): BoxSpace {
     return this.#container;

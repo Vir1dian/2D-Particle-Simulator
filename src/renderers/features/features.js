@@ -52,7 +52,7 @@ class ContainerRenderer extends Renderer {
         this.getElement().style.height = `${container.y_max - container.y_min}px`;
     }
     toggle_dark_overlay(value = true) {
-        __classPrivateFieldGet(this, _ContainerRenderer_dark_overlay, "f").style.display = value ? '' : 'none';
+        __classPrivateFieldGet(this, _ContainerRenderer_dark_overlay, "f").style.display = value ? 'block' : 'none';
     }
     getContainer() {
         return __classPrivateFieldGet(this, _ContainerRenderer_container, "f");

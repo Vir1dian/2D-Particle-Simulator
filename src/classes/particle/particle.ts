@@ -1,5 +1,19 @@
 const PARTICLE_COLORS: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
 
+// const ParticleHighlightMap: Record<string, string> = {
+//   black: 'gray',
+//   gray: 'lightgray',
+//   blue: 'cornflowerblue',
+//   red: 'crimson',
+//   pink: 'hotpink',
+//   green: 'limegreen',
+//   yellow: 'gold',
+//   orange: 'darkorange',
+//   violet: 'orchid',
+//   purple: 'mediumorchid',
+//   brown: 'peru'
+// }
+
 enum ParticleEvent {
   Update,
   Edit,

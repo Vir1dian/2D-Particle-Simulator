@@ -12,6 +12,19 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _a, _Particle_instance_count, _Particle_observers, _Particle_id, _Particle_group_id, _Particle_is_highlighted;
 const PARTICLE_COLORS = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
+// const ParticleHighlightMap: Record<string, string> = {
+//   black: 'gray',
+//   gray: 'lightgray',
+//   blue: 'cornflowerblue',
+//   red: 'crimson',
+//   pink: 'hotpink',
+//   green: 'limegreen',
+//   yellow: 'gold',
+//   orange: 'darkorange',
+//   violet: 'orchid',
+//   purple: 'mediumorchid',
+//   brown: 'peru'
+// }
 var ParticleEvent;
 (function (ParticleEvent) {
     ParticleEvent[ParticleEvent["Update"] = 0] = "Update";

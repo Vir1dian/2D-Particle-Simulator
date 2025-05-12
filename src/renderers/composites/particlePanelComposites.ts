@@ -436,7 +436,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#group = group;
     this.setupObservers(container);
     this.#icon = this.createIcon(group.getGrouping().color as string);
-    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container.getContainer());
+    this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container);
     this.#drag_button = this.setupDragButton();
     this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...Array.from(
       group.getParticles(), ([id, particle]) => new ParticleUnitRenderer(particle, group, container)
@@ -464,8 +464,8 @@ class ParticleUnitGroupRenderer extends Renderer {
     else icon.getElement().style.backgroundColor = color;
     return icon;
   };
-  private setupDetailsDialog(group_id: string, particles_handler: ParticlesHandler, container: BoxSpace): StandardDialogRenderer<EditGroupMenuRenderer> {
-    const body = new EditGroupMenuRenderer(this.#group, particles_handler, container);
+  private setupDetailsDialog(group_id: string, particles_handler: ParticlesHandler, container: ContainerRenderer): StandardDialogRenderer<EditGroupMenuRenderer> {
+    const body = new EditGroupMenuRenderer(this.#group, particles_handler, container.getContainer());
     const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, `Group: ${group_id}`, true);
     const open_button = details_dialog.getOpenButton();
     const close_button = details_dialog.getCloseButton();
@@ -475,7 +475,11 @@ class ParticleUnitGroupRenderer extends Renderer {
     open_button.setCallback(
       () => {
         open_callback();
-        console.log('yeet');
+
+        for (const [id, particle] of this.#group.getParticles()) 
+          particle.highlight(true);
+        container.toggle_dark_overlay(true);
+
       }
     );
 
@@ -484,7 +488,11 @@ class ParticleUnitGroupRenderer extends Renderer {
     close_button.setCallback(
       () => {
         close_callback();
-        console.log('yote');
+
+        for (const [id, particle] of this.#group.getParticles()) 
+          particle.highlight(false);
+        container.toggle_dark_overlay(false);
+
       }
     );
 
@@ -583,7 +591,7 @@ class ParticleUnitRenderer extends Renderer {
     this.setupObservers(particle);
     this.#particle_renderer = new ParticlePointRenderer(particle, container);
     this.#icon = this.createIcon(particle.color);
-    this.#details_dialog = this.setupDetailsDialog(particle.getID(), group, container.getContainer());
+    this.#details_dialog = this.setupDetailsDialog(particle.getID(), group, container);
     this.#drag_button = this.setupDragButton(); 
 
     // DOM Content
@@ -602,8 +610,8 @@ class ParticleUnitRenderer extends Renderer {
     icon.getElement().style.backgroundColor = color;
     return icon;
   }
-  private setupDetailsDialog(id: number, group: ParticleGroup, container: BoxSpace): StandardDialogRenderer<EditParticleMenuRenderer> {
-    const body = new EditParticleMenuRenderer(this.#particle_renderer.getParticle(), group, container);
+  private setupDetailsDialog(id: number, group: ParticleGroup, container: ContainerRenderer): StandardDialogRenderer<EditParticleMenuRenderer> {
+    const body = new EditParticleMenuRenderer(this.#particle_renderer.getParticle(), group, container.getContainer());
     const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle: ${id}`, true);
     const open_button = details_dialog.getOpenButton();
     const close_button = details_dialog.getCloseButton();
@@ -613,7 +621,10 @@ class ParticleUnitRenderer extends Renderer {
     open_button.setCallback(
       () => {
         open_callback();
-        console.log('yeet');
+        
+        this.#particle_renderer.getParticle().highlight(true);
+        container.toggle_dark_overlay(true);
+
       }
     );
 
@@ -622,7 +633,10 @@ class ParticleUnitRenderer extends Renderer {
     close_button.setCallback(
       () => {
         close_callback();
-        console.log('yote');
+        
+        this.#particle_renderer.getParticle().highlight(false);
+        container.toggle_dark_overlay(false);
+
       }
     );
 
@@ -720,6 +734,7 @@ class ParticlePointRenderer extends Renderer {
   private setupObservers(): void {
     const obs = this.#particle.getObservers();
     obs.add(ParticleEvent.Move, () => {this.update('position')});
+    obs.add(ParticleEvent.Highlight, () => {this.highlight()})
   }
 
   getElement(): HTMLDivElement {
@@ -731,11 +746,11 @@ class ParticlePointRenderer extends Renderer {
   setContainer(container: BoxSpace): void {
     if (this.#container === container) return;
     this.#container = container;
-    const container_element : HTMLDivElement = document.querySelector('.container_element') as HTMLDivElement;
+    const container_element = document.querySelector('.container_element') as HTMLDivElement;
     container_element.appendChild(this.getElement());
   }
   update(...properties: ('radius' | 'position' | 'color')[]): void {
-    const particle_element : HTMLDivElement = this.getElement() as HTMLDivElement;
+    const particle_element = this.getElement() as HTMLDivElement;
     if (properties.includes('radius')) {
       particle_element.style.borderRadius = `${this.#particle.radius}px`;
       particle_element.style.width = `${2*this.#particle.radius}px`;
@@ -747,6 +762,17 @@ class ParticlePointRenderer extends Renderer {
     }
     if (properties.includes('color')) {
       particle_element.style.backgroundColor = this.#particle.color;
+    }
+  }
+  highlight(): void {
+    const particle_element = this.getElement() as HTMLDivElement;
+    if (this.#particle.is_highlighted()) {
+      particle_element.classList.add("highlighted_particle_element");
+      // particle_element.style.backgroundColor = ParticleHighlightMap[this.#particle.color];
+    }
+    else {
+      particle_element.classList.remove("highlighted_particle_element");
+      // particle_element.style.backgroundColor = this.#particle.color;
     }
   }
 }

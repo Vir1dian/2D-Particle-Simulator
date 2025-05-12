@@ -124,10 +124,10 @@ const DEFAULT_PRESET: SimPreset = {
 const TEMPORARY_PRESETS: Record<string, SimPreset> = {
   sandbox: {
     container: {
-      x_min: -180,
-      x_max: 180,
-      y_min: -180,
-      y_max: 180
+      x_min: -275,
+      x_max: 275,
+      y_min: -275,
+      y_max: 275
     },
     environment: {
       statics: {
@@ -287,6 +287,115 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           color: 'black',
         },
         size: 15
+      }]
+    ])
+  },
+  colorstest: {
+    particle_groups: new Map([
+      [DEFAULT_GROUPING.group_id, { 
+        grouping: {
+          group_id: DEFAULT_GROUPING.group_id
+        }, 
+        size: 0
+      }],
+      ["black", { 
+        grouping: {
+          group_id: "black",
+          radius: 20,
+          position: new Vector2D(-230, 0),
+          color: 'black',
+        }, 
+        size: 1 
+      }],
+      ["gray", { 
+        grouping: {
+          group_id: "gray",
+          radius: 20,
+          position: new Vector2D(-190, 0),
+          color: 'gray',
+        }, 
+        size: 1 
+      }],
+      ["blue", { 
+        grouping: {
+          group_id: "blue",
+          radius: 20,
+          position: new Vector2D(-150, 0),
+          color: 'blue',
+        }, 
+        size: 1 
+      }],
+      ["red", { 
+        grouping: {
+          group_id: "red",
+          radius: 20,
+          position: new Vector2D(-110, 0),
+          color: 'red',
+        }, 
+        size: 1 
+      }],
+      ["pink", { 
+        grouping: {
+          group_id: "pink",
+          radius: 20,
+          position: new Vector2D(-70, 0),
+          color: 'pink',
+        }, 
+        size: 1 
+      }],
+      ["green", { 
+        grouping: {
+          group_id: "green",
+          radius: 20,
+          position: new Vector2D(-30, 0),
+          color: 'green',
+        }, 
+        size: 1 
+      }],
+      ["yellow", { 
+        grouping: {
+          group_id: "yellow",
+          radius: 20,
+          position: new Vector2D(10, 0),
+          color: 'yellow',
+        }, 
+        size: 1 
+      }],
+      ["orange", { 
+        grouping: {
+          group_id: "orange",
+          radius: 20,
+          position: new Vector2D(50, 0),
+          color: 'orange',
+        }, 
+        size: 1 
+      }],
+      ["violet", { 
+        grouping: {
+          group_id: "violet",
+          radius: 20,
+          position: new Vector2D(90, 0),
+          color: 'violet',
+        }, 
+        size: 1 
+      }],
+      ["purple", { 
+        grouping: {
+          group_id: "purple",
+          radius: 20,
+          position: new Vector2D(130, 0),
+          color: 'purple',
+        }, 
+        size: 1 
+      }],
+      ["brown", { 
+        grouping: {
+          group_id: "brown",
+          radius: 20,
+          position: new Vector2D(170, 0),
+          color: 'brown',
+        }, 
+        size: 1 
       }]
     ])
   }

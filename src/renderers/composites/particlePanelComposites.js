@@ -432,7 +432,7 @@ class ParticleUnitGroupRenderer extends Renderer {
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_group, group, "f");
         this.setupObservers(container);
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_icon, this.createIcon(group.getGrouping().color), "f");
-        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container.getContainer()), "f");
+        __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_details_dialog, this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_drag_button, this.setupDragButton(), "f");
         __classPrivateFieldSet(this, _ParticleUnitGroupRenderer_unit_list, new ListRenderer(...Array.from(group.getParticles(), ([id, particle]) => new ParticleUnitRenderer(particle, group, container))), "f");
         // DOM Content
@@ -461,7 +461,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     }
     ;
     setupDetailsDialog(group_id, particles_handler, container) {
-        const body = new EditGroupMenuRenderer(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f"), particles_handler, container);
+        const body = new EditGroupMenuRenderer(__classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f"), particles_handler, container.getContainer());
         const details_dialog = new StandardDialogRenderer(body, `particle_group_${group_id}`, `Group: ${group_id}`, true);
         const open_button = details_dialog.getOpenButton();
         const close_button = details_dialog.getCloseButton();
@@ -469,13 +469,17 @@ class ParticleUnitGroupRenderer extends Renderer {
         const open_callback = open_button.getCallback();
         open_button.setCallback(() => {
             open_callback();
-            console.log('yeet');
+            for (const [id, particle] of __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f").getParticles())
+                particle.highlight(true);
+            container.toggle_dark_overlay(true);
         });
         close_button.setLabel("close", true);
         const close_callback = close_button.getCallback();
         close_button.setCallback(() => {
             close_callback();
-            console.log('yote');
+            for (const [id, particle] of __classPrivateFieldGet(this, _ParticleUnitGroupRenderer_group, "f").getParticles())
+                particle.highlight(false);
+            container.toggle_dark_overlay(false);
         });
         return details_dialog;
     }
@@ -572,7 +576,7 @@ class ParticleUnitRenderer extends Renderer {
         this.setupObservers(particle);
         __classPrivateFieldSet(this, _ParticleUnitRenderer_particle_renderer, new ParticlePointRenderer(particle, container), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_icon, this.createIcon(particle.color), "f");
-        __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.getID(), group, container.getContainer()), "f");
+        __classPrivateFieldSet(this, _ParticleUnitRenderer_details_dialog, this.setupDetailsDialog(particle.getID(), group, container), "f");
         __classPrivateFieldSet(this, _ParticleUnitRenderer_drag_button, this.setupDragButton(), "f");
         // DOM Content
         particle_control_element.appendChild(this.createTitleWrapper(particle.getID()));
@@ -591,7 +595,7 @@ class ParticleUnitRenderer extends Renderer {
         return icon;
     }
     setupDetailsDialog(id, group, container) {
-        const body = new EditParticleMenuRenderer(__classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle(), group, container);
+        const body = new EditParticleMenuRenderer(__classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle(), group, container.getContainer());
         const details_dialog = new StandardDialogRenderer(body, `particle_${id}`, `Particle: ${id}`, true);
         const open_button = details_dialog.getOpenButton();
         const close_button = details_dialog.getCloseButton();
@@ -599,13 +603,15 @@ class ParticleUnitRenderer extends Renderer {
         const open_callback = open_button.getCallback();
         open_button.setCallback(() => {
             open_callback();
-            console.log('yeet');
+            __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle().highlight(true);
+            container.toggle_dark_overlay(true);
         });
         close_button.setLabel("close", true);
         const close_callback = close_button.getCallback();
         close_button.setCallback(() => {
             close_callback();
-            console.log('yote');
+            __classPrivateFieldGet(this, _ParticleUnitRenderer_particle_renderer, "f").getParticle().highlight(false);
+            container.toggle_dark_overlay(false);
         });
         return details_dialog;
     }
@@ -699,6 +705,7 @@ class ParticlePointRenderer extends Renderer {
     setupObservers() {
         const obs = __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").getObservers();
         obs.add(ParticleEvent.Move, () => { this.update('position'); });
+        obs.add(ParticleEvent.Highlight, () => { this.highlight(); });
     }
     getElement() {
         return super.getElement();
@@ -726,6 +733,17 @@ class ParticlePointRenderer extends Renderer {
         }
         if (properties.includes('color')) {
             particle_element.style.backgroundColor = __classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").color;
+        }
+    }
+    highlight() {
+        const particle_element = this.getElement();
+        if (__classPrivateFieldGet(this, _ParticlePointRenderer_particle, "f").is_highlighted()) {
+            particle_element.classList.add("highlighted_particle_element");
+            // particle_element.style.backgroundColor = ParticleHighlightMap[this.#particle.color];
+        }
+        else {
+            particle_element.classList.remove("highlighted_particle_element");
+            // particle_element.style.backgroundColor = this.#particle.color;
         }
     }
 }
