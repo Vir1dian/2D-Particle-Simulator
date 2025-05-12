@@ -26,10 +26,6 @@ class UIControlRenderer extends Renderer {
     }
 }
 _UIControlRenderer_simulation = new WeakMap();
-const FIELD_WIDTH = 60;
-const GRAV_OFFSET = 20;
-const ELEC_OFFSET = 40;
-const MAG_OFFSET = 60;
 class ContainerRenderer extends Renderer {
     constructor(simulation) {
         const container_element = document.createElement('div');

@@ -194,51 +194,59 @@ class Particle {
     }
     return false;
   }
-
   /**
-   * "Moves" or changes the particle's kinematic properties given some time span
+   * "Moves" or changes the particle's kinematic properties given some time span, calculated by Euler's method.
+   * @param {SimEnvironment} environment Source of environmental variables such as gravity, electric field, etc.
    * @param {number} dt The time change that the movement occurs, more accurate the smaller the value is
-   * @param {number} t The total time elapsed, used for oscillation only (WIP)
-   * @param {'euler' | 'rungekutta'} method The calculation used, euler by default
    */
-  move(environment: SimEnvironment, dt: number, t: number, method: 'euler' | 'rungekutta' = 'euler') {
-    // dv/dt = g - (b/m)*v
+  eulerMove(environment: SimEnvironment, dt: number): void {
     const gravity = environment.statics!.gravity!; 
     const dragOverMass = environment.statics!.drag! / this.mass;
-    if (method === 'euler') {
-      const drag_force = this.velocity.scalarMultiply(-dragOverMass)
-      const new_acceleration = gravity.add(drag_force);
-      this.velocity = this.velocity.add(new_acceleration.scalarMultiply(dt));
-      this.position = this.position.add(this.velocity.scalarMultiply(dt));
-    }
-    else if (method === 'rungekutta') {
-      const new_acceleration = (vel: Vector2D) => gravity.add(vel.scalarMultiply(-dragOverMass))
-      const k1_velocity = this.velocity;
-      const k1_acceleration = new_acceleration(k1_velocity);
-    
-      const k2_velocity = this.velocity.add(k1_acceleration.scalarMultiply(0.5 * dt));
-      const k2_acceleration = new_acceleration(k2_velocity);
-    
-      const k3_velocity = this.velocity.add(k2_acceleration.scalarMultiply(0.5 * dt));
-      const k3_acceleration = new_acceleration(k3_velocity);
-    
-      const k4_velocity = this.velocity.add(k3_acceleration.scalarMultiply(dt));
-      const k4_acceleration = new_acceleration(k4_velocity);
-    
-      this.velocity = this.velocity.add(
-        k1_acceleration.add(k2_acceleration.scalarMultiply(2))
-          .add(k3_acceleration.scalarMultiply(2))
-          .add(k4_acceleration)
-          .scalarMultiply(dt / 6)
-      );
-    
-      this.position = this.position.add(
-        k1_velocity.add(k2_velocity.scalarMultiply(2))
-          .add(k3_velocity.scalarMultiply(2))
-          .add(k4_velocity)
-          .scalarMultiply(dt / 6)
-      );
-    }
+    const drag_force = this.velocity.scalarMultiply(-dragOverMass)
+
+    const new_acceleration = gravity.add(drag_force);
+    this.velocity = this.velocity.add(new_acceleration.scalarMultiply(dt));
+    this.position = this.position.add(this.velocity.scalarMultiply(dt));
+
+    this.#observers.notify(ParticleEvent.Update, undefined);
+    this.#observers.notify(ParticleEvent.Move, undefined);
+  }
+  /**
+   * "Moves" or changes the particle's kinematic properties given some time span, calculated by the 4th Order Runge-Kutta method.
+   * @param {SimEnvironment} environment Source of environmental variables such as gravity, electric field, etc.
+   * @param {number} dt The time change that the movement occurs, more accurate the smaller the value is
+   */
+  rungekuttaMove(environment: SimEnvironment, dt: number): void {
+    const gravity = environment.statics!.gravity!; 
+    const dragOverMass = environment.statics!.drag! / this.mass;
+
+    const new_acceleration = (vel: Vector2D) => gravity.add(vel.scalarMultiply(-dragOverMass))
+    const k1_velocity = this.velocity;
+    const k1_acceleration = new_acceleration(k1_velocity);
+  
+    const k2_velocity = this.velocity.add(k1_acceleration.scalarMultiply(0.5 * dt));
+    const k2_acceleration = new_acceleration(k2_velocity);
+  
+    const k3_velocity = this.velocity.add(k2_acceleration.scalarMultiply(0.5 * dt));
+    const k3_acceleration = new_acceleration(k3_velocity);
+  
+    const k4_velocity = this.velocity.add(k3_acceleration.scalarMultiply(dt));
+    const k4_acceleration = new_acceleration(k4_velocity);
+  
+    this.velocity = this.velocity.add(
+      k1_acceleration.add(k2_acceleration.scalarMultiply(2))
+        .add(k3_acceleration.scalarMultiply(2))
+        .add(k4_acceleration)
+        .scalarMultiply(dt / 6)
+    );
+  
+    this.position = this.position.add(
+      k1_velocity.add(k2_velocity.scalarMultiply(2))
+        .add(k3_velocity.scalarMultiply(2))
+        .add(k4_velocity)
+        .scalarMultiply(dt / 6)
+    );
+
     this.#observers.notify(ParticleEvent.Update, undefined);
     this.#observers.notify(ParticleEvent.Move, undefined);
   }

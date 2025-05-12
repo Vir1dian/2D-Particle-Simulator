@@ -11,8 +11,6 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _ZVectorField_arrows, _ZVectorField_magnitude, _XYVectorField_arrows, _XYVectorField_angle, _XYVectorField_magnitude;
-const VECTOR_VISUAL_SCALE_FACTOR = 1 / 10000;
-const OVERFLOW_OFFSET = 1.3;
 class ZVectorField {
     constructor(container, width_between, offset, magnitude = 1, color = 'black') {
         _ZVectorField_arrows.set(this, void 0);

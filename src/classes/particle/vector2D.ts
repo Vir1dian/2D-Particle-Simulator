@@ -23,6 +23,16 @@ class Vector2D {
     return (this.x * other_vector.x) + (this.y * other_vector.y);
   }
 
+  // Limited cross product: assumes that z vectors are perfectly
+  // perpendicular to xy vectors
+  crossProduct(other_vector: number): Vector2D;
+  crossProduct(other_vector: Vector2D): number;
+  crossProduct(other_vector: Vector2D | number): number | Vector2D {
+    if (typeof other_vector === 'number')  // If pointing at z direction only
+      return new Vector2D(this.y * other_vector, -1 * this.x * other_vector);  
+    return this.x * other_vector.y - this.y * other_vector.x;  
+  }
+
   magnitude(): number {
     return Math.sqrt(this.dotProduct(this));
   }

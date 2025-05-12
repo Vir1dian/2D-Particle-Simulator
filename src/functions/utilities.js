@@ -130,3 +130,13 @@ function createKeyFlags(example) {
     }, {});
 }
 const INPUT_PREFIX = 'input_id_';
+const VECTOR_VISUAL_SCALE_FACTOR = 1 / 10000;
+const OVERFLOW_OFFSET = 1.3;
+const FIELD_WIDTH = 60;
+const GRAV_OFFSET = 20;
+const ELEC_OFFSET = 40;
+const MAG_OFFSET = 60;
+const ELECTRON_CHARGE = 1.60 * 10 ** -19;
+const ELECTRIC_FORCE_CONSTANT = 8.99 * 10 ** 9;
+const PERMITTIVITY_CONSTANT = 8.85 * 10 ** -12;
+const MAGNETIC_CONSTANT = 4 * Math.PI * 10 ** -7;

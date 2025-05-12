@@ -14,11 +14,6 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
   }
 }
 
-const FIELD_WIDTH = 60;
-const GRAV_OFFSET = 20;
-const ELEC_OFFSET = 40;
-const MAG_OFFSET = 60;
-
 class ContainerRenderer extends Renderer {
   #container: BoxSpace;
   #grav_field: XYVectorField;

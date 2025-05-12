@@ -16,6 +16,11 @@ class Vector2D {
     dotProduct(other_vector) {
         return (this.x * other_vector.x) + (this.y * other_vector.y);
     }
+    crossProduct(other_vector) {
+        if (typeof other_vector === 'number') // If pointing at z direction only
+            return new Vector2D(this.y * other_vector, -1 * this.x * other_vector);
+        return this.x * other_vector.y - this.y * other_vector.x;
+    }
     magnitude() {
         return Math.sqrt(this.dotProduct(this));
     }

@@ -1,6 +1,3 @@
-const VECTOR_VISUAL_SCALE_FACTOR = 1 / 10000;
-const OVERFLOW_OFFSET = 1.3;
-
 class ZVectorField {
   #arrows: ZArrowSprite[][];
   #magnitude: number;
