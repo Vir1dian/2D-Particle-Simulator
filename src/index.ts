@@ -88,7 +88,7 @@ function loadAll() {
   // Temporary fix for spin icon buttons, fix soon
   control_item_elements = document.querySelectorAll(".control_item") as NodeListOf<HTMLElement>;  
 
-  openControlItem(control_items_data[2]);  // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
+  openControlItem(control_items_data[1]);  // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
 
   // const test_sprite = new Sprite();
   // test_sprite.setStyle({ 

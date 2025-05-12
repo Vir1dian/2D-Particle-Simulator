@@ -184,12 +184,23 @@ class Particle {
      * @param {number} dt The time change that the movement occurs, more accurate the smaller the value is
      */
     eulerMove(environment, dt) {
-        const gravity = environment.statics.gravity;
-        const dragOverMass = environment.statics.drag / this.mass;
-        const drag_force = this.velocity.scalarMultiply(-dragOverMass);
-        const new_acceleration = gravity.add(drag_force);
-        this.velocity = this.velocity.add(new_acceleration.scalarMultiply(dt));
+        var _b, _c, _d, _e, _f, _g;
+        const g_vec = (_c = (_b = environment.statics) === null || _b === void 0 ? void 0 : _b.gravity) !== null && _c !== void 0 ? _c : new Vector2D();
+        // const dragOverMass = environment.statics!.drag! / this.mass;
+        // const drag_force = this.velocity.scalarMultiply(-dragOverMass);
+        // const new_acceleration = gravity.add(drag_force);
+        const e_field = (_e = (_d = environment.statics) === null || _d === void 0 ? void 0 : _d.electric_field) !== null && _e !== void 0 ? _e : new Vector2D();
+        const b_field = (_g = (_f = environment.statics) === null || _f === void 0 ? void 0 : _f.magnetic_field) !== null && _g !== void 0 ? _g : 0;
+        // biot-savart and coulombs not included here (too computationally expensive)
+        // F_g = m * g, F_e = E * q, F_b = q * v x b
+        // m * a = F_g + F_e + F_b
+        // a = (F_g + F_e + F_b) / m
+        const f_g = g_vec.scalarMultiply(this.mass);
+        const f_e = e_field.scalarMultiply(this.charge);
+        const f_b = this.velocity.crossProduct(b_field).scalarMultiply(this.charge);
+        const new_acceleration = f_g.add(f_e).add(f_b).scalarMultiply(1 / this.mass);
         this.position = this.position.add(this.velocity.scalarMultiply(dt));
+        this.velocity = this.velocity.add(new_acceleration.scalarMultiply(dt));
         __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Update, undefined);
         __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Move, undefined);
     }
@@ -199,9 +210,19 @@ class Particle {
      * @param {number} dt The time change that the movement occurs, more accurate the smaller the value is
      */
     rungekuttaMove(environment, dt) {
-        const gravity = environment.statics.gravity;
-        const dragOverMass = environment.statics.drag / this.mass;
-        const new_acceleration = (vel) => gravity.add(vel.scalarMultiply(-dragOverMass));
+        var _b, _c, _d, _e, _f, _g;
+        const g_vec = (_c = (_b = environment.statics) === null || _b === void 0 ? void 0 : _b.gravity) !== null && _c !== void 0 ? _c : new Vector2D();
+        // const dragOverMass = environment.statics!.drag! / this.mass;
+        // const drag_force = this.velocity.scalarMultiply(-dragOverMass);
+        // const new_acceleration = gravity.add(drag_force);
+        const e_field = (_e = (_d = environment.statics) === null || _d === void 0 ? void 0 : _d.electric_field) !== null && _e !== void 0 ? _e : new Vector2D();
+        const b_field = (_g = (_f = environment.statics) === null || _f === void 0 ? void 0 : _f.magnetic_field) !== null && _g !== void 0 ? _g : 0;
+        const f_g = g_vec.scalarMultiply(this.mass);
+        const f_e = e_field.scalarMultiply(this.charge);
+        const new_acceleration = (vel) => {
+            const f_b = vel.crossProduct(b_field).scalarMultiply(this.charge);
+            return f_g.add(f_e).add(f_b).scalarMultiply(1 / this.mass);
+        };
         const k1_velocity = this.velocity;
         const k1_acceleration = new_acceleration(k1_velocity);
         const k2_velocity = this.velocity.add(k1_acceleration.scalarMultiply(0.5 * dt));
@@ -210,13 +231,13 @@ class Particle {
         const k3_acceleration = new_acceleration(k3_velocity);
         const k4_velocity = this.velocity.add(k3_acceleration.scalarMultiply(dt));
         const k4_acceleration = new_acceleration(k4_velocity);
-        this.velocity = this.velocity.add(k1_acceleration.add(k2_acceleration.scalarMultiply(2))
-            .add(k3_acceleration.scalarMultiply(2))
-            .add(k4_acceleration)
-            .scalarMultiply(dt / 6));
         this.position = this.position.add(k1_velocity.add(k2_velocity.scalarMultiply(2))
             .add(k3_velocity.scalarMultiply(2))
             .add(k4_velocity)
+            .scalarMultiply(dt / 6));
+        this.velocity = this.velocity.add(k1_acceleration.add(k2_acceleration.scalarMultiply(2))
+            .add(k3_acceleration.scalarMultiply(2))
+            .add(k4_acceleration)
             .scalarMultiply(dt / 6));
         __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Update, undefined);
         __classPrivateFieldGet(this, _Particle_observers, "f").notify(ParticleEvent.Move, undefined);

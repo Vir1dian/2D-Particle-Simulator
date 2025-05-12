@@ -407,6 +407,7 @@ const TEMPORARY_PRESETS = {
                 magnetic_field: -30
             }
         },
+        config: structuredCloneCustom(DEFAULT_PRESET.config),
         particle_groups: new Map([
             [DEFAULT_GROUPING.group_id, {
                     grouping: {
@@ -418,6 +419,206 @@ const TEMPORARY_PRESETS = {
                         color: 'random',
                     },
                     size: 10
+                }]
+        ])
+    },
+    electricfieldtest: {
+        container: {
+            x_min: -250,
+            x_max: 250,
+            y_min: -250,
+            y_max: 250
+        },
+        environment: {
+            statics: {
+                elasticity: 1,
+                drag: 0,
+                gravity: new Vector2D(),
+                electric_field: new Vector2D(10, 10),
+                magnetic_field: 0
+            }
+        },
+        config: structuredCloneCustom(DEFAULT_PRESET.config),
+        particle_groups: new Map([
+            [DEFAULT_GROUPING.group_id, {
+                    grouping: {
+                        group_id: DEFAULT_GROUPING.group_id
+                    },
+                    size: 0
+                }],
+            ["Positive", {
+                    grouping: {
+                        group_id: "Positive",
+                        radius: 10,
+                        position: 'random',
+                        velocity: new Vector2D(),
+                        mass: 1,
+                        charge: 10,
+                        color: 'blue',
+                    },
+                    size: 15
+                }],
+            ["Negative", {
+                    grouping: {
+                        group_id: "Negative",
+                        radius: 10,
+                        position: 'random',
+                        velocity: new Vector2D(),
+                        mass: 1,
+                        charge: -10,
+                        color: 'red',
+                    },
+                    size: 15
+                }]
+        ])
+    },
+    magneticfieldtest: {
+        container: {
+            x_min: -250,
+            x_max: 250,
+            y_min: -250,
+            y_max: 250
+        },
+        environment: {
+            statics: {
+                elasticity: 1,
+                drag: 0,
+                gravity: new Vector2D(),
+                electric_field: new Vector2D(),
+                magnetic_field: 100
+            }
+        },
+        config: structuredCloneCustom(DEFAULT_PRESET.config),
+        particle_groups: new Map([
+            [DEFAULT_GROUPING.group_id, {
+                    grouping: {
+                        group_id: DEFAULT_GROUPING.group_id
+                    },
+                    size: 0
+                }],
+            ["Positive", {
+                    grouping: {
+                        group_id: "Positive",
+                        radius: 10,
+                        position: 'random',
+                        velocity: new Vector2D(10, 0),
+                        mass: 1,
+                        charge: 10,
+                        color: 'blue',
+                    },
+                    size: 15
+                }],
+            ["Negative", {
+                    grouping: {
+                        group_id: "Negative",
+                        radius: 10,
+                        position: 'random',
+                        velocity: new Vector2D(10, 0),
+                        mass: 1,
+                        charge: -10,
+                        color: 'red',
+                    },
+                    size: 15
+                }]
+        ])
+    },
+    lorentztest: {
+        container: {
+            x_min: -250,
+            x_max: 250,
+            y_min: -250,
+            y_max: 250
+        },
+        environment: {
+            statics: {
+                elasticity: 1,
+                drag: 0,
+                gravity: new Vector2D(),
+                electric_field: new Vector2D(10, 10),
+                magnetic_field: 100
+            }
+        },
+        config: structuredCloneCustom(DEFAULT_PRESET.config),
+        particle_groups: new Map([
+            [DEFAULT_GROUPING.group_id, {
+                    grouping: {
+                        group_id: DEFAULT_GROUPING.group_id
+                    },
+                    size: 0
+                }],
+            ["Positive", {
+                    grouping: {
+                        group_id: "Positive",
+                        radius: 10,
+                        position: 'random',
+                        velocity: new Vector2D(),
+                        mass: 1,
+                        charge: 10,
+                        color: 'blue',
+                    },
+                    size: 15
+                }],
+            ["Negative", {
+                    grouping: {
+                        group_id: "Negative",
+                        radius: 10,
+                        position: 'random',
+                        velocity: new Vector2D(),
+                        mass: 1,
+                        charge: -10,
+                        color: 'red',
+                    },
+                    size: 15
+                }]
+        ])
+    },
+    gravpluslorentz: {
+        container: {
+            x_min: -250,
+            x_max: 250,
+            y_min: -250,
+            y_max: 250
+        },
+        environment: {
+            statics: {
+                elasticity: 1,
+                drag: 0,
+                gravity: new Vector2D(-100, -100),
+                electric_field: new Vector2D(10, 10),
+                magnetic_field: 100
+            }
+        },
+        config: structuredCloneCustom(DEFAULT_PRESET.config),
+        particle_groups: new Map([
+            [DEFAULT_GROUPING.group_id, {
+                    grouping: {
+                        group_id: DEFAULT_GROUPING.group_id
+                    },
+                    size: 0
+                }],
+            ["Positive", {
+                    grouping: {
+                        group_id: "Positive",
+                        radius: 10,
+                        position: 'random',
+                        velocity: new Vector2D(),
+                        mass: 1,
+                        charge: 10,
+                        color: 'blue',
+                    },
+                    size: 15
+                }],
+            ["Negative", {
+                    grouping: {
+                        group_id: "Negative",
+                        radius: 10,
+                        position: 'random',
+                        velocity: new Vector2D(),
+                        mass: 1,
+                        charge: -10,
+                        color: 'red',
+                    },
+                    size: 15
                 }]
         ])
     }
