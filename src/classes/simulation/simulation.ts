@@ -117,6 +117,7 @@ const DEFAULT_PRESET: SimPreset = {
 
 // For testing Simulation class, will eventually save all presets in "simulation_presets.json"
 const TEMPORARY_PRESETS: Record<string, SimPreset> = {
+  empty: structuredCloneCustom(DEFAULT_PRESET),
   sandbox: {
     container: {
       x_min: -275,
@@ -124,16 +125,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
       y_min: -275,
       y_max: 275
     },
-    environment: {
-      statics: {
-        elasticity: 1,
-        drag: 0,
-        gravity: new Vector2D(),
-        electric_field: new Vector2D(),
-        magnetic_field: 0
-      },
-      dynamics: {}
-    },
+    environment: structuredCloneCustom(DEFAULT_PRESET.environment!),
     config: {
       path_trace_step: 0.5,
       is_draggable: false,
@@ -170,7 +162,11 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
     },
     environment: {
       statics: {
-        elasticity: 0.7
+        elasticity: 0.7,
+        drag: 0,
+        gravity: new Vector2D(),
+        electric_field: new Vector2D(),
+        magnetic_field: 0
       }
     },
     config: {
@@ -240,7 +236,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
       statics: {
         elasticity: 0.95,
         drag: 0,
-        gravity: new Vector2D(),
+        gravity: new Vector2D(0, -10),
         electric_field: new Vector2D(),
         magnetic_field: 0
       },
@@ -286,6 +282,9 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
     ])
   },
   colorstest: {
+    container: structuredCloneCustom(DEFAULT_PRESET.container!),
+    environment: structuredCloneCustom(DEFAULT_PRESET.environment!),
+    config: structuredCloneCustom(DEFAULT_PRESET.config!),
     particle_groups: new Map([
       [DEFAULT_GROUPING.group_id, { 
         grouping: {
@@ -404,6 +403,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
     environment: {
       statics: {
         elasticity: 0.7,
+        drag: 0,
         gravity: new Vector2D(100, 100),
         electric_field: new Vector2D(-100, 100),
         magnetic_field: -30

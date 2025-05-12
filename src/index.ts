@@ -68,7 +68,7 @@ function openControlItem(item:control_item_data) {
 
 // Sets the initial state of all elements
 function loadAll() {
-  const sim = new Simulation(TEMPORARY_PRESETS["vectorfieldstest"]);
+  const sim = new Simulation(TEMPORARY_PRESETS["empty"]);
   const cont = new ContainerRenderer(sim);
   const anim = new AnimationController(sim);
   const anim_element = new AnimationControllerRenderer(anim);

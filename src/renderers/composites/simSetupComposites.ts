@@ -60,7 +60,7 @@ class EnvironmentSetupRenderer extends Renderer {
  */
 class PresetInputRenderer extends Renderer { 
   #simulation: Simulation;
-  #preset_dropdown: DatalistInputRenderer;
+  #preset_dropdown: SelectRenderer;
   #apply_button: ButtonRenderer;
   constructor(simulation: Simulation) {
     const simulation_preset_input_wrapper: HTMLDivElement = document.createElement('div');
@@ -73,20 +73,18 @@ class PresetInputRenderer extends Renderer {
     this.#preset_dropdown.setParent(simulation_preset_input_wrapper);
     this.#apply_button.setParent(simulation_preset_input_wrapper);
   }
-  private setupPresetDropdown(): DatalistInputRenderer {
+  private setupPresetDropdown(): SelectRenderer {
     const preset_data: OptionRenderer[] = [];
     Object.keys(TEMPORARY_PRESETS).forEach((preset_name, preset) => {
       preset_data.push(new OptionRenderer(preset_name, ''));
     });
-    const dropdown: DatalistInputRenderer = new DatalistInputRenderer('simsetup_presets_input', preset_data, 'simsetup_presets');
-    dropdown.getElement().placeholder = "Preset";
+    const dropdown: SelectRenderer = new SelectRenderer('simsetup_presets_dropdown', preset_data);
     return dropdown;
   }
   private setupApplyButton(): ButtonRenderer {
     const button: ButtonRenderer = new ButtonRenderer(
       () => {
-        this.#preset_dropdown.refreshValue();
-        const preset_name: string = this.#preset_dropdown.getValue();
+        const preset_name: string = this.#preset_dropdown.getElement().value;
         const preset: SimPreset = TEMPORARY_PRESETS[preset_name];
         this.#simulation.setPreset(preset);
       }

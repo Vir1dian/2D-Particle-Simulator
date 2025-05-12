@@ -91,8 +91,6 @@ class ContainerRenderer extends Renderer {
         const g = env.statics.gravity;
         const e = env.statics.electric_field;
         const b = env.statics.magnetic_field;
-        console.log(Math.atan2(g.y, g.x) * (180 / Math.PI));
-        console.log(Math.atan2(e.y, e.x) * (180 / Math.PI));
         __classPrivateFieldGet(this, _ContainerRenderer_grav_field, "f").redraw(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), FIELD_WIDTH, GRAV_OFFSET, Math.atan2(g.y, g.x) * (180 / Math.PI), g.magnitude(), 'thistle');
         __classPrivateFieldGet(this, _ContainerRenderer_elec_field, "f").redraw(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), FIELD_WIDTH, ELEC_OFFSET, Math.atan2(e.y, e.x) * (180 / Math.PI), e.magnitude(), 'lightsalmon');
         __classPrivateFieldGet(this, _ContainerRenderer_mag_field, "f").redraw(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), FIELD_WIDTH, MAG_OFFSET, b, 'turquoise');

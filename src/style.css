@@ -111,7 +111,7 @@
   text-align: center;
 }
 
-input:not(input[type="checkbox"]), textarea {
+input:not(input[type="checkbox"]), textarea, select {
   margin: 2px;
   padding: 2px;
   border: solid 1px lightgrey;
@@ -365,6 +365,14 @@ dialog::backdrop {
   border-radius: 4px;
 }
 
+#simsetup_presets_wrapper {
+  display: flex;
+  align-items: center;
+}
+#simsetup_presets_dropdown {
+  font-size: 16px;
+  padding: 7px;
+}
 #simsetup_global_variables_wrapper table td {
   width: 150px;
   padding: 2px;

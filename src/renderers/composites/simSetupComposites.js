@@ -89,14 +89,12 @@ class PresetInputRenderer extends Renderer {
         Object.keys(TEMPORARY_PRESETS).forEach((preset_name, preset) => {
             preset_data.push(new OptionRenderer(preset_name, ''));
         });
-        const dropdown = new DatalistInputRenderer('simsetup_presets_input', preset_data, 'simsetup_presets');
-        dropdown.getElement().placeholder = "Preset";
+        const dropdown = new SelectRenderer('simsetup_presets_dropdown', preset_data);
         return dropdown;
     }
     setupApplyButton() {
         const button = new ButtonRenderer(() => {
-            __classPrivateFieldGet(this, _PresetInputRenderer_preset_dropdown, "f").refreshValue();
-            const preset_name = __classPrivateFieldGet(this, _PresetInputRenderer_preset_dropdown, "f").getValue();
+            const preset_name = __classPrivateFieldGet(this, _PresetInputRenderer_preset_dropdown, "f").getElement().value;
             const preset = TEMPORARY_PRESETS[preset_name];
             __classPrivateFieldGet(this, _PresetInputRenderer_simulation, "f").setPreset(preset);
         });
