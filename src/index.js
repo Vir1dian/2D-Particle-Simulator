@@ -71,5 +71,13 @@ function loadAll() {
     // Temporary fix for spin icon buttons, fix soon
     control_item_elements = document.querySelectorAll(".control_item");
     openControlItem(control_items_data[2]); // For DEV: Default opened settings upon refresh: 0 for visuals, 1 for simulation, 2 for particle
+    // const test_sprite = new Sprite();
+    // test_sprite.setStyle({ 
+    //   backgroundColor: 'gray', 
+    //   height: '100px', 
+    //   width: '100px',
+    // });
+    // test_sprite.translate({x: 100,y: 300}).rotate(45).scale({x: 1,y: 1.5})
+    // test_sprite.setParent(cont);
     // sim.setPreset({container: {x_min: 100, x_max: 100, y_min: 100, y_max: 100}});
 }

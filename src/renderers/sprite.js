@@ -10,45 +10,57 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Sprite_translate, _Sprite_rotate, _Sprite_scale;
+var _Sprite_translation, _Sprite_rotation, _Sprite_scale;
 class Sprite extends Renderer {
     constructor(classname = '', id = '') {
         const element = document.createElement('div');
         super(element, classname, id);
-        _Sprite_translate.set(this, void 0);
-        _Sprite_rotate.set(this, void 0);
+        _Sprite_translation.set(this, void 0);
+        _Sprite_rotation.set(this, void 0);
         _Sprite_scale.set(this, void 0);
         this.getElement().style.position = "absolute";
-        __classPrivateFieldSet(this, _Sprite_translate, '', "f");
-        __classPrivateFieldSet(this, _Sprite_rotate, '', "f");
-        __classPrivateFieldSet(this, _Sprite_scale, 'scale(1, 1)', "f");
+        __classPrivateFieldSet(this, _Sprite_translation, new Vector2D(), "f");
+        __classPrivateFieldSet(this, _Sprite_rotation, 0, "f");
+        __classPrivateFieldSet(this, _Sprite_scale, new Vector2D(1, 1), "f");
     }
     applyTransform() {
-        this.getElement().style.transform = `${__classPrivateFieldGet(this, _Sprite_translate, "f")} ${__classPrivateFieldGet(this, _Sprite_rotate, "f")} ${__classPrivateFieldGet(this, _Sprite_scale, "f")}`;
+        const translate = `translate(${__classPrivateFieldGet(this, _Sprite_translation, "f").x}px, ${__classPrivateFieldGet(this, _Sprite_translation, "f").y}px)`;
+        const rotate = `rotate(${__classPrivateFieldGet(this, _Sprite_rotation, "f")}deg)`;
+        const scale = `scale(${__classPrivateFieldGet(this, _Sprite_scale, "f").x}, ${__classPrivateFieldGet(this, _Sprite_scale, "f").y})`;
+        this.getElement().style.transform = `${translate} ${rotate} ${scale}`;
     }
     setStyle(styles) {
         Object.assign(this.getElement().style, styles);
     }
-    translate(x, y) {
-        __classPrivateFieldSet(this, _Sprite_translate, `translate(${x}px, ${y}px)`, "f");
+    translate(translation) {
+        __classPrivateFieldSet(this, _Sprite_translation, new Vector2D(translation.x, translation.y), "f");
         this.applyTransform();
         return this; // allows chaining transform calls in one line
     }
-    rotate(deg) {
-        __classPrivateFieldSet(this, _Sprite_rotate, `rotate(${deg}deg)`, "f");
+    rotate(rotation) {
+        __classPrivateFieldSet(this, _Sprite_rotation, rotation, "f");
         this.applyTransform();
         return this;
     }
-    scale(scale_x, scale_y) {
-        __classPrivateFieldSet(this, _Sprite_scale, `scale(${scale_x}, ${scale_y})`, "f");
+    scale(scale) {
+        __classPrivateFieldSet(this, _Sprite_scale, new Vector2D(scale.x, scale.y), "f");
         this.applyTransform();
         return this;
     }
     reset() {
         this.getElement().style.transform = 'none';
     }
+    getTranslation() {
+        return __classPrivateFieldGet(this, _Sprite_translation, "f");
+    }
+    getRotation() {
+        return __classPrivateFieldGet(this, _Sprite_rotation, "f");
+    }
+    getScale() {
+        return __classPrivateFieldGet(this, _Sprite_scale, "f");
+    }
 }
-_Sprite_translate = new WeakMap(), _Sprite_rotate = new WeakMap(), _Sprite_scale = new WeakMap();
+_Sprite_translation = new WeakMap(), _Sprite_rotation = new WeakMap(), _Sprite_scale = new WeakMap();
 class ZArrowSprite extends Sprite {
 }
 class XYArrowSprite extends Sprite {
