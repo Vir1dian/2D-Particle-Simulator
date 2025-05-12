@@ -16,6 +16,9 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
 
 class ContainerRenderer extends Renderer {
   #container: BoxSpace;
+  #grav_field: XYVectorField;
+  #elec_field: XYVectorField;
+  #mag_field: ZVectorField;
   #dark_overlay: HTMLDivElement;
   constructor(simulation: Simulation) {
     const container_element : HTMLElement = document.createElement('div');
@@ -27,12 +30,47 @@ class ContainerRenderer extends Renderer {
       SimEvent.Update_Container, 
       () => {this.resize(this.#container)}
     );
+    this.#grav_field = this.setupGravField(simulation);
+    this.#elec_field = this.setupElecField(simulation);
+    this.#mag_field = this.setupMagField(simulation);
     this.#dark_overlay = this.setupDarkOverlay();
 
     // Content
+    this.#grav_field.setArrowsParent(this);
+    // this.#elec_field.setArrowsParent(this);
+    // this.#mag_field.setArrowsParent(this);
     this.getElement().appendChild(this.#dark_overlay);
     container_element.style.width = `${this.#container.x_max - this.#container.x_min}px`;
     container_element.style.height = `${this.#container.y_max - this.#container.y_min}px`;
+  }
+  private setupGravField(simulation: Simulation): XYVectorField {
+    const field = new XYVectorField(this.#container, 150);
+    const vector = simulation.getEnvironment()!.statics!.gravity!;
+    field.setMagnitude(vector.magnitude());
+    field.pointAt(vector);
+
+    // TODO: set color to black, add observers for resize + simulation environment events
+
+    return field;
+  }
+  private setupElecField(simulation: Simulation): XYVectorField {
+    const field = new XYVectorField(this.#container, 100);
+    const vector = simulation.getEnvironment()!.statics!.electric_field!;
+    field.setMagnitude(vector.magnitude());
+    field.pointAt(vector);
+
+    // TODO: set color to black, add observers for resize + simulation environment events
+
+    return field;
+  }
+  private setupMagField(simulation: Simulation): ZVectorField {
+    const field = new ZVectorField(this.#container, 130);
+    const scalar = simulation.getEnvironment()!.statics!.magnetic_field!;
+    field.setMagnitude(scalar);
+
+    // TODO: set color to black, add observers for resize + simulation environment events
+
+    return field;
   }
   private setupDarkOverlay(): HTMLDivElement {
     const overlay = document.createElement('div');

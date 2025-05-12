@@ -10,7 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _UIControlRenderer_simulation, _ContainerRenderer_container, _ContainerRenderer_dark_overlay, _EnvironmentPanelRenderer_preset_handler, _EnvironmentPanelRenderer_environment_handler, _ParticlePanelRenderer_particles_handler, _ParticlePanelRenderer_container, _ParticlePanelRenderer_add_particles_dialog, _ParticlePanelRenderer_create_group_dialog, _ParticlePanelRenderer_group_list;
+var _UIControlRenderer_simulation, _ContainerRenderer_container, _ContainerRenderer_grav_field, _ContainerRenderer_elec_field, _ContainerRenderer_mag_field, _ContainerRenderer_dark_overlay, _EnvironmentPanelRenderer_preset_handler, _EnvironmentPanelRenderer_environment_handler, _ParticlePanelRenderer_particles_handler, _ParticlePanelRenderer_container, _ParticlePanelRenderer_add_particles_dialog, _ParticlePanelRenderer_create_group_dialog, _ParticlePanelRenderer_group_list;
 // UI Config Renderers -- May implement a separate UIHandler class from Simulation
 class UIControlRenderer extends Renderer {
     // may create a UIConfig class soon
@@ -31,15 +31,47 @@ class ContainerRenderer extends Renderer {
         const container_element = document.createElement('div');
         super(container_element, "container_element");
         _ContainerRenderer_container.set(this, void 0);
+        _ContainerRenderer_grav_field.set(this, void 0);
+        _ContainerRenderer_elec_field.set(this, void 0);
+        _ContainerRenderer_mag_field.set(this, void 0);
         _ContainerRenderer_dark_overlay.set(this, void 0);
         // Stored Data
         __classPrivateFieldSet(this, _ContainerRenderer_container, simulation.getContainer(), "f");
         simulation.getObservers().add(SimEvent.Update_Container, () => { this.resize(__classPrivateFieldGet(this, _ContainerRenderer_container, "f")); });
+        __classPrivateFieldSet(this, _ContainerRenderer_grav_field, this.setupGravField(simulation), "f");
+        __classPrivateFieldSet(this, _ContainerRenderer_elec_field, this.setupElecField(simulation), "f");
+        __classPrivateFieldSet(this, _ContainerRenderer_mag_field, this.setupMagField(simulation), "f");
         __classPrivateFieldSet(this, _ContainerRenderer_dark_overlay, this.setupDarkOverlay(), "f");
         // Content
+        __classPrivateFieldGet(this, _ContainerRenderer_grav_field, "f").setArrowsParent(this);
+        // this.#elec_field.setArrowsParent(this);
+        // this.#mag_field.setArrowsParent(this);
         this.getElement().appendChild(__classPrivateFieldGet(this, _ContainerRenderer_dark_overlay, "f"));
         container_element.style.width = `${__classPrivateFieldGet(this, _ContainerRenderer_container, "f").x_max - __classPrivateFieldGet(this, _ContainerRenderer_container, "f").x_min}px`;
         container_element.style.height = `${__classPrivateFieldGet(this, _ContainerRenderer_container, "f").y_max - __classPrivateFieldGet(this, _ContainerRenderer_container, "f").y_min}px`;
+    }
+    setupGravField(simulation) {
+        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 150);
+        const vector = simulation.getEnvironment().statics.gravity;
+        field.setMagnitude(vector.magnitude());
+        field.pointAt(vector);
+        // TODO: set color to black, add observers for resize + simulation environment events
+        return field;
+    }
+    setupElecField(simulation) {
+        const field = new XYVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 100);
+        const vector = simulation.getEnvironment().statics.electric_field;
+        field.setMagnitude(vector.magnitude());
+        field.pointAt(vector);
+        // TODO: set color to black, add observers for resize + simulation environment events
+        return field;
+    }
+    setupMagField(simulation) {
+        const field = new ZVectorField(__classPrivateFieldGet(this, _ContainerRenderer_container, "f"), 130);
+        const scalar = simulation.getEnvironment().statics.magnetic_field;
+        field.setMagnitude(scalar);
+        // TODO: set color to black, add observers for resize + simulation environment events
+        return field;
     }
     setupDarkOverlay() {
         const overlay = document.createElement('div');
@@ -62,7 +94,7 @@ class ContainerRenderer extends Renderer {
         super.remove();
     }
 }
-_ContainerRenderer_container = new WeakMap(), _ContainerRenderer_dark_overlay = new WeakMap();
+_ContainerRenderer_container = new WeakMap(), _ContainerRenderer_grav_field = new WeakMap(), _ContainerRenderer_elec_field = new WeakMap(), _ContainerRenderer_mag_field = new WeakMap(), _ContainerRenderer_dark_overlay = new WeakMap();
 class EnvironmentPanelRenderer extends Renderer {
     constructor(simulation) {
         const environment_panel = document.createElement('article');

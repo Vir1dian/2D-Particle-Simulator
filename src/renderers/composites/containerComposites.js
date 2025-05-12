@@ -24,12 +24,14 @@ class ZVectorField {
             const row = [];
             for (let i = container.x_min; i < container.x_max; i += width_between) {
                 const arrow = new ZArrowSprite(is_pointing_up);
-                arrow
-                    .translateCenter({
-                    x: container.x_min - i,
-                    y: container.y_min - j
-                })
-                    .slowScale(Math.abs(magnitude));
+                requestAnimationFrame(() => {
+                    arrow
+                        .translateCenter({
+                        x: i - container.x_min,
+                        y: j - container.y_min
+                    })
+                        .slowScale(Math.abs(magnitude));
+                });
                 row.push(arrow);
             }
             __classPrivateFieldGet(this, _ZVectorField_arrows, "f").push(row);
@@ -73,13 +75,15 @@ class XYVectorField {
             const row = [];
             for (let i = container.x_min; i < container.x_max; i += width_between) {
                 const arrow = new XYArrowSprite();
-                arrow
-                    .translateCenter({
-                    x: container.x_min - i,
-                    y: container.y_min - j
-                })
-                    .slowScale(Math.abs(magnitude))
-                    .rotate(__classPrivateFieldGet(this, _XYVectorField_angle, "f") + negative_offset);
+                requestAnimationFrame(() => {
+                    arrow
+                        .translateCenter({
+                        x: i - container.x_min,
+                        y: j - container.y_min
+                    })
+                        .slowScale(Math.abs(magnitude))
+                        .rotate(__classPrivateFieldGet(this, _XYVectorField_angle, "f") + negative_offset);
+                });
                 row.push(arrow);
             }
             __classPrivateFieldGet(this, _XYVectorField_arrows, "f").push(row);

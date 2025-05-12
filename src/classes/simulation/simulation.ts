@@ -398,6 +398,35 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
         size: 1 
       }]
     ])
+  },
+  vectorfieldstest: {
+    container: {
+      x_min: -250,
+      x_max: 250,
+      y_min: -250,
+      y_max: 250
+    },
+    environment: {
+      statics: {
+        elasticity: 0.7,
+        gravity: new Vector2D(100, 100),
+        electric_field: new Vector2D(-100, 100),
+        magnetic_field: -30
+      }
+    },
+    particle_groups: new Map([
+      [DEFAULT_GROUPING.group_id, { 
+        grouping: {
+          group_id: DEFAULT_GROUPING.group_id,
+          radius: 15,
+          position: 'random',
+          velocity: 'random',
+          mass: 'random',
+          color: 'random',
+        }, 
+        size: 10
+      }]
+    ])
   }
 }
 
