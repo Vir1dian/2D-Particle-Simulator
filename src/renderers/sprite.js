@@ -61,6 +61,15 @@ class Sprite extends Renderer {
             y: translation.y - offsetY,
         });
     }
+    slowScale(magnitude, base = Math.E) {
+        const safeMagnitude = Math.max(0, magnitude); // Prevent negatives
+        const scale_factor = Math.log(safeMagnitude + 1) / Math.log(base);
+        this.scale({
+            x: scale_factor,
+            y: scale_factor
+        });
+        return this;
+    }
     reset() {
         this.getElement().style.transform = 'none';
     }
@@ -98,9 +107,9 @@ class ZArrowSprite extends Sprite {
             __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").style.display = '';
         }
     }
-    setDirection(is_up = true) {
-        __classPrivateFieldSet(this, _ZArrowSprite_is_pointing_up, is_up, "f");
-        if (is_up) {
+    pointUp(value = true) {
+        __classPrivateFieldSet(this, _ZArrowSprite_is_pointing_up, value, "f");
+        if (value) {
             __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").style.display = '';
             __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").style.display = 'none';
         }
@@ -108,6 +117,14 @@ class ZArrowSprite extends Sprite {
             __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").style.display = 'none';
             __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").style.display = '';
         }
+    }
+    isPointingUp() {
+        return __classPrivateFieldGet(this, _ZArrowSprite_is_pointing_up, "f");
+    }
+    remove() {
+        __classPrivateFieldGet(this, _ZArrowSprite_dot, "f").remove();
+        __classPrivateFieldGet(this, _ZArrowSprite_cross, "f").remove();
+        super.remove();
     }
 }
 _ZArrowSprite_is_pointing_up = new WeakMap(), _ZArrowSprite_dot = new WeakMap(), _ZArrowSprite_cross = new WeakMap();
@@ -123,6 +140,15 @@ class XYArrowSprite extends Sprite {
         __classPrivateFieldGet(this, _XYArrowSprite_body, "f").className = 'xy_arrow_body';
         wrapper.appendChild(__classPrivateFieldGet(this, _XYArrowSprite_body, "f"));
         wrapper.appendChild(__classPrivateFieldGet(this, _XYArrowSprite_head, "f"));
+    }
+    pointAt(direction) {
+        const angle = Math.atan2(direction.y, direction.x) * (180 / Math.PI);
+        this.rotate(angle);
+    }
+    remove() {
+        __classPrivateFieldGet(this, _XYArrowSprite_head, "f").remove();
+        __classPrivateFieldGet(this, _XYArrowSprite_body, "f").remove();
+        super.remove();
     }
 }
 _XYArrowSprite_head = new WeakMap(), _XYArrowSprite_body = new WeakMap();

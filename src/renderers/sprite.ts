@@ -39,7 +39,7 @@ class Sprite extends Renderer {
    * element is rendered in the DOM. Use setTimout
    * to delay translateCenter if to be used immediately. 
    */
-  translateCenter(translation: Vector2D): this {
+  translateCenter(translation: {x: number, y: number} | Vector2D): this {
     const bounds = this.getElement().getBoundingClientRect();
     const offsetX = bounds.width / 2;
     const offsetY = bounds.height / 2;
@@ -47,6 +47,15 @@ class Sprite extends Renderer {
       x: translation.x - offsetX,
       y: translation.y - offsetY,
     });
+  }
+  slowScale(magnitude: number, base = Math.E): this {
+    const safeMagnitude = Math.max(0, magnitude); // Prevent negatives
+    const scale_factor = Math.log(safeMagnitude + 1) / Math.log(base);
+    this.scale({
+      x: scale_factor,
+      y: scale_factor
+    });
+    return this;
   }
   reset(): void {
     this.getElement().style.transform = 'none';
@@ -88,9 +97,9 @@ class ZArrowSprite extends Sprite {
       this.#cross.style.display = '';
     }
   }
-  setDirection(is_up: boolean = true): void {
-    this.#is_pointing_up = is_up;
-    if (is_up) {
+  pointUp(value: boolean = true): void {
+    this.#is_pointing_up = value;
+    if (value) {
       this.#dot.style.display = '';
       this.#cross.style.display = 'none';
     }
@@ -99,7 +108,14 @@ class ZArrowSprite extends Sprite {
       this.#cross.style.display = '';
     }
   }
-  // more methods here
+  isPointingUp(): boolean {
+    return this.#is_pointing_up;
+  }
+  remove(): void {
+    this.#dot.remove();
+    this.#cross.remove();
+    super.remove();
+  }
 }
 
 class XYArrowSprite extends Sprite {
@@ -117,5 +133,13 @@ class XYArrowSprite extends Sprite {
     wrapper.appendChild(this.#body);
     wrapper.appendChild(this.#head);
   }
-  // more methods here
+  pointAt(direction: {x: number, y: number} | Vector2D): void {
+    const angle = Math.atan2(direction.y, direction.x) * (180 / Math.PI);
+    this.rotate(angle);
+  }
+  remove(): void {
+    this.#head.remove();
+    this.#body.remove();
+    super.remove();
+  }
 }
