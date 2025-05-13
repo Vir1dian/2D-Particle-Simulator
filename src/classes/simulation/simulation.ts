@@ -456,7 +456,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           velocity: new Vector2D(),
           mass: 1,
           charge: 10,
-          color: 'blue',
+          color: 'red',
         }, 
         size: 15 
       }],
@@ -468,7 +468,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           velocity: new Vector2D(),
           mass: 1,
           charge: -10,
-          color: 'red',
+          color: 'blue',
         }, 
         size: 15 
       }]
@@ -506,7 +506,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           velocity: new Vector2D(30, 0),
           mass: 1,
           charge: 10,
-          color: 'blue',
+          color: 'red',
         }, 
         size: 5 
       }],
@@ -518,7 +518,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           velocity: new Vector2D(30, 0),
           mass: 1,
           charge: -10,
-          color: 'red',
+          color: 'blue',
         }, 
         size: 5 
       }]
@@ -556,7 +556,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           velocity: new Vector2D(),
           mass: 1,
           charge: 10,
-          color: 'blue',
+          color: 'red',
         }, 
         size: 5 
       }],
@@ -568,7 +568,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           velocity: new Vector2D(),
           mass: 1,
           charge: -10,
-          color: 'red',
+          color: 'blue',
         }, 
         size: 5 
       }]
@@ -606,7 +606,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           velocity: new Vector2D(),
           mass: 1,
           charge: 10,
-          color: 'blue',
+          color: 'red',
         }, 
         size: 15 
       }],
@@ -618,7 +618,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
           velocity: new Vector2D(),
           mass: 1,
           charge: -10,
-          color: 'red',
+          color: 'blue',
         }, 
         size: 15 
       }]
