@@ -153,7 +153,7 @@ class AddParticleMenuRenderer extends Renderer {
         if (!group)
             throw new Error("Group id not found in ParticleHandler.");
         for (let i = 0; i < __classPrivateFieldGet(this, _AddParticleMenuRenderer_amount_input, "f").getNumberValue(); i++) {
-            const new_particle = new Particle(Object.assign({ group_id: __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value }, __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges()), container);
+            const new_particle = new Particle(container, Object.assign({ group_id: __classPrivateFieldGet(this, _AddParticleMenuRenderer_group_selector, "f").getElement().value }, __classPrivateFieldGet(this, _AddParticleMenuRenderer_input_table, "f").prepareChanges()));
             __classPrivateFieldGet(this, _AddParticleMenuRenderer_particles_handler, "f").addParticle(new_particle, group);
         }
     }

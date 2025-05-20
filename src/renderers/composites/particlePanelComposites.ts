@@ -149,8 +149,8 @@ class AddParticleMenuRenderer extends Renderer {
     if (!group) throw new Error("Group id not found in ParticleHandler.");
     for (let i = 0; i < this.#amount_input.getNumberValue(); i++) {
       const new_particle = new Particle(
-        { group_id: this.#group_selector.getElement().value, ...this.#input_table.prepareChanges() },
-        container
+        container,
+        { group_id: this.#group_selector.getElement().value, ...this.#input_table.prepareChanges() }
       );
       this.#particles_handler.addParticle(new_particle, group);
     }

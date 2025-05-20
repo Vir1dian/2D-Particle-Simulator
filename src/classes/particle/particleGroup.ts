@@ -50,7 +50,7 @@ class ParticleGroup {
     this.#grouping = structuredCloneCustom(grouping);
     this.#particles = new Map();
     for (let i = 0; i < size; i++) {
-      const p: Particle = new Particle(grouping, container);
+      const p: Particle = new Particle(container, grouping);
       this.#particles.set(p.getID(), p);
     }
     this.#observers = new ObserverHandler(ParticleGroupEvent);

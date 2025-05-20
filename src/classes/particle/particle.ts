@@ -44,7 +44,7 @@ class Particle {
   enable_path_tracing: boolean;  // will be strictly limited to certain simulation presets only, the user should not ever be able access this property
   #is_highlighted: boolean;
 
-  constructor(grouping: ParticleGrouping = DEFAULT_GROUPING, container: BoxSpace) {
+  constructor(container: BoxSpace, grouping: ParticleGrouping = DEFAULT_GROUPING) {
 
     this.#observers = new ObserverHandler(ParticleEvent);
 

@@ -34,7 +34,7 @@ var ParticleEvent;
 })(ParticleEvent || (ParticleEvent = {}));
 ;
 class Particle {
-    constructor(grouping = DEFAULT_GROUPING, container) {
+    constructor(container, grouping = DEFAULT_GROUPING) {
         var _b;
         var _c, _d;
         _Particle_observers.set(this, void 0);

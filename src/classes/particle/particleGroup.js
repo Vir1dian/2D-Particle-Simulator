@@ -54,7 +54,7 @@ class ParticleGroup {
         __classPrivateFieldSet(this, _ParticleGroup_grouping, structuredCloneCustom(grouping), "f");
         __classPrivateFieldSet(this, _ParticleGroup_particles, new Map(), "f");
         for (let i = 0; i < size; i++) {
-            const p = new Particle(grouping, container);
+            const p = new Particle(container, grouping);
             __classPrivateFieldGet(this, _ParticleGroup_particles, "f").set(p.getID(), p);
         }
         __classPrivateFieldSet(this, _ParticleGroup_observers, new ObserverHandler(ParticleGroupEvent), "f");
