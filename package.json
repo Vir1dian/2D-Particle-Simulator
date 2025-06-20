@@ -1,15 +1,21 @@
 {
   "name": "2d-particle-simulator",
+  "homepage": "https://Vir1dian.github.io/2D-Particle-Simulator/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "gh-pages": "^6.3.0"
   }
 }
