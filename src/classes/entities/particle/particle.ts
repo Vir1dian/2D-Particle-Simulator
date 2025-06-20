@@ -1,3 +1,10 @@
+import { createKeyFlags, isVectorLike } from "../../../functions/utilities";
+import { Vector2D } from "../vector2D";
+import { ObserverHandler } from "../observerHandler";
+import type { BoxSpace, SimEnvironment } from "../simulation/simInterfaces";
+import type { ParticleGrouping } from "./particleGroup";
+import { DEFAULT_GROUPING } from "./particleGroup";
+
 const PARTICLE_COLORS: string[] = ['black', 'gray', 'blue', 'red', 'pink', 'green', 'yellow', 'orange', 'violet', 'purple', 'brown'];
 
 // const ParticleHighlightMap: Record<string, string> = {
@@ -313,5 +320,7 @@ class Particle {
     // this.#observers.notify(ParticleEvent.Update, undefined);
     this.#observers.notify(ParticleEvent.Highlight, undefined);
   }
-}
+};
 
+export type { ParticleEvent };
+export { Particle };

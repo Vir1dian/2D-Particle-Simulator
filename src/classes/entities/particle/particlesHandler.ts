@@ -1,3 +1,9 @@
+import { ObserverHandler } from "../observerHandler";
+import type { BoxSpace } from "../simulation/simInterfaces";
+import { Particle } from "./particle";
+import type { ParticleGrouping } from "./particleGroup";
+import { ParticleGroup } from "./particleGroup";
+
 enum ParticleHandlerEvent {
   Update,
   Add_Group,
@@ -74,4 +80,7 @@ class ParticlesHandler {
   getObservers(): ObserverHandler<typeof ParticleHandlerEvent, ParticleHandlerEventPayloadMap> {
     return this.#observers;
   }
-}
+};
+
+export type { ParticleHandlerEvent };
+export { ParticlesHandler };

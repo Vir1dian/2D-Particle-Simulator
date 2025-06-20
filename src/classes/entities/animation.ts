@@ -1,3 +1,9 @@
+import { ObserverHandler } from "./observerHandler";
+import { Particle } from "./particle/particle";
+import { ParticleGroup } from "./particle/particleGroup";
+import { ParticlesHandler } from "./particle/particlesHandler";
+import { Renderer } from "../renderers/renderer";
+
 class AnimationControllerRenderer extends Renderer {
   #controller: AnimationController;
   #timer_element: HTMLDivElement;
@@ -134,7 +140,7 @@ class AnimationController {
   #environment: SimEnvironment;   // saved directly because of frame-by-frame calls
   #config: SimConfig;             // saved directly because of frame-by-frame calls
   #particle_list: Particle[];     // saved directly because of frame-by-frame calls
-  #state: AnimationControllerState;
+  #state: AnimationControllerState;  // for the timer renderer
   #time_elapsed: number = 0;  // in total number of seconds
 
   #frame_id: number;
@@ -142,7 +148,7 @@ class AnimationController {
   #time_previous: number = 0;
   #time_paused: number = 0;
 
-  #observers: ObserverHandler<typeof AnimationControllerEvent, AnimationControllerEventPayloadMap>;  // for the timer renderer
+  #observers: ObserverHandler<typeof AnimationControllerEvent, AnimationControllerEventPayloadMap>;
 
   constructor(simulation: Simulation) {
     this.#simulation = simulation;

@@ -1,3 +1,11 @@
+import { Vector2D } from "../../entities/vector2D";
+import type { SimPreset } from "../../entities/simulation/simInterfaces";
+import type { SimEvent } from "../../entities/simulation/simulation";
+import { Simulation, DEFAULT_PRESET, TEMPORARY_PRESETS } from "../../entities/simulation/simulation";
+import { Renderer } from "../renderer";
+import { ButtonRenderer } from "../blocks";
+import { TableRenderer, SelectRenderer, OptionRenderer, InputTableRenderer } from "../collections";
+
 /**
  * Helper class for EnvironmentPanelRenderer.
  * Handles user inputs and sends changes to
@@ -49,7 +57,7 @@ class EnvironmentSetupRenderer extends Renderer {
     this.#apply_button.remove();
     super.remove();
   }
-}
+};
 
 /**
  * Helper class for EnvironmentPanelRenderer.
@@ -98,4 +106,9 @@ class PresetInputRenderer extends Renderer {
     this.#apply_button.remove();
     super.remove();
   }
-}
+};
+
+export {
+  EnvironmentSetupRenderer,
+  PresetInputRenderer
+};

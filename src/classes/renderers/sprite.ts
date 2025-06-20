@@ -1,3 +1,6 @@
+import { Vector2D } from "../entities/vector2D";
+import { Renderer } from "./renderer";
+
 class Sprite extends Renderer {
   #translation: Vector2D;
   #rotation: number;
@@ -69,7 +72,7 @@ class Sprite extends Renderer {
   getScale(): Vector2D {
     return this.#scale;
   }
-}
+};
 
 class ZArrowSprite extends Sprite {
   #is_pointing_up: boolean;
@@ -120,7 +123,7 @@ class ZArrowSprite extends Sprite {
     this.#cross.remove();
     super.remove();
   }
-}
+};
 
 class XYArrowSprite extends Sprite {
   #head: HTMLDivElement;
@@ -150,4 +153,10 @@ class XYArrowSprite extends Sprite {
     this.#body.remove();
     super.remove();
   }
-}
+};
+
+export {
+  Sprite,
+  ZArrowSprite,
+  XYArrowSprite
+};

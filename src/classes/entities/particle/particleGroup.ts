@@ -1,3 +1,10 @@
+import { structuredCloneCustom, isVectorLike, createKeyFlags } from "../../../functions/utilities";
+import { Vector2D } from "../vector2D";
+import { ObserverHandler } from "../observerHandler";
+import type { BoxSpace } from "../simulation/simInterfaces";
+import type { ParticleEvent } from "./particle";
+import { Particle } from "./particle";
+
 interface ParticleGrouping {
   group_id: string,
   radius?: number | 'random',
@@ -7,7 +14,7 @@ interface ParticleGrouping {
   charge?: number | 'random',
   color?: string | 'random',
   enable_path_tracing?: boolean
-}
+};
 
 const DEFAULT_GROUPING: ParticleGrouping = {
   group_id: "Ungrouped",
@@ -18,7 +25,7 @@ const DEFAULT_GROUPING: ParticleGrouping = {
   charge: 0,
   color: "black",
   enable_path_tracing: false
-}
+};
 
 enum ParticleGroupEvent {
   Update,
@@ -146,4 +153,13 @@ class ParticleGroup {
     this.#particles.clear();
     this.#observers.clearAll();
   }
-}
+};
+
+export type {
+  ParticleGrouping,
+  ParticleGroupEvent
+};
+export {
+  DEFAULT_GROUPING,
+  ParticleGroup
+};

@@ -1,7 +1,9 @@
+import { Vector2D } from "../classes/entities/vector2D";
+
 interface KinematicData {
   position: Vector2D;
   velocity: Vector2D;
-}
+};
 
 /**
  * Things to double check: does it handle negative direction? how about when the projectile is turning directions during the calculation?
@@ -44,7 +46,7 @@ const Kinematics = {
     }
     return Infinity;
   }
-}
+};
 
 const Dynamics = {
   drag: {
@@ -127,7 +129,7 @@ const Dynamics = {
   electromagnetism: {},
   planetary: {},
   rocketry: {}
-}
+};
 
 // TODO: Refactor into classes
 const PredictParticle = {
@@ -167,7 +169,7 @@ const PredictParticle = {
     );
     return {position: new_position, velocity: new_velocity};
   }
-}
+};
 
 /**
  * Returns the time of collision with a static object (i.e. container walls)
@@ -223,8 +225,15 @@ const PredictCollision = {
     }
     return Math.min(...valid_collision_time) + tolerance;
   }
-}
+};
 
+export type { KinematicData };
+export {
+  Kinematics,
+  Dynamics,
+  PredictParticle,
+  PredictCollision
+};
 
 /* NO DRAG */
 // Acceleration

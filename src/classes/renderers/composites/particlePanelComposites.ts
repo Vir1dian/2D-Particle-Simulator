@@ -1,3 +1,18 @@
+import { structuredCloneCustom } from "../../../functions/utilities";
+import { Vector2D } from "../../entities/vector2D";
+import type { BoxSpace } from "../../entities/simulation/simInterfaces";
+import type { ParticleEvent } from "../../entities/particle/particle";
+import { Particle } from "../../entities/particle/particle";
+import type { ParticleGrouping, ParticleGroupEvent } from "../../entities/particle/particleGroup";
+import { ParticleGroup, DEFAULT_GROUPING } from "../../entities/particle/particleGroup";
+import type { ParticleHandlerEvent } from "../../entities/particle/particlesHandler";
+import { ParticlesHandler } from "../../entities/particle/particlesHandler";
+import { DEFAULT_BOUNDS } from "../../entities/simulation/simulation";
+import { Renderer } from "../renderer";
+import { ButtonRenderer, StandardDialogRenderer, NumberInputRenderer } from "../blocks";
+import { SelectRenderer, OptionRenderer, ListRenderer, InputTableRenderer } from "../collections";
+import { ContainerRenderer } from "../features";
+
 class AddParticleMenuRenderer extends Renderer {
   // To be placed inside an existing StandardDialogRenderer
   #particles_handler: ParticlesHandler;
@@ -163,7 +178,7 @@ class AddParticleMenuRenderer extends Renderer {
     this.#submit_button.remove();
     super.remove();
   }
-}
+};
 
 class CreateGroupMenuRenderer extends Renderer {
   // To be placed inside an existing StandardDialogRenderer
@@ -228,7 +243,7 @@ class CreateGroupMenuRenderer extends Renderer {
     this.#submit_button.remove();
     super.remove();
   }
-}
+};
 
 class EditGroupMenuRenderer extends Renderer {
   #group: ParticleGroup;
@@ -311,7 +326,7 @@ class EditGroupMenuRenderer extends Renderer {
     this.#delete_button.remove();
     super.remove();
   }
-}
+};
 
 class EditParticleMenuRenderer extends Renderer {
   // To be placed inside an existing StandardDialogRenderer
@@ -412,7 +427,7 @@ class EditParticleMenuRenderer extends Renderer {
     this.#delete_button.remove();
     super.remove();
   }
-}
+};
 
 /**
  * Helper class for ParticleSetup Renderer.
@@ -568,7 +583,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#unit_list.remove();
     super.remove();
   }
-}
+};
 
 
 /**
@@ -698,7 +713,7 @@ class ParticleUnitRenderer extends Renderer {
     this.#drag_button.remove();
     super.remove();
   }
-}
+};
 
 /**
  * Helper class for ParticleUnitRenderer.
@@ -786,4 +801,14 @@ class ParticlePointRenderer extends Renderer {
     this.getElement().removeEventListener('click', this.#select_callback);
     super.remove();
   }
-}
+};
+
+export {
+  AddParticleMenuRenderer,
+  CreateGroupMenuRenderer,
+  EditGroupMenuRenderer,
+  EditParticleMenuRenderer,
+  ParticleUnitGroupRenderer,
+  ParticleUnitRenderer,
+  ParticlePointRenderer
+};

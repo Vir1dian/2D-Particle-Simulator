@@ -1,7 +1,7 @@
 /**
  * Base class for storing and handling an HTMLElement
  */
-class Renderer {
+export class Renderer {
   #element: HTMLElement;
   #classname: string;
   #id: string;
@@ -42,4 +42,4 @@ class Renderer {
     deafened_clone.parentNode?.removeChild(deafened_clone);
     this.#element.remove();
   }
-}
+};

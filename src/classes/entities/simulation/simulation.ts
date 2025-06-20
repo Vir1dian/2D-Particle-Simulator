@@ -1,3 +1,10 @@
+import { structuredCloneCustom, deepmergeCustom } from "../../../functions/utilities";
+import { Vector2D } from "../vector2D";
+import { ObserverHandler } from "../observerHandler";
+import type { BoxSpace, SimEnvironment, SimConfig, SimPreset } from "./simInterfaces";
+import { DEFAULT_GROUPING } from "../particle/particleGroup";
+import { ParticlesHandler } from "../particle/particlesHandler";
+
 enum SimEvent {
   Update,
   Update_Container,
@@ -86,7 +93,7 @@ class Simulation {
   getObservers(): ObserverHandler<typeof SimEvent, SimEventPayloadMap> {
     return this.#observers;
   }
-}
+};
 
 const DEFAULT_PRESET: SimPreset = {
   container: {
@@ -113,7 +120,7 @@ const DEFAULT_PRESET: SimPreset = {
   particle_groups: new Map([
     [DEFAULT_GROUPING.group_id, { grouping: DEFAULT_GROUPING, size: 0 }]
   ])
-}
+};
 
 // For testing Simulation class, will eventually save all presets in "simulation_presets.json"
 const TEMPORARY_PRESETS: Record<string, SimPreset> = {
@@ -624,7 +631,7 @@ const TEMPORARY_PRESETS: Record<string, SimPreset> = {
       }]
     ])
   }
-}
+};
 
 const DEFAULT_BOUNDS: {  // Used to set a minimum and maximum for input elements
   key: string, 
@@ -634,4 +641,12 @@ const DEFAULT_BOUNDS: {  // Used to set a minimum and maximum for input elements
   { key: "radius", min: 1, max: 75 },
   { key: "position", min: {x: -1, y: -1}, max: {x: 1, y: 1} },
   { key: "mass", min: 1, max: false },
-]
+];
+
+export type { SimEvent };
+export {
+  Simulation,
+  DEFAULT_PRESET,
+  TEMPORARY_PRESETS,
+  DEFAULT_BOUNDS
+};

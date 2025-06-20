@@ -1,3 +1,9 @@
+import { VECTOR_VISUAL_SCALE_FACTOR, OVERFLOW_OFFSET } from "../../../functions/utilities";
+import { Vector2D } from "../../entities/vector2D";
+import type { BoxSpace } from "../../entities/simulation/simInterfaces";
+import { Renderer } from "../renderer";
+import { ZArrowSprite, XYArrowSprite } from "../sprite";
+
 class ZVectorField {
   #arrows: ZArrowSprite[][];
   #magnitude: number;
@@ -58,7 +64,7 @@ class ZVectorField {
     this.#arrows.forEach(row => row.forEach(arrow => arrow.remove()));
     this.#arrows.length = 0;
   }
-}
+};
 
 class XYVectorField {
   #arrows: XYArrowSprite[][];
@@ -142,4 +148,9 @@ class XYVectorField {
     this.#arrows.forEach(row => row.forEach(arrow => arrow.remove()));
     this.#arrows.length = 0;
   }
-}
+};
+
+export {
+  ZVectorField,
+  XYVectorField
+};

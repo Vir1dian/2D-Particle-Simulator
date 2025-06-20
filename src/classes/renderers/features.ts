@@ -1,3 +1,7 @@
+import { Simulation } from "../entities/simulation/simulation";
+
+import { Renderer } from "./renderer";
+
 // UI Config Renderers -- May implement a separate UIHandler class from Simulation
 class UIControlRenderer extends Renderer {  // May extend from a TableRenderer or a ListRenderer instead
   // WIP: Will need methods to handle Simulation Class's calls
@@ -12,7 +16,7 @@ class UIControlRenderer extends Renderer {  // May extend from a TableRenderer o
   remove(): void {
     super.remove();
   }
-}
+};
 
 class ContainerRenderer extends Renderer {
   #container: BoxSpace;
@@ -114,7 +118,7 @@ class ContainerRenderer extends Renderer {
     this.#dark_overlay.remove();
     super.remove();
   }
-}
+};
 
 class EnvironmentPanelRenderer extends Renderer {
   #preset_handler: PresetInputRenderer;
@@ -140,9 +144,8 @@ class EnvironmentPanelRenderer extends Renderer {
     this.#environment_handler.remove();
     super.remove();
   }
-}
+};
 
-// Particle Interface Renderers
 /**
  * Helper class for SimulationRenderer
  * Handles ParticleUnitGroupRenderers which
@@ -256,4 +259,11 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     this.#group_list.remove();
     super.remove();
   }
-}
+};
+
+export {
+  UIControlRenderer,
+  ContainerRenderer,
+  EnvironmentPanelRenderer,
+  ParticlePanelRenderer
+};

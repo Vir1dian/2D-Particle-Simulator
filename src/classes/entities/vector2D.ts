@@ -1,4 +1,4 @@
-class Vector2D {
+export class Vector2D {
   x: number;
   y: number;
 
@@ -73,4 +73,4 @@ class Vector2D {
 
     return new Vector2D(random_x, random_y);
   }
-}
+};

@@ -1,4 +1,3 @@
-
 type EnumLike = { 
   [key: string]: string | number; 
   [key: number]: string 
@@ -54,4 +53,13 @@ class ObserverHandler<E extends EnumLike, M extends EventPayloadMap<E>> {  // E 
       this.#observers[key as EnumNumerical<E>]?.clear();
     }
   }
-}
+};
+
+export type {
+  EnumLike,
+  EnumNumerical,
+  EventPayloadMap,
+  EventPayload
+};
+
+export { ObserverHandler };

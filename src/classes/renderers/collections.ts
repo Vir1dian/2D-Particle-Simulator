@@ -1,3 +1,8 @@
+import { structuredCloneCustom, prettifyKey, INPUT_PREFIX } from "../../functions/utilities";
+import { Vector2D } from "../entities/vector2D";
+import { Renderer } from "./renderer";
+import { InputRenderer, CheckboxInputRenderer, NumberInputRenderer, Vector2DInputRenderer } from "./blocks";
+
 /**
  * 
  */
@@ -47,7 +52,7 @@ class TableCellRenderer<R extends Renderer> extends Renderer {  // stores at mos
     else if (this.#content instanceof HTMLElement) this.#content.remove();
     super.remove();
   }
-}
+};
 
 /**
  * Stores a HTMLTableElement, maintains a
@@ -118,7 +123,7 @@ class TableRenderer extends Renderer {
     this.#cells.length = 0;
     super.remove();
   }
-}
+};
 
 class ListRenderer<T extends Renderer> extends Renderer {
   #items: T[];
@@ -238,7 +243,7 @@ class ListRenderer<T extends Renderer> extends Renderer {
     this.empty();
     super.remove();
   }
-}
+};
 
 class OptionRenderer extends Renderer {
   #value: string;
@@ -274,7 +279,7 @@ class OptionRenderer extends Renderer {
   //   this.#label = label;
   //   this.getElement().innerHTML = this.#label;
   // }
-}
+};
 
 class SelectRenderer extends Renderer {
   #options: OptionRenderer[];
@@ -395,7 +400,7 @@ class SelectRenderer extends Renderer {
     this.#label_element.remove();
     super.remove();
   }
-}
+};
 
 class DatalistInputRenderer extends InputRenderer {
   // Note, datalists only require option elements with set values, no need for inner text labels
@@ -446,7 +451,7 @@ class DatalistInputRenderer extends InputRenderer {
     this.#datalist_element.remove();
     super.remove();
   }
-}
+};
 
 /**
  * Handles a table of inputs for a string record-type object. 
@@ -678,4 +683,13 @@ class InputTableRenderer<T extends string | boolean | number | Vector2D | undefi
     this.#inputs.clear();
     super.remove();
   }
-}
+};
+
+export {
+  TableRenderer,
+  ListRenderer,
+  OptionRenderer,
+  SelectRenderer,
+  DatalistInputRenderer,
+  InputTableRenderer
+};

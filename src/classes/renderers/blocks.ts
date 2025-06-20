@@ -1,3 +1,6 @@
+import { Vector2D } from "../entities/vector2D";
+import { Renderer } from "./renderer";
+
 /**
  * Stores an HTMLButtonElement, maintains a callback
  * and an event. Uses only one eventlistener at a
@@ -58,7 +61,7 @@ class ButtonRenderer extends Renderer {
     this.deafen();
     super.remove();
   }
-}
+};
 
 /**
  * Stores an empty HTMLDialogElement, an empty 
@@ -119,7 +122,7 @@ class DialogRenderer extends Renderer {
     this.#content_wrapper.remove();
     super.remove();
   }
-}
+};
 
 /**
  * An extension of DialogRenderer with basic styling
@@ -187,7 +190,7 @@ class StandardDialogRenderer<T extends Renderer> extends DialogRenderer {
   getBody(): T {
     return this.#body;
   }
-}
+};
 
 class InputRenderer extends Renderer {
   #value: string;  // may not be strings for some Input types, will write derived InputRenderer classes for those as needed
@@ -261,7 +264,7 @@ class InputRenderer extends Renderer {
     this.#label_element.remove();
     super.remove();
   }
-}
+};
 
 class NumberInputRenderer extends InputRenderer {
   #min: number | false;
@@ -312,7 +315,7 @@ class NumberInputRenderer extends InputRenderer {
     this.getElement().removeEventListener("blur", this.#clamp);
     super.remove();
   }
-}
+};
 
 class CheckboxInputRenderer extends InputRenderer {
   constructor(id: string, checked: boolean = false) {
@@ -331,7 +334,7 @@ class CheckboxInputRenderer extends InputRenderer {
     this.getElement().checked = value === "true";
     // super.setValue(value);
   }
-}
+};
 
 class Vector2DInputRenderer extends Renderer {
   #value: Vector2D;
@@ -428,12 +431,24 @@ class Vector2DInputRenderer extends Renderer {
     this.#label_element.remove();
     super.remove();
   }
-}
+};
 
 class TooltipRenderer extends Renderer {
 
-}
+};
 
 class DraggableRenderer extends Renderer {
 
-}
+};
+
+export {
+  ButtonRenderer,
+  DialogRenderer,
+  StandardDialogRenderer,
+  InputRenderer,
+  NumberInputRenderer,
+  CheckboxInputRenderer,
+  Vector2DInputRenderer,
+  TooltipRenderer,
+  DraggableRenderer
+};

@@ -1,9 +1,12 @@
+import { Vector2D } from "../vector2D";
+import type { ParticleGrouping } from "../particle/particleGroup";
+
 interface BoxSpace {
   x_min: number,
   x_max: number,
   y_min: number,
   y_max: number
-} 
+};
 
 interface SimEnvironment {
   statics?: {
@@ -16,13 +19,13 @@ interface SimEnvironment {
   dynamics?: {
     // for the future
   }
-}
+};
 
 interface SimConfig {
   path_trace_step?: number,
   is_draggable?: boolean,
   focus_color?: string
-}
+};
 
 // Used to structure the contents of Simulation class
 interface SimPreset {
@@ -30,5 +33,11 @@ interface SimPreset {
   environment?: SimEnvironment;
   config?: SimConfig;
   particle_groups?: Map<string, { grouping: ParticleGrouping, size: number}>;
-}
+};
 
+export type {
+  BoxSpace,
+  SimEnvironment,
+  SimConfig,
+  SimPreset
+};

@@ -1,3 +1,5 @@
+import { Vector2D } from "../classes/entities/vector2D";
+
 /**
  * Makes a key string capitalized and spaced,
  * intended for in dynamic creation of headers and
@@ -152,3 +154,24 @@ const ELECTRON_CHARGE = 1.60 * 10 ** -19;
 const ELECTRIC_FORCE_CONSTANT = 8.99 * 10 ** 9;
 const PERMITTIVITY_CONSTANT = 8.85 * 10 ** -12;
 const MAGNETIC_CONSTANT = 4 * Math.PI * 10 ** -7;
+
+export {
+  prettifyKey,
+  toSnakeCase,
+  deepmergeCustom,
+  structuredCloneCustom,
+  isObject,
+  isVectorLike,
+  createKeyFlags,
+  INPUT_PREFIX,
+  VECTOR_VISUAL_SCALE_FACTOR,
+  OVERFLOW_OFFSET,
+  FIELD_WIDTH,
+  GRAV_OFFSET,
+  ELEC_OFFSET,
+  MAG_OFFSET,
+  ELECTRON_CHARGE,
+  ELECTRIC_FORCE_CONSTANT,
+  PERMITTIVITY_CONSTANT,
+  MAGNETIC_CONSTANT
+}
