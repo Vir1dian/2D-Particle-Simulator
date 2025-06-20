@@ -229,7 +229,7 @@ class InputRenderer extends Renderer {
   }
 
   // setters
-  setChild(child: HTMLElement | Renderer): void {
+  setChild(_child: HTMLElement | Renderer): void {
     // Prevents setChild from being used for an InputRenderer
     throw new Error("InputRenderer does not support child elements.");
   }
@@ -386,7 +386,7 @@ class Vector2DInputRenderer extends Renderer {
   }
 
   // setters
-  setChild(child: HTMLElement | Renderer): void {
+  setChild(_child: HTMLElement | Renderer): void {
     // Prevents setChild from being used for an InputRenderer
     throw new Error("InputRenderer does not support child elements.");
   }

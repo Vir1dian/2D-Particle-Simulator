@@ -84,7 +84,7 @@ class AddParticleMenuRenderer extends Renderer {
       'menu_group_selector_add_particle', 
       Array.from(
         this.#particles_handler.getGroups() as Map<string, ParticleGroup>,
-        ([group_id, group]) => new OptionRenderer(group_id)
+        ([group_id]) => new OptionRenderer(group_id)
       )
     );
     const callback = () => {
@@ -451,7 +451,7 @@ class ParticleUnitGroupRenderer extends Renderer {
     this.#details_dialog = this.setupDetailsDialog(group.getGrouping().group_id, particles_handler, container);
     this.#drag_button = this.setupDragButton();
     this.#unit_list = new ListRenderer<ParticleUnitRenderer>(...Array.from(
-      group.getParticles(), ([id, particle]) => new ParticleUnitRenderer(particle, group, container)
+      group.getParticles(), ([_id, particle]) => new ParticleUnitRenderer(particle, group, container)
     ));
     // DOM Content
     const header: HTMLElement = document.createElement('header');
@@ -488,7 +488,7 @@ class ParticleUnitGroupRenderer extends Renderer {
       () => {
         open_callback();
 
-        for (const [id, particle] of this.#group.getParticles()) 
+        for (const [_id, particle] of this.#group.getParticles()) 
           particle.highlight(true);
         container.toggle_dark_overlay(true);
 
@@ -501,7 +501,7 @@ class ParticleUnitGroupRenderer extends Renderer {
       () => {
         close_callback();
 
-        for (const [id, particle] of this.#group.getParticles()) 
+        for (const [_id, particle] of this.#group.getParticles()) 
           particle.highlight(false);
         container.toggle_dark_overlay(false);
 
@@ -730,7 +730,7 @@ class ParticlePointRenderer extends Renderer {
     this.#particle = particle;
     this.setupParticleObservers();
     this.#container = container.getContainer();
-    this.#select_callback = (e: MouseEvent) => {};
+    this.#select_callback = (_e: MouseEvent) => {};
 
     this.setParent(container);
 

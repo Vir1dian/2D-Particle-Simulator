@@ -14,12 +14,16 @@ import { PresetInputRenderer, EnvironmentSetupRenderer } from "./composites/simS
 // UI Config Renderers -- May implement a separate UIHandler class from Simulation
 class UIControlRenderer extends Renderer {  // May extend from a TableRenderer or a ListRenderer instead
   // WIP: Will need methods to handle Simulation Class's calls
-  #simulation: Simulation
+  // #simulation: Simulation
   // may create a UIConfig class soon
-  constructor(simulation: Simulation) {
+  // constructor(simulation: Simulation) {
+  //   const ui_settings_element : HTMLDivElement = document.createElement('div');
+  //   super(ui_settings_element);
+  //   this.#simulation = simulation;
+  // }
+  constructor() {
     const ui_settings_element : HTMLDivElement = document.createElement('div');
     super(ui_settings_element);
-    this.#simulation = simulation;
   }
 
   remove(): void {
@@ -180,7 +184,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     this.#create_group_dialog = this.setupCreateGroupDialog();
     this.#group_list = new ListRenderer<ParticleUnitGroupRenderer>(...Array.from(
       particles_handler.getGroups() as Map<string, ParticleGroup>, 
-      ([group_id, group]) => new ParticleUnitGroupRenderer(group, particles_handler, container)
+      ([_group_id, group]) => new ParticleUnitGroupRenderer(group, particles_handler, container)
     ));
 
     // Content
@@ -259,7 +263,7 @@ class ParticlePanelRenderer extends Renderer {  // TODO: Add particles/groups, d
     this.#group_list.empty();
     Array.from(
       this.#particles_handler.getGroups() as Map<string, ParticleGroup>, 
-      ([group_id, group]) => new ParticleUnitGroupRenderer(group, this.#particles_handler, this.#container)
+      ([_group_id, group]) => new ParticleUnitGroupRenderer(group, this.#particles_handler, this.#container)
     ).forEach(group_renderer => this.#group_list.push(group_renderer));
   }
   remove(): void {

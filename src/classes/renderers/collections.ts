@@ -26,7 +26,7 @@ class TableCellRenderer<R extends Renderer> extends Renderer {  // stores at mos
   getCol(): number {
     return this.#col;
   }
-  setParent(parent: HTMLElement | Renderer): void {
+  setParent(_parent: HTMLElement | Renderer): void {
     throw new Error("Cannot append TableCellRenderer to a parent. Manipulate through TableRenderer instead.");
   }
   setContent(content: string | HTMLElement | R): void {
@@ -265,7 +265,7 @@ class OptionRenderer extends Renderer {
   getLabel(): string {
     return this.#label;
   }
-  setChild(child: HTMLElement | Renderer): void {
+  setChild(_child: HTMLElement | Renderer): void {
     throw new Error("setChild() not allowed for OptionRenderer.");
   }
   setParent(parent: HTMLSelectElement | SelectRenderer | HTMLDataListElement): void {
@@ -338,7 +338,7 @@ class SelectRenderer extends Renderer {
   }
 
   // setters
-  setChild(child: HTMLElement | Renderer): void {
+  setChild(_child: HTMLElement | Renderer): void {
     // Prevents setChild from being used for an SelectRenderer
     throw new Error("setChild() not allowed for SelectRenderer, use addOption().");
   }

@@ -147,7 +147,7 @@ class ParticleGroup {
   }
 
   clear(): void {
-    for (const [id, particle] of this.#particles)
+    for (const [_id, particle] of this.#particles)
       particle.clear();
     this.#particles.clear();
     this.#observers.clearAll();

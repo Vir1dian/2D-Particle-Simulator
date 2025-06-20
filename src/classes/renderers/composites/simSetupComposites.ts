@@ -82,7 +82,7 @@ class PresetInputRenderer extends Renderer {
   }
   private setupPresetDropdown(): SelectRenderer {
     const preset_data: OptionRenderer[] = [];
-    Object.keys(TEMPORARY_PRESETS).forEach((preset_name, preset) => {
+    Object.keys(TEMPORARY_PRESETS).forEach((preset_name) => {
       preset_data.push(new OptionRenderer(preset_name, ''));
     });
     const dropdown: SelectRenderer = new SelectRenderer('simsetup_presets_dropdown', preset_data);

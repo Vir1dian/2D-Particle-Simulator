@@ -3,25 +3,25 @@
  */
 export class Renderer {
   #element: HTMLElement;
-  #classname: string;
-  #id: string;
+  // #classname: string;
+  // #id: string;
  
   constructor(element: HTMLElement, classname: string = '', id: string = '') {
     this.#element = element;
     this.#element.className = classname;
     this.#element.id = id;
-    this.#classname = classname;
-    this.#id = id;
+    // this.#classname = classname;
+    // this.#id = id;
   }
   getElement(): HTMLElement {
     return this.#element;
   }
   setClassName(classname: string): void {
-    this.#classname = classname;
+    // this.#classname = classname;
     this.#element.className = classname;
   }
   setID(id: string): void {
-    this.#id = id;
+    // this.#id = id;
     this.#element.id = id;
   }
   setParent(parent: HTMLElement | Renderer): void {

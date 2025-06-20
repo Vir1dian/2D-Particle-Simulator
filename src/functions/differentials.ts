@@ -1,4 +1,6 @@
 import { Vector2D } from "../classes/entities/vector2D";
+import type { BoxSpace, SimEnvironment } from "../classes/entities/simulation/simInterfaces";
+import { Particle } from "../classes/entities/particle/particle";
 
 interface KinematicData {
   position: Vector2D;

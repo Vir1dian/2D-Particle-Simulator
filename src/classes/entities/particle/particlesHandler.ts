@@ -52,7 +52,7 @@ class ParticlesHandler {
   }
 
   overwriteGroups(preset_groups: Map<string, { grouping: ParticleGrouping, size: number }>): void {
-    for (const [id, group] of this.#groups)
+    for (const [_id, group] of this.#groups)
       group.clear();
     this.#groups.clear();
     for (const [id, group] of preset_groups)

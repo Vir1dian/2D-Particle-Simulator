@@ -1,6 +1,6 @@
 import { structuredCloneCustom } from "../../functions/utilities";
 import { ObserverHandler } from "./observerHandler";
-import type { BoxSpace, SimEnvironment, SimConfig } from "./simulation/simInterfaces";
+import type { BoxSpace, SimEnvironment } from "./simulation/simInterfaces";
 import { Particle } from "./particle/particle";
 import { ParticleGroupEvent, ParticleGroup } from "./particle/particleGroup";
 import { ParticleHandlerEvent, ParticlesHandler } from "./particle/particlesHandler";
@@ -142,7 +142,7 @@ class AnimationController {
   #simulation: Simulation;
   #container: BoxSpace;           // saved directly because of frame-by-frame calls
   #environment: SimEnvironment;   // saved directly because of frame-by-frame calls
-  #config: SimConfig;             // saved directly because of frame-by-frame calls
+  // #config: SimConfig;             // saved directly because of frame-by-frame calls
   #particle_list: Particle[];     // saved directly because of frame-by-frame calls
   #state: AnimationControllerState;  // for the timer renderer
   #time_elapsed: number = 0;  // in total number of seconds
@@ -158,7 +158,7 @@ class AnimationController {
     this.#simulation = simulation;
     this.#container = structuredCloneCustom(simulation.getContainer());
     this.#environment = structuredCloneCustom(simulation.getEnvironment());
-    this.#config = structuredCloneCustom(simulation.getConfig());
+    // this.#config = structuredCloneCustom(simulation.getConfig());
     this.#particle_list = simulation.getParticlesHandler().getAllParticles();
     this.#state = AnimationControllerState.Stopped;
 
@@ -179,9 +179,9 @@ class AnimationController {
     sim_obs.add(SimEvent.Update_Environment, () => {
       this.#environment = structuredCloneCustom(simulation.getEnvironment());
     });
-    sim_obs.add(SimEvent.Update_Config, () => {
-      this.#config = structuredCloneCustom(simulation.getConfig());
-    });
+    // sim_obs.add(SimEvent.Update_Config, () => {
+    //   this.#config = structuredCloneCustom(simulation.getConfig());
+    // });
   }
   private setupParticleHandlerObservers(particles_handler: ParticlesHandler): void {
     const handler_obs = particles_handler.getObservers();

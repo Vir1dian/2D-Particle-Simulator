@@ -43,11 +43,11 @@ class Simulation {
     this.#particles_handler = new ParticlesHandler(final_preset.particle_groups!, final_preset.container!);
     this.#observers = new ObserverHandler(SimEvent);
 
-    this.setupParticleHandlerObservers(this.#particles_handler);
+    // this.setupParticleHandlerObservers(this.#particles_handler);
   }
-  private setupParticleHandlerObservers(particles_handler: ParticlesHandler): void {
-    const obs = particles_handler.getObservers();
-  }
+  // private setupParticleHandlerObservers(particles_handler: ParticlesHandler): void {
+  //   const obs = particles_handler.getObservers();
+  // }
 
   setPreset(preset: SimPreset): void {  
     const current_properties: SimPreset = {

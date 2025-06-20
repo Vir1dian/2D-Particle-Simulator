@@ -51,7 +51,7 @@ class Sprite extends Renderer {
       y: translation.y - offsetY,
     });
   }
-  slowScale(magnitude: number, base = Math.E): this {
+  slowScale(magnitude: number): this {
     const safe_magnitude = Math.max(0, magnitude); // Prevent negatives
     const scale_factor = safe_magnitude ** 0.1;
     this.scale({
