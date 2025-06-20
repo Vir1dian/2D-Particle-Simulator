@@ -1,8 +1,15 @@
+import { structuredCloneCustom } from "../../functions/utilities";
 import { ObserverHandler } from "./observerHandler";
+import type { BoxSpace, SimEnvironment, SimConfig } from "./simulation/simInterfaces";
 import { Particle } from "./particle/particle";
+import type { ParticleGroupEvent } from "./particle/particleGroup";
 import { ParticleGroup } from "./particle/particleGroup";
+import type { ParticleHandlerEvent } from "./particle/particlesHandler";
 import { ParticlesHandler } from "./particle/particlesHandler";
+import type { SimEvent } from "./simulation/simulation";
+import { Simulation, DEFAULT_PRESET } from "./simulation/simulation";
 import { Renderer } from "../renderers/renderer";
+import { ButtonRenderer } from "../renderers/blocks";
 
 class AnimationControllerRenderer extends Renderer {
   #controller: AnimationController;
@@ -112,27 +119,27 @@ class AnimationControllerRenderer extends Renderer {
     this.getElement().removeChild(this.#timer_element);
     super.remove();
   }
-}
+};
 
 enum AnimationControllerState {
   Stopped,
   Running,
   Paused
-}
+};
 
 enum AnimationControllerEvent {
   Update,
   Add_Particle,
   Delete_Particle,
   Overwrite_Groups
-}
+};
 
 type AnimationControllerEventPayloadMap = {
   [AnimationControllerEvent.Update]: void | undefined;
   [AnimationControllerEvent.Add_Particle]: { particle: Particle };
   [AnimationControllerEvent.Delete_Particle]: { particle: Particle };
   [AnimationControllerEvent.Overwrite_Groups]: void | undefined;
-}
+};
 
 class AnimationController {
   #simulation: Simulation;
@@ -321,4 +328,10 @@ class AnimationController {
   getObservers(): ObserverHandler<typeof AnimationControllerEvent, AnimationControllerEventPayloadMap> {
     return this.#observers;
   }
-}
+};
+
+export type { AnimationControllerEvent };
+export {
+  AnimationControllerRenderer,
+  AnimationController
+};
