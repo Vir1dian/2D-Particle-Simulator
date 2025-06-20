@@ -82,5 +82,7 @@ class ParticlesHandler {
   }
 };
 
-export type { ParticleHandlerEvent };
-export { ParticlesHandler };
+export { 
+  ParticleHandlerEvent, 
+  ParticlesHandler 
+};

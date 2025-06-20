@@ -322,5 +322,7 @@ class Particle {
   }
 };
 
-export type { ParticleEvent };
-export { Particle };
+export { 
+  ParticleEvent, 
+  Particle 
+};

@@ -1,7 +1,6 @@
 import { Vector2D } from "../../entities/vector2D";
 import type { SimPreset } from "../../entities/simulation/simInterfaces";
-import type { SimEvent } from "../../entities/simulation/simulation";
-import { Simulation, DEFAULT_PRESET, TEMPORARY_PRESETS } from "../../entities/simulation/simulation";
+import { SimEvent, Simulation, DEFAULT_PRESET, TEMPORARY_PRESETS } from "../../entities/simulation/simulation";
 import { Renderer } from "../renderer";
 import { ButtonRenderer } from "../blocks";
 import { TableRenderer, SelectRenderer, OptionRenderer, InputTableRenderer } from "../collections";

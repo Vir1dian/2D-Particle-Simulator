@@ -1,12 +1,10 @@
 import { structuredCloneCustom } from "../../../functions/utilities";
 import { Vector2D } from "../../entities/vector2D";
 import type { BoxSpace } from "../../entities/simulation/simInterfaces";
-import type { ParticleEvent } from "../../entities/particle/particle";
-import { Particle } from "../../entities/particle/particle";
-import type { ParticleGrouping, ParticleGroupEvent } from "../../entities/particle/particleGroup";
-import { ParticleGroup, DEFAULT_GROUPING } from "../../entities/particle/particleGroup";
-import type { ParticleHandlerEvent } from "../../entities/particle/particlesHandler";
-import { ParticlesHandler } from "../../entities/particle/particlesHandler";
+import { ParticleEvent, Particle } from "../../entities/particle/particle";
+import type { ParticleGrouping } from "../../entities/particle/particleGroup";
+import { ParticleGroupEvent, ParticleGroup, DEFAULT_GROUPING } from "../../entities/particle/particleGroup";
+import { ParticleHandlerEvent, ParticlesHandler } from "../../entities/particle/particlesHandler";
 import { DEFAULT_BOUNDS } from "../../entities/simulation/simulation";
 import { Renderer } from "../renderer";
 import { ButtonRenderer, StandardDialogRenderer, NumberInputRenderer } from "../blocks";

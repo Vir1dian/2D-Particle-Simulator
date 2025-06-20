@@ -2,12 +2,9 @@ import { structuredCloneCustom } from "../../functions/utilities";
 import { ObserverHandler } from "./observerHandler";
 import type { BoxSpace, SimEnvironment, SimConfig } from "./simulation/simInterfaces";
 import { Particle } from "./particle/particle";
-import type { ParticleGroupEvent } from "./particle/particleGroup";
-import { ParticleGroup } from "./particle/particleGroup";
-import type { ParticleHandlerEvent } from "./particle/particlesHandler";
-import { ParticlesHandler } from "./particle/particlesHandler";
-import type { SimEvent } from "./simulation/simulation";
-import { Simulation, DEFAULT_PRESET } from "./simulation/simulation";
+import { ParticleGroupEvent, ParticleGroup } from "./particle/particleGroup";
+import { ParticleHandlerEvent, ParticlesHandler } from "./particle/particlesHandler";
+import { SimEvent, Simulation, DEFAULT_PRESET } from "./simulation/simulation";
 import { Renderer } from "../renderers/renderer";
 import { ButtonRenderer } from "../renderers/blocks";
 
@@ -330,8 +327,8 @@ class AnimationController {
   }
 };
 
-export type { AnimationControllerEvent };
 export {
+  AnimationControllerEvent,
   AnimationControllerRenderer,
   AnimationController
 };

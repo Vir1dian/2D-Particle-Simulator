@@ -643,8 +643,8 @@ const DEFAULT_BOUNDS: {  // Used to set a minimum and maximum for input elements
   { key: "mass", min: 1, max: false },
 ];
 
-export type { SimEvent };
 export {
+  SimEvent,
   Simulation,
   DEFAULT_PRESET,
   TEMPORARY_PRESETS,

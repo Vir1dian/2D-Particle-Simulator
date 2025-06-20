@@ -2,8 +2,7 @@ import { structuredCloneCustom, isVectorLike, createKeyFlags } from "../../../fu
 import { Vector2D } from "../vector2D";
 import { ObserverHandler } from "../observerHandler";
 import type { BoxSpace } from "../simulation/simInterfaces";
-import type { ParticleEvent } from "./particle";
-import { Particle } from "./particle";
+import { ParticleEvent, Particle } from "./particle";
 
 interface ParticleGrouping {
   group_id: string,
@@ -157,9 +156,9 @@ class ParticleGroup {
 
 export type {
   ParticleGrouping,
-  ParticleGroupEvent
 };
 export {
   DEFAULT_GROUPING,
+  ParticleGroupEvent,
   ParticleGroup
 };
